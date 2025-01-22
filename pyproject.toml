@@ -1,13 +1,15 @@
 [project]
 name = "openstudio-hpxml-calibration"
 version = "0.1.0"
-description = "Add your description here"
+description = "Calibrates a building energy model to utility bills."
 readme = "README.md"
 authors = [
     { name = "Noel Merket", email = "noel.merket@nrel.gov" }
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "lxml>=5.3.0",
+]
 
 [project.scripts]
 openstudio-hpxml-calibration = "openstudio_hpxml_calibration:main"
