@@ -8,11 +8,12 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
+    "click>=8.1.8",
     "lxml>=5.3.0",
 ]
 
 [project.scripts]
-openstudio-hpxml-calibration = "openstudio_hpxml_calibration:main"
+openstudio-hpxml-calibration = "openstudio_hpxml_calibration:cli"
 
 [build-system]
 requires = ["hatchling"]
