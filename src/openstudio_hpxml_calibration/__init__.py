@@ -1,15 +1,27 @@
+import pathlib
 import subprocess
-import click
+
+from cyclopts import App
+
+app = App()
+
+oshpxml_path = pathlib.Path(__file__).resolve().parent.parent / "OpenStudio-HPXML"
 
 
-@click.group()
-def cli() -> None:
-    pass
-
-
-@cli.command()
+@app.command
 def openstudio_version() -> None:
+    """Return the OpenStudio-HPXML, HPXML, OpenStudio, and EnergyPlus Versions"""
     resp = subprocess.run(
-        ["openstudio", "openstudio_version"], capture_output=True, check=True
+        [
+            "openstudio",
+            str(oshpxml_path / "workflow" / "run_simulation.rb"),
+            "--version",
+        ],
+        capture_output=True,
+        check=True,
     )
     print(resp.stdout.decode())
+
+
+if __name__ == "__main__":
+    app()
