@@ -69,6 +69,7 @@ ignore = [
     "SIM108",  # if-else-block-instead-of-if-exp
 ]
 
-# [lint.per-file-ignores]
+[lint.per-file-ignores]
+"tests/*" = ["S101", "S607", "S603"] # assert statements are allowed in tests, and paths are safe
 
 # [lint.pylint]
