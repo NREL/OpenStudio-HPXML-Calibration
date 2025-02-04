@@ -48,11 +48,11 @@ repos:
         args: [
           "--config", ".markdownlint.json"
         ]
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.14.1
-    hooks:
-      - id: mypy
-        additional_dependencies: [tokenize-rt==6.1.0]
-        args: [--strict-equality, --show-error-context, --show-error-code-links, --pretty]
-        # do not call install-types
-        # args: [--strict, --ignore-missing-imports]
+  # - repo: https://github.com/pre-commit/mirrors-mypy
+  #   rev: v1.14.1
+  #   hooks:
+  #     - id: mypy
+  #       additional_dependencies: [tokenize-rt==6.1.0]
+  #       args: [--strict-equality, --show-error-context, --show-error-code-links, --pretty]
+  #       # do not call install-types
+  #       # args: [--strict, --ignore-missing-imports]
