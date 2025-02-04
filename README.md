@@ -19,4 +19,4 @@ installed and everything is working as expected.
 
 ## Testing
 
-Once we have built tests, they can be run with `pytest`
+Ccan be run with `uv run pytest`
