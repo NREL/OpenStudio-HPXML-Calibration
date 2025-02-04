@@ -10,8 +10,10 @@
 # def test_example(setup_data):
 #     assert setup_data["key"] == "value"
 
+from openstudio_hpxml_calibration import app
 
-def test_cli_gets_os_version():
-    from openstudio_hpxml_calibration import openstudio_version
 
-    openstudio_version()
+def test_greet(capsys):
+    app(["openstudio-version"])
+    captured = capsys.readouterr()
+    assert "HPXML v4.0" in captured.out
