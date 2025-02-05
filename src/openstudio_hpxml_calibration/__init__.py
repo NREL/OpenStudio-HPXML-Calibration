@@ -1,11 +1,11 @@
-import pathlib
 import subprocess
+from pathlib import Path
 
 from cyclopts import App
 
 app = App()
 
-oshpxml_path = pathlib.Path(__file__).resolve().parent.parent / "OpenStudio-HPXML"
+oshpxml_path = Path(__file__).resolve().parent.parent / "OpenStudio-HPXML"
 
 
 @app.command
@@ -24,17 +24,14 @@ def openstudio_version() -> None:
 
 
 @app.command
-def run_sim(hpxml_filepath, granularity=None, output_format="json", output_dir="./") -> None:
+def run_sim(hpxml_filepath, output_format="json", output_dir=Path.cwd()) -> None:
     """Simulate an HPXML file using the OpenStudio-HPXML workflow"""
-    if granularity is not None:
-        granularity = f"--{granularity}"
     subprocess.run(
         [
             "openstudio",
             oshpxml_path / "workflow" / "run_simulation.rb",
             "--xml",
             hpxml_filepath,
-            granularity,
             f"--output-format={output_format}",
             f"--output-dir={output_dir}",
         ],
