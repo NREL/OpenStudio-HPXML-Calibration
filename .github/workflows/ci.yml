@@ -48,6 +48,6 @@ jobs:
 
           # Add the bin directory to PATH
           $OpenStudioBinPath = Join-Path $ExtractPath "bin"
-          [Environment]::SetEnvironmentVariable("PATH", "$env:PATH;$OpenStudioBinPath", "Machine")
+          echo $OpenStudioBinPath >> $env:GITHUB_PATH
       - name: Unit tests
         run: uv run pytest -v
