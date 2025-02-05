@@ -10,4 +10,10 @@ wheels/
 .venv
 .python-version
 
+# IDE
 .vscode
+
+# Cache dirs
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
