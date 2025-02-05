@@ -19,4 +19,4 @@ installed and everything is working as expected.
 
 ## Testing
 
-Ccan be run with `uv run pytest`
+Can be run by calling: `uv run pytest`
