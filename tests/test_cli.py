@@ -24,3 +24,10 @@ def test_cli_calls_openstudio(capsys):
     app(["openstudio-version"])
     captured = capsys.readouterr()
     assert "HPXML v4.0" in captured.out
+
+
+@pytest.mark.skip(reason="Requires OpenStudio installation")
+def test_cli_calls_run_sim(capsys):
+    app(["run-sim", "tests/data/sample-xml/sample.xml"])
+    captured = capsys.readouterr()
+    assert "Completed in" in captured.out
