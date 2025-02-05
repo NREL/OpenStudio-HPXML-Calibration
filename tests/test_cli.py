@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from shutil import rmtree
 
@@ -7,16 +8,16 @@ from openstudio_hpxml_calibration import app
 
 REPO_DIR = Path(__file__).parent.parent
 TEST_SIM_DIR = REPO_DIR / "run"
+TEST_CONFIG = REPO_DIR / "tests" / "data" / "test_config.json"
 
 
 @pytest.fixture
 def test_data():
     # Setup phase
-    data = {"sample_xml_file": "src/OpenStudio-HPXML/workflow/sample_files/base.xml"}
-    print("\nSetting up resources...")
+    data = json.loads(TEST_CONFIG.read_text())
     yield data  # Provide data dict to the test
+
     # Teardown phase
-    print("\nTearing down resources...")
     rmtree(TEST_SIM_DIR, ignore_errors=True)
 
 
