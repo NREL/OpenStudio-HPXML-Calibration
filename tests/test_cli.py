@@ -1,16 +1,23 @@
+from pathlib import Path
+from shutil import rmtree
+
 import pytest
 
-# @pytest.fixture
-# def setup_data():
-#     # Setup phase
-#     data = {"key": "value"}
-#     print("\nSetting up resources...")
-#     yield data  # Provide data to the test
-#     # Teardown phase
-#     print("\nTearing down resources...")
-# def test_example(setup_data):
-#     assert setup_data["key"] == "value"
 from openstudio_hpxml_calibration import app
+
+REPO_DIR = Path(__file__).parent.parent
+TEST_SIM_DIR = REPO_DIR / "run"
+
+
+@pytest.fixture
+def test_data():
+    # Setup phase
+    data = {"sample_xml_file": "src/OpenStudio-HPXML/workflow/sample_files/base.xml"}
+    print("\nSetting up resources...")
+    yield data  # Provide data dict to the test
+    # Teardown phase
+    print("\nTearing down resources...")
+    rmtree(TEST_SIM_DIR, ignore_errors=True)
 
 
 def test_cli_has_help(capsys):
@@ -27,7 +34,6 @@ def test_cli_calls_openstudio(capsys):
 
 
 @pytest.mark.skip(reason="Requires OpenStudio installation")
-def test_cli_calls_run_sim(capsys):
-    app(["run-sim", "tests/data/sample-xml/sample.xml"])
-    captured = capsys.readouterr()
-    assert "Completed in" in captured.out
+def test_cli_calls_run_sim(test_data):
+    app(["run-sim", test_data["sample_xml_file"]])
+    assert (TEST_SIM_DIR / "results_annual.json").exists()
