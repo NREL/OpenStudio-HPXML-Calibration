@@ -7,7 +7,7 @@ import pytest
 from openstudio_hpxml_calibration import app
 
 REPO_DIR = Path(__file__).parent.parent
-TEST_SIM_DIR = REPO_DIR / "run"
+TEST_SIM_DIR = REPO_DIR / "tests" / "run"
 TEST_CONFIG = REPO_DIR / "tests" / "data" / "test_config.json"
 
 
@@ -34,5 +34,5 @@ def test_cli_calls_openstudio(capsys):
 
 
 def test_cli_calls_run_sim(test_data):
-    app(["run-sim", test_data["sample_xml_file"]])
+    app(["run-sim", test_data["sample_xml_file"], "--output-dir", "tests", "--output-format", "json"])
     assert (TEST_SIM_DIR / "results_annual.json").exists()
