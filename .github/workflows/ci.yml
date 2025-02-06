@@ -28,6 +28,8 @@ jobs:
         run: |
           uv version
           uv sync
+      - name: Lint & format
+        run: uv run pre-commit run --all-files
       - name: Install OpenStudio on Linux
         if: runner.os == 'Linux'
         run: |
