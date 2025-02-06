@@ -24,19 +24,18 @@ def openstudio_version() -> None:
 
 
 @app.command
-def run_sim(hpxml_filepath, granularity=None, output_format="json", output_dir=Path.cwd()) -> None:
+def run_sim(hpxml_filepath, output_format=None, output_dir=None, granularity=None) -> None:
     """Simulate an HPXML file using the OpenStudio-HPXML workflow"""
-    run_simulation_command = [
-        "openstudio",
-        oshpxml_path / "workflow" / "run_simulation.rb",
-        "--xml",
-        hpxml_filepath,
-        f"--output-format={output_format}",
-        f"--output-dir={output_dir}",
-    ]
+    run_simulation_command = ["openstudio", str(oshpxml_path / "workflow" / "run_simulation.rb"), "--xml", hpxml_filepath]
     if granularity is not None:
         granularity = f"--{granularity} ALL"
         run_simulation_command.extend(granularity.split())
+    if output_format is not None:
+        output_format = f"--output-format {output_format}"
+        run_simulation_command.extend(output_format.split())
+    if output_dir is not None:
+        output_dir = f"--output-dir {output_dir}"
+        run_simulation_command.extend(output_dir.split())
     subprocess.run(
         run_simulation_command,
         capture_output=True,
