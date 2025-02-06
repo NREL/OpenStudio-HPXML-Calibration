@@ -6,6 +6,7 @@ A package to automatically calibrate an OS-HPXML model to provided utilities bil
 
 - Clone the repository: `git clone https://github.com/NREL/OpenStudio-HPXML-Calibration.git`
 - Move into the repository: `cd OpenStudio-HPXML-Calibration`
+- Install [OpenStudio 3.9.0](https://github.com/NREL/OpenStudio/releases)
 
 - [Uv](https://docs.astral.sh/uv/) is used to manage the project & dependencies (and may also be used to [manage Python](https://docs.astral.sh/uv/guides/install-python/) if you want). After cloning, ensure you have
 [uv installed](https://docs.astral.sh/uv/getting-started/installation/), then run `uv sync` to install the package and all development dependencies.
@@ -17,6 +18,15 @@ installed and everything is working as expected.
 - Pycharm users may need to add Ruff as a [3rd-party plugin](https://docs.astral.sh/ruff/editors/setup/#via-third-party-plugin) or install it as an [external tool](https://docs.astral.sh/ruff/editors/setup/#pycharm) to their IDE to ensure linting & formatting is consistent.
 - Developers can test in-process functionality by prepending `uv run` to a terminal command. For instance, to see the CLI help menu with local changes not yet committed, run: `uv run openstudio-hpxml-calibration --help`
 
+### Alternative Dev Container Environment
+
+There's a Dev Container configuration in this repo which installs all the necessary dependencies in a docker container and attaches to VSCode to it. To use it:
+
+- Install [VSCode](https://code.visualstudio.com/)
+- Install the [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension.
+- Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) or something compatible.
+- Click the little blue "><" icon in the lower left of VSCode, and select "Reopen in Container". The window will reload. It may take a few minutes the first time.
+
 ## Testing
 
-Ccan be run with `uv run pytest`
+Can be run with `uv run pytest`
