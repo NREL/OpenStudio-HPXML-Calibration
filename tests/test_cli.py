@@ -27,14 +27,12 @@ def test_cli_has_help(capsys):
     assert "Return the OpenStudio-HPXML" in captured.out
 
 
-@pytest.mark.skip(reason="Requires OpenStudio installation")
 def test_cli_calls_openstudio(capsys):
     app(["openstudio-version"])
     captured = capsys.readouterr()
     assert "HPXML v4.0" in captured.out
 
 
-@pytest.mark.skip(reason="Requires OpenStudio installation")
 def test_cli_calls_run_sim(test_data):
     app(["run-sim", test_data["sample_xml_file"]])
     assert (TEST_SIM_DIR / "results_annual.json").exists()

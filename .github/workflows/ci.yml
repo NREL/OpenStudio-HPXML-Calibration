@@ -3,6 +3,10 @@ name: CI
 on:
   push:
 
+env:
+  OS_VERSION: "3.9.0"
+  OS_SHA: c77fbb9569
+
 jobs:
   test:
     strategy:
@@ -24,5 +28,26 @@ jobs:
         run: |
           uv version
           uv sync
+      - name: Install OpenStudio on Linux
+        if: runner.os == 'Linux'
+        run: |
+          wget -q -O OpenStudio.deb https://github.com/NREL/OpenStudio/releases/download/v${OS_VERSION}/OpenStudio-${OS_VERSION}+${OS_SHA}-Ubuntu-24.04-x86_64.deb
+          sudo dpkg -i OpenStudio.deb
+          rm OpenStudio.deb
+      - name: Install OpenStudio on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          # Download the tarball in the runner temp directory
+          $DownloadPath = Join-Path $env:RUNNER_TEMP "Windows.tar.gz"
+          Invoke-WebRequest -OutFile $DownloadPath -URI "https://github.com/NREL/OpenStudio/releases/download/v${env:OS_VERSION}/OpenStudio-${env:OS_VERSION}+${env:OS_SHA}-Windows.tar.gz"
+
+          # Extract the tarball in the runner temp directory
+          $ExtractPath = Join-Path $env:RUNNER_TEMP "OpenStudio-${env:OS_VERSION}+${env:OS_SHA}-Windows"
+          tar -xzf $DownloadPath -C $env:RUNNER_TEMP
+
+          # Add the bin directory to PATH
+          $OpenStudioBinPath = Join-Path $ExtractPath "bin"
+          echo $OpenStudioBinPath >> $env:GITHUB_PATH
       - name: Unit tests
         run: uv run pytest -v

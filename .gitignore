@@ -17,3 +17,4 @@ wheels/
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
+.DS_Store
