@@ -1,9 +1,14 @@
 import subprocess
+from importlib.metadata import version
 from pathlib import Path
 
 from cyclopts import App
 
-app = App(help="Calibrate an HPXML model to provided utility data using OpenStudio-HPXML")
+app = App(
+    version=version("openstudio-hpxml-calibration"),
+    version_flags=["--version", "-v"],
+    help="Calibrate an HPXML model to provided utility data using OpenStudio-HPXML",
+)
 
 oshpxml_path = Path(__file__).resolve().parent.parent / "OpenStudio-HPXML"
 
@@ -34,7 +39,7 @@ def run_sim(hpxml_filepath, output_format=None, output_dir=None, granularity=Non
     output_format: str
         Output file format type (csv, json, msgpack, csv_dview). Default is csv
     output_dir: str
-        Output directory to save simulation results. Default is HPXML file dir
+        Output directory to save simulation results dir. Default is HPXML file dir
     granularity: str
         Granularity of simulation results (hourly, daily, monthly). Default is annual
     """
