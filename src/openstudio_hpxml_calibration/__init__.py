@@ -3,7 +3,7 @@ from pathlib import Path
 
 from cyclopts import App
 
-app = App()
+app = App(help="Calibrate an HPXML model to provided utility data using OpenStudio-HPXML")
 
 oshpxml_path = Path(__file__).resolve().parent.parent / "OpenStudio-HPXML"
 
@@ -25,7 +25,19 @@ def openstudio_version() -> None:
 
 @app.command
 def run_sim(hpxml_filepath, output_format=None, output_dir=None, granularity=None) -> None:
-    """Simulate an HPXML file using the OpenStudio-HPXML workflow"""
+    """Simulate an HPXML file using the OpenStudio-HPXML workflow
+
+    Parameters
+    ----------
+    hpxml_filepath: str
+        Path to the HPXML file to simulate
+    output_format: str
+        Output file format type (csv, json, msgpack, csv_dview). Default is csv
+    output_dir: str
+        Output directory to save simulation results. Default is HPXML file dir
+    granularity: str
+        Granularity of simulation results (hourly, daily, monthly). Default is annual
+    """
     run_simulation_command = ["openstudio", str(oshpxml_path / "workflow" / "run_simulation.rb"), "--xml", hpxml_filepath]
     if granularity is not None:
         granularity = f"--{granularity} ALL"
