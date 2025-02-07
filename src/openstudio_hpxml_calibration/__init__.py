@@ -45,8 +45,8 @@ def run_sim(hpxml_filepath, output_format=None, output_dir=None, granularity=Non
     """
     run_simulation_command = ["openstudio", str(oshpxml_path / "workflow" / "run_simulation.rb"), "--xml", hpxml_filepath]
     if granularity is not None:
-        granularity = f"--{granularity} ALL"
-        run_simulation_command.extend(granularity.split())
+        granularity = [f"--{granularity}", "ALL"]
+        run_simulation_command.extend(granularity)
     if output_format is not None:
         output_format = ["--output-format", output_format]
         run_simulation_command.extend(output_format)
