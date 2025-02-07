@@ -31,7 +31,7 @@ def run_sim(hpxml_filepath, output_format=None, output_dir=None, granularity=Non
         granularity = f"--{granularity} ALL"
         run_simulation_command.extend(granularity.split())
     if output_format is not None:
-        output_format = f"--output-format {output_format}"
+        output_format = ["--output-format", output_format]
         run_simulation_command.extend(output_format.split())
     if output_dir is not None:
         output_dir = f"--output-dir {output_dir}"
