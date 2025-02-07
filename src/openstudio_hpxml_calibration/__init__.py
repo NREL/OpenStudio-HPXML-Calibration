@@ -32,10 +32,10 @@ def run_sim(hpxml_filepath, output_format=None, output_dir=None, granularity=Non
         run_simulation_command.extend(granularity.split())
     if output_format is not None:
         output_format = ["--output-format", output_format]
-        run_simulation_command.extend(output_format.split())
+        run_simulation_command.extend(output_format)
     if output_dir is not None:
-        output_dir = f"--output-dir {output_dir}"
-        run_simulation_command.extend(output_dir.split())
+        output_dir = ["--output-dir", output_dir]
+        run_simulation_command.extend(output_dir)
     subprocess.run(
         run_simulation_command,
         capture_output=True,
