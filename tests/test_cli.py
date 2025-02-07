@@ -14,7 +14,7 @@ TEST_CONFIG = REPO_DIR / "tests" / "data" / "test_config.json"
 @pytest.fixture
 def test_data():
     # Setup phase
-    data = json.loads(TEST_CONFIG.read_text())
+    data: dict = json.loads(TEST_CONFIG.read_text())
     yield data  # Provide data dict to the test
 
     # Teardown phase
