@@ -34,5 +34,14 @@ def test_cli_calls_openstudio(capsys):
 
 
 def test_cli_calls_run_sim(test_data):
-    app(["run-sim", test_data["sample_xml_file"], "--output-dir", "tests", "--output-format", "json"])
+    app(
+        [
+            "run-sim",
+            test_data["sample_xml_file"],
+            "--output-dir",
+            "tests",
+            "--output-format",
+            "json",
+        ]
+    )
     assert (TEST_SIM_DIR / "results_annual.json").exists()
