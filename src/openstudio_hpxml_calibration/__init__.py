@@ -63,7 +63,12 @@ def run_sim(
     granularity: str
         Granularity of simulation results. Default is annual.
     """
-    run_simulation_command = ["openstudio", str(OSHPXML_PATH / "workflow" / "run_simulation.rb"), "--xml", hpxml_filepath]
+    run_simulation_command = [
+        "openstudio",
+        str(OSHPXML_PATH / "workflow" / "run_simulation.rb"),
+        "--xml",
+        hpxml_filepath,
+    ]
     if granularity is not None:
         granularity = [f"--{granularity.value}", "ALL"]
         run_simulation_command.extend(granularity)
