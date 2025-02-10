@@ -4,7 +4,8 @@ version = "0.1.0"
 description = "Calibrates a building energy model to utility bills."
 readme = "README.md"
 authors = [
-    { name = "Noel Merket", email = "noel.merket@nrel.gov" }
+    { name = "Noel Merket", email = "noel.merket@nrel.gov" },
+    { name = "Nathan Moore", email = "nathan.moore@nrel.gov" }
 ]
 requires-python = ">=3.12, < 3.14"
 dependencies = [
