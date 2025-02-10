@@ -12,6 +12,13 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Install NREL root certs.
+RUN curl -fsSLk -o /usr/local/share/ca-certificates/nrel_root.crt https://raw.github.nrel.gov/TADA/nrel-certs/v20180329/certs/nrel_root.pem && \
+  curl -fsSLk -o /usr/local/share/ca-certificates/nrel_xca1.crt https://raw.github.nrel.gov/TADA/nrel-certs/v20180329/certs/nrel_xca1.pem && \
+  update-ca-certificates && \
+  sed -i 's/^\(\[openssl_init\]\)/\1\nssl_conf = ssl_sect\n\n[ssl_sect]\nsystem_default = system_default_sect\n\n[system_default_sect]\nOptions = UnsafeLegacyServerConnect/' /etc/ssl/openssl.cnf
+ENV REQUESTS_CA_BUNDLE="/etc/ssl/certs/ca-certificates.crt"
+
 COPY --from=uv --chown=vscode: /uv /uvx /bin/
 
 # Install OpenStudio
