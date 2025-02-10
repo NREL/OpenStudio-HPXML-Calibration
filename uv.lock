@@ -86,7 +86,7 @@ wheels = [
 
 [[package]]
 name = "cyclopts"
-version = "3.4.0"
+version = "3.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
@@ -94,9 +94,9 @@ dependencies = [
     { name = "rich" },
     { name = "rich-rst" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/9d/97/8dc859c4714bc6ef81de51f3916300bcc4baa1eb83bba4a0c68d56efac03/cyclopts-3.4.0.tar.gz", hash = "sha256:ac61a98b211affa991c545b42e2d3c6fabe55f40d903507d556259dd7fb7839b", size = 62791 }
+sdist = { url = "https://files.pythonhosted.org/packages/25/50/48fa22a868ea472a37edf1dbc79fbdf8525eae7ce2405cb5d3e3f7d74163/cyclopts-3.5.0.tar.gz", hash = "sha256:b8fa54268c580332992b0016ae924245c6ba3e407330ce1be47b2bbbf293284e", size = 63522 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0b/4b/493960ea601af54109b9145e12e09e96d898f86fe305a999b31d4cd30f84/cyclopts-3.4.0-py3-none-any.whl", hash = "sha256:e9faad3d1dd18e5948076b67d1f7ad0ba387edfbdd1410b14ba44a1c7b445d35", size = 72150 },
+    { url = "https://files.pythonhosted.org/packages/94/af/44c7d69c23bbba97dfd63531c44bc78e47da6f18570604e9f1939a61f87b/cyclopts-3.5.0-py3-none-any.whl", hash = "sha256:bb25ed7d315a8f2f2e13ef56a114a602472230d525a77fc97a55c007cfee1728", size = 72860 },
 ]
 
 [[package]]

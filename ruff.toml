@@ -1,5 +1,9 @@
 fix = true
-line-length = 140
+line-length = 100
+
+exclude = [
+    "src/OpenStudio-HPXML/*"
+]
 
 [format]
 # preview = true
