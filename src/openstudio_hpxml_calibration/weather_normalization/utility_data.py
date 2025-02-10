@@ -1,12 +1,20 @@
 import datetime as dt
 import os
-import numpy as np
+
 import pandas as pd
-from lxml import objectify, etree
+from lxml import etree, objectify
 
 
 def parse_hpxml(filename: os.PathLike) -> etree._ElementTree:
     return objectify.parse(str(filename))
+
+
+def get_datetime_subel(el: objectify.ObjectifiedElement, subel_name: str) -> pd.Timestamp | None:
+    subel = getattr(el, subel_name, None)
+    if subel is None:
+        return subel
+    else:
+        return pd.to_datetime(str(subel))
 
 
 def get_bills_from_hpxml(
@@ -16,26 +24,28 @@ def get_bills_from_hpxml(
         dt.timedelta(hours=int(hpxml_root.Building.Site.TimeZone.UTCOffset))
     )
 
-    bills = {}
+    bills_by_fuel_type = {}
     bill_units = {}
     for cons_info in hpxml_root.Consumption.ConsumptionDetails.ConsumptionInfo:
         fuel_type = str(cons_info.ConsumptionType.Energy.FuelType)
         bill_units[fuel_type] = str(cons_info.ConsumptionType.Energy.UnitofMeasure)
-        vals = []
-        start_dates = []
+        rows = []
         for el in cons_info.ConsumptionDetail:
-            vals.append(float(el.Consumption))
-            start_dates.append(str(el.StartDateTime))
-            end_date = str(el.EndDateTime)
-        start_dates.append(
-            (pd.to_datetime(end_date) + pd.Timedelta(seconds=1)).isoformat()
-        )
-        vals.append(np.nan)
-        start_dates = pd.to_datetime(start_dates)
-        start_dates = start_dates.tz_localize(local_standard_tz)
-        bills[fuel_type] = pd.DataFrame({"value": vals}, index=start_dates)
+            rows.append(
+                [
+                    get_datetime_subel(el, "StartDateTime"),
+                    get_datetime_subel(el, "EndDateTime"),
+                    float(el.Consumption),
+                ]
+            )
+        bills = pd.DataFrame.from_records(rows, columns=["start_date", "end_date", "consumption"])
+        if pd.isna(bills["end_date"]).all():
+            bills["end_date"] = bills["start_date"].shift(-1)
+        if pd.isna(bills["start_date"]).all():
+            bills["start_date"] = bills["end_date"].shift(1)
+        bills_by_fuel_type[fuel_type] = bills
 
-    return bills, bill_units, local_standard_tz
+    return bills_by_fuel_type, bill_units, local_standard_tz
 
 
 def get_lat_lon_from_hpxml(
