@@ -20,6 +20,7 @@ dev = [
 ]
 
 [project.scripts]
+openstudio-hpxml-calibration = "openstudio_hpxml_calibration:app"
 oshit = "openstudio_hpxml_calibration:app"
 
 [build-system]
