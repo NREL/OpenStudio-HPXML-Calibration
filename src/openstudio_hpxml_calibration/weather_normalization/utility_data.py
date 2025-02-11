@@ -1,6 +1,7 @@
 import datetime as dt
 import os
 
+import eeweather
 import pandas as pd
 from lxml import etree, objectify
 
@@ -54,3 +55,10 @@ def get_lat_lon_from_hpxml(
     lat = float(hpxml_root.Building.Site.GeoLocation.Latitude)
     lon = float(hpxml_root.Building.Site.GeoLocation.Longitude)
     return lat, lon
+
+
+def join_bills_weather(bills: pd.DataFrame, lat: float, lon: float, **kw):
+    bills["start_date"].min()
+    bills["end_date"].min()
+    ranked_stations = eeweather.rank_stations(lat, lon, **kw)
+    isd_station, isd_warnings = eeweather.select_station(ranked_stations)
