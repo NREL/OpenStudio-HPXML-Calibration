@@ -36,6 +36,11 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     arg.setDescription('XPath to the XML field to modify')
     args << arg
 
+    arg = OpenStudio::Measure::OSArgument.makeStringArgument('change_increment', true)
+    arg.setDisplayName('How much to change')
+    arg.setDescription('Value to add to the XML field')
+    args << arg
+
     return args
   end
 
@@ -58,20 +63,25 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     end
     # xml_file_path = runner.getStringArgumentValue('xml_file', user_arguments)
 
+    # xpath through the XML file with the user arguments
+    xml_field = args[:xml_field]
+    original_value = xml_file.xml_field.value
 
+    # Update the XML field with the new value
+    xml_file.xml_field.value = original_value + args[:change_increment]
 
     # report initial condition of model
-    runner.registerInitialCondition("The building started with #{model.getSpaces.size} spaces.")
+    # runner.registerInitialCondition("The building started with #{model.getSpaces.size} spaces.")
 
     # add a new space to the model
-    new_space = OpenStudio::Model::Space.new(model)
-    new_space.setName(space_name)
+    # new_space = OpenStudio::Model::Space.new(model)
+    # new_space.setName(space_name)
 
     # echo the new space's name back to the user
-    runner.registerInfo("Space #{new_space.name} was added.")
+    # runner.registerInfo("Space #{new_space.name} was added.")
 
     # report final condition of model
-    runner.registerFinalCondition("The building finished with #{model.getSpaces.size} spaces.")
+    # runner.registerFinalCondition("The building finished with #{model.getSpaces.size} spaces.")
 
     return true
   end
