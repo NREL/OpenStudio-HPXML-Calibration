@@ -1,0 +1,575 @@
+<HPXML xmlns="http://hpxmlonline.com/2023/09" schemaVersion="4.0">
+  <XMLTransactionHeaderInformation>
+    <XMLType>Building</XMLType>
+    <XMLGeneratedBy>NREL</XMLGeneratedBy>
+    <CreatedDateAndTime>2021-01-01T00:00:00</CreatedDateAndTime>
+    <Transaction>create</Transaction>
+  </XMLTransactionHeaderInformation>
+  <SoftwareInfo/>
+  <Building>
+    <BuildingID id="bldg1"/>
+    <Site>
+      <SiteID id="site1"/>
+      <Address>
+        <AddressType>street</AddressType>
+        <CityMunicipality>Charlotte</CityMunicipality>
+        <StateCode>NC</StateCode>
+      </Address>
+    </Site>
+    <ProjectStatus>
+      <EventType>audit</EventType>
+    </ProjectStatus>
+    <BuildingDetails>
+      <BuildingSummary>
+        <BuildingConstruction>
+          <YearBuilt>2009</YearBuilt>
+          <YearBuiltKnownOrEstimated>known</YearBuiltKnownOrEstimated>
+          <ResidentialFacilityType>single-family detached</ResidentialFacilityType>
+          <NumberofConditionedFloors>1.0</NumberofConditionedFloors>
+          <NumberofConditionedFloorsAboveGrade>1</NumberofConditionedFloorsAboveGrade>
+          <NumberofBedrooms>4</NumberofBedrooms>
+          <ConditionedFloorArea>1234</ConditionedFloorArea>
+          <ConditionedBuildingVolume>9872</ConditionedBuildingVolume>
+          <FoundationType>
+            <SlabOnGrade/>
+          </FoundationType>
+          <GaragePresent>false</GaragePresent>
+        </BuildingConstruction>
+      </BuildingSummary>
+      <ClimateandRiskZones>
+        <ClimateZoneIECC>
+          <Year>2003</Year>
+          <ClimateZone>3A</ClimateZone>
+        </ClimateZoneIECC>
+        <WeatherStation dataSource="software">
+          <SystemIdentifier id="weather_station"/>
+          <Name>Charlotte, NC</Name>
+          <WMO>723140</WMO>
+          <extension>
+            <EPWFilePath>USA_NC_Charlotte-Douglas.Intl.AP.723140_TMY3.epw</EPWFilePath>
+          </extension>
+        </WeatherStation>
+      </ClimateandRiskZones>
+      <Enclosure>
+        <AirInfiltration>
+          <AirInfiltrationMeasurement>
+            <SystemIdentifier id="infiltmeas2"/>
+            <TypeOfInfiltrationMeasurement>blower door</TypeOfInfiltrationMeasurement>
+            <HousePressure>50</HousePressure>
+            <BuildingAirLeakage>
+              <UnitofMeasure>CFM</UnitofMeasure>
+              <AirLeakage>1324</AirLeakage>
+            </BuildingAirLeakage>
+          </AirInfiltrationMeasurement>
+        </AirInfiltration>
+        <Attics>
+          <Attic>
+            <SystemIdentifier id="attic4"/>
+            <AtticType>
+              <Attic>
+                <extension>
+                  <Vented>unknown</Vented>
+                </extension>
+              </Attic>
+            </AtticType>
+            <AttachedToRoof idref="roof3"/>
+            <AttachedToFloor idref="attic-floor-0"/>
+          </Attic>
+        </Attics>
+        <Foundations>
+          <Foundation>
+            <SystemIdentifier id="fnd6"/>
+            <FoundationType>
+              <SlabOnGrade/>
+            </FoundationType>
+            <AttachedToSlab idref="slab22"/>
+          </Foundation>
+        </Foundations>
+        <Roofs>
+          <Roof>
+            <SystemIdentifier id="roof3"/>
+            <InteriorAdjacentTo>attic - unvented</InteriorAdjacentTo>
+            <Area dataSource="software">1300.64</Area>
+            <RoofColor>medium</RoofColor>
+            <Rafters>
+              <Size>2x4</Size>
+              <Spacing>24</Spacing>
+            </Rafters>
+            <Pitch dataSource="software">6</Pitch>
+            <RadiantBarrier>false</RadiantBarrier>
+            <Insulation>
+              <SystemIdentifier id="roof_insul0"/>
+              <AssemblyEffectiveRValue dataSource="software">2.3</AssemblyEffectiveRValue>
+            </Insulation>
+          </Roof>
+        </Roofs>
+        <Walls>
+          <Wall>
+            <SystemIdentifier id="agwall25"/>
+            <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
+            <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
+            <WallType>
+              <WoodStud/>
+            </WallType>
+            <Area>1315</Area>
+            <Studs>
+              <Size>2x4</Size>
+              <Spacing>16</Spacing>
+              <Material>wood</Material>
+            </Studs>
+            <Color>medium</Color>
+            <Insulation>
+              <SystemIdentifier id="insul26"/>
+              <AssemblyEffectiveRValue>14.03</AssemblyEffectiveRValue>
+              <Layer>
+                <InstallationType>continuous - interior</InstallationType>
+                <NominalRValue>0</NominalRValue>
+              </Layer>
+              <Layer>
+                <InstallationType>cavity</InstallationType>
+                <NominalRValue>15</NominalRValue>
+                <Thickness>3.5</Thickness>
+              </Layer>
+              <Layer>
+                <InstallationType>continuous - exterior</InstallationType>
+                <NominalRValue>0</NominalRValue>
+              </Layer>
+            </Insulation>
+          </Wall>
+        </Walls>
+        <Floors>
+          <Floor>
+            <SystemIdentifier id="attic-floor-0"/>
+            <ExteriorAdjacentTo>attic - unvented</ExteriorAdjacentTo>
+            <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
+            <FloorType>
+              <WoodFrame dataSource="software"/>
+            </FloorType>
+            <Area>1234.0</Area>
+            <Insulation>
+              <SystemIdentifier id="insul5"/>
+              <AssemblyEffectiveRValue>31.04</AssemblyEffectiveRValue>
+              <Layer>
+                <InstallationType>cavity</InstallationType>
+                <NominalRValue>13</NominalRValue>
+                <Thickness>3.5</Thickness>
+              </Layer>
+              <Layer>
+                <InstallationType>continuous - exterior</InstallationType>
+                <NominalRValue>17</NominalRValue>
+              </Layer>
+            </Insulation>
+          </Floor>
+        </Floors>
+        <Slabs>
+          <Slab>
+            <SystemIdentifier id="slab22"/>
+            <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
+            <Area>1234</Area>
+            <Perimeter>164</Perimeter>
+            <ExposedPerimeter>164</ExposedPerimeter>
+            <OnGradeExposedPerimeter>164</OnGradeExposedPerimeter>
+            <DepthBelowGrade>0</DepthBelowGrade>
+            <PerimeterInsulation>
+              <SystemIdentifier id="insul23"/>
+              <Layer>
+                <InstallationType>continuous</InstallationType>
+                <NominalRValue>7</NominalRValue>
+                <InsulationDepth>2.5</InsulationDepth>
+              </Layer>
+            </PerimeterInsulation>
+            <UnderSlabInsulation>
+              <SystemIdentifier id="insul24"/>
+              <Layer>
+                <InstallationType>continuous</InstallationType>
+                <NominalRValue>0</NominalRValue>
+                <InsulationWidth>0</InsulationWidth>
+              </Layer>
+            </UnderSlabInsulation>
+          </Slab>
+        </Slabs>
+        <Windows>
+          <Window>
+            <SystemIdentifier id="window27"/>
+            <Area>24</Area>
+            <Orientation>east</Orientation>
+            <UFactor>0.4</UFactor>
+            <SHGC>0.48</SHGC>
+            <AttachedToWall idref="agwall25"/>
+          </Window>
+          <Window>
+            <SystemIdentifier id="window28"/>
+            <Area>48</Area>
+            <Orientation>west</Orientation>
+            <UFactor>0.4</UFactor>
+            <SHGC>0.48</SHGC>
+            <AttachedToWall idref="agwall25"/>
+          </Window>
+          <Window>
+            <SystemIdentifier id="window29"/>
+            <Area>24</Area>
+            <Orientation>south</Orientation>
+            <UFactor>0.4</UFactor>
+            <SHGC>0.48</SHGC>
+            <AttachedToWall idref="agwall25"/>
+          </Window>
+          <Window>
+            <SystemIdentifier id="window30"/>
+            <Area>40</Area>
+            <Orientation>northwest</Orientation>
+            <UFactor>0.4</UFactor>
+            <SHGC>0.48</SHGC>
+            <AttachedToWall idref="agwall25"/>
+          </Window>
+          <Window>
+            <SystemIdentifier id="window31"/>
+            <Area>12</Area>
+            <Orientation>east</Orientation>
+            <UFactor>0.4</UFactor>
+            <SHGC>0.48</SHGC>
+            <AttachedToWall idref="agwall25"/>
+          </Window>
+        </Windows>
+        <Doors>
+          <Door>
+            <SystemIdentifier id="door32"/>
+            <AttachedToWall idref="agwall25"/>
+            <Area>23.3</Area>
+            <DoorType>exterior</DoorType>
+            <DoorMaterial>solid wood</DoorMaterial>
+            <StormDoor>false</StormDoor>
+            <RValue dataSource="software">2.0</RValue>
+          </Door>
+          <Door>
+            <SystemIdentifier id="door33"/>
+            <AttachedToWall idref="agwall25"/>
+            <Area>21.1</Area>
+            <DoorType>exterior</DoorType>
+            <DoorMaterial>solid wood</DoorMaterial>
+            <StormDoor>false</StormDoor>
+            <RValue dataSource="software">2.0</RValue>
+          </Door>
+        </Doors>
+      </Enclosure>
+      <Systems>
+        <HVAC>
+          <HVACPlant>
+            <HeatPump>
+              <SystemIdentifier id="ashp34"/>
+              <UnitLocation>attic - unvented</UnitLocation>
+              <PerformanceAdjustment>1</PerformanceAdjustment>
+              <DistributionSystem idref="air36"/>
+              <HeatPumpType>air-to-air</HeatPumpType>
+              <HeatPumpFuel>electricity</HeatPumpFuel>
+              <HeatingCapacity>24000</HeatingCapacity>
+              <HeatingCapacity17F>14640</HeatingCapacity17F>
+              <CoolingCapacity>18000</CoolingCapacity>
+              <BackupType>integrated</BackupType>
+              <BackupSystemFuel>electricity</BackupSystemFuel>
+              <BackupAnnualHeatingEfficiency>
+                <Units>Percent</Units>
+                <Value dataSource="software">1.0</Value>
+              </BackupAnnualHeatingEfficiency>
+              <BackupHeatingCapacity>34120</BackupHeatingCapacity>
+              <FractionHeatLoadServed>1</FractionHeatLoadServed>
+              <FractionCoolLoadServed>1</FractionCoolLoadServed>
+              <AnnualCoolingEfficiency>
+                <Units>SEER</Units>
+                <Value>12</Value>
+              </AnnualCoolingEfficiency>
+              <AnnualHeatingEfficiency>
+                <Units>HSPF</Units>
+                <Value>7.2</Value>
+              </AnnualHeatingEfficiency>
+            </HeatPump>
+          </HVACPlant>
+          <HVACControl>
+            <SystemIdentifier id="control37"/>
+            <ControlType>manual thermostat</ControlType>
+            <SetpointTempHeatingSeason>72</SetpointTempHeatingSeason>
+            <SetpointTempCoolingSeason>75</SetpointTempCoolingSeason>
+          </HVACControl>
+          <HVACDistribution>
+            <SystemIdentifier id="air36"/>
+            <DistributionSystemType>
+              <AirDistribution>
+                <AirDistributionType>regular velocity</AirDistributionType>
+                <DuctLeakageMeasurement>
+                  <DuctLeakage>
+                    <Units>CFM25</Units>
+                    <Value>40</Value>
+                  </DuctLeakage>
+                </DuctLeakageMeasurement>
+                <DuctLeakageMeasurement dataSource="software">
+                  <DuctType>supply</DuctType>
+                  <DuctLeakage>
+                    <Units>CFM25</Units>
+                    <Value>20.0</Value>
+                    <TotalOrToOutside>to outside</TotalOrToOutside>
+                  </DuctLeakage>
+                </DuctLeakageMeasurement>
+                <DuctLeakageMeasurement dataSource="software">
+                  <DuctType>return</DuctType>
+                  <DuctLeakage>
+                    <Units>CFM25</Units>
+                    <Value>20.0</Value>
+                    <TotalOrToOutside>to outside</TotalOrToOutside>
+                  </DuctLeakage>
+                </DuctLeakageMeasurement>
+                <Ducts>
+                  <SystemIdentifier id="air36_ducts0"/>
+                  <DuctType>supply</DuctType>
+                  <DuctInsulationRValue>4.2</DuctInsulationRValue>
+                  <DuctLocation>attic - unvented</DuctLocation>
+                  <FractionDuctArea>1</FractionDuctArea>
+                </Ducts>
+                <Ducts>
+                  <SystemIdentifier id="air36_ducts1"/>
+                  <DuctType>return</DuctType>
+                  <DuctInsulationRValue>4.2</DuctInsulationRValue>
+                  <DuctLocation>attic - unvented</DuctLocation>
+                  <FractionDuctArea>1</FractionDuctArea>
+                </Ducts>
+                <NumberofReturnRegisters>1</NumberofReturnRegisters>
+              </AirDistribution>
+            </DistributionSystemType>
+            <ConditionedFloorAreaServed dataSource="software">1234.0</ConditionedFloorAreaServed>
+          </HVACDistribution>
+        </HVAC>
+        <MechanicalVentilation>
+          <VentilationFans>
+            <VentilationFan>
+              <SystemIdentifier id="mechvent38"/>
+              <FanType>exhaust only</FanType>
+              <TestedFlowRate>50</TestedFlowRate>
+              <HoursInOperation>24</HoursInOperation>
+              <UsedForWholeBuildingVentilation>true</UsedForWholeBuildingVentilation>
+              <FanPower>0.1</FanPower>
+            </VentilationFan>
+          </VentilationFans>
+        </MechanicalVentilation>
+        <WaterHeating>
+          <WaterHeatingSystem>
+            <SystemIdentifier id="dhw35"/>
+            <FuelType>electricity</FuelType>
+            <WaterHeaterType>storage water heater</WaterHeaterType>
+            <Location>conditioned space</Location>
+            <TankVolume>40</TankVolume>
+            <FractionDHWLoadServed>1</FractionDHWLoadServed>
+            <EnergyFactor>0.91</EnergyFactor>
+            <RecoveryEfficiency>0.98</RecoveryEfficiency>
+            <WaterHeaterInsulation>
+              <Jacket>
+                <JacketRValue>0</JacketRValue>
+              </Jacket>
+            </WaterHeaterInsulation>
+          </WaterHeatingSystem>
+          <HotWaterDistribution dataSource="software">
+            <SystemIdentifier id="dhwdist"/>
+            <SystemType>
+              <Standard dataSource="software"/>
+            </SystemType>
+          </HotWaterDistribution>
+          <WaterFixture dataSource="software">
+            <SystemIdentifier id="shower_head_0.0"/>
+            <WaterFixtureType>shower head</WaterFixtureType>
+            <LowFlow>false</LowFlow>
+          </WaterFixture>
+          <WaterFixture dataSource="software">
+            <SystemIdentifier id="faucet_0.0"/>
+            <WaterFixtureType>faucet</WaterFixtureType>
+            <LowFlow>false</LowFlow>
+          </WaterFixture>
+        </WaterHeating>
+      </Systems>
+      <Appliances>
+        <Dishwasher>
+          <SystemIdentifier id="dishwasher41"/>
+        </Dishwasher>
+        <Refrigerator dataSource="software">
+          <SystemIdentifier id="refrigerator"/>
+        </Refrigerator>
+        <CookingRange dataSource="software">
+          <SystemIdentifier id="cooking-range"/>
+          <FuelType>electricity</FuelType>
+        </CookingRange>
+        <Oven dataSource="software">
+          <SystemIdentifier id="oven"/>
+          <FuelType>electricity</FuelType>
+        </Oven>
+      </Appliances>
+      <Lighting>
+        <LightingGroup dataSource="software">
+          <SystemIdentifier id="lighting-cfl-interior"/>
+          <Location>interior</Location>
+          <FractionofUnitsInLocation>0.1</FractionofUnitsInLocation>
+          <LightingType>
+            <CompactFluorescent/>
+          </LightingType>
+        </LightingGroup>
+        <LightingGroup dataSource="software">
+          <SystemIdentifier id="lighting-led-interior"/>
+          <Location>interior</Location>
+          <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
+          <LightingType>
+            <LightEmittingDiode/>
+          </LightingType>
+        </LightingGroup>
+        <LightingGroup dataSource="software">
+          <SystemIdentifier id="lighting-lfl-interior"/>
+          <Location>interior</Location>
+          <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
+          <LightingType>
+            <FluorescentTube/>
+          </LightingType>
+        </LightingGroup>
+        <LightingGroup dataSource="software">
+          <SystemIdentifier id="lighting-cfl-exterior"/>
+          <Location>exterior</Location>
+          <FractionofUnitsInLocation>0.1</FractionofUnitsInLocation>
+          <LightingType>
+            <CompactFluorescent/>
+          </LightingType>
+        </LightingGroup>
+        <LightingGroup dataSource="software">
+          <SystemIdentifier id="lighting-led-exterior"/>
+          <Location>exterior</Location>
+          <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
+          <LightingType>
+            <LightEmittingDiode/>
+          </LightingType>
+        </LightingGroup>
+        <LightingGroup dataSource="software">
+          <SystemIdentifier id="lighting-lfl-exterior"/>
+          <Location>exterior</Location>
+          <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
+          <LightingType>
+            <FluorescentTube/>
+          </LightingType>
+        </LightingGroup>
+        <LightingGroup dataSource="software">
+          <SystemIdentifier id="lighting-cfl-garage"/>
+          <Location>garage</Location>
+          <FractionofUnitsInLocation>0.1</FractionofUnitsInLocation>
+          <LightingType>
+            <CompactFluorescent/>
+          </LightingType>
+        </LightingGroup>
+        <LightingGroup dataSource="software">
+          <SystemIdentifier id="lighting-led-garage"/>
+          <Location>garage</Location>
+          <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
+          <LightingType>
+            <LightEmittingDiode/>
+          </LightingType>
+        </LightingGroup>
+        <LightingGroup dataSource="software">
+          <SystemIdentifier id="lighting-lfl-garage"/>
+          <Location>garage</Location>
+          <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
+          <LightingType>
+            <FluorescentTube/>
+          </LightingType>
+        </LightingGroup>
+      </Lighting>
+      <MiscLoads dataSource="software">
+        <PlugLoad>
+          <SystemIdentifier id="plugload1"/>
+          <PlugLoadType>other</PlugLoadType>
+        </PlugLoad>
+        <PlugLoad>
+          <SystemIdentifier id="plugload2"/>
+          <PlugLoadType>TV other</PlugLoadType>
+        </PlugLoad>
+      </MiscLoads>
+    </BuildingDetails>
+  </Building>
+  <Consumption>
+    <BuildingID idref="bldg1"/>
+    <CustomerID/>
+    <ConsumptionDetails>
+      <ConsumptionInfo>
+        <UtilityID/>
+        <ConsumptionType>
+          <Energy>
+            <FuelType>electricity</FuelType>
+            <UnitofMeasure>kWh</UnitofMeasure>
+          </Energy>
+        </ConsumptionType>
+        <ConsumptionDetail>
+          <Consumption>1579</Consumption>
+          <StartDateTime>2004-11-01T00:00:00</StartDateTime>
+          <EndDateTime>2004-12-01T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>1796</Consumption>
+          <StartDateTime>2004-12-01T00:00:00</StartDateTime>
+          <EndDateTime>2005-01-01T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>1933</Consumption>
+          <StartDateTime>2005-01-01T00:00:00</StartDateTime>
+          <EndDateTime>2005-02-01T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>1735</Consumption>
+          <StartDateTime>2005-02-01T00:00:00</StartDateTime>
+          <EndDateTime>2005-03-01T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>1288</Consumption>
+          <StartDateTime>2005-03-01T00:00:00</StartDateTime>
+          <EndDateTime>2005-04-01T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>1404</Consumption>
+          <StartDateTime>2005-04-01T00:00:00</StartDateTime>
+          <EndDateTime>2005-05-01T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>1420</Consumption>
+          <StartDateTime>2005-05-01T00:00:00</StartDateTime>
+          <EndDateTime>2005-06-01T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>1732</Consumption>
+          <StartDateTime>2005-06-01T00:00:00</StartDateTime>
+          <EndDateTime>2005-07-01T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>2018</Consumption>
+          <StartDateTime>2005-07-01T00:00:00</StartDateTime>
+          <EndDateTime>2005-08-01T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>1556</Consumption>
+          <StartDateTime>2005-08-01T00:00:00</StartDateTime>
+          <EndDateTime>2005-09-01T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>1170</Consumption>
+          <StartDateTime>2005-09-01T00:00:00</StartDateTime>
+          <EndDateTime>2005-10-02T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>1210</Consumption>
+          <StartDateTime>2005-10-02T00:00:00</StartDateTime>
+          <EndDateTime>2005-11-03T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>1972</Consumption>
+          <StartDateTime>2005-11-03T00:00:00</StartDateTime>
+          <EndDateTime>2005-12-02T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>1921</Consumption>
+          <StartDateTime>2005-12-02T00:00:00</StartDateTime>
+          <EndDateTime>2006-01-02T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+      </ConsumptionInfo>
+    </ConsumptionDetails>
+    <extension>
+      <MissingFuelTypes/>
+    </extension>
+  </Consumption>
+</HPXML>
