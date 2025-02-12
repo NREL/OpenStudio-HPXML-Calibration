@@ -49,4 +49,5 @@ def test_weather_retrieval(filename):
     lat, lon = ud.get_lat_lon_from_hpxml(root)
     bills_by_fuel_type, bill_units, tz = ud.get_bills_from_hpxml(root)
     for fuel_type, bills in bills_by_fuel_type.items():
-        ud.join_bills_weather(bills, lat, lon)
+        bills_temps = ud.join_bills_weather(bills, lat, lon)
+        assert not pd.isna(bills_temps["avg_temp"]).any()
