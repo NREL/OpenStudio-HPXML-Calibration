@@ -1,5 +1,6 @@
 import datetime as dt
 import os
+import re
 
 import eeweather
 import pandas as pd
@@ -18,13 +19,26 @@ def get_datetime_subel(el: objectify.ObjectifiedElement, subel_name: str) -> pd.
         return pd.to_datetime(str(subel))
 
 
+def xpath(
+    el: objectify.ObjectifiedElement, xpath_expr: str, **kw
+) -> list[objectify.ObjectifiedElement]:
+    ns = re.match(r"\{(.+)\}", el.tag).group(1)
+    return el.xpath(xpath_expr, namespaces={"h": ns}, **kw)
+
+
+def get_first_building_id(hpxml_root: objectify.ObjectifiedElement) -> str:
+    return xpath(hpxml_root, "h:Building[1]/h:BuildingID/@id", smart_strings=False)[0]
+
+
 def get_bills_from_hpxml(
-    hpxml_root: objectify.ObjectifiedElement,
+    hpxml_root: objectify.ObjectifiedElement, building_id: str | None = None
 ) -> tuple[dict[str, pd.DataFrame], dict[str, str], dt.timezone]:
     """Get utility bills from an HPXML file.
 
     :param hpxml_root: The root element of the HPXML file
     :type hpxml_root: objectify.ObjectifiedElement
+    :param building_id: Optional building_id of the building you want to get bills for.
+    :type building_id: str | None
     :return:
         * `bills_by_fuel_type`, a dictionary with fuel types as the keys and a
           dataframe as the values with columns `start_date`, `end_date`, and `consumption`
@@ -32,13 +46,19 @@ def get_bills_from_hpxml(
         * `local_standard_tz`, the timezone (standard, no DST) of the location.
     :rtype: tuple[dict[str, pd.DataFrame], dict[str, str], dt.timezone]
     """
+    if building_id is None:
+        building_id = get_first_building_id(hpxml_root)
     local_standard_tz = dt.timezone(
         dt.timedelta(hours=int(hpxml_root.Building.Site.TimeZone.UTCOffset))
     )
 
     bills_by_fuel_type = {}
     bill_units = {}
-    for cons_info in hpxml_root.Consumption.ConsumptionDetails.ConsumptionInfo:
+    for cons_info in xpath(
+        hpxml_root,
+        "h:Consumption[h:BuildingID/@idref=$building_id]/h:ConsumptionDetails/h:ConsumptionInfo",
+        building_id=building_id,
+    ):
         fuel_type = str(cons_info.ConsumptionType.Energy.FuelType)
         bill_units[fuel_type] = str(cons_info.ConsumptionType.Energy.UnitofMeasure)
         rows = []
@@ -63,17 +83,26 @@ def get_bills_from_hpxml(
 
 
 def get_lat_lon_from_hpxml(
-    hpxml_root: objectify.ObjectifiedElement,
+    hpxml_root: objectify.ObjectifiedElement, building_id: str | None = None
 ) -> tuple[float, float]:
     """Get latitude, longitude from hpxml file
 
     :param hpxml_root: _description_
     :type hpxml_root: objectify.ObjectifiedElement
+    :param building_id: Optional building_id of the building you want to get location for.
+    :type building_id: str | None
     :return: _description_
     :rtype: tuple[float, float]
     """
-    lat = float(hpxml_root.Building.Site.GeoLocation.Latitude)
-    lon = float(hpxml_root.Building.Site.GeoLocation.Longitude)
+    if building_id is None:
+        building_id = get_first_building_id(hpxml_root)
+    geolocation = xpath(
+        hpxml_root,
+        "h:Building[h:BuildingID/@id=$building_id]/h:Site/h:GeoLocation",
+        building_id=building_id,
+    )[0]
+    lat = float(geolocation.Latitude)
+    lon = float(geolocation.Longitude)
     return lat, lon
 
 

@@ -1,5 +1,4 @@
 import pathlib
-import re
 
 import pandas as pd
 import pytest
@@ -28,9 +27,7 @@ def test_hpxml_utility_bill_read_missing_start_end_date(filename):
         # Remove all the EndDateTime elements
         tree = ud.parse_hpxml(filename)
         root = tree.getroot()
-        ns = re.match(r"\{(.+)\}", root.tag).group(1)
-        xpkw = {"namespaces": {"h": ns}}
-        for el in root.xpath(f"//h:{start_end.capitalize()}DateTime", **xpkw):
+        for el in ud.xpath(root, f"//h:{start_end.capitalize()}DateTime"):
             el.getparent().remove(el)
 
         # Load the bills
