@@ -3,6 +3,15 @@
 # see the URL below for information on how to write OpenStudio measures
 # http://nrel.github.io/OpenStudio-user-documentation/reference/measure_writing_guide/
 
+require 'oga'
+require 'pathname'
+# require 'openstudio'
+Dir["#{File.dirname(__FILE__)}/../../OpenStudio-HPXML/HPXMLtoOpenStudio/resources/*.rb"].each do |resource_file|
+  next if resource_file.include? 'minitest_helper.rb'
+
+  require resource_file
+end
+
 # start the measure
 class ModifyXML < OpenStudio::Measure::ModelMeasure
   # human readable name
@@ -31,21 +40,21 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     arg.setDescription('Path to existing XML file to modify')
     args << arg
 
-    arg = OpenStudio::Measure::OSArgument.makeStringArgument('xml_field', true)
-    arg.setDisplayName('XML field to modify')
-    arg.setDescription('XPath to the XML field to modify')
+    arg = OpenStudio::Measure::OSArgument.makeStringArgument('save_file_path', true)
+    arg.setDisplayName('Save file path')
+    arg.setDescription('Path to save new xml file')
     args << arg
 
-    arg = OpenStudio::Measure::OSArgument.makeStringArgument('change_increment', true)
-    arg.setDisplayName('How much to change')
-    arg.setDescription('Value to add to the XML field')
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('heating_setpoint_offset', false)
+    arg.setDisplayName('Heating setpoint offset')
+    arg.setDescription('How much to change heating setpoint')
     args << arg
 
     return args
   end
 
   # define what happens when the measure is run
-  def modify(model, runner, user_arguments)
+  def run(model, runner, user_arguments)
     super(model, runner, user_arguments)  # Do **NOT** remove this line
 
     # use the built-in error checking
@@ -61,29 +70,27 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     unless (Pathname.new xml_file).absolute?
       xml_file = File.expand_path(xml_file)
     end
-    # xml_file_path = runner.getStringArgumentValue('xml_file', user_arguments)
 
-    # xpath through the XML file with the user arguments
-    xml_field = args[:xml_field]
-    original_value = xml_file.xml_field.value
+    hpxml = HPXML.new(hpxml_path: xml_file)
+    hpxml_building = hpxml.buildings[0] # FIXME: Does not handle multiple buildings
 
-    # Update the XML field with the new value
-    xml_file.xml_field.value = original_value + args[:change_increment]
+    # Modify XML fields
+    modify_heating_setpoint(hpxml_building, runner, args)
+    # ...
 
-    # report initial condition of model
-    # runner.registerInitialCondition("The building started with #{model.getSpaces.size} spaces.")
-
-    # add a new space to the model
-    # new_space = OpenStudio::Model::Space.new(model)
-    # new_space.setName(space_name)
-
-    # echo the new space's name back to the user
-    # runner.registerInfo("Space #{new_space.name} was added.")
-
-    # report final condition of model
-    # runner.registerFinalCondition("The building finished with #{model.getSpaces.size} spaces.")
-
+    # Save new file
+    XMLHelper.write_file(hpxml.to_doc(), args[:save_file_path])
     return true
+  end
+
+  def modify_heating_setpoint(hpxml_building, runner, args)
+    # TODO: need to handle setbacks & other ways of describing setpoints
+    # What if heating_setpoint_temp is nil?
+    # Or if there is a setback?
+    if args[:heating_setpoint_offset].nil?
+      return
+    end
+    hpxml_building.hvac_controls[0].heating_setpoint_temp += args[:heating_setpoint_offset]
   end
 end
 

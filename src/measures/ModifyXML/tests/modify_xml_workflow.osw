@@ -1,0 +1,16 @@
+{
+  "run_directory": "run",
+  "measure_paths": [
+    "../.."
+  ],
+  "steps": [
+    {
+      "arguments": {
+        "xml_file": "../../../../../OpenStudio-HPXML/workflow/sample_files/base.xml",
+        "save_file_path": "../new_output.xml",
+        "heating_setpoint_offset": 2
+      },
+      "measure_dir_name": "ModifyXML"
+    }
+  ]
+}

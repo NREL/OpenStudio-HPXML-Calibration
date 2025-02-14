@@ -3,20 +3,36 @@
   <schema_version>3.1</schema_version>
   <name>modify_xml</name>
   <uid>afd74b96-8b2c-4ebd-83be-0d3fdc35bf9a</uid>
-  <version_id>ad528d99-719d-4ab2-9498-54baf0f3abc9</version_id>
-  <version_modified>2025-02-10T21:00:40Z</version_modified>
-  <xml_checksum>00000000</xml_checksum>
+  <version_id>381d58c1-55c2-47f2-8623-075877f94180</version_id>
+  <version_modified>2025-02-12T22:32:40Z</version_modified>
+  <xml_checksum>1B7C870F</xml_checksum>
   <class_name>ModifyXML</class_name>
   <display_name>ModifyXML</display_name>
   <description>Modify the contents of an existing, valid XML file</description>
   <modeler_description>The measure changes values of requested XML fields</modeler_description>
   <arguments>
     <argument>
-      <name>space_name</name>
-      <display_name>New space name</display_name>
-      <description>This name will be used as the name of the new space.</description>
+      <name>xml_file</name>
+      <display_name>Path to XML file</display_name>
+      <description>Path to existing XML file to modify</description>
       <type>String</type>
       <required>true</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>save_file_path</name>
+      <display_name>Save file path</display_name>
+      <description>Path to save new xml file</description>
+      <type>String</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>heating_setpoint_offset</name>
+      <display_name>Heating setpoint offset</display_name>
+      <description>How much to change heating setpoint</description>
+      <type>Double</type>
+      <required>false</required>
       <model_dependent>false</model_dependent>
     </argument>
   </arguments>
@@ -42,7 +58,13 @@
       <filename>LICENSE.md</filename>
       <filetype>md</filetype>
       <usage_type>license</usage_type>
-      <checksum>CD7F5672</checksum>
+      <checksum>8C1169D5</checksum>
+    </file>
+    <file>
+      <filename>README.md</filename>
+      <filetype>md</filetype>
+      <usage_type>readme</usage_type>
+      <checksum>578C7B39</checksum>
     </file>
     <file>
       <filename>README.md.erb</filename>
@@ -60,23 +82,156 @@
       <version>
         <software_program>OpenStudio</software_program>
         <identifier>3.9.0</identifier>
+        <min_compatible>3.9.0</min_compatible>
       </version>
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>057B5755</checksum>
+      <checksum>F243F9B9</checksum>
     </file>
     <file>
       <filename>example_model.osm</filename>
       <filetype>osm</filetype>
       <usage_type>test</usage_type>
-      <checksum>D6BD40D0</checksum>
+      <checksum>6489488C</checksum>
     </file>
     <file>
       <filename>modify_xml_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
       <checksum>70016E42</checksum>
+    </file>
+    <file>
+      <filename>modify_xml_workflow.osw</filename>
+      <filetype>osw</filetype>
+      <usage_type>test</usage_type>
+      <checksum>1D35C196</checksum>
+    </file>
+    <file>
+      <filename>out.osw</filename>
+      <filetype>osw</filetype>
+      <usage_type>test</usage_type>
+      <checksum>D8BFB9F9</checksum>
+    </file>
+    <file>
+      <filename>run/data_point.zip</filename>
+      <filetype>zip</filetype>
+      <usage_type>test</usage_type>
+      <checksum>3671ED6B</checksum>
+    </file>
+    <file>
+      <filename>run/data_point_out.json</filename>
+      <filetype>json</filetype>
+      <usage_type>test</usage_type>
+      <checksum>88EF3B91</checksum>
+    </file>
+    <file>
+      <filename>run/eplusout.bnd</filename>
+      <filetype>bnd</filetype>
+      <usage_type>test</usage_type>
+      <checksum>ACFE6FA2</checksum>
+    </file>
+    <file>
+      <filename>run/eplusout.eio</filename>
+      <filetype>eio</filetype>
+      <usage_type>test</usage_type>
+      <checksum>50DC9FDD</checksum>
+    </file>
+    <file>
+      <filename>run/eplusout.end</filename>
+      <filetype>end</filetype>
+      <usage_type>test</usage_type>
+      <checksum>EE2C0D0A</checksum>
+    </file>
+    <file>
+      <filename>run/eplusout.err</filename>
+      <filetype>err</filetype>
+      <usage_type>test</usage_type>
+      <checksum>A9F36420</checksum>
+    </file>
+    <file>
+      <filename>run/eplusout.eso</filename>
+      <filetype>eso</filetype>
+      <usage_type>test</usage_type>
+      <checksum>13A8AFA9</checksum>
+    </file>
+    <file>
+      <filename>run/eplusout.mtd</filename>
+      <filetype>mtd</filetype>
+      <usage_type>test</usage_type>
+      <checksum>00000000</checksum>
+    </file>
+    <file>
+      <filename>run/eplusout.mtr</filename>
+      <filetype>mtr</filetype>
+      <usage_type>test</usage_type>
+      <checksum>0E41893D</checksum>
+    </file>
+    <file>
+      <filename>run/eplusout.sql</filename>
+      <filetype>sql</filetype>
+      <usage_type>test</usage_type>
+      <checksum>7B22EBA2</checksum>
+    </file>
+    <file>
+      <filename>run/failed.job</filename>
+      <filetype>job</filetype>
+      <usage_type>test</usage_type>
+      <checksum>048740F3</checksum>
+    </file>
+    <file>
+      <filename>run/in.idf</filename>
+      <filetype>idf</filetype>
+      <usage_type>test</usage_type>
+      <checksum>D53FB0EE</checksum>
+    </file>
+    <file>
+      <filename>run/in.osm</filename>
+      <filetype>osm</filetype>
+      <usage_type>test</usage_type>
+      <checksum>A84D6EDC</checksum>
+    </file>
+    <file>
+      <filename>run/measure_attributes.json</filename>
+      <filetype>json</filetype>
+      <usage_type>test</usage_type>
+      <checksum>88EF3B91</checksum>
+    </file>
+    <file>
+      <filename>run/new_output.xml</filename>
+      <filetype>xml</filetype>
+      <usage_type>test</usage_type>
+      <checksum>92D455E2</checksum>
+    </file>
+    <file>
+      <filename>run/pre-preprocess.idf</filename>
+      <filetype>idf</filetype>
+      <usage_type>test</usage_type>
+      <checksum>37F4C6A7</checksum>
+    </file>
+    <file>
+      <filename>run/run.log</filename>
+      <filetype>log</filetype>
+      <usage_type>test</usage_type>
+      <checksum>3D8C9D63</checksum>
+    </file>
+    <file>
+      <filename>run/sqlite.err</filename>
+      <filetype>err</filetype>
+      <usage_type>test</usage_type>
+      <checksum>D834FBC1</checksum>
+    </file>
+    <file>
+      <filename>run/started.job</filename>
+      <filetype>job</filetype>
+      <usage_type>test</usage_type>
+      <checksum>7C38D501</checksum>
+    </file>
+    <file>
+      <filename>run/stdout-energyplus</filename>
+      <filetype></filetype>
+      <usage_type>test</usage_type>
+      <checksum>DF156122</checksum>
     </file>
   </files>
 </measure>

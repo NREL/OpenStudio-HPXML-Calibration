@@ -1,0 +1,71 @@
+{
+   "completed_at" : "20250212T223431Z",
+   "completed_status" : "Success",
+   "current_step" : 1,
+   "file_paths" :
+   [
+      "/Users/nmoore/github/OpenStudio-HPXML-Calibration/src/measures/ModifyXML/tests/generated_files",
+      "./files",
+      "./weather",
+      "../../files",
+      "../../weather",
+      "./"
+   ],
+   "hash" : "C42EC8C7",
+   "measure_paths" :
+   [
+      "../.."
+   ],
+   "run_directory" : "run",
+   "run_options" : null,
+   "started_at" : "20250212T223430Z",
+   "steps" :
+   [
+      {
+         "arguments" :
+         {
+            "heating_setpoint_offset" : 2,
+            "save_file_path" : "../new_output.xml",
+            "xml_file" : "../../../../../OpenStudio-HPXML/workflow/sample_files/base.xml"
+         },
+         "measure_dir_name" : "ModifyXML",
+         "result" :
+         {
+            "completed_at" : "20250212T223431Z",
+            "measure_class_name" : "ModifyXML",
+            "measure_display_name" : "ModifyXML",
+            "measure_name" : "modify_xml",
+            "measure_taxonomy" : "Envelope.Fenestration",
+            "measure_type" : "ModelMeasure",
+            "measure_uid" : "afd74b96-8b2c-4ebd-83be-0d3fdc35bf9a",
+            "measure_version_id" : "381d58c1-55c2-47f2-8623-075877f94180",
+            "measure_version_modified" : "20250212T223240Z",
+            "measure_xml_checksum" : "1B7C870F",
+            "started_at" : "20250212T223431Z",
+            "stderr" : "",
+            "stdout" : "",
+            "step_errors" : [],
+            "step_files" : [],
+            "step_info" : [],
+            "step_result" : "Success",
+            "step_values" :
+            [
+               {
+                  "name" : "xml_file",
+                  "value" : "../../../../../OpenStudio-HPXML/workflow/sample_files/base.xml"
+               },
+               {
+                  "name" : "save_file_path",
+                  "value" : "../new_output.xml"
+               },
+               {
+                  "name" : "heating_setpoint_offset",
+                  "value" : 2.0
+               }
+            ],
+            "step_warnings" : []
+         }
+      }
+   ],
+   "updated_at" : "20250212T223431Z"
+}
