@@ -1,11 +1,11 @@
 [project]
 name = "openstudio-hpxml-calibration"
 version = "0.1.0"
-description = "Calibrates a building energy model to utility bills."
+description = "Calibrates a building energy model to utility bills. OpenStudio Hpxml Iterative Tuner"
 readme = "README.md"
 authors = [
     { name = "Noel Merket", email = "noel.merket@nrel.gov" },
-    { name = "Nathan Moore", email = "nathan.moore@nrel.gov" }
+    { name = "Nathan Moore", email = "nathan.moore@nrel.gov" },
 ]
 requires-python = ">=3.12, < 3.14"
 dependencies = [
@@ -21,6 +21,7 @@ dev = [
 
 [project.scripts]
 openstudio-hpxml-calibration = "openstudio_hpxml_calibration:app"
+oshit = "openstudio_hpxml_calibration:app"
 
 [build-system]
 requires = ["hatchling"]
