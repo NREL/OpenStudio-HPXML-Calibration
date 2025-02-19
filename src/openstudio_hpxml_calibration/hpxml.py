@@ -1,14 +1,42 @@
 import os
+import pathlib
 import re
 
-from lxml import objectify
+from lxml import etree, isoschematron, objectify
 
 
 class HpxmlDoc:
-    def __init__(self, filename: os.PathLike):
+    def __init__(
+        self, filename: os.PathLike, validate_schema: bool = True, validate_schematron: bool = True
+    ):
         self.tree = objectify.parse(str(filename))
         self.root = self.tree.getroot()
-        # TODO: Validate the HPXML document
+
+        if validate_schema:
+            hpxml_schema_filename = (
+                pathlib.Path(__file__).resolve().parent.parent
+                / "OpenStudio-HPXML"
+                / "HPXMLtoOpenStudio"
+                / "resources"
+                / "hpxml_schema"
+                / "HPXML.xsd"
+            )
+            schema_doc = etree.parse(str(hpxml_schema_filename))
+            schema = etree.XMLSchema(schema_doc)
+            schema.assertValid(self.tree)
+
+        if validate_schematron:
+            hpxml_schematron_filename = (
+                pathlib.Path(__file__).resolve().parent.parent
+                / "OpenStudio-HPXML"
+                / "HPXMLtoOpenStudio"
+                / "resources"
+                / "hpxml_schematron"
+                / "EPvalidator.xml"
+            )
+            schematron_doc = etree.parse(str(hpxml_schematron_filename))
+            schematron = isoschematron.Schematron(schematron_doc)
+            schematron.assertValid(self.tree)
 
     def __getattr__(self, name: str):
         return getattr(self.root, name)
