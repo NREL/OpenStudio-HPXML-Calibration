@@ -94,7 +94,9 @@ def join_bills_weather(bills_orig: pd.DataFrame, lat: float, lon: float, **kw) -
     """
     start_date = bills_orig["start_date"].min().tz_convert("UTC")
     end_date = bills_orig["end_date"].max().tz_convert("UTC")
-    ranked_stations = eeweather.rank_stations(lat, lon, **kw)
+    rank_stations_kw = {"minimum_quality": "medium"}
+    rank_stations_kw.update(kw)
+    ranked_stations = eeweather.rank_stations(lat, lon, **rank_stations_kw)
     isd_station, _ = eeweather.select_station(ranked_stations)
     tempC, _ = isd_station.load_isd_hourly_temp_data(start_date, end_date)
     tempC = tempC.tz_convert(bills_orig["start_date"].dt.tz)
