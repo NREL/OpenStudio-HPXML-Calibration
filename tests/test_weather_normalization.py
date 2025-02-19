@@ -13,7 +13,7 @@ test_hpxml_files = list(
     (pathlib.Path(__file__).resolve().parent.parent / "test_hpxmls").glob("*.xml")
 )
 results_dir = pathlib.Path(__file__).resolve().parent / "results" / "weather_normalization"
-results_dir.mkdir(exist_ok=True)
+results_dir.mkdir(exist_ok=True, parents=True)
 
 
 @pytest.mark.parametrize("filename", test_hpxml_files, ids=lambda x: x.stem)
