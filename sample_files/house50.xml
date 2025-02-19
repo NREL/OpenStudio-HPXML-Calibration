@@ -1,0 +1,1358 @@
+<HPXML xmlns="http://hpxmlonline.com/2023/09" schemaVersion="4.0">
+  <XMLTransactionHeaderInformation>
+    <XMLType>HPXML</XMLType>
+    <XMLGeneratedBy>NREL</XMLGeneratedBy>
+    <CreatedDateAndTime>2021-01-01T00:00:00</CreatedDateAndTime>
+    <Transaction>create</Transaction>
+  </XMLTransactionHeaderInformation>
+  <SoftwareInfo/>
+  <Building>
+    <BuildingID id="bldg1"/>
+    <Site>
+      <SiteID id="site1"/>
+      <Address>
+        <AddressType>street</AddressType>
+        <StateCode>VT</StateCode>
+        <ZipCode>05403</ZipCode>
+      </Address>
+    </Site>
+    <ProjectStatus>
+      <EventType>audit</EventType>
+    </ProjectStatus>
+    <BuildingDetails>
+      <BuildingSummary>
+        <BuildingConstruction>
+          <YearBuilt>2009</YearBuilt>
+          <YearBuiltKnownOrEstimated>known</YearBuiltKnownOrEstimated>
+          <ResidentialFacilityType>single-family detached</ResidentialFacilityType>
+          <NumberofConditionedFloors>3.0</NumberofConditionedFloors>
+          <NumberofConditionedFloorsAboveGrade>2.0</NumberofConditionedFloorsAboveGrade>
+          <NumberofBedrooms>3</NumberofBedrooms>
+          <ConditionedFloorArea>2391.0</ConditionedFloorArea>
+          <ConditionedBuildingVolume>28767.0</ConditionedBuildingVolume>
+          <FoundationType>
+            <Basement>
+              <Conditioned>true</Conditioned>
+            </Basement>
+          </FoundationType>
+          <GaragePresent>true</GaragePresent>
+        </BuildingConstruction>
+      </BuildingSummary>
+      <ClimateandRiskZones>
+        <ClimateZoneIECC>
+          <Year>2009</Year>
+          <ClimateZone>6A</ClimateZone>
+        </ClimateZoneIECC>
+        <WeatherStation dataSource="software">
+          <SystemIdentifier id="weather_station"/>
+          <Name>Burlington, VT</Name>
+          <WMO>726170</WMO>
+          <extension>
+            <EPWFilePath>USA_VT_Burlington.Intl.AP.726170_TMY3.epw</EPWFilePath>
+          </extension>
+        </WeatherStation>
+      </ClimateandRiskZones>
+      <Enclosure>
+        <AirInfiltration>
+          <AirInfiltrationMeasurement>
+            <SystemIdentifier id="infiltmeas3"/>
+            <TypeOfInfiltrationMeasurement>blower door</TypeOfInfiltrationMeasurement>
+            <HousePressure>50</HousePressure>
+            <BuildingAirLeakage>
+              <UnitofMeasure>CFM</UnitofMeasure>
+              <AirLeakage>1159.0</AirLeakage>
+            </BuildingAirLeakage>
+          </AirInfiltrationMeasurement>
+        </AirInfiltration>
+        <Attics>
+          <Attic>
+            <SystemIdentifier id="attic5"/>
+            <AtticType>
+              <Attic>
+                <extension>
+                  <Vented>unknown</Vented>
+                </extension>
+              </Attic>
+            </AtticType>
+            <AttachedToRoof idref="roof4"/>
+            <AttachedToFloor idref="attic-floor-0"/>
+          </Attic>
+          <Attic>
+            <SystemIdentifier id="attic8"/>
+            <AtticType>
+              <CathedralCeiling/>
+            </AtticType>
+            <AttachedToRoof idref="roof7"/>
+          </Attic>
+        </Attics>
+        <Foundations>
+          <Foundation>
+            <SystemIdentifier id="fnd12"/>
+            <FoundationType>
+              <Basement>
+                <Conditioned>true</Conditioned>
+              </Basement>
+            </FoundationType>
+            <AttachedToFoundationWall idref="fw30"/>
+            <AttachedToFoundationWall idref="fw32"/>
+            <AttachedToSlab idref="slab34"/>
+          </Foundation>
+          <Foundation>
+            <SystemIdentifier id="fnd21"/>
+            <FoundationType>
+              <Garage>
+                <Conditioned>false</Conditioned>
+              </Garage>
+            </FoundationType>
+            <AttachedToFloor idref="ff26"/>
+          </Foundation>
+          <Foundation>
+            <SystemIdentifier id="fnd25"/>
+            <FoundationType>
+              <Ambient/>
+            </FoundationType>
+            <AttachedToFloor idref="ff28"/>
+          </Foundation>
+        </Foundations>
+        <Roofs>
+          <Roof>
+            <SystemIdentifier id="roof4"/>
+            <InteriorAdjacentTo>attic - unvented</InteriorAdjacentTo>
+            <Area dataSource="software">1516.71</Area>
+            <RoofColor>dark</RoofColor>
+            <Rafters>
+              <Size>2x4</Size>
+              <Spacing>24.0</Spacing>
+            </Rafters>
+            <Pitch dataSource="software">6</Pitch>
+            <RadiantBarrier>false</RadiantBarrier>
+            <Insulation>
+              <SystemIdentifier id="roof_insul0"/>
+              <AssemblyEffectiveRValue dataSource="software">2.3</AssemblyEffectiveRValue>
+            </Insulation>
+            <extension>
+              <rowid>10519</rowid>
+            </extension>
+          </Roof>
+          <Roof>
+            <SystemIdentifier id="roof7"/>
+            <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
+            <Area>80.0</Area>
+            <RoofColor>dark</RoofColor>
+            <Rafters>
+              <Size>2x10</Size>
+              <Spacing>16.0</Spacing>
+            </Rafters>
+            <Pitch dataSource="software">6</Pitch>
+            <RadiantBarrier>false</RadiantBarrier>
+            <Insulation>
+              <SystemIdentifier id="insul9"/>
+              <InsulationGrade>1</InsulationGrade>
+              <AssemblyEffectiveRValue>24.67</AssemblyEffectiveRValue>
+              <Layer>
+                <InstallationType>cavity</InstallationType>
+                <NominalRValue>32.5</NominalRValue>
+                <Thickness>5.0</Thickness>
+              </Layer>
+              <Layer>
+                <InstallationType>continuous - exterior</InstallationType>
+                <NominalRValue>0.0</NominalRValue>
+              </Layer>
+            </Insulation>
+            <extension>
+              <rowid>10520</rowid>
+            </extension>
+          </Roof>
+        </Roofs>
+        <RimJoists>
+          <RimJoist>
+            <SystemIdentifier id="rj37"/>
+            <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
+            <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
+            <Area>132.5</Area>
+            <Insulation>
+              <SystemIdentifier id="insul38"/>
+              <AssemblyEffectiveRValue>20.2</AssemblyEffectiveRValue>
+              <Layer>
+                <InstallationType>continuous - interior</InstallationType>
+                <NominalRValue>0</NominalRValue>
+              </Layer>
+              <Layer>
+                <InstallationType>cavity</InstallationType>
+                <NominalRValue>19.0</NominalRValue>
+                <Thickness>6.0</Thickness>
+              </Layer>
+              <Layer>
+                <InstallationType>continuous - exterior</InstallationType>
+                <NominalRValue>0.0</NominalRValue>
+              </Layer>
+            </Insulation>
+            <FloorJoists>
+              <Spacing>16.0</Spacing>
+            </FloorJoists>
+          </RimJoist>
+          <RimJoist>
+            <SystemIdentifier id="rj39"/>
+            <ExteriorAdjacentTo>garage</ExteriorAdjacentTo>
+            <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
+            <Area>22.0</Area>
+            <Insulation>
+              <SystemIdentifier id="insul40"/>
+              <AssemblyEffectiveRValue>20.2</AssemblyEffectiveRValue>
+              <Layer>
+                <InstallationType>continuous - interior</InstallationType>
+                <NominalRValue>0</NominalRValue>
+              </Layer>
+              <Layer>
+                <InstallationType>cavity</InstallationType>
+                <NominalRValue>19.0</NominalRValue>
+                <Thickness>6.0</Thickness>
+              </Layer>
+              <Layer>
+                <InstallationType>continuous - exterior</InstallationType>
+                <NominalRValue>0.0</NominalRValue>
+              </Layer>
+            </Insulation>
+            <FloorJoists>
+              <Spacing>16.0</Spacing>
+            </FloorJoists>
+          </RimJoist>
+          <RimJoist>
+            <SystemIdentifier id="rj41"/>
+            <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
+            <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
+            <Area>111.5</Area>
+            <Insulation>
+              <SystemIdentifier id="insul42"/>
+              <AssemblyEffectiveRValue>20.2</AssemblyEffectiveRValue>
+              <Layer>
+                <InstallationType>continuous - interior</InstallationType>
+                <NominalRValue>0</NominalRValue>
+              </Layer>
+              <Layer>
+                <InstallationType>cavity</InstallationType>
+                <NominalRValue>19.0</NominalRValue>
+                <Thickness>6.0</Thickness>
+              </Layer>
+              <Layer>
+                <InstallationType>continuous - exterior</InstallationType>
+                <NominalRValue>0.0</NominalRValue>
+              </Layer>
+            </Insulation>
+            <FloorJoists>
+              <Spacing>16.0</Spacing>
+            </FloorJoists>
+          </RimJoist>
+        </RimJoists>
+        <Walls>
+          <Wall>
+            <SystemIdentifier id="agwall43"/>
+            <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
+            <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
+            <WallType>
+              <WoodStud/>
+            </WallType>
+            <Area>2504.0</Area>
+            <Studs>
+              <Size>2x6</Size>
+              <Spacing>16.0</Spacing>
+              <Material>wood</Material>
+            </Studs>
+            <Color>light</Color>
+            <Insulation>
+              <SystemIdentifier id="insul44"/>
+              <InsulationGrade>3</InsulationGrade>
+              <AssemblyEffectiveRValue>13.14</AssemblyEffectiveRValue>
+              <Layer>
+                <InstallationType>continuous - interior</InstallationType>
+                <NominalRValue>0</NominalRValue>
+              </Layer>
+              <Layer>
+                <InstallationType>cavity</InstallationType>
+                <NominalRValue>18.0</NominalRValue>
+                <Thickness>5.5</Thickness>
+              </Layer>
+              <Layer>
+                <InstallationType>continuous - exterior</InstallationType>
+                <NominalRValue>0.0</NominalRValue>
+              </Layer>
+            </Insulation>
+            <extension>
+              <rowid>15835</rowid>
+            </extension>
+          </Wall>
+          <Wall>
+            <SystemIdentifier id="agwall45"/>
+            <ExteriorAdjacentTo>garage</ExteriorAdjacentTo>
+            <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
+            <WallType>
+              <WoodStud/>
+            </WallType>
+            <Area>198.0</Area>
+            <Studs>
+              <Size>2x6</Size>
+              <Spacing>16.0</Spacing>
+              <Material>wood</Material>
+            </Studs>
+            <Color>light</Color>
+            <Insulation>
+              <SystemIdentifier id="insul46"/>
+              <InsulationGrade>3</InsulationGrade>
+              <AssemblyEffectiveRValue>13.14</AssemblyEffectiveRValue>
+              <Layer>
+                <InstallationType>continuous - interior</InstallationType>
+                <NominalRValue>0</NominalRValue>
+              </Layer>
+              <Layer>
+                <InstallationType>cavity</InstallationType>
+                <NominalRValue>18.0</NominalRValue>
+                <Thickness>5.5</Thickness>
+              </Layer>
+              <Layer>
+                <InstallationType>continuous - exterior</InstallationType>
+                <NominalRValue>0.0</NominalRValue>
+              </Layer>
+            </Insulation>
+            <extension>
+              <rowid>15836</rowid>
+            </extension>
+          </Wall>
+          <Wall dataSource="software">
+            <SystemIdentifier id="grg_wall"/>
+            <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
+            <InteriorAdjacentTo>garage</InteriorAdjacentTo>
+            <WallType>
+              <WoodStud/>
+            </WallType>
+            <Area>198.0</Area>
+            <Insulation>
+              <SystemIdentifier id="grg_wall_insul"/>
+              <AssemblyEffectiveRValue>4.0</AssemblyEffectiveRValue>
+            </Insulation>
+          </Wall>
+        </Walls>
+        <FoundationWalls>
+          <FoundationWall>
+            <SystemIdentifier id="fw30"/>
+            <ExteriorAdjacentTo>ground</ExteriorAdjacentTo>
+            <InteriorAdjacentTo>basement - conditioned</InteriorAdjacentTo>
+            <Type>solid concrete</Type>
+            <Length>132.5</Length>
+            <Height>9.0</Height>
+            <Thickness>8.0</Thickness>
+            <DepthBelowGrade>7.5</DepthBelowGrade>
+            <Insulation>
+              <SystemIdentifier id="insul31"/>
+              <InsulationGrade>1</InsulationGrade>
+              <Layer>
+                <InstallationType>continuous - interior</InstallationType>
+                <NominalRValue>10.0</NominalRValue>
+              </Layer>
+              <Layer>
+                <InstallationType>cavity</InstallationType>
+                <NominalRValue>0.0</NominalRValue>
+              </Layer>
+              <Layer>
+                <InstallationType>continuous - exterior</InstallationType>
+                <NominalRValue>0.0</NominalRValue>
+              </Layer>
+            </Insulation>
+            <extension>
+              <rowid>12012</rowid>
+            </extension>
+          </FoundationWall>
+          <FoundationWall>
+            <SystemIdentifier id="fw32"/>
+            <ExteriorAdjacentTo>garage</ExteriorAdjacentTo>
+            <InteriorAdjacentTo>basement - conditioned</InteriorAdjacentTo>
+            <Type>solid concrete</Type>
+            <Length>22.0</Length>
+            <Height>8.0</Height>
+            <Thickness>8.0</Thickness>
+            <DepthBelowGrade>6.5</DepthBelowGrade>
+            <Insulation>
+              <SystemIdentifier id="insul33"/>
+              <InsulationGrade>1</InsulationGrade>
+              <Layer>
+                <InstallationType>continuous - interior</InstallationType>
+                <NominalRValue>10.0</NominalRValue>
+              </Layer>
+              <Layer>
+                <InstallationType>cavity</InstallationType>
+                <NominalRValue>0.0</NominalRValue>
+              </Layer>
+              <Layer>
+                <InstallationType>continuous - exterior</InstallationType>
+                <NominalRValue>0.0</NominalRValue>
+              </Layer>
+            </Insulation>
+            <extension>
+              <rowid>12013</rowid>
+            </extension>
+          </FoundationWall>
+        </FoundationWalls>
+        <Floors>
+          <Floor>
+            <SystemIdentifier id="attic-floor-0"/>
+            <ExteriorAdjacentTo>attic - unvented</ExteriorAdjacentTo>
+            <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
+            <FloorType>
+              <WoodFrame dataSource="software"/>
+            </FloorType>
+            <Area>1439.0</Area>
+            <Insulation>
+              <SystemIdentifier id="insul6"/>
+              <InsulationGrade>1</InsulationGrade>
+              <AssemblyEffectiveRValue>37.59</AssemblyEffectiveRValue>
+              <Layer>
+                <InstallationType>cavity</InstallationType>
+                <NominalRValue>13.0</NominalRValue>
+                <Thickness>3.5</Thickness>
+              </Layer>
+              <Layer>
+                <InstallationType>continuous - exterior</InstallationType>
+                <NominalRValue>24.1</NominalRValue>
+              </Layer>
+            </Insulation>
+          </Floor>
+          <Floor>
+            <SystemIdentifier id="ff26"/>
+            <ExteriorAdjacentTo>garage</ExteriorAdjacentTo>
+            <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
+            <FloorType>
+              <WoodFrame dataSource="software"/>
+            </FloorType>
+            <FloorJoists>
+              <Size>2x12</Size>
+              <Spacing>16.0</Spacing>
+            </FloorJoists>
+            <FloorCovering>carpet</FloorCovering>
+            <Area>336.0</Area>
+            <Insulation>
+              <SystemIdentifier id="insul27"/>
+              <InsulationGrade>1</InsulationGrade>
+              <AssemblyEffectiveRValue>135.78</AssemblyEffectiveRValue>
+              <Layer>
+                <InstallationType>cavity</InstallationType>
+                <NominalRValue>45.599998</NominalRValue>
+                <Thickness>12.0</Thickness>
+              </Layer>
+              <Layer>
+                <InstallationType>continuous - exterior</InstallationType>
+                <NominalRValue>91.199997</NominalRValue>
+              </Layer>
+            </Insulation>
+          </Floor>
+          <Floor>
+            <SystemIdentifier id="ff28"/>
+            <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
+            <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
+            <FloorType>
+              <WoodFrame dataSource="software"/>
+            </FloorType>
+            <FloorJoists>
+              <Size>2x12</Size>
+              <Spacing>16.0</Spacing>
+            </FloorJoists>
+            <FloorCovering>carpet</FloorCovering>
+            <Area>33.0</Area>
+            <Insulation>
+              <SystemIdentifier id="insul29"/>
+              <InsulationGrade>3</InsulationGrade>
+              <AssemblyEffectiveRValue>24.89</AssemblyEffectiveRValue>
+              <Layer>
+                <InstallationType>cavity</InstallationType>
+                <NominalRValue>37.0</NominalRValue>
+                <Thickness>11.2</Thickness>
+              </Layer>
+              <Layer>
+                <InstallationType>continuous - exterior</InstallationType>
+                <NominalRValue>0.0</NominalRValue>
+              </Layer>
+            </Insulation>
+          </Floor>
+        </Floors>
+        <Slabs>
+          <Slab>
+            <SystemIdentifier id="slab34"/>
+            <InteriorAdjacentTo>basement - conditioned</InteriorAdjacentTo>
+            <Area>1071.0</Area>
+            <Perimeter>155.0</Perimeter>
+            <ExposedPerimeter>155.0</ExposedPerimeter>
+            <OnGradeExposedPerimeter>0.0</OnGradeExposedPerimeter>
+            <DepthBelowGrade>7.5</DepthBelowGrade>
+            <PerimeterInsulation>
+              <SystemIdentifier id="insul35"/>
+              <Layer>
+                <InstallationType>continuous</InstallationType>
+                <NominalRValue>0.0</NominalRValue>
+                <InsulationDepth>0.0</InsulationDepth>
+              </Layer>
+            </PerimeterInsulation>
+            <UnderSlabInsulation>
+              <SystemIdentifier id="insul36"/>
+              <Layer>
+                <InstallationType>continuous</InstallationType>
+                <NominalRValue>0.0</NominalRValue>
+                <InsulationWidth>0.0</InsulationWidth>
+              </Layer>
+            </UnderSlabInsulation>
+          </Slab>
+          <Slab dataSource="software">
+            <SystemIdentifier id="grg_slab"/>
+            <InteriorAdjacentTo>garage</InteriorAdjacentTo>
+            <Area>336.0</Area>
+            <Perimeter>73.32</Perimeter>
+            <ExposedPerimeter>73.32</ExposedPerimeter>
+            <OnGradeExposedPerimeter>73.32</OnGradeExposedPerimeter>
+            <DepthBelowGrade>0</DepthBelowGrade>
+            <PerimeterInsulation>
+              <SystemIdentifier id="grg_slab_perim_insul"/>
+              <Layer>
+                <InstallationType>continuous</InstallationType>
+                <NominalRValue>0</NominalRValue>
+                <InsulationDepth>0</InsulationDepth>
+              </Layer>
+            </PerimeterInsulation>
+            <UnderSlabInsulation>
+              <SystemIdentifier id="grg_slab_under_insul"/>
+              <Layer>
+                <InstallationType>continuous</InstallationType>
+                <NominalRValue>0</NominalRValue>
+                <InsulationWidth>0</InsulationWidth>
+              </Layer>
+            </UnderSlabInsulation>
+          </Slab>
+        </Slabs>
+        <Windows>
+          <Window>
+            <SystemIdentifier id="window47"/>
+            <Area>37.0</Area>
+            <Orientation>north</Orientation>
+            <UFactor>0.29</UFactor>
+            <SHGC>0.3</SHGC>
+            <Overhangs>
+              <Depth>6.0</Depth>
+              <DistanceToTopOfWindow>1.0</DistanceToTopOfWindow>
+              <DistanceToBottomOfWindow>7.0</DistanceToBottomOfWindow>
+            </Overhangs>
+            <AttachedToWall idref="agwall43"/>
+          </Window>
+          <Window>
+            <SystemIdentifier id="window48"/>
+            <Area>93.800003</Area>
+            <Orientation>north</Orientation>
+            <UFactor>0.29</UFactor>
+            <SHGC>0.3</SHGC>
+            <AttachedToWall idref="agwall43"/>
+          </Window>
+          <Window>
+            <SystemIdentifier id="window49"/>
+            <Area>154.600006</Area>
+            <Orientation>west</Orientation>
+            <UFactor>0.29</UFactor>
+            <SHGC>0.3</SHGC>
+            <AttachedToWall idref="agwall43"/>
+          </Window>
+          <Window>
+            <SystemIdentifier id="window50"/>
+            <Area>40.0</Area>
+            <Orientation>west</Orientation>
+            <UFactor>0.31</UFactor>
+            <SHGC>0.25</SHGC>
+            <AttachedToWall idref="agwall43"/>
+          </Window>
+          <Window>
+            <SystemIdentifier id="window51"/>
+            <Area>64.400002</Area>
+            <Orientation>east</Orientation>
+            <UFactor>0.29</UFactor>
+            <SHGC>0.3</SHGC>
+            <AttachedToWall idref="agwall43"/>
+          </Window>
+          <Window>
+            <SystemIdentifier id="window52"/>
+            <Area>16.0</Area>
+            <Orientation>east</Orientation>
+            <UFactor>0.29</UFactor>
+            <SHGC>0.3</SHGC>
+            <AttachedToWall idref="fw30"/>
+          </Window>
+          <Window>
+            <SystemIdentifier id="window53"/>
+            <Area>4.0</Area>
+            <Orientation>east</Orientation>
+            <UFactor>0.5</UFactor>
+            <SHGC>0.65</SHGC>
+            <AttachedToWall idref="fw30"/>
+          </Window>
+          <Window>
+            <SystemIdentifier id="window54"/>
+            <Area>8.0</Area>
+            <Orientation>west</Orientation>
+            <UFactor>0.5</UFactor>
+            <SHGC>0.65</SHGC>
+            <AttachedToWall idref="fw30"/>
+          </Window>
+          <Window>
+            <SystemIdentifier id="window55"/>
+            <Area>21.0</Area>
+            <Orientation>north</Orientation>
+            <UFactor>0.23</UFactor>
+            <SHGC>0.06</SHGC>
+            <Overhangs>
+              <Depth>8.0</Depth>
+              <DistanceToTopOfWindow>2.0</DistanceToTopOfWindow>
+              <DistanceToBottomOfWindow>9.0</DistanceToBottomOfWindow>
+            </Overhangs>
+            <AttachedToWall idref="agwall43"/>
+          </Window>
+        </Windows>
+        <Doors>
+          <Door>
+            <SystemIdentifier id="door56"/>
+            <AttachedToWall idref="agwall45"/>
+            <Area>21.0</Area>
+            <DoorType>exterior</DoorType>
+            <StormDoor>false</StormDoor>
+            <RValue>5.93</RValue>
+          </Door>
+        </Doors>
+      </Enclosure>
+      <Systems>
+        <HVAC>
+          <HVACPlant>
+            <HeatingSystem>
+              <SystemIdentifier id="htgsys57"/>
+              <PerformanceAdjustment>1.0</PerformanceAdjustment>
+              <DistributionSystem idref="air62"/>
+              <HeatingSystemType>
+                <Furnace/>
+              </HeatingSystemType>
+              <HeatingSystemFuel>natural gas</HeatingSystemFuel>
+              <HeatingCapacity>78000.0</HeatingCapacity>
+              <AnnualHeatingEfficiency>
+                <Units>AFUE</Units>
+                <Value>0.955</Value>
+              </AnnualHeatingEfficiency>
+              <FractionHeatLoadServed>1.0</FractionHeatLoadServed>
+              <extension>
+                <rowid>15048</rowid>
+              </extension>
+            </HeatingSystem>
+            <CoolingSystem>
+              <SystemIdentifier id="clgsys61"/>
+              <UnitLocation>conditioned space</UnitLocation>
+              <PerformanceAdjustment>1.0</PerformanceAdjustment>
+              <DistributionSystem idref="air62"/>
+              <CoolingSystemType>central air conditioner</CoolingSystemType>
+              <CoolingSystemFuel>electricity</CoolingSystemFuel>
+              <CoolingCapacity>36000.0</CoolingCapacity>
+              <FractionCoolLoadServed>1.0</FractionCoolLoadServed>
+              <AnnualCoolingEfficiency>
+                <Units>SEER</Units>
+                <Value>10.0</Value>
+              </AnnualCoolingEfficiency>
+              <extension>
+                <rowid>15050</rowid>
+              </extension>
+            </CoolingSystem>
+          </HVACPlant>
+          <HVACControl>
+            <SystemIdentifier id="control63"/>
+            <ControlType>programmable thermostat</ControlType>
+            <SetpointTempHeatingSeason>68.0</SetpointTempHeatingSeason>
+            <SetpointTempCoolingSeason>78.0</SetpointTempCoolingSeason>
+          </HVACControl>
+          <HVACDistribution>
+            <SystemIdentifier id="air62"/>
+            <DistributionSystemType>
+              <AirDistribution>
+                <AirDistributionType>regular velocity</AirDistributionType>
+                <DuctLeakageMeasurement>
+                  <DuctLeakage>
+                    <Units>CFM25</Units>
+                    <Value>0.0</Value>
+                    <TotalOrToOutside>to outside</TotalOrToOutside>
+                  </DuctLeakage>
+                </DuctLeakageMeasurement>
+                <DuctLeakageMeasurement dataSource="software">
+                  <DuctType>supply</DuctType>
+                  <DuctLeakage>
+                    <Units>CFM25</Units>
+                    <Value>0.0</Value>
+                    <TotalOrToOutside>to outside</TotalOrToOutside>
+                  </DuctLeakage>
+                </DuctLeakageMeasurement>
+                <DuctLeakageMeasurement dataSource="software">
+                  <DuctType>return</DuctType>
+                  <DuctLeakage>
+                    <Units>CFM25</Units>
+                    <Value>0.0</Value>
+                    <TotalOrToOutside>to outside</TotalOrToOutside>
+                  </DuctLeakage>
+                </DuctLeakageMeasurement>
+                <Ducts>
+                  <SystemIdentifier id="air62_ducts0"/>
+                  <DuctType>supply</DuctType>
+                  <DuctInsulationRValue>0.0</DuctInsulationRValue>
+                  <DuctLocation>conditioned space</DuctLocation>
+                  <FractionDuctArea>0.5</FractionDuctArea>
+                </Ducts>
+                <Ducts>
+                  <SystemIdentifier id="air62_ducts1"/>
+                  <DuctType>return</DuctType>
+                  <DuctInsulationRValue>0.0</DuctInsulationRValue>
+                  <DuctLocation>conditioned space</DuctLocation>
+                  <FractionDuctArea>0.75</FractionDuctArea>
+                </Ducts>
+                <Ducts>
+                  <SystemIdentifier id="air62_ducts2"/>
+                  <DuctType>supply</DuctType>
+                  <DuctInsulationRValue>0.0</DuctInsulationRValue>
+                  <DuctLocation>conditioned space</DuctLocation>
+                  <FractionDuctArea>0.5</FractionDuctArea>
+                </Ducts>
+                <Ducts>
+                  <SystemIdentifier id="air62_ducts3"/>
+                  <DuctType>return</DuctType>
+                  <DuctInsulationRValue>0.0</DuctInsulationRValue>
+                  <DuctLocation>conditioned space</DuctLocation>
+                  <FractionDuctArea>0.25</FractionDuctArea>
+                </Ducts>
+                <NumberofReturnRegisters>6</NumberofReturnRegisters>
+              </AirDistribution>
+            </DistributionSystemType>
+            <ConditionedFloorAreaServed dataSource="software">2391.0</ConditionedFloorAreaServed>
+          </HVACDistribution>
+        </HVAC>
+        <MechanicalVentilation>
+          <VentilationFans>
+            <VentilationFan>
+              <SystemIdentifier id="mechvent64"/>
+              <FanType>exhaust only</FanType>
+              <TestedFlowRate>154.0</TestedFlowRate>
+              <HoursInOperation>8.0</HoursInOperation>
+              <UsedForWholeBuildingVentilation>true</UsedForWholeBuildingVentilation>
+              <FanPower>33.900002</FanPower>
+            </VentilationFan>
+          </VentilationFans>
+        </MechanicalVentilation>
+        <WaterHeating>
+          <WaterHeatingSystem>
+            <SystemIdentifier id="dhw59"/>
+            <FuelType>natural gas</FuelType>
+            <WaterHeaterType>instantaneous water heater</WaterHeaterType>
+            <FractionDHWLoadServed>1.0</FractionDHWLoadServed>
+            <EnergyFactor>0.82</EnergyFactor>
+            <WaterHeaterInsulation>
+              <Jacket>
+                <JacketRValue>0.0</JacketRValue>
+              </Jacket>
+            </WaterHeaterInsulation>
+          </WaterHeatingSystem>
+          <HotWaterDistribution dataSource="software">
+            <SystemIdentifier id="dhwdist"/>
+            <SystemType>
+              <Standard dataSource="software"/>
+            </SystemType>
+          </HotWaterDistribution>
+          <WaterFixture dataSource="software">
+            <SystemIdentifier id="shower_head_0.0"/>
+            <WaterFixtureType>shower head</WaterFixtureType>
+            <LowFlow>false</LowFlow>
+          </WaterFixture>
+          <WaterFixture dataSource="software">
+            <SystemIdentifier id="faucet_0.0"/>
+            <WaterFixtureType>faucet</WaterFixtureType>
+            <LowFlow>false</LowFlow>
+          </WaterFixture>
+        </WaterHeating>
+      </Systems>
+      <Appliances>
+        <ClothesWasher dataSource="software">
+          <SystemIdentifier id="clothes-washer"/>
+        </ClothesWasher>
+        <ClothesDryer>
+          <SystemIdentifier id="clothesdryer65"/>
+          <FuelType>natural gas</FuelType>
+        </ClothesDryer>
+        <Dishwasher>
+          <SystemIdentifier id="dishwasher66"/>
+        </Dishwasher>
+        <Refrigerator>
+          <SystemIdentifier id="refrig67"/>
+          <RatedAnnualkWh>775.0</RatedAnnualkWh>
+        </Refrigerator>
+        <CookingRange dataSource="software">
+          <SystemIdentifier id="cooking-range"/>
+          <FuelType>natural gas</FuelType>
+        </CookingRange>
+        <Oven>
+          <SystemIdentifier id="oven68"/>
+          <FuelType>natural gas</FuelType>
+        </Oven>
+      </Appliances>
+      <Lighting>
+        <LightingGroup>
+          <SystemIdentifier id="lighting-fraction-1"/>
+          <Location>interior</Location>
+          <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
+          <LightingType>
+            <CompactFluorescent/>
+          </LightingType>
+        </LightingGroup>
+        <LightingGroup>
+          <SystemIdentifier id="lighting-fraction-2"/>
+          <Location>interior</Location>
+          <FractionofUnitsInLocation>0.41000000000000003</FractionofUnitsInLocation>
+          <LightingType>
+            <FluorescentTube/>
+          </LightingType>
+        </LightingGroup>
+        <LightingGroup dataSource="software">
+          <SystemIdentifier id="lighting-led-interior"/>
+          <Location>interior</Location>
+          <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
+          <LightingType>
+            <LightEmittingDiode/>
+          </LightingType>
+        </LightingGroup>
+        <LightingGroup dataSource="software">
+          <SystemIdentifier id="lighting-cfl-exterior"/>
+          <Location>exterior</Location>
+          <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
+          <LightingType>
+            <CompactFluorescent/>
+          </LightingType>
+        </LightingGroup>
+        <LightingGroup dataSource="software">
+          <SystemIdentifier id="lighting-led-exterior"/>
+          <Location>exterior</Location>
+          <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
+          <LightingType>
+            <LightEmittingDiode/>
+          </LightingType>
+        </LightingGroup>
+        <LightingGroup dataSource="software">
+          <SystemIdentifier id="lighting-lfl-exterior"/>
+          <Location>exterior</Location>
+          <FractionofUnitsInLocation>0.41000000000000003</FractionofUnitsInLocation>
+          <LightingType>
+            <FluorescentTube/>
+          </LightingType>
+        </LightingGroup>
+        <LightingGroup dataSource="software">
+          <SystemIdentifier id="lighting-cfl-garage"/>
+          <Location>garage</Location>
+          <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
+          <LightingType>
+            <CompactFluorescent/>
+          </LightingType>
+        </LightingGroup>
+        <LightingGroup dataSource="software">
+          <SystemIdentifier id="lighting-led-garage"/>
+          <Location>garage</Location>
+          <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
+          <LightingType>
+            <LightEmittingDiode/>
+          </LightingType>
+        </LightingGroup>
+        <LightingGroup dataSource="software">
+          <SystemIdentifier id="lighting-lfl-garage"/>
+          <Location>garage</Location>
+          <FractionofUnitsInLocation>0.41000000000000003</FractionofUnitsInLocation>
+          <LightingType>
+            <FluorescentTube/>
+          </LightingType>
+        </LightingGroup>
+      </Lighting>
+      <MiscLoads dataSource="software">
+        <PlugLoad>
+          <SystemIdentifier id="plugload1"/>
+          <PlugLoadType>other</PlugLoadType>
+        </PlugLoad>
+        <PlugLoad>
+          <SystemIdentifier id="plugload2"/>
+          <PlugLoadType>TV other</PlugLoadType>
+        </PlugLoad>
+      </MiscLoads>
+    </BuildingDetails>
+  </Building>
+  <Utility>
+    <UtilitiesorFuelProviders>
+      <UtilityFuelProvider>
+        <SystemIdentifier id="UtilitySupplierFuel"/>
+      </UtilityFuelProvider>
+    </UtilitiesorFuelProviders>
+  </Utility>
+  <Consumption>
+    <BuildingID idref="bldg1"/>
+    <CustomerID idref="Customer1"/>
+    <ConsumptionDetails>
+      <ConsumptionInfo>
+        <UtilityID idref="UtilitySupplierFuel"/>
+        <ConsumptionType>
+          <Energy>
+            <FuelType>electricity</FuelType>
+            <UnitofMeasure>kWh</UnitofMeasure>
+          </Energy>
+        </ConsumptionType>
+        <ConsumptionDetail>
+          <Consumption>333.0</Consumption>
+          <StartDateTime>2009-07-25T00:00:00</StartDateTime>
+          <EndDateTime>2009-08-19T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>101.0</Consumption>
+          <StartDateTime>2009-08-19T00:00:00</StartDateTime>
+          <EndDateTime>2009-09-18T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>3.0</Consumption>
+          <StartDateTime>2009-09-18T00:00:00</StartDateTime>
+          <EndDateTime>2009-09-23T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>0.0</Consumption>
+          <StartDateTime>2009-09-23T00:00:00</StartDateTime>
+          <EndDateTime>2009-10-19T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>1491.0</Consumption>
+          <StartDateTime>2009-10-19T00:00:00</StartDateTime>
+          <EndDateTime>2009-11-18T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>746.0</Consumption>
+          <StartDateTime>2009-11-18T00:00:00</StartDateTime>
+          <EndDateTime>2009-12-17T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>689.0</Consumption>
+          <StartDateTime>2009-12-17T00:00:00</StartDateTime>
+          <EndDateTime>2010-01-19T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>718.0</Consumption>
+          <StartDateTime>2010-01-19T00:00:00</StartDateTime>
+          <EndDateTime>2010-02-17T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>702.0</Consumption>
+          <StartDateTime>2010-02-17T00:00:00</StartDateTime>
+          <EndDateTime>2010-03-16T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>710.0</Consumption>
+          <StartDateTime>2010-03-16T00:00:00</StartDateTime>
+          <EndDateTime>2010-04-15T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>398.0</Consumption>
+          <StartDateTime>2010-04-15T00:00:00</StartDateTime>
+          <EndDateTime>2010-05-14T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>543.0</Consumption>
+          <StartDateTime>2010-05-14T00:00:00</StartDateTime>
+          <EndDateTime>2010-06-15T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>1077.0</Consumption>
+          <StartDateTime>2010-06-15T00:00:00</StartDateTime>
+          <EndDateTime>2010-07-15T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>448.0</Consumption>
+          <StartDateTime>2010-07-15T00:00:00</StartDateTime>
+          <EndDateTime>2010-08-16T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>1222.0</Consumption>
+          <StartDateTime>2010-08-16T00:00:00</StartDateTime>
+          <EndDateTime>2010-09-15T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>727.0</Consumption>
+          <StartDateTime>2010-09-15T00:00:00</StartDateTime>
+          <EndDateTime>2010-10-14T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>528.0</Consumption>
+          <StartDateTime>2010-10-14T00:00:00</StartDateTime>
+          <EndDateTime>2010-11-15T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>700.0</Consumption>
+          <StartDateTime>2010-11-15T00:00:00</StartDateTime>
+          <EndDateTime>2010-12-15T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>741.0</Consumption>
+          <StartDateTime>2010-12-15T00:00:00</StartDateTime>
+          <EndDateTime>2011-01-14T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>744.0</Consumption>
+          <StartDateTime>2011-01-14T00:00:00</StartDateTime>
+          <EndDateTime>2011-02-14T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>633.0</Consumption>
+          <StartDateTime>2011-02-14T00:00:00</StartDateTime>
+          <EndDateTime>2011-03-16T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>602.0</Consumption>
+          <StartDateTime>2011-03-16T00:00:00</StartDateTime>
+          <EndDateTime>2011-04-15T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>408.0</Consumption>
+          <StartDateTime>2011-04-15T00:00:00</StartDateTime>
+          <EndDateTime>2011-05-13T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>612.0</Consumption>
+          <StartDateTime>2011-05-13T00:00:00</StartDateTime>
+          <EndDateTime>2011-06-15T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>836.0</Consumption>
+          <StartDateTime>2011-06-15T00:00:00</StartDateTime>
+          <EndDateTime>2011-07-15T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>819.0</Consumption>
+          <StartDateTime>2011-07-15T00:00:00</StartDateTime>
+          <EndDateTime>2011-08-16T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>1193.0</Consumption>
+          <StartDateTime>2011-08-16T00:00:00</StartDateTime>
+          <EndDateTime>2011-09-15T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>768.0</Consumption>
+          <StartDateTime>2011-09-15T00:00:00</StartDateTime>
+          <EndDateTime>2011-10-14T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>410.0</Consumption>
+          <StartDateTime>2011-10-14T00:00:00</StartDateTime>
+          <EndDateTime>2011-11-14T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>675.0</Consumption>
+          <StartDateTime>2011-11-14T00:00:00</StartDateTime>
+          <EndDateTime>2011-12-15T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>870.0</Consumption>
+          <StartDateTime>2011-12-15T00:00:00</StartDateTime>
+          <EndDateTime>2012-01-16T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>768.0</Consumption>
+          <StartDateTime>2012-01-16T00:00:00</StartDateTime>
+          <EndDateTime>2012-02-14T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>678.0</Consumption>
+          <StartDateTime>2012-02-14T00:00:00</StartDateTime>
+          <EndDateTime>2012-03-15T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>596.0</Consumption>
+          <StartDateTime>2012-03-15T00:00:00</StartDateTime>
+          <EndDateTime>2012-04-16T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>613.0</Consumption>
+          <StartDateTime>2012-04-16T00:00:00</StartDateTime>
+          <EndDateTime>2012-05-15T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>644.0</Consumption>
+          <StartDateTime>2012-05-15T00:00:00</StartDateTime>
+          <EndDateTime>2012-06-14T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>1212.0</Consumption>
+          <StartDateTime>2012-06-14T00:00:00</StartDateTime>
+          <EndDateTime>2012-07-16T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>1054.0</Consumption>
+          <StartDateTime>2012-07-16T00:00:00</StartDateTime>
+          <EndDateTime>2012-08-15T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>1112.0</Consumption>
+          <StartDateTime>2012-08-15T00:00:00</StartDateTime>
+          <EndDateTime>2012-09-14T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>621.0</Consumption>
+          <StartDateTime>2012-09-14T00:00:00</StartDateTime>
+          <EndDateTime>2012-10-11T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>700.0</Consumption>
+          <StartDateTime>2012-10-11T00:00:00</StartDateTime>
+          <EndDateTime>2012-11-11T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>696.0</Consumption>
+          <StartDateTime>2012-11-11T00:00:00</StartDateTime>
+          <EndDateTime>2012-12-11T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>991.0</Consumption>
+          <StartDateTime>2012-12-11T00:00:00</StartDateTime>
+          <EndDateTime>2013-01-14T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+      </ConsumptionInfo>
+      <ConsumptionInfo>
+        <UtilityID idref="UtilitySupplierFuel"/>
+        <ConsumptionType>
+          <Energy>
+            <FuelType>natural gas</FuelType>
+            <UnitofMeasure>therms</UnitofMeasure>
+          </Energy>
+        </ConsumptionType>
+        <ConsumptionDetail>
+          <Consumption>1.0</Consumption>
+          <StartDateTime>2009-09-16T00:00:00</StartDateTime>
+          <EndDateTime>2009-09-17T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>22.8</Consumption>
+          <StartDateTime>2009-09-17T00:00:00</StartDateTime>
+          <EndDateTime>2009-10-13T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>70.5</Consumption>
+          <StartDateTime>2009-10-13T00:00:00</StartDateTime>
+          <EndDateTime>2009-11-11T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>69.5</Consumption>
+          <StartDateTime>2009-11-11T00:00:00</StartDateTime>
+          <EndDateTime>2009-12-10T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>169.0</Consumption>
+          <StartDateTime>2009-12-10T00:00:00</StartDateTime>
+          <EndDateTime>2010-01-12T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>132.7</Consumption>
+          <StartDateTime>2010-01-12T00:00:00</StartDateTime>
+          <EndDateTime>2010-02-10T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>103.7</Consumption>
+          <StartDateTime>2010-02-10T00:00:00</StartDateTime>
+          <EndDateTime>2010-03-11T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>75.7</Consumption>
+          <StartDateTime>2010-03-11T00:00:00</StartDateTime>
+          <EndDateTime>2010-04-13T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>45.6</Consumption>
+          <StartDateTime>2010-04-13T00:00:00</StartDateTime>
+          <EndDateTime>2010-05-12T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>18.7</Consumption>
+          <StartDateTime>2010-05-12T00:00:00</StartDateTime>
+          <EndDateTime>2010-06-11T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>11.4</Consumption>
+          <StartDateTime>2010-06-11T00:00:00</StartDateTime>
+          <EndDateTime>2010-07-15T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>13.5</Consumption>
+          <StartDateTime>2010-07-15T00:00:00</StartDateTime>
+          <EndDateTime>2010-08-13T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>10.4</Consumption>
+          <StartDateTime>2010-08-13T00:00:00</StartDateTime>
+          <EndDateTime>2010-09-15T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>18.7</Consumption>
+          <StartDateTime>2010-09-15T00:00:00</StartDateTime>
+          <EndDateTime>2010-10-13T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>50.8</Consumption>
+          <StartDateTime>2010-10-13T00:00:00</StartDateTime>
+          <EndDateTime>2010-11-10T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>105.8</Consumption>
+          <StartDateTime>2010-11-10T00:00:00</StartDateTime>
+          <EndDateTime>2010-12-13T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>126.5</Consumption>
+          <StartDateTime>2010-12-13T00:00:00</StartDateTime>
+          <EndDateTime>2011-01-11T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>161.8</Consumption>
+          <StartDateTime>2011-01-11T00:00:00</StartDateTime>
+          <EndDateTime>2011-02-09T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>156.6</Consumption>
+          <StartDateTime>2011-02-09T00:00:00</StartDateTime>
+          <EndDateTime>2011-03-14T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>92.3</Consumption>
+          <StartDateTime>2011-03-14T00:00:00</StartDateTime>
+          <EndDateTime>2011-04-12T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>59.1</Consumption>
+          <StartDateTime>2011-04-12T00:00:00</StartDateTime>
+          <EndDateTime>2011-05-12T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>24.9</Consumption>
+          <StartDateTime>2011-05-12T00:00:00</StartDateTime>
+          <EndDateTime>2011-06-14T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>17.6</Consumption>
+          <StartDateTime>2011-06-14T00:00:00</StartDateTime>
+          <EndDateTime>2011-07-14T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>20.7</Consumption>
+          <StartDateTime>2011-07-14T00:00:00</StartDateTime>
+          <EndDateTime>2011-08-12T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>19.7</Consumption>
+          <StartDateTime>2011-08-12T00:00:00</StartDateTime>
+          <EndDateTime>2011-09-13T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>24.9</Consumption>
+          <StartDateTime>2011-09-13T00:00:00</StartDateTime>
+          <EndDateTime>2011-10-12T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>57.0</Consumption>
+          <StartDateTime>2011-10-12T00:00:00</StartDateTime>
+          <EndDateTime>2011-11-10T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>89.2</Consumption>
+          <StartDateTime>2011-11-10T00:00:00</StartDateTime>
+          <EndDateTime>2011-12-12T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>129.6</Consumption>
+          <StartDateTime>2011-12-12T00:00:00</StartDateTime>
+          <EndDateTime>2012-01-11T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>135.8</Consumption>
+          <StartDateTime>2012-01-11T00:00:00</StartDateTime>
+          <EndDateTime>2012-02-10T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>116.1</Consumption>
+          <StartDateTime>2012-02-10T00:00:00</StartDateTime>
+          <EndDateTime>2012-03-12T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>65.3</Consumption>
+          <StartDateTime>2012-03-12T00:00:00</StartDateTime>
+          <EndDateTime>2012-04-11T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>44.6</Consumption>
+          <StartDateTime>2012-04-11T00:00:00</StartDateTime>
+          <EndDateTime>2012-05-10T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>20.7</Consumption>
+          <StartDateTime>2012-05-10T00:00:00</StartDateTime>
+          <EndDateTime>2012-06-12T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>13.5</Consumption>
+          <StartDateTime>2012-06-12T00:00:00</StartDateTime>
+          <EndDateTime>2012-07-12T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>15.6</Consumption>
+          <StartDateTime>2012-07-12T00:00:00</StartDateTime>
+          <EndDateTime>2012-08-13T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>18.7</Consumption>
+          <StartDateTime>2012-08-13T00:00:00</StartDateTime>
+          <EndDateTime>2012-09-12T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>21.8</Consumption>
+          <StartDateTime>2012-09-12T00:00:00</StartDateTime>
+          <EndDateTime>2012-10-11T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>45.6</Consumption>
+          <StartDateTime>2012-10-11T00:00:00</StartDateTime>
+          <EndDateTime>2012-11-09T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>98.5</Consumption>
+          <StartDateTime>2012-11-09T00:00:00</StartDateTime>
+          <EndDateTime>2012-12-11T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>134.8</Consumption>
+          <StartDateTime>2012-12-11T00:00:00</StartDateTime>
+          <EndDateTime>2013-01-11T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>170.1</Consumption>
+          <StartDateTime>2013-01-11T00:00:00</StartDateTime>
+          <EndDateTime>2013-02-11T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>134.8</Consumption>
+          <StartDateTime>2013-02-11T00:00:00</StartDateTime>
+          <EndDateTime>2013-03-13T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>120.3</Consumption>
+          <StartDateTime>2013-03-13T00:00:00</StartDateTime>
+          <EndDateTime>2013-04-12T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>58.1</Consumption>
+          <StartDateTime>2013-04-12T00:00:00</StartDateTime>
+          <EndDateTime>2013-05-13T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>23.9</Consumption>
+          <StartDateTime>2013-05-13T00:00:00</StartDateTime>
+          <EndDateTime>2013-06-13T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+      </ConsumptionInfo>
+    </ConsumptionDetails>
+  </Consumption>
+</HPXML>
