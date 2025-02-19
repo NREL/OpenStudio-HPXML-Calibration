@@ -55,6 +55,7 @@ jobs:
         run: uv run pytest -v
       - name: Save test results
         uses: actions/upload-artifact@v4
+        if: ${{ runner.os == 'Linux' && matrix.python-version == '3.13' }}
         with:
           name: test_results
           path: tests/results/*
