@@ -62,7 +62,8 @@ def test_weather_retrieval(filename):
     sys.platform == "win32"
     and sys.version_info.major == 3
     and sys.version_info.minor == 13
-    and sys.version_info.micro <= 2
+    and sys.version_info.micro <= 2,
+    reason="Skipping Windows and Python 3.13 due to known bug",
 )
 @pytest.mark.parametrize("filename", test_hpxml_files, ids=lambda x: x.stem)
 def test_curve_fit(filename):
