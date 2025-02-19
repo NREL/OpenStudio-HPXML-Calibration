@@ -64,9 +64,7 @@ def get_bills_from_hpxml(
     return bills_by_fuel_type, bill_units, local_standard_tz
 
 
-def get_lat_lon_from_hpxml(
-    hpxml: HpxmlDoc, building_id: str | None = None
-) -> tuple[float, float]:
+def get_lat_lon_from_hpxml(hpxml: HpxmlDoc, building_id: str | None = None) -> tuple[float, float]:
     """Get latitude, longitude from hpxml file
 
     :param hpxml: _description_

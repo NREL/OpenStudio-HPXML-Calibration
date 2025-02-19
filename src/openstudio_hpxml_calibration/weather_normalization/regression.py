@@ -24,7 +24,7 @@ class UtilityBillRegressionModel:
             bills_temps["daily_consumption"].to_numpy(),
             p0=self.INITIAL_GUESSES,
             bounds=self.BOUNDS,
-            method='dogbox'
+            method="dogbox",
         )
         self.parameters = popt
         self.pcov = pcov
@@ -96,11 +96,7 @@ class Bpi2400ModelFitError(Exception):
 
 
 def fit_model(bills_temps: pd.DataFrame, bpi2400=True) -> UtilityBillRegressionModel:
-    models_to_try = [
-        ThreeParameterCooling,
-        ThreeParameterHeating,
-        FiveParameter
-    ]
+    models_to_try = [ThreeParameterCooling, ThreeParameterHeating, FiveParameter]
     models = []
     for ModelClass in models_to_try:
         model = ModelClass()

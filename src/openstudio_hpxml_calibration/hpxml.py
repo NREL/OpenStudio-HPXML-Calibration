@@ -28,4 +28,6 @@ class HpxmlDoc:
         if building_id is None:
             return self.xpath("h:Building[1]")[0]
         else:
-            return self.xpath("h:Building[h:BuildingID/@id=$building_id]", building_id=building_id)[0]
+            return self.xpath("h:Building[h:BuildingID/@id=$building_id]", building_id=building_id)[
+                0
+            ]
