@@ -1,4 +1,5 @@
 import pathlib
+import sys
 
 import numpy as np
 import pandas as pd
@@ -56,6 +57,13 @@ def test_weather_retrieval(filename):
         assert not pd.isna(bills_temps["avg_temp"]).any()
 
 
+# Skipping because of this bug in Python https://github.com/python/cpython/issues/125235#issuecomment-2412948604
+@pytest.mark.skipif(
+    sys.platform == "win32"
+    and sys.version_info.major == 3
+    and sys.version_info.minor == 13
+    and sys.version_info.micro <= 2
+)
 @pytest.mark.parametrize("filename", test_hpxml_files, ids=lambda x: x.stem)
 def test_curve_fit(filename):
     hpxml = HpxmlDoc(filename)
