@@ -25,6 +25,7 @@ dev = [
     "matplotlib>=3.10.0",
     "pre-commit>=4.1.0",
     "pytest>=8.3.4",
+    "pytest-xdist>=3.6.1",
 ]
 
 [project.scripts]
@@ -40,3 +41,6 @@ packages = ["src/openstudio_hpxml_calibration"]
 include = [
     "src/OpenStudio-HPXML/**",
 ]
+
+[tool.pytest.ini_options]
+ addopts="-n auto"

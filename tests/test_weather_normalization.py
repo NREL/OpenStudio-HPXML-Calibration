@@ -13,13 +13,11 @@ from openstudio_hpxml_calibration.weather_normalization import regression as reg
 test_hpxml_files = list(
     (pathlib.Path(__file__).resolve().parent.parent / "test_hpxmls").glob("*.xml")
 )
-results_dir = pathlib.Path(__file__).resolve().parent / "results" / "weather_normalization"
-results_dir.mkdir(exist_ok=True, parents=True)
 
 
 @pytest.mark.parametrize("filename", test_hpxml_files, ids=lambda x: x.stem)
 def test_hpxml_utility_bill_read(filename):
-    hpxml = HpxmlDoc(filename)
+    hpxml = HpxmlDoc(filename, validate_schematron=False)
     bills, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
     assert "electricity" in bills
 
@@ -31,7 +29,7 @@ def test_hpxml_utility_bill_read(filename):
 def test_hpxml_utility_bill_read_missing_start_end_date(filename):
     for start_end in ("start", "end"):
         # Remove all the EndDateTime elements
-        hpxml = HpxmlDoc(filename)
+        hpxml = HpxmlDoc(filename, validate_schematron=False)
         for el in hpxml.xpath(f"//h:{start_end.capitalize()}DateTime"):
             el.getparent().remove(el)
 
@@ -45,15 +43,17 @@ def test_hpxml_utility_bill_read_missing_start_end_date(filename):
 
 
 @pytest.mark.parametrize("filename", test_hpxml_files, ids=lambda x: x.stem)
-def test_weather_retrieval(filename):
-    hpxml = HpxmlDoc(filename)
+def test_weather_retrieval(results_dir, filename):
+    hpxml = HpxmlDoc(filename, validate_schematron=False)
     lat, lon = ud.get_lat_lon_from_hpxml(hpxml)
     bills_by_fuel_type, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
     for fuel_type, bills in bills_by_fuel_type.items():
         bills_temps = ud.join_bills_weather(bills, lat, lon)
         fig = plt.figure(figsize=(8, 6))
         plt.scatter(bills_temps["avg_temp"], bills_temps["daily_consumption"])
-        fig.savefig(results_dir / f"{filename.stem}_{fuel_type}.png", dpi=200)
+        fig.savefig(
+            results_dir / "weather_normalization" / f"{filename.stem}_{fuel_type}.png", dpi=200
+        )
         assert not pd.isna(bills_temps["avg_temp"]).any()
 
 
@@ -66,8 +66,8 @@ def test_weather_retrieval(filename):
     reason="Skipping Windows and Python 3.13 due to known bug",
 )
 @pytest.mark.parametrize("filename", test_hpxml_files, ids=lambda x: x.stem)
-def test_curve_fit(filename):
-    hpxml = HpxmlDoc(filename)
+def test_curve_fit(results_dir, filename):
+    hpxml = HpxmlDoc(filename, validate_schematron=False)
     lat, lon = ud.get_lat_lon_from_hpxml(hpxml)
     bills_by_fuel_type, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
     for fuel_type, bills in bills_by_fuel_type.items():
@@ -93,5 +93,7 @@ def test_curve_fit(filename):
         )
         plt.title(f"{fuel_type} [{bill_units[fuel_type]}]")
         plt.legend()
-        fig.savefig(results_dir / f"{filename.stem}_{fuel_type}_fit.png", dpi=200)
+        fig.savefig(
+            results_dir / "weather_normalization" / f"{filename.stem}_{fuel_type}_fit.png", dpi=200
+        )
         assert cvrmse <= 0.2
