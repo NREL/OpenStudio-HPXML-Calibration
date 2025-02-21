@@ -6,9 +6,11 @@ import pytest
 
 from openstudio_hpxml_calibration import app
 
-REPO_DIR = Path(__file__).parent.parent
-TEST_SIM_DIR = REPO_DIR / "tests" / "run"
-TEST_CONFIG = REPO_DIR / "tests" / "data" / "test_config.json"
+TEST_DIR = Path(__file__).parent
+TEST_DATA_DIR = TEST_DIR / "data"
+TEST_SIM_DIR = TEST_DIR / "run"
+TEST_MODIFY_DIR = TEST_DIR / "modifications"
+TEST_CONFIG = TEST_DATA_DIR / "test_config.json"
 
 
 @pytest.fixture
@@ -19,6 +21,10 @@ def test_data():
 
     # Teardown phase
     rmtree(TEST_SIM_DIR, ignore_errors=True)
+    rmtree(TEST_MODIFY_DIR, ignore_errors=True)
+    rmtree(TEST_DATA_DIR / "generated_files", ignore_errors=True)
+    rmtree(TEST_DATA_DIR / "reports", ignore_errors=True)
+    (TEST_DATA_DIR / "out.osw").unlink(missing_ok=True)
 
 
 def test_cli_has_help(capsys):
@@ -45,3 +51,13 @@ def test_cli_calls_run_sim(test_data):
         ]
     )
     assert (TEST_SIM_DIR / "results_annual.json").exists()
+
+
+def test_calls_modify_hpxml(test_data):
+    app(
+        [
+            "modify-xml",
+            test_data["test_workflow"],
+        ]
+    )
+    assert (TEST_MODIFY_DIR / "new_output.xml").exists()
