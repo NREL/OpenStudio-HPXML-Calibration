@@ -1,24 +1,12 @@
 import subprocess
-from enum import Enum
 from importlib.metadata import version
 from pathlib import Path
 
 from cyclopts import App
 
+from .enums import Format, Granularity
+
 OSHPXML_PATH = Path(__file__).resolve().parent.parent / "OpenStudio-HPXML"
-
-
-class Granularity(str, Enum):
-    HOURLY = "hourly"
-    DAILY = "daily"
-    MONTHLY = "monthly"
-
-
-class Format(str, Enum):
-    CSV = "csv"
-    JSON = "json"
-    MSGPACK = "msgpack"
-    CSV_DVIEW = "csv_dview"
 
 
 app = App(
@@ -80,6 +68,23 @@ def run_sim(
         run_simulation_command.extend(output_dir)
     subprocess.run(
         run_simulation_command,
+        capture_output=True,
+        check=True,
+    )
+
+
+@app.command
+def modify_xml(workflow_file: Path) -> None:
+    modify_xml_command = [
+        "openstudio",
+        "run",
+        "--workflow",
+        str(workflow_file),
+        "--measures_only",
+    ]
+
+    subprocess.run(
+        modify_xml_command,
         capture_output=True,
         check=True,
     )
