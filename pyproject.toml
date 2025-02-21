@@ -16,6 +16,7 @@ dependencies = [
     "numpy>=2.2.2",
     "pandas>=2.2.3",
     "platformdirs>=4.3.6",
+    "pvlib>=0.11.2",
     "scipy>=1.15.2",
     "setuptools>=75.8.0",
     "sqlalchemy>=2.0.38",

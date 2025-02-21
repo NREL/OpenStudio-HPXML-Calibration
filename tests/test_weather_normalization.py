@@ -10,9 +10,9 @@ import openstudio_hpxml_calibration.weather_normalization.utility_data as ud
 from openstudio_hpxml_calibration.hpxml import HpxmlDoc
 from openstudio_hpxml_calibration.weather_normalization import regression as reg
 
-test_hpxml_files = list(
-    (pathlib.Path(__file__).resolve().parent.parent / "test_hpxmls").glob("*.xml")
-)
+repo_root = pathlib.Path(__file__).resolve().parent.parent
+test_hpxml_files = list((repo_root / "test_hpxmls").glob("*.xml"))
+sample_files = list((repo_root / "sample_files").glob("*.xml"))
 
 
 @pytest.mark.parametrize("filename", test_hpxml_files, ids=lambda x: x.stem)
@@ -65,7 +65,7 @@ def test_weather_retrieval(results_dir, filename):
     and sys.version_info.micro <= 2,
     reason="Skipping Windows and Python 3.13 due to known bug",
 )
-@pytest.mark.parametrize("filename", test_hpxml_files, ids=lambda x: x.stem)
+@pytest.mark.parametrize("filename", test_hpxml_files + sample_files, ids=lambda x: x.stem)
 def test_curve_fit(results_dir, filename):
     hpxml = HpxmlDoc(filename, validate_schematron=False)
     lat, lon = ud.get_lat_lon_from_hpxml(hpxml)

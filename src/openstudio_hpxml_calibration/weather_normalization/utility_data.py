@@ -1,8 +1,10 @@
 import datetime as dt
+from pathlib import Path
 
 import eeweather
 import pandas as pd
 from lxml import objectify
+from pvlib.iotools import read_epw
 
 from openstudio_hpxml_calibration.hpxml import HpxmlDoc
 
@@ -74,9 +76,48 @@ def get_lat_lon_from_hpxml(hpxml: HpxmlDoc, building_id: str | None = None) -> t
     :return: _description_
     :rtype: tuple[float, float]
     """
-    geolocation = hpxml.get_building(building_id).Site.GeoLocation
-    lat = float(geolocation.Latitude)
-    lon = float(geolocation.Longitude)
+    os_hpxml_path = Path(__file__).resolve().parent.parent.parent / "OpenStudio-HPXML"
+    building = hpxml.get_building(building_id)
+    try:
+        # Option 1: Get directly from HPXML
+        geolocation = building.Site.GeoLocation
+        lat = float(geolocation.Latitude)
+        lon = float(geolocation.Longitude)
+    except AttributeError:
+        try:
+            # Option 2: Get location from EPW file header
+            epw_file = str(
+                building.BuildingDetails.ClimateandRiskZones.WeatherStation.extension.EPWFilePath
+            )
+        except AttributeError:
+            # Option 3: Get location from zipcode
+            zipcode = str(building.Site.Address.ZipCode)
+            zipcode_lookup_filename = (
+                os_hpxml_path / "HPXMLtoOpenStudio/resources/data/zipcode_weather_stations.csv"
+            )
+            zipcodes = pd.read_csv(
+                zipcode_lookup_filename,
+                usecols=["zipcode", "zipcode_latitude", "zipcode_longitude"],
+                index_col="zipcode",
+                dtype={"zipcode": str},
+            )
+            lat = zipcodes.loc[zipcode, "zipcode_latitude"]
+            lon = zipcodes.loc[zipcode, "zipcode_longitude"]
+        else:
+            # Option 2, continued
+            epw_path = Path(epw_file)
+            if not epw_path.is_absolute():
+                possible_parent_paths = [hpxml.file_path.parent, os_hpxml_path / "weather"]
+                for parent_path in possible_parent_paths:
+                    epw_path = parent_path / Path(epw_file)
+                    if epw_path.exists():
+                        break
+            if not epw_path.exists():
+                raise FileNotFoundError(str(epw_path))
+            _, epw_metadata = read_epw(epw_path)
+            lat = epw_metadata["latitude"]
+            lon = epw_metadata["longitude"]
+
     return lat, lon
 
 

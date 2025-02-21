@@ -9,6 +9,7 @@ class HpxmlDoc:
     def __init__(
         self, filename: os.PathLike, validate_schema: bool = True, validate_schematron: bool = True
     ):
+        self.file_path = pathlib.Path(filename).resolve()
         self.tree = objectify.parse(str(filename))
         self.root = self.tree.getroot()
 
