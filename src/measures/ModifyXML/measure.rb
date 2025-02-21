@@ -5,7 +5,6 @@
 
 require 'oga'
 require 'pathname'
-# require 'openstudio'
 Dir["#{File.dirname(__FILE__)}/../../OpenStudio-HPXML/HPXMLtoOpenStudio/resources/*.rb"].each do |resource_file|
   next if resource_file.include? 'minitest_helper.rb'
 
@@ -72,7 +71,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     end
 
     hpxml = HPXML.new(hpxml_path: xml_file)
-    hpxml_building = hpxml.buildings[0] # FIXME: Does not handle multiple buildings
+    hpxml_building = hpxml.buildings[0] # FIXME: This requires that each XML file contain only a single building
 
     # Modify XML fields
     modify_heating_setpoint(hpxml_building, runner, args)
