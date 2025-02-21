@@ -1,15 +1,14 @@
-import hashlib
-import os
 import subprocess
 import zipfile
 from enum import Enum
 from importlib.metadata import version
 from pathlib import Path
 
-import platformdirs
 import requests
 from cyclopts import App
 from tqdm import tqdm
+
+from openstudio_hpxml_calibration.utils import calculate_sha256, get_cache_dir
 
 OSHPXML_PATH = Path(__file__).resolve().parent.parent / "OpenStudio-HPXML"
 
@@ -91,21 +90,6 @@ def run_sim(
     )
 
 
-def get_cache_dir() -> Path:
-    cache_dir = Path(platformdirs.user_cache_dir("oshit"))
-    cache_dir.mkdir(parents=True, exist_ok=True)
-    return cache_dir
-
-
-def calculate_sha256(filepath: os.PathLike, block_size: int = 65536):
-    """Calculates the SHA-256 hash of a file."""
-    sha256_hash = hashlib.sha256()
-    with open(filepath, "rb") as f:
-        for byte_block in iter(lambda: f.read(block_size), b""):
-            sha256_hash.update(byte_block)
-    return sha256_hash.hexdigest()
-
-
 @app.command
 def download_weather() -> None:
     weather_files_url = "https://data.nrel.gov/system/files/128/tmy3s-cache-csv.zip"
@@ -133,6 +117,7 @@ def download_weather() -> None:
                     pbar.update(len(chunk))
 
     # Extract weather files
+    print(weather_zip_filepath)
     weather_dir = OSHPXML_PATH / "weather"
     with zipfile.ZipFile(weather_zip_filepath, "r") as zf:
         for filename in tqdm(zf.namelist(), desc="Extracting epws"):
