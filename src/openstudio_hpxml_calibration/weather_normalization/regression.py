@@ -7,6 +7,13 @@ from scipy.optimize import Bounds, curve_fit
 
 
 class UtilityBillRegressionModel:
+    """Utility Bill Regression Model Base Class
+
+    Implements a utility bill regression given the ``bills_temps`` dataframe.
+
+    :raises NotImplementedError: When it is called on the base class.
+    """
+
     MODEL_NAME: str = "Base Model"
     INITIAL_GUESSES: list[float]
     BOUNDS: Bounds
@@ -31,18 +38,36 @@ class UtilityBillRegressionModel:
         self.pcov = pcov
 
     def __call__(self, temperatures: np.ndarray) -> np.ndarray:
+        """Given an array of temperatures [degF], return the predicted energy use.
+
+        This makes it so that an instance of this class can be called like a function.
+
+        :param temperatures: An array of daily temperatures in degF.
+        :type temperatures: np.ndarray
+        :return: An array of daily energy use, in the units the model was trained on.
+        :rtype: np.ndarray
+        """
         return self.func(temperatures, *self.parameters)
 
     def func(self, x: Sequence[float], *args: list[float | np.floating]) -> np.ndarray:
         raise NotImplementedError
 
     def calc_cvrmse(self, bills_temps: pd.DataFrame) -> float:
+        """Calculate the CVRMSE for the model and the bills_temps dataframe.
+
+        :param bills_temps: A dataframe with bills and temperatures
+        :type bills_temps: pd.DataFrame
+        :return: Calculated CVRMSE
+        :rtype: float
+        """
         y = bills_temps["daily_consumption"].to_numpy()
         y_hat = self(bills_temps["avg_temp"].to_numpy())
         return np.sqrt(np.sum((y - y_hat) ** 2) / (y.shape[0] - self.n_parameters)) / y.mean()
 
 
 class ThreeParameterCooling(UtilityBillRegressionModel):
+    """3-parameter cooling model from ASHRAE Guideline 14"""
+
     MODEL_NAME = "3-parameter Cooling"
     INITIAL_GUESSES = [10.0, 5.0, 70.0]
     BOUNDS = Bounds(lb=[0.0, 0.0, 40.0], ub=np.inf)
@@ -59,6 +84,8 @@ class ThreeParameterCooling(UtilityBillRegressionModel):
 
 
 class ThreeParameterHeating(UtilityBillRegressionModel):
+    """3-parameter heating model from ASHRAE Guideline 14"""
+
     MODEL_NAME = "3-parameter Heating"
     INITIAL_GUESSES = [10.0, -1.0, 70.0]
     BOUNDS = Bounds(lb=[0.0, -np.inf, 20.0], ub=[np.inf, 0.0, 80.0])
@@ -75,6 +102,8 @@ class ThreeParameterHeating(UtilityBillRegressionModel):
 
 
 class FiveParameter(UtilityBillRegressionModel):
+    """5-parameter heating and cooling model from ASHRAE Guideline 14"""
+
     MODEL_NAME = "5-parameter"
     INITIAL_GUESSES = [10.0, -5.0, 5.0, 50.0, 70.0]
     BOUNDS = Bounds(lb=[0.0, -np.inf, 0.0, 20.0, 40.0], ub=[np.inf, 0.0, np.inf, 80.0, np.inf])
@@ -97,6 +126,22 @@ class Bpi2400ModelFitError(Exception):
 
 
 def fit_model(bills_temps: pd.DataFrame, bpi2400=True) -> UtilityBillRegressionModel:
+    """Fit a regression model to the utility bills
+
+    The ``bills_data`` dataframe should be in the format returned by the
+    ``utility_data.join_bills_weather`` function. At a minimum this should
+    include the columns "daily_consumption" and "avg_temp" in degF. The index is
+    ignored.
+
+    :param bills_temps: dataframe of utility bills and temperatures.
+    :type bills_temps: pd.DataFrame
+    :param bpi2400: Use BPI-2400 criteria for model selection, defaults to True
+    :type bpi2400: bool, optional
+    :raises Bpi2400ModelFitError: Error thrown if model doesn't meet BPI-2400
+        criteria
+    :return: An instance of a model class, fit to your data.
+    :rtype: UtilityBillRegressionModel
+    """
     models_to_try = [ThreeParameterCooling, ThreeParameterHeating, FiveParameter]
     models = []
     for ModelClass in models_to_try:
