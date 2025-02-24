@@ -46,4 +46,9 @@ include = [
 ]
 
 [tool.pytest.ini_options]
- addopts="-n auto"
+addopts="-n auto"
+filterwarnings = [
+    "ignore:pkg_resources is deprecated as an API.:DeprecationWarning",
+    "ignore:'H' is deprecated and will be removed in a future version, please use 'h' instead.:FutureWarning",
+    "ignore:The 'warn' method is deprecated:DeprecationWarning"
+]

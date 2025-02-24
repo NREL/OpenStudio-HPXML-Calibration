@@ -1,4 +1,3 @@
-import shutil
 from pathlib import Path
 
 import pytest
@@ -10,9 +9,9 @@ def results_dir(worker_id):
     results_dir = Path(__file__).resolve().parent / "results"
 
     base_worker = False
-    if worker_id in ("gw0", "master") and results_dir.is_dir():
-        base_worker = True
-        shutil.rmtree(results_dir)
+    # if worker_id in ("gw0", "master") and results_dir.is_dir():
+    #     base_worker = True
+    #     shutil.rmtree(results_dir)
 
     results_dir.mkdir(exist_ok=True)
 

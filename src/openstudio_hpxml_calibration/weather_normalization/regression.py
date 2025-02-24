@@ -1,3 +1,4 @@
+import warnings
 from collections.abc import Sequence
 
 import numpy as np
@@ -100,7 +101,17 @@ def fit_model(bills_temps: pd.DataFrame, bpi2400=True) -> UtilityBillRegressionM
     models = []
     for ModelClass in models_to_try:
         model = ModelClass()
-        model.fit(bills_temps)
+        try:
+            model.fit(bills_temps)
+        except RuntimeError as ex:
+            if (
+                str(ex)
+                == "Optimal parameters not found: The maximum number of function evaluations is exceeded."
+            ):
+                warnings.warn(f"Unable to fit {ModelClass.MODEL_NAME} to data.")
+                continue
+            else:
+                raise
         models.append(model)
     best_model = min(models, key=lambda x: x.calc_cvrmse(bills_temps))
     if bpi2400 and (cvrmse := best_model.calc_cvrmse(bills_temps)) > 0.2:

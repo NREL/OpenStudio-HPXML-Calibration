@@ -4,6 +4,8 @@ from pathlib import Path
 
 import platformdirs
 
+OS_HPXML_PATH = Path(__file__).resolve().parent.parent / "OpenStudio-HPXML"
+
 
 def get_cache_dir() -> Path:
     cache_dir = Path(platformdirs.user_cache_dir("oshit"))

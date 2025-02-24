@@ -1,26 +1,26 @@
+import functools
 import os
-import pathlib
 import re
+from pathlib import Path
 
+import pandas as pd
 from lxml import etree, isoschematron, objectify
+from pvlib.iotools import read_epw
+
+from openstudio_hpxml_calibration import OS_HPXML_PATH
 
 
 class HpxmlDoc:
     def __init__(
         self, filename: os.PathLike, validate_schema: bool = True, validate_schematron: bool = True
     ):
-        self.file_path = pathlib.Path(filename).resolve()
+        self.file_path = Path(filename).resolve()
         self.tree = objectify.parse(str(filename))
         self.root = self.tree.getroot()
 
         if validate_schema:
             hpxml_schema_filename = (
-                pathlib.Path(__file__).resolve().parent.parent
-                / "OpenStudio-HPXML"
-                / "HPXMLtoOpenStudio"
-                / "resources"
-                / "hpxml_schema"
-                / "HPXML.xsd"
+                OS_HPXML_PATH / "HPXMLtoOpenStudio" / "resources" / "hpxml_schema" / "HPXML.xsd"
             )
             schema_doc = etree.parse(str(hpxml_schema_filename))
             schema = etree.XMLSchema(schema_doc)
@@ -28,8 +28,7 @@ class HpxmlDoc:
 
         if validate_schematron:
             hpxml_schematron_filename = (
-                pathlib.Path(__file__).resolve().parent.parent
-                / "OpenStudio-HPXML"
+                OS_HPXML_PATH
                 / "HPXMLtoOpenStudio"
                 / "resources"
                 / "hpxml_schematron"
@@ -60,3 +59,39 @@ class HpxmlDoc:
             return self.xpath("h:Building[h:BuildingID/@id=$building_id]", building_id=building_id)[
                 0
             ]
+
+    @functools.cache
+    def get_epw_path(self, building_id: str | None = None) -> Path:
+        building = self.get_building(building_id)
+        try:
+            epw_file = str(
+                building.BuildingDetails.ClimateandRiskZones.WeatherStation.extension.EPWFilePath
+            )
+        except AttributeError:
+            zipcode = str(building.Site.Address.ZipCode)
+            zipcode_lookup_filename = (
+                OS_HPXML_PATH / "HPXMLtoOpenStudio/resources/data/zipcode_weather_stations.csv"
+            )
+            zipcodes = pd.read_csv(
+                zipcode_lookup_filename,
+                usecols=["zipcode", "station_filename"],
+                index_col="zipcode",
+                dtype={"zipcode": str},
+            )
+            epw_file = zipcodes.loc[zipcode, "station_filename"]
+
+        epw_path = Path(epw_file)
+        if not epw_path.is_absolute():
+            possible_parent_paths = [self.file_path.parent, OS_HPXML_PATH / "weather"]
+            for parent_path in possible_parent_paths:
+                epw_path = parent_path / Path(epw_file)
+                if epw_path.exists():
+                    break
+        if not epw_path.exists():
+            raise FileNotFoundError(str(epw_path))
+
+        return epw_path
+
+    @functools.cache
+    def get_epw_data(self, building_id: str | None = None, **kw) -> tuple[pd.DataFrame, dict]:
+        return read_epw(self.get_epw_path(building_id), **kw)

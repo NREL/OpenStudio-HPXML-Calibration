@@ -2,15 +2,12 @@ import subprocess
 import zipfile
 from enum import Enum
 from importlib.metadata import version
-from pathlib import Path
 
 import requests
 from cyclopts import App
 from tqdm import tqdm
 
-from openstudio_hpxml_calibration.utils import calculate_sha256, get_cache_dir
-
-OSHPXML_PATH = Path(__file__).resolve().parent.parent / "OpenStudio-HPXML"
+from openstudio_hpxml_calibration.utils import OS_HPXML_PATH, calculate_sha256, get_cache_dir
 
 
 class Granularity(str, Enum):
@@ -39,7 +36,7 @@ def openstudio_version() -> None:
     resp = subprocess.run(
         [
             "openstudio",
-            str(OSHPXML_PATH / "workflow" / "run_simulation.rb"),
+            str(OS_HPXML_PATH / "workflow" / "run_simulation.rb"),
             "--version",
         ],
         capture_output=True,
@@ -70,7 +67,7 @@ def run_sim(
     """
     run_simulation_command = [
         "openstudio",
-        str(OSHPXML_PATH / "workflow" / "run_simulation.rb"),
+        str(OS_HPXML_PATH / "workflow" / "run_simulation.rb"),
         "--xml",
         hpxml_filepath,
     ]
@@ -118,7 +115,7 @@ def download_weather() -> None:
 
     # Extract weather files
     print(weather_zip_filepath)
-    weather_dir = OSHPXML_PATH / "weather"
+    weather_dir = OS_HPXML_PATH / "weather"
     with zipfile.ZipFile(weather_zip_filepath, "r") as zf:
         for filename in tqdm(zf.namelist(), desc="Extracting epws"):
             if filename.endswith(".epw") and not (weather_dir / filename).exists():
