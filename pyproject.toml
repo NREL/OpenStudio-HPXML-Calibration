@@ -10,13 +10,25 @@ authors = [
 requires-python = ">=3.12, < 3.14"
 dependencies = [
     "cyclopts>=3.4.0",
+    "eeweather>=0.3.29",
+    "geopy>=2.4.1",
     "lxml>=5.3.0",
+    "numpy>=2.2.2",
+    "pandas>=2.2.3",
+    "platformdirs>=4.3.6",
+    "pvlib>=0.11.2",
+    "scipy>=1.15.2",
+    "setuptools>=75.8.0",
+    "sqlalchemy>=2.0.38",
+    "tqdm>=4.67.1",
 ]
 
 [dependency-groups]
 dev = [
+    "matplotlib>=3.10.0",
     "pre-commit>=4.1.0",
     "pytest>=8.3.4",
+    "pytest-xdist>=3.6.1",
 ]
 
 [project.scripts]
@@ -31,4 +43,12 @@ build-backend = "hatchling.build"
 packages = ["src/openstudio_hpxml_calibration"]
 include = [
     "src/OpenStudio-HPXML/**",
+]
+
+[tool.pytest.ini_options]
+addopts="-n auto"
+filterwarnings = [
+    "ignore:pkg_resources is deprecated as an API.:DeprecationWarning",
+    "ignore:'H' is deprecated and will be removed in a future version, please use 'h' instead.:FutureWarning",
+    "ignore:The 'warn' method is deprecated:DeprecationWarning"
 ]

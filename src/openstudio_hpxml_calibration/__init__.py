@@ -1,11 +1,13 @@
 import subprocess
+import zipfile
 from enum import Enum
 from importlib.metadata import version
-from pathlib import Path
 
+import requests
 from cyclopts import App
+from tqdm import tqdm
 
-OSHPXML_PATH = Path(__file__).resolve().parent.parent / "OpenStudio-HPXML"
+from openstudio_hpxml_calibration.utils import OS_HPXML_PATH, calculate_sha256, get_cache_dir
 
 
 class Granularity(str, Enum):
@@ -34,7 +36,7 @@ def openstudio_version() -> None:
     resp = subprocess.run(
         [
             "openstudio",
-            str(OSHPXML_PATH / "workflow" / "run_simulation.rb"),
+            str(OS_HPXML_PATH / "workflow" / "run_simulation.rb"),
             "--version",
         ],
         capture_output=True,
@@ -65,7 +67,7 @@ def run_sim(
     """
     run_simulation_command = [
         "openstudio",
-        str(OSHPXML_PATH / "workflow" / "run_simulation.rb"),
+        str(OS_HPXML_PATH / "workflow" / "run_simulation.rb"),
         "--xml",
         hpxml_filepath,
     ]
@@ -83,6 +85,41 @@ def run_sim(
         capture_output=True,
         check=True,
     )
+
+
+@app.command
+def download_weather() -> None:
+    weather_files_url = "https://data.nrel.gov/system/files/128/tmy3s-cache-csv.zip"
+    weather_zip_filename = weather_files_url.split("/")[-1]
+    weather_zip_sha256 = "58f5d2821931e235de34a5a7874f040f7f766b46e5e6a4f85448b352de4c8846"
+
+    # Download file
+    cache_dir = get_cache_dir()
+    weather_zip_filepath = cache_dir / weather_zip_filename
+    if not (
+        weather_zip_filepath.exists()
+        and calculate_sha256(weather_zip_filepath) == weather_zip_sha256
+    ):
+        resp = requests.get(weather_files_url, stream=True, timeout=10)
+        resp.raise_for_status()
+        total_size = int(resp.headers.get("content-length", 0))
+        block_size = 8192
+        with (
+            tqdm(total=total_size, unit="iB", unit_scale=True, desc=weather_zip_filename) as pbar,
+            open(weather_zip_filepath, "wb") as f,
+        ):
+            for chunk in resp.iter_content(chunk_size=block_size):
+                if chunk:
+                    f.write(chunk)
+                    pbar.update(len(chunk))
+
+    # Extract weather files
+    print(weather_zip_filepath)
+    weather_dir = OS_HPXML_PATH / "weather"
+    with zipfile.ZipFile(weather_zip_filepath, "r") as zf:
+        for filename in tqdm(zf.namelist(), desc="Extracting epws"):
+            if filename.endswith(".epw") and not (weather_dir / filename).exists():
+                zf.extract(filename, path=weather_dir)
 
 
 if __name__ == "__main__":
