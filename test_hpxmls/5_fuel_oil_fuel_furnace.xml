@@ -120,6 +120,7 @@
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
               <SystemIdentifier id="Roof1Insulation"/>
+              <AssemblyEffectiveRValue>2.3</AssemblyEffectiveRValue>
               <Layer>
                 <InstallationType>cavity</InstallationType>
                 <NominalRValue>0</NominalRValue>
@@ -138,6 +139,7 @@
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
               <SystemIdentifier id="Roof2Insulation"/>
+              <AssemblyEffectiveRValue>2.3</AssemblyEffectiveRValue>
               <Layer>
                 <InstallationType>cavity</InstallationType>
                 <NominalRValue>0</NominalRValue>
@@ -157,6 +159,7 @@
             <Color>medium dark</Color>
             <Insulation>
               <SystemIdentifier id="RimJoist1Insulation"/>
+              <AssemblyEffectiveRValue>4.0</AssemblyEffectiveRValue>
               <Layer>
                 <InstallationType>cavity</InstallationType>
                 <NominalRValue>0</NominalRValue>
@@ -174,6 +177,7 @@
             <Color>medium dark</Color>
             <Insulation>
               <SystemIdentifier id="RimJoist2Insulation"/>
+              <AssemblyEffectiveRValue>4.0</AssemblyEffectiveRValue>
               <Layer>
                 <InstallationType>cavity</InstallationType>
                 <NominalRValue>0</NominalRValue>
@@ -191,6 +195,7 @@
             <Color>medium dark</Color>
             <Insulation>
               <SystemIdentifier id="RimJoist3Insulation"/>
+              <AssemblyEffectiveRValue>4.0</AssemblyEffectiveRValue>
               <Layer>
                 <InstallationType>cavity</InstallationType>
                 <NominalRValue>0</NominalRValue>
@@ -208,6 +213,7 @@
             <Color>medium dark</Color>
             <Insulation>
               <SystemIdentifier id="RimJoist4Insulation"/>
+              <AssemblyEffectiveRValue>4.0</AssemblyEffectiveRValue>
               <Layer>
                 <InstallationType>cavity</InstallationType>
                 <NominalRValue>0</NominalRValue>
@@ -231,6 +237,7 @@
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
               <SystemIdentifier id="Wall1Insulation"/>
+              <AssemblyEffectiveRValue>4.8</AssemblyEffectiveRValue>
               <Layer>
                 <InstallationType>cavity</InstallationType>
                 <NominalRValue>0</NominalRValue>
@@ -252,6 +259,7 @@
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
               <SystemIdentifier id="Wall2Insulation"/>
+              <AssemblyEffectiveRValue>4.8</AssemblyEffectiveRValue>
               <Layer>
                 <InstallationType>cavity</InstallationType>
                 <NominalRValue>0</NominalRValue>
@@ -273,6 +281,7 @@
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
               <SystemIdentifier id="Wall3Insulation"/>
+              <AssemblyEffectiveRValue>4.8</AssemblyEffectiveRValue>
               <Layer>
                 <InstallationType>cavity</InstallationType>
                 <NominalRValue>0</NominalRValue>
@@ -294,6 +303,7 @@
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
               <SystemIdentifier id="Wall4Insulation"/>
+              <AssemblyEffectiveRValue>4.8</AssemblyEffectiveRValue>
               <Layer>
                 <InstallationType>cavity</InstallationType>
                 <NominalRValue>0</NominalRValue>
@@ -316,6 +326,7 @@
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
               <SystemIdentifier id="Wall5Insulation"/>
+              <AssemblyEffectiveRValue>4.8</AssemblyEffectiveRValue>
               <Layer>
                 <NominalRValue>0.0</NominalRValue>
               </Layer>
@@ -337,6 +348,7 @@
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
               <SystemIdentifier id="Wall6Insulation"/>
+              <AssemblyEffectiveRValue>4.8</AssemblyEffectiveRValue>
               <Layer>
                 <NominalRValue>0.0</NominalRValue>
               </Layer>
@@ -446,6 +458,7 @@
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
               <SystemIdentifier id="Floor1Insulation"/>
+              <AssemblyEffectiveRValue>3.1</AssemblyEffectiveRValue>
               <Layer>
                 <InstallationType>cavity</InstallationType>
                 <NominalRValue>0</NominalRValue>
@@ -464,6 +477,7 @@
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
               <SystemIdentifier id="Floor2Insulation"/>
+              <AssemblyEffectiveRValue>8.7</AssemblyEffectiveRValue>
               <Layer>
                 <InstallationType>cavity</InstallationType>
                 <NominalRValue>7</NominalRValue>
@@ -796,6 +810,7 @@
         <Refrigerator>
           <SystemIdentifier id="Refrigerator1"/>
           <Location>conditioned space</Location>
+          <PrimaryIndicator>true</PrimaryIndicator>
         </Refrigerator>
         <Refrigerator>
           <SystemIdentifier id="Refrigerator2"/>
@@ -810,6 +825,90 @@
           <SystemIdentifier id="Oven1"/>
         </Oven>
       </Appliances>
+      <Lighting>
+        <LightingGroup>
+          <SystemIdentifier id='LightingGroup1'/>
+          <Location>interior</Location>
+          <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
+          <LightingType>
+            <CompactFluorescent/>
+          </LightingType>
+        </LightingGroup>
+        <LightingGroup>
+          <SystemIdentifier id='LightingGroup2'/>
+          <Location>interior</Location>
+          <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
+          <LightingType>
+            <FluorescentTube/>
+          </LightingType>
+        </LightingGroup>
+        <LightingGroup>
+          <SystemIdentifier id='LightingGroup3'/>
+          <Location>interior</Location>
+          <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
+          <LightingType>
+            <LightEmittingDiode/>
+          </LightingType>
+        </LightingGroup>
+        <LightingGroup>
+          <SystemIdentifier id='LightingGroup4'/>
+          <Location>exterior</Location>
+          <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
+          <LightingType>
+            <CompactFluorescent/>
+          </LightingType>
+        </LightingGroup>
+        <LightingGroup>
+          <SystemIdentifier id='LightingGroup5'/>
+          <Location>exterior</Location>
+          <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
+          <LightingType>
+            <FluorescentTube/>
+          </LightingType>
+        </LightingGroup>
+        <LightingGroup>
+          <SystemIdentifier id='LightingGroup6'/>
+          <Location>exterior</Location>
+          <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
+          <LightingType>
+            <LightEmittingDiode/>
+          </LightingType>
+        </LightingGroup>
+        <LightingGroup>
+          <SystemIdentifier id='LightingGroup7'/>
+          <Location>garage</Location>
+          <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
+          <LightingType>
+            <CompactFluorescent/>
+          </LightingType>
+        </LightingGroup>
+        <LightingGroup>
+          <SystemIdentifier id='LightingGroup8'/>
+          <Location>garage</Location>
+          <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
+          <LightingType>
+            <FluorescentTube/>
+          </LightingType>
+        </LightingGroup>
+        <LightingGroup>
+          <SystemIdentifier id='LightingGroup9'/>
+          <Location>garage</Location>
+          <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
+          <LightingType>
+            <LightEmittingDiode/>
+          </LightingType>
+        </LightingGroup>
+      </Lighting>
+      <MiscLoads>
+        <PlugLoad>
+          <SystemIdentifier id='PlugLoad1'/>
+          <PlugLoadType>TV other</PlugLoadType>
+        </PlugLoad>
+        <PlugLoad>
+          <SystemIdentifier id='PlugLoad2'/>
+          <PlugLoadType>other</PlugLoadType>
+        </PlugLoad>
+      </MiscLoads>
     </BuildingDetails>
   </Building>
   <Consumption>
