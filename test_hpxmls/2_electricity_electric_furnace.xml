@@ -1,0 +1,622 @@
+<HPXML xmlns="http://hpxmlonline.com/2023/09" schemaVersion="4.0">
+  <XMLTransactionHeaderInformation>
+    <XMLType>HPXML</XMLType>
+    <XMLGeneratedBy>BuildResidentialHPXML</XMLGeneratedBy>
+    <CreatedDateAndTime>2024-04-25T17:24:06-06:00</CreatedDateAndTime>
+    <Transaction>create</Transaction>
+  </XMLTransactionHeaderInformation>
+  <SoftwareInfo>
+    <SoftwareProgramUsed>ResStock</SoftwareProgramUsed>
+    <SoftwareProgramVersion>3.2.0</SoftwareProgramVersion>
+  </SoftwareInfo>
+  <Building>
+    <BuildingID id="MyBuilding"/>
+    <Site>
+      <SiteID id="SiteID"/>
+      <Address>
+        <CityMunicipality>Gulfport Biloxi Int</CityMunicipality>
+        <StateCode>MS</StateCode>
+        <ZipCode>39520</ZipCode>
+      </Address>
+      <GeoLocation>
+        <Latitude>30.41</Latitude>
+        <Longitude>-89.07</Longitude>
+      </GeoLocation>
+      <TimeZone>
+        <UTCOffset>-6.0</UTCOffset>
+        <DSTObserved>true</DSTObserved>
+      </TimeZone>
+    </Site>
+    <ProjectStatus>
+      <EventType>audit</EventType>
+    </ProjectStatus>
+    <BuildingDetails>
+      <BuildingSummary>
+        <Site>
+          <Surroundings>stand-alone</Surroundings>
+          <VerticalSurroundings>no units above or below</VerticalSurroundings>
+          <ShieldingofHome>normal</ShieldingofHome>
+          <AzimuthOfFrontOfHome>180</AzimuthOfFrontOfHome>
+        </Site>
+        <BuildingOccupancy>
+          <NumberofResidents>2.0</NumberofResidents>
+        </BuildingOccupancy>
+        <BuildingConstruction>
+          <YearBuilt>1990</YearBuilt>
+          <ResidentialFacilityType>single-family detached</ResidentialFacilityType>
+          <NumberofConditionedFloors>1.0</NumberofConditionedFloors>
+          <NumberofConditionedFloorsAboveGrade>1.0</NumberofConditionedFloorsAboveGrade>
+          <AverageCeilingHeight>8.0</AverageCeilingHeight>
+          <NumberofBedrooms>3</NumberofBedrooms>
+          <NumberofBathrooms>2</NumberofBathrooms>
+          <ConditionedFloorArea>1698.0</ConditionedFloorArea>
+          <ConditionedBuildingVolume>13584.0</ConditionedBuildingVolume>
+        </BuildingConstruction>
+      </BuildingSummary>
+      <ClimateandRiskZones>
+        <ClimateZoneIECC>
+          <Year>2006</Year>
+          <ClimateZone>2A</ClimateZone>
+        </ClimateZoneIECC>
+      </ClimateandRiskZones>
+      <Enclosure>
+        <AirInfiltration>
+          <AirInfiltrationMeasurement>
+            <SystemIdentifier id="AirInfiltrationMeasurement1"/>
+            <HousePressure>50.0</HousePressure>
+            <BuildingAirLeakage>
+              <UnitofMeasure>ACH</UnitofMeasure>
+              <AirLeakage>25.0</AirLeakage>
+            </BuildingAirLeakage>
+            <InfiltrationVolume>13584.0</InfiltrationVolume>
+          </AirInfiltrationMeasurement>
+        </AirInfiltration>
+        <Attics>
+          <Attic>
+            <SystemIdentifier id="Attic1"/>
+            <AtticType>
+              <Attic>
+                <Vented>true</Vented>
+              </Attic>
+            </AtticType>
+            <AttachedToRoof idref="Roof1"/>
+            <AttachedToRoof idref="Roof2"/>
+            <AttachedToWall idref="Wall5"/>
+            <AttachedToWall idref="Wall6"/>
+            <AttachedToFloor idref="Floor1"/>
+          </Attic>
+        </Attics>
+        <Foundations>
+          <Foundation>
+            <SystemIdentifier id="Foundation1"/>
+            <FoundationType>
+              <SlabOnGrade/>
+            </FoundationType>
+            <AttachedToSlab idref="Slab1"/>
+          </Foundation>
+        </Foundations>
+        <Roofs>
+          <Roof>
+            <SystemIdentifier id="Roof1"/>
+            <InteriorAdjacentTo>attic - vented</InteriorAdjacentTo>
+            <Area>949.2</Area>
+            <Orientation>north</Orientation>
+            <Azimuth>0</Azimuth>
+            <RoofType>metal surfacing</RoofType>
+            <RoofColor>dark</RoofColor>
+            <Pitch>6.0</Pitch>
+            <RadiantBarrier>false</RadiantBarrier>
+            <Insulation>
+              <SystemIdentifier id="Roof1Insulation"/>
+              <Layer>
+                <InstallationType>cavity</InstallationType>
+                <NominalRValue>0</NominalRValue>
+              </Layer>
+            </Insulation>
+          </Roof>
+          <Roof>
+            <SystemIdentifier id="Roof2"/>
+            <InteriorAdjacentTo>attic - vented</InteriorAdjacentTo>
+            <Area>949.2</Area>
+            <Orientation>south</Orientation>
+            <Azimuth>180</Azimuth>
+            <RoofType>metal surfacing</RoofType>
+            <RoofColor>dark</RoofColor>
+            <Pitch>6.0</Pitch>
+            <RadiantBarrier>false</RadiantBarrier>
+            <Insulation>
+              <SystemIdentifier id="Roof2Insulation"/>
+              <Layer>
+                <InstallationType>cavity</InstallationType>
+                <NominalRValue>0</NominalRValue>
+              </Layer>
+            </Insulation>
+          </Roof>
+        </Roofs>
+        <Walls>
+          <Wall>
+            <SystemIdentifier id="Wall1"/>
+            <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
+            <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
+            <WallType>
+              <WoodStud/>
+            </WallType>
+            <Area>442.3</Area>
+            <Orientation>north</Orientation>
+            <Azimuth>0</Azimuth>
+            <Siding>brick veneer</Siding>
+            <Color>medium dark</Color>
+            <RadiantBarrier>false</RadiantBarrier>
+            <Insulation>
+              <SystemIdentifier id="Wall1Insulation"/>
+              <Layer>
+                <InstallationType>cavity</InstallationType>
+                <NominalRValue>15</NominalRValue>
+              </Layer>
+            </Insulation>
+          </Wall>
+          <Wall>
+            <SystemIdentifier id="Wall2"/>
+            <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
+            <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
+            <WallType>
+              <WoodStud/>
+            </WallType>
+            <Area>245.7</Area>
+            <Orientation>east</Orientation>
+            <Azimuth>90</Azimuth>
+            <Siding>brick veneer</Siding>
+            <Color>medium dark</Color>
+            <RadiantBarrier>false</RadiantBarrier>
+            <Insulation>
+              <SystemIdentifier id="Wall2Insulation"/>
+              <Layer>
+                <InstallationType>cavity</InstallationType>
+                <NominalRValue>15</NominalRValue>
+              </Layer>
+            </Insulation>
+          </Wall>
+          <Wall>
+            <SystemIdentifier id="Wall3"/>
+            <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
+            <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
+            <WallType>
+              <WoodStud/>
+            </WallType>
+            <Area>442.3</Area>
+            <Orientation>south</Orientation>
+            <Azimuth>180</Azimuth>
+            <Siding>brick veneer</Siding>
+            <Color>medium dark</Color>
+            <RadiantBarrier>false</RadiantBarrier>
+            <Insulation>
+              <SystemIdentifier id="Wall3Insulation"/>
+              <Layer>
+                <InstallationType>cavity</InstallationType>
+                <NominalRValue>15</NominalRValue>
+              </Layer>
+            </Insulation>
+          </Wall>
+          <Wall>
+            <SystemIdentifier id="Wall4"/>
+            <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
+            <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
+            <WallType>
+              <WoodStud/>
+            </WallType>
+            <Area>245.7</Area>
+            <Orientation>west</Orientation>
+            <Azimuth>270</Azimuth>
+            <Siding>brick veneer</Siding>
+            <Color>medium dark</Color>
+            <RadiantBarrier>false</RadiantBarrier>
+            <Insulation>
+              <SystemIdentifier id="Wall4Insulation"/>
+              <Layer>
+                <InstallationType>cavity</InstallationType>
+                <NominalRValue>15</NominalRValue>
+              </Layer>
+            </Insulation>
+          </Wall>
+          <Wall>
+            <SystemIdentifier id="Wall5"/>
+            <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
+            <InteriorAdjacentTo>attic - vented</InteriorAdjacentTo>
+            <AtticWallType>gable</AtticWallType>
+            <WallType>
+              <WoodStud/>
+            </WallType>
+            <Area>117.9</Area>
+            <Orientation>east</Orientation>
+            <Azimuth>90</Azimuth>
+            <Siding>brick veneer</Siding>
+            <Color>medium dark</Color>
+            <RadiantBarrier>false</RadiantBarrier>
+            <Insulation>
+              <SystemIdentifier id="Wall5Insulation"/>
+              <Layer>
+                <NominalRValue>0.0</NominalRValue>
+              </Layer>
+            </Insulation>
+          </Wall>
+          <Wall>
+            <SystemIdentifier id="Wall6"/>
+            <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
+            <InteriorAdjacentTo>attic - vented</InteriorAdjacentTo>
+            <AtticWallType>gable</AtticWallType>
+            <WallType>
+              <WoodStud/>
+            </WallType>
+            <Area>117.9</Area>
+            <Orientation>west</Orientation>
+            <Azimuth>270</Azimuth>
+            <Siding>brick veneer</Siding>
+            <Color>medium dark</Color>
+            <RadiantBarrier>false</RadiantBarrier>
+            <Insulation>
+              <SystemIdentifier id="Wall6Insulation"/>
+              <Layer>
+                <NominalRValue>0.0</NominalRValue>
+              </Layer>
+            </Insulation>
+          </Wall>
+        </Walls>
+        <Floors>
+          <Floor>
+            <SystemIdentifier id="Floor1"/>
+            <ExteriorAdjacentTo>attic - vented</ExteriorAdjacentTo>
+            <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
+            <FloorOrCeiling>ceiling</FloorOrCeiling>
+            <FloorType>
+              <WoodFrame/>
+            </FloorType>
+            <Area>1698.0</Area>
+            <RadiantBarrier>false</RadiantBarrier>
+            <Insulation>
+              <SystemIdentifier id="Floor1Insulation"/>
+              <Layer>
+                <InstallationType>cavity</InstallationType>
+                <NominalRValue>21</NominalRValue>
+              </Layer>
+            </Insulation>
+          </Floor>
+        </Floors>
+        <Slabs>
+          <Slab>
+            <SystemIdentifier id="Slab1"/>
+            <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
+            <Area>1698.0</Area>
+            <ExposedPerimeter>172.0</ExposedPerimeter>
+            <PerimeterInsulation>
+              <SystemIdentifier id="Slab1PerimeterInsulation"/>
+              <Layer>
+                <NominalRValue>0.0</NominalRValue>
+                <InsulationDepth>0.0</InsulationDepth>
+              </Layer>
+            </PerimeterInsulation>
+            <UnderSlabInsulation>
+              <SystemIdentifier id="Slab1UnderSlabInsulation"/>
+              <Layer>
+                <NominalRValue>0.0</NominalRValue>
+                <InsulationWidth>0.0</InsulationWidth>
+              </Layer>
+            </UnderSlabInsulation>
+          </Slab>
+        </Slabs>
+        <Windows>
+          <Window>
+            <SystemIdentifier id="Window1"/>
+            <Area>132.7</Area>
+            <Azimuth>0</Azimuth>
+            <Orientation>north</Orientation>
+            <FrameType>
+              <Vinyl/>
+            </FrameType>
+            <GlassLayers>double-pane</GlassLayers>
+            <GlassType>clear</GlassType>
+            <GasFill>air</GasFill>
+            <Overhangs>
+              <Depth>2.0</Depth>
+              <DistanceToTopOfWindow>1.0</DistanceToTopOfWindow>
+              <DistanceToBottomOfWindow>4.8</DistanceToBottomOfWindow>
+            </Overhangs>
+            <AttachedToWall idref="Wall1"/>
+          </Window>
+          <Window>
+            <SystemIdentifier id="Window2"/>
+            <Area>73.7</Area>
+            <Azimuth>90</Azimuth>
+            <Orientation>east</Orientation>
+            <FrameType>
+              <Vinyl/>
+            </FrameType>
+            <GlassLayers>double-pane</GlassLayers>
+            <GlassType>clear</GlassType>
+            <GasFill>air</GasFill>
+            <Overhangs>
+              <Depth>2.0</Depth>
+              <DistanceToTopOfWindow>1.0</DistanceToTopOfWindow>
+              <DistanceToBottomOfWindow>4.7</DistanceToBottomOfWindow>
+            </Overhangs>
+            <AttachedToWall idref="Wall2"/>
+          </Window>
+          <Window>
+            <SystemIdentifier id="Window3"/>
+            <Area>132.7</Area>
+            <Azimuth>180</Azimuth>
+            <Orientation>south</Orientation>
+            <FrameType>
+              <Vinyl/>
+            </FrameType>
+            <GlassLayers>double-pane</GlassLayers>
+            <GlassType>clear</GlassType>
+            <GasFill>air</GasFill>
+            <Overhangs>
+              <Depth>2.0</Depth>
+              <DistanceToTopOfWindow>1.0</DistanceToTopOfWindow>
+              <DistanceToBottomOfWindow>4.8</DistanceToBottomOfWindow>
+            </Overhangs>
+            <AttachedToWall idref="Wall3"/>
+          </Window>
+          <Window>
+            <SystemIdentifier id="Window4"/>
+            <Area>73.7</Area>
+            <Azimuth>270</Azimuth>
+            <Orientation>west</Orientation>
+            <FrameType>
+              <Vinyl/>
+            </FrameType>
+            <GlassLayers>double-pane</GlassLayers>
+            <GlassType>clear</GlassType>
+            <GasFill>air</GasFill>
+            <Overhangs>
+              <Depth>2.0</Depth>
+              <DistanceToTopOfWindow>1.0</DistanceToTopOfWindow>
+              <DistanceToBottomOfWindow>4.7</DistanceToBottomOfWindow>
+            </Overhangs>
+            <AttachedToWall idref="Wall4"/>
+          </Window>
+        </Windows>
+        <Doors>
+          <Door>
+            <SystemIdentifier id="Door1"/>
+            <AttachedToWall idref="Wall3"/>
+            <Area>20.0</Area>
+            <Azimuth>180</Azimuth>
+            <Orientation>south</Orientation>
+            <RValue>5.0</RValue>
+          </Door>
+        </Doors>
+      </Enclosure>
+      <Systems>
+        <HVAC>
+          <HVACPlant>
+            <PrimarySystems>
+              <PrimaryHeatingSystem idref="HeatingSystem1"/>
+              <PrimaryCoolingSystem idref="CoolingSystem1"/>
+            </PrimarySystems>
+            <HeatingSystem>
+              <SystemIdentifier id="HeatingSystem1"/>
+              <UnitLocation>attic - vented</UnitLocation>
+              <DistributionSystem idref="HVACDistribution1"/>
+              <HeatingSystemType>
+                <Furnace/>
+              </HeatingSystemType>
+              <HeatingSystemFuel>electricity</HeatingSystemFuel>
+              <AnnualHeatingEfficiency>
+                <Units>AFUE</Units>
+                <Value>1.0</Value>
+              </AnnualHeatingEfficiency>
+              <FractionHeatLoadServed>1.0</FractionHeatLoadServed>
+            </HeatingSystem>
+            <CoolingSystem>
+              <SystemIdentifier id="CoolingSystem1"/>
+              <UnitLocation>attic - vented</UnitLocation>
+              <DistributionSystem idref="HVACDistribution1"/>
+              <CoolingSystemType>central air conditioner</CoolingSystemType>
+              <CoolingSystemFuel>electricity</CoolingSystemFuel>
+              <FractionCoolLoadServed>1.0</FractionCoolLoadServed>
+              <AnnualCoolingEfficiency>
+                <Units>SEER</Units>
+                <Value>10.0</Value>
+              </AnnualCoolingEfficiency>
+            </CoolingSystem>
+          </HVACPlant>
+          <HVACControl>
+            <SystemIdentifier id="HVACControl1"/>
+            <SetpointTempHeatingSeason>65</SetpointTempHeatingSeason>
+            <SetpointTempCoolingSeason>76</SetpointTempCoolingSeason>
+          </HVACControl>
+          <HVACDistribution>
+            <SystemIdentifier id="HVACDistribution1"/>
+            <DistributionSystemType>
+              <AirDistribution>
+                <AirDistributionType>regular velocity</AirDistributionType>
+                <DuctLeakageMeasurement>
+                  <DuctType>supply</DuctType>
+                  <DuctLeakage>
+                    <Units>Percent</Units>
+                    <Value>0.133</Value>
+                    <TotalOrToOutside>to outside</TotalOrToOutside>
+                  </DuctLeakage>
+                </DuctLeakageMeasurement>
+                <DuctLeakageMeasurement>
+                  <DuctType>return</DuctType>
+                  <DuctLeakage>
+                    <Units>Percent</Units>
+                    <Value>0.067</Value>
+                    <TotalOrToOutside>to outside</TotalOrToOutside>
+                  </DuctLeakage>
+                </DuctLeakageMeasurement>
+                <Ducts>
+                  <SystemIdentifier id="Ducts1"/>
+                  <DuctType>supply</DuctType>
+                  <DuctInsulationRValue>4.0</DuctInsulationRValue>
+                  <DuctLocation>attic - vented</DuctLocation>
+                  <FractionDuctArea>1.0</FractionDuctArea>
+                </Ducts>
+                <Ducts>
+                  <SystemIdentifier id="Ducts2"/>
+                  <DuctType>return</DuctType>
+                  <DuctInsulationRValue>4.0</DuctInsulationRValue>
+                  <DuctLocation>attic - vented</DuctLocation>
+                  <FractionDuctArea>1.0</FractionDuctArea>
+                </Ducts>
+              </AirDistribution>
+            </DistributionSystemType>
+            <ConditionedFloorAreaServed>1698.0</ConditionedFloorAreaServed>
+          </HVACDistribution>
+        </HVAC>
+        <MechanicalVentilation>
+          <VentilationFans>
+            <VentilationFan>
+              <SystemIdentifier id="VentilationFan1"/>
+              <FanLocation>kitchen</FanLocation>
+              <UsedForLocalVentilation>true</UsedForLocalVentilation>
+            </VentilationFan>
+            <VentilationFan>
+              <SystemIdentifier id="VentilationFan2"/>
+              <FanLocation>bath</FanLocation>
+              <UsedForLocalVentilation>true</UsedForLocalVentilation>
+            </VentilationFan>
+          </VentilationFans>
+        </MechanicalVentilation>
+        <WaterHeating>
+          <WaterHeatingSystem>
+            <SystemIdentifier id="WaterHeatingSystem1"/>
+            <FuelType>electricity</FuelType>
+            <WaterHeaterType>storage water heater</WaterHeaterType>
+            <Location>conditioned space</Location>
+            <FractionDHWLoadServed>1.0</FractionDHWLoadServed>
+            <EnergyFactor>0.92</EnergyFactor>
+            <HotWaterTemperature>125.0</HotWaterTemperature>
+          </WaterHeatingSystem>
+          <HotWaterDistribution>
+            <SystemIdentifier id="HotWaterDistribution1"/>
+            <SystemType>
+              <Standard/>
+            </SystemType>
+            <PipeInsulation>
+              <PipeRValue>0.0</PipeRValue>
+            </PipeInsulation>
+          </HotWaterDistribution>
+          <WaterFixture>
+            <SystemIdentifier id="WaterFixture1"/>
+            <WaterFixtureType>shower head</WaterFixtureType>
+            <LowFlow>false</LowFlow>
+          </WaterFixture>
+          <WaterFixture>
+            <SystemIdentifier id="WaterFixture2"/>
+            <WaterFixtureType>faucet</WaterFixtureType>
+            <LowFlow>false</LowFlow>
+          </WaterFixture>
+        </WaterHeating>
+      </Systems>
+      <Appliances>
+        <ClothesWasher>
+          <SystemIdentifier id="ClothesWasher1"/>
+          <Location>conditioned space</Location>
+        </ClothesWasher>
+        <Dishwasher>
+          <SystemIdentifier id="Dishwasher1"/>
+          <Location>conditioned space</Location>
+        </Dishwasher>
+        <Refrigerator>
+          <SystemIdentifier id="Refrigerator1"/>
+          <Location>conditioned space</Location>
+        </Refrigerator>
+        <Refrigerator>
+          <SystemIdentifier id="Refrigerator2"/>
+          <Location>conditioned space</Location>
+        </Refrigerator>
+        <Freezer>
+          <SystemIdentifier id="Freezer1"/>
+          <Location>conditioned space</Location>
+        </Freezer>
+        <CookingRange>
+          <SystemIdentifier id="CookingRange1"/>
+          <Location>conditioned space</Location>
+          <FuelType>electricity</FuelType>
+        </CookingRange>
+        <Oven>
+          <SystemIdentifier id="Oven1"/>
+        </Oven>
+      </Appliances>
+    </BuildingDetails>
+  </Building>
+  <Consumption>
+    <BuildingID idref="MyBuilding"/>
+    <CustomerID/>
+    <ConsumptionDetails>
+      <ConsumptionInfo>
+        <UtilityID/>
+        <ConsumptionType>
+          <Energy>
+            <FuelType>electricity</FuelType>
+            <UnitofMeasure>kWh</UnitofMeasure>
+          </Energy>
+        </ConsumptionType>
+        <ConsumptionDetail>
+          <Consumption>1468.0</Consumption>
+          <StartDateTime>2019-01-01T00:00:00</StartDateTime>
+          <EndDateTime>2019-01-31T23:59:59</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>976.0</Consumption>
+          <StartDateTime>2019-02-01T00:00:00</StartDateTime>
+          <EndDateTime>2019-02-28T23:59:59</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>1031.0</Consumption>
+          <StartDateTime>2019-03-01T00:00:00</StartDateTime>
+          <EndDateTime>2019-03-31T23:59:59</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>1185.0</Consumption>
+          <StartDateTime>2019-04-01T00:00:00</StartDateTime>
+          <EndDateTime>2019-04-30T23:59:59</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>1843.0</Consumption>
+          <StartDateTime>2019-05-01T00:00:00</StartDateTime>
+          <EndDateTime>2019-05-31T23:59:59</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>2195.0</Consumption>
+          <StartDateTime>2019-06-01T00:00:00</StartDateTime>
+          <EndDateTime>2019-06-30T23:59:59</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>2281.0</Consumption>
+          <StartDateTime>2019-07-01T00:00:00</StartDateTime>
+          <EndDateTime>2019-07-31T23:59:59</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>2074.0</Consumption>
+          <StartDateTime>2019-08-01T00:00:00</StartDateTime>
+          <EndDateTime>2019-08-31T23:59:59</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>2204.0</Consumption>
+          <StartDateTime>2019-09-01T00:00:00</StartDateTime>
+          <EndDateTime>2019-09-30T23:59:59</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>1712.0</Consumption>
+          <StartDateTime>2019-10-01T00:00:00</StartDateTime>
+          <EndDateTime>2019-10-31T23:59:59</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>950.0</Consumption>
+          <StartDateTime>2019-11-01T00:00:00</StartDateTime>
+          <EndDateTime>2019-11-30T23:59:59</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>1089.0</Consumption>
+          <StartDateTime>2019-12-01T00:00:00</StartDateTime>
+          <EndDateTime>2019-12-31T23:59:59</EndDateTime>
+        </ConsumptionDetail>
+      </ConsumptionInfo>
+    </ConsumptionDetails>
+  </Consumption>
+</HPXML>

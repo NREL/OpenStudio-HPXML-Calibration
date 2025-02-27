@@ -51,5 +51,13 @@ jobs:
           # Add the bin directory to PATH
           $OpenStudioBinPath = Join-Path $ExtractPath "bin"
           echo $OpenStudioBinPath >> $env:GITHUB_PATH
+      - name: Download Weather
+        run: uv run openstudio-hpxml-calibration download-weather
       - name: Unit tests
         run: uv run pytest -v
+      - name: Save test results
+        uses: actions/upload-artifact@v4
+        if: ${{ runner.os == 'Linux' && matrix.python-version == '3.13' }}
+        with:
+          name: test_results
+          path: tests/results/*
