@@ -5,6 +5,7 @@ from shutil import rmtree
 import pytest
 
 from openstudio_hpxml_calibration import app
+from openstudio_hpxml_calibration.hpxml import HpxmlDoc
 
 TEST_DIR = Path(__file__).parent
 TEST_DATA_DIR = TEST_DIR / "data"
@@ -28,12 +29,14 @@ def test_data():
 
 
 def test_cli_has_help(capsys):
+    # capsys is a builtin pytest fixture that captures stdout and stderr
     app(["--help"])
     captured = capsys.readouterr()
     assert "Return the OpenStudio-HPXML" in captured.out
 
 
 def test_cli_calls_openstudio(capsys):
+    # capsys is a builtin pytest fixture that captures stdout and stderr
     app(["openstudio-version"])
     captured = capsys.readouterr()
     assert "HPXML v4.0" in captured.out
@@ -50,7 +53,11 @@ def test_cli_calls_run_sim(test_data):
             "json",
         ]
     )
-    assert (TEST_SIM_DIR / "results_annual.json").exists()
+
+    output_file = TEST_SIM_DIR / "results_annual.json"
+    assert output_file.exists()
+    output_data: dict = json.loads(output_file.read_text())
+    assert output_data["Energy Use"]["Total (MBtu)"] == 59.617
 
 
 def test_calls_modify_hpxml(test_data):
@@ -60,4 +67,42 @@ def test_calls_modify_hpxml(test_data):
             test_data["test_workflow"],
         ]
     )
-    assert (TEST_MODIFY_DIR / "new_output.xml").exists()
+
+    output_file = TEST_MODIFY_DIR / "new_output.xml"
+    assert output_file.exists()
+
+    test_workflow_file = TEST_DATA_DIR / "test_modify_xml_workflow.osw"
+    test_workflow: dict = json.loads(test_workflow_file.read_text())
+
+    # How did we change the setpoint
+    heating_offset = test_workflow["steps"][0]["arguments"]["heating_setpoint_offset"]
+    cooling_setpoint_offset = test_workflow["steps"][0]["arguments"]["cooling_setpoint_offset"]
+
+    # Name of the original test xml file is the last part of the xml_file path
+    test_file = Path(test_workflow["steps"][0]["arguments"]["xml_file"]).parts[-1]
+    original_xml_file = TEST_DIR.parent / "sample_files" / test_file
+
+    # Instantiate the original and modified HPXML files
+    original_hpxml = HpxmlDoc(original_xml_file, validate_schema=False)
+    modified_hpxml = HpxmlDoc(output_file, validate_schema=False)
+
+    # Parse and check the setpoint & setback values for correct changes
+    original_heating_setpoint = original_hpxml.get_building().BuildingDetails.Systems.HVAC.HVACControl.SetpointTempHeatingSeason
+    # print(original_heating_setpoint)
+    modified_heating_setpoint = modified_hpxml.get_building().BuildingDetails.Systems.HVAC.HVACControl.SetpointTempHeatingSeason
+    assert modified_heating_setpoint == original_heating_setpoint + heating_offset
+
+    # Catching an AttributeError seems to be the best way to handle missing elements
+    try:
+        original_heating_setback = original_hpxml.get_building().BuildingDetails.Systems.HVAC.HVACControl.SetbackTempHeatingSeason
+        modified_heating_setback = modified_hpxml.get_building().BuildingDetails.Systems.HVAC.HVACControl.SetbackTempHeatingSeason
+        assert modified_heating_setback == original_heating_setback + heating_offset
+    except AttributeError:
+        pass
+
+    try:
+        original_cooling_setback = original_hpxml.get_building().BuildingDetails.Systems.HVAC.HVACControl.SetupTempCoolingSeason
+        modified_cooling_setback = modified_hpxml.get_building().BuildingDetails.Systems.HVAC.HVACControl.SetupTempCoolingSeason
+        assert modified_cooling_setback == original_cooling_setback + cooling_setpoint_offset
+    except AttributeError:
+        pass
