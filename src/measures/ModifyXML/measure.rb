@@ -49,6 +49,11 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     arg.setDescription('How much to change heating setpoint')
     args << arg
 
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('cooling_setpoint_offset', false)
+    arg.setDisplayName('Cooling setpoint offset')
+    arg.setDescription('How much to change cooling setpoint')
+    args << arg
+
     return args
   end
 
@@ -75,6 +80,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
 
     # Modify XML fields
     modify_heating_setpoint(hpxml_building, runner, args)
+    modify_cooling_setpoint(hpxml_building, runner, args)
     # ...
 
     # Save new file
@@ -83,13 +89,29 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_heating_setpoint(hpxml_building, runner, args)
-    # TODO: need to handle setbacks & other ways of describing setpoints
-    # What if heating_setpoint_temp is nil?
-    # Or if there is a setback?
-    if args[:heating_setpoint_offset].nil?
+    # As of 2025-02-25, this measure only modifies heating setpoint & setback (not hourly heating setpoints)
+    if args[:heating_setpoint_offset].nil? || args[:weekday_heating_setpoints] || args[:weekend_heating_setpoints]
+      puts 'Only heating setpoint (& setback) is supported. Not modifying heating setpoints.'
       return
     end
+    # https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/src/OpenStudio-HPXML/HPXMLtoOpenStudio/resources/hpxml.rb#L7508-L7530
     hpxml_building.hvac_controls[0].heating_setpoint_temp += args[:heating_setpoint_offset]
+    if hpxml_building.hvac_controls[0].heating_setback_temp
+      hpxml_building.hvac_controls[0].heating_setback_temp += args[:heating_setpoint_offset]
+    end
+  end
+
+  def modify_cooling_setpoint(hpxml_building, runner, args)
+    # As of 2025-02-25, this measure only modifies cooling setpoint & setback (not hourly cooling setpoints)
+    if args[:cooling_setpoint_offset].nil? || args[:weekday_cooling_setpoints] || args[:weekend_cooling_setpoints]
+      puts 'Only cooling setpoint (& setback) is supported. Not modifying cooling setpoints.'
+      return
+    end
+    # https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/src/OpenStudio-HPXML/HPXMLtoOpenStudio/resources/hpxml.rb#L7508-L7530
+    hpxml_building.hvac_controls[0].cooling_setpoint_temp += args[:cooling_setpoint_offset]
+    if hpxml_building.hvac_controls[0].cooling_setup_temp
+      hpxml_building.hvac_controls[0].cooling_setup_temp += args[:cooling_setpoint_offset]
+    end
   end
 end
 

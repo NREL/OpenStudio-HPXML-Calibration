@@ -45,3 +45,12 @@ How much to change heating setpoint
 **Units:** ,
 **Required:** false,
 **Model Dependent:** false
+
+### Cooling setpoint offset
+
+How much to change cooling setpoint
+**Name:** cooling_setpoint_offset,
+**Type:** Double,
+**Units:** ,
+**Required:** false,
+**Model Dependent:** false
