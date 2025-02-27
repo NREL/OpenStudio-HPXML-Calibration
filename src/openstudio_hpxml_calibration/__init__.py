@@ -101,6 +101,12 @@ def modify_xml(workflow_file: Path) -> None:
 
 @app.command
 def download_weather() -> None:
+    """Download the TMY3 weather files from NREL
+
+    Parameters
+    ----------
+    None
+    """
     weather_files_url = "https://data.nrel.gov/system/files/128/tmy3s-cache-csv.zip"
     weather_zip_filename = weather_files_url.split("/")[-1]
     weather_zip_sha256 = "58f5d2821931e235de34a5a7874f040f7f766b46e5e6a4f85448b352de4c8846"
