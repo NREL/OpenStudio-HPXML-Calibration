@@ -65,6 +65,8 @@ class HPXML < Object
   AtticTypeCathedral = 'CathedralCeiling'
   AtticTypeConditioned = 'ConditionedAttic'
   AtticTypeFlatRoof = 'FlatRoof'
+  AtticTypeOther = 'Other'
+  AtticTypeUnknown = 'UnknownAttic'
   AtticTypeUnvented = 'UnventedAttic'
   AtticTypeVented = 'VentedAttic'
   AtticWallTypeGable = 'gable'
@@ -131,10 +133,14 @@ class HPXML < Object
   FoundationTypeAmbient = 'Ambient'
   FoundationTypeBasementConditioned = 'ConditionedBasement'
   FoundationTypeBasementUnconditioned = 'UnconditionedBasement'
+  FoundationTypeBasementUnknown = 'UnknownBasement'
   FoundationTypeCrawlspaceConditioned = 'ConditionedCrawlspace'
   FoundationTypeCrawlspaceUnvented = 'UnventedCrawlspace'
+  FoundationTypeCrawlspaceUnknown = 'UnknownCrawlspace'
   FoundationTypeCrawlspaceVented = 'VentedCrawlspace'
   FoundationTypeBellyAndWing = 'BellyAndWing'
+  FoundationTypeGarage = 'Garage'
+  FoundationTypeRubbleStone = 'RubbleStone'
   FoundationTypeSlab = 'SlabOnGrade'
   FoundationWallTypeConcreteBlock = 'concrete block'
   FoundationWallTypeConcreteBlockFoamCore = 'concrete block foam core'
@@ -3426,12 +3432,15 @@ class HPXML < Object
       return if @attic_type.nil?
 
       case @attic_type
-      when AtticTypeCathedral, AtticTypeConditioned, AtticTypeFlatRoof, AtticTypeBelowApartment
+      when AtticTypeCathedral, AtticTypeConditioned,
+           AtticTypeFlatRoof, AtticTypeBelowApartment
         return LocationConditionedSpace
       when AtticTypeUnvented
         return LocationAtticUnvented
       when AtticTypeVented
         return LocationAtticVented
+      when AtticTypeUnknown, AtticTypeOther
+        return nil # Not currently used
       else
         fail "Unexpected attic type: '#{@attic_type}'."
       end
@@ -3490,6 +3499,10 @@ class HPXML < Object
         when AtticTypeConditioned
           attic_type_attic = XMLHelper.add_element(attic_type_el, 'Attic')
           XMLHelper.add_element(attic_type_attic, 'Conditioned', true, :boolean)
+        when AtticTypeUnknown
+          attic_type_attic = XMLHelper.add_element(attic_type_el, 'Attic')
+        when AtticTypeOther
+          XMLHelper.add_element(attic_type_el, @attic_type)
         else
           fail "Unhandled attic type '#{@attic_type}'."
         end
@@ -3529,12 +3542,16 @@ class HPXML < Object
         @attic_type = AtticTypeVented
       elsif XMLHelper.has_element(attic, "AtticType/Attic[Conditioned='true']")
         @attic_type = AtticTypeConditioned
+      elsif XMLHelper.has_element(attic, 'AtticType/Attic')
+        @attic_type = AtticTypeUnknown
       elsif XMLHelper.has_element(attic, 'AtticType/FlatRoof')
         @attic_type = AtticTypeFlatRoof
       elsif XMLHelper.has_element(attic, 'AtticType/CathedralCeiling')
         @attic_type = AtticTypeCathedral
       elsif XMLHelper.has_element(attic, 'AtticType/BelowApartment')
         @attic_type = AtticTypeBelowApartment
+      elsif XMLHelper.has_element(attic, 'AtticType/Other')
+        @attic_type = AtticTypeOther
       end
       if @attic_type == AtticTypeVented
         @vented_attic_sla = XMLHelper.get_value(attic, "VentilationRate[UnitofMeasure='#{UnitsSLA}']/Value", :float)
@@ -3685,6 +3702,12 @@ class HPXML < Object
         return LocationCrawlspaceConditioned
       when FoundationTypeBellyAndWing
         return LocationManufacturedHomeUnderBelly
+      when FoundationTypeBasementUnknown,
+           FoundationTypeCrawlspaceUnknown,
+           FoundationTypeGarage,
+           FoundationTypeRubbleStone,
+           FoundationTypeOther
+        return nil # Not currently used
       else
         fail "Unexpected foundation type: '#{@foundation_type}'."
       end
@@ -3751,6 +3774,8 @@ class HPXML < Object
         when FoundationTypeBasementUnconditioned
           basement = XMLHelper.add_element(foundation_type_el, 'Basement')
           XMLHelper.add_element(basement, 'Conditioned', false, :boolean)
+        when FoundationTypeBasementUnknown
+          XMLHelper.add_element(foundation_type_el, 'Basement')
         when FoundationTypeCrawlspaceVented
           crawlspace = XMLHelper.add_element(foundation_type_el, 'Crawlspace')
           XMLHelper.add_element(crawlspace, 'Vented', true, :boolean)
@@ -3765,9 +3790,17 @@ class HPXML < Object
         when FoundationTypeCrawlspaceConditioned
           crawlspace = XMLHelper.add_element(foundation_type_el, 'Crawlspace')
           XMLHelper.add_element(crawlspace, 'Conditioned', true, :boolean)
+        when FoundationTypeCrawlspaceUnknown
+          XMLHelper.add_element(foundation_type_el, 'Crawlspace')
         when FoundationTypeBellyAndWing
           belly_and_wing = XMLHelper.add_element(foundation_type_el, 'BellyAndWing')
           XMLHelper.add_element(belly_and_wing, 'SkirtPresent', @belly_wing_skirt_present, :boolean, @belly_wing_skirt_present_isdefaulted) unless @belly_wing_skirt_present.nil?
+        when FoundationTypeGarage
+          XMLHelper.add_element(foundation_type_el, 'Garage')
+        when FoundationTypeRubbleStone
+          XMLHelper.add_element(foundation_type_el, 'RubbleStone')
+        when FoundationTypeOther
+          XMLHelper.add_element(foundation_type_el, 'Other')
         else
           fail "Unhandled foundation type '#{@foundation_type}'."
         end
@@ -3819,12 +3852,18 @@ class HPXML < Object
         @foundation_type = FoundationTypeBasementUnconditioned
       elsif XMLHelper.has_element(foundation, "FoundationType/Basement[Conditioned='true']")
         @foundation_type = FoundationTypeBasementConditioned
+      elsif XMLHelper.has_element(foundation, "FoundationType/Basement")
+        @foundation_type = FoundationTypeBasementUnknown
       elsif XMLHelper.has_element(foundation, "FoundationType/Crawlspace[Vented='false']")
         @foundation_type = FoundationTypeCrawlspaceUnvented
       elsif XMLHelper.has_element(foundation, "FoundationType/Crawlspace[Vented='true']")
         @foundation_type = FoundationTypeCrawlspaceVented
       elsif XMLHelper.has_element(foundation, "FoundationType/Crawlspace[Conditioned='true']")
         @foundation_type = FoundationTypeCrawlspaceConditioned
+      elsif XMLHelper.has_element(foundation, "FoundationType/Crawlspace[Conditioned='false']")
+        @foundation_type = FoundationTypeCrawlspaceUnvented
+      elsif XMLHelper.has_element(foundation, "FoundationType/Crawlspace")
+        @foundation_type = FoundationTypeCrawlspaceUnknown
       elsif XMLHelper.has_element(foundation, 'FoundationType/Ambient')
         @foundation_type = FoundationTypeAmbient
       elsif XMLHelper.has_element(foundation, 'FoundationType/AboveApartment')
@@ -3832,6 +3871,12 @@ class HPXML < Object
       elsif XMLHelper.has_element(foundation, 'FoundationType/BellyAndWing')
         @foundation_type = FoundationTypeBellyAndWing
         @belly_wing_skirt_present = XMLHelper.get_value(foundation, 'FoundationType/BellyAndWing/SkirtPresent', :boolean)
+      elsif XMLHelper.has_element(foundation, 'FoundationType/RubbleStone')
+        @foundation_type = FoundationTypeRubbleStone
+      elsif XMLHelper.has_element(foundation, 'FoundationType/Garage')
+        @foundation_type = FoundationTypeGarage
+      elsif XMLHelper.has_element(foundation, 'FoundationType/Other')
+        @foundation_type = FoundationTypeOther
       end
       if @foundation_type == FoundationTypeCrawlspaceVented
         @vented_crawlspace_sla = XMLHelper.get_value(foundation, "VentilationRate[UnitofMeasure='#{UnitsSLA}']/Value", :float)
@@ -4102,9 +4147,9 @@ class HPXML < Object
         @interior_finish_type = XMLHelper.get_value(interior_finish, 'Type', :string)
         @interior_finish_thickness = XMLHelper.get_value(interior_finish, 'Thickness', :float)
       end
-      @framing_factor = XMLHelper.get_value(roof, 'Rafters/FramingFactor', :float)
-      @framing_size = XMLHelper.get_value(roof, 'Rafters/Size', :string)
-      @framing_spacing = XMLHelper.get_value(roof, 'Rafters/Spacing', :float)
+      #@framing_factor = XMLHelper.get_value(roof, 'Rafters/FramingFactor', :float)
+      #@framing_size = XMLHelper.get_value(roof, 'Rafters/Size', :string)
+      #@framing_spacing = XMLHelper.get_value(roof, 'Rafters/Spacing', :float)
       @pitch = XMLHelper.get_value(roof, 'Pitch', :float)
       @radiant_barrier = XMLHelper.get_value(roof, 'RadiantBarrier', :boolean)
       @radiant_barrier_grade = XMLHelper.get_value(roof, 'RadiantBarrierGrade', :integer)
@@ -4113,18 +4158,18 @@ class HPXML < Object
         @insulation_id = HPXML::get_id(insulation)
         @insulation_grade = XMLHelper.get_value(insulation, 'InsulationGrade', :integer)
         @insulation_assembly_r_value = XMLHelper.get_value(insulation, 'AssemblyEffectiveRValue', :float)
-        @insulation_cavity_r_value = XMLHelper.get_value(insulation, "Layer[InstallationType='cavity']/NominalRValue", :float)
-        @insulation_cavity_material = XMLHelper.get_child_name(insulation, "Layer[InstallationType='cavity']/InsulationMaterial")
-        if not @insulation_cavity_material.nil?
-          material_type = XMLHelper.get_value(insulation, "Layer[InstallationType='cavity']/InsulationMaterial/#{@insulation_cavity_material}", :string)
-          @insulation_cavity_material += "/#{material_type}" unless material_type.nil?
-        end
-        @insulation_continuous_r_value = XMLHelper.get_value(insulation, "Layer[InstallationType='continuous']/NominalRValue", :float)
-        @insulation_continuous_material = XMLHelper.get_child_name(insulation, "Layer[InstallationType='continuous']/InsulationMaterial")
-        if not @insulation_continuous_material.nil?
-          material_type = XMLHelper.get_value(insulation, "Layer[InstallationType='continuous']/InsulationMaterial/#{@insulation_continuous_material}", :string)
-          @insulation_continuous_material += "/#{material_type}" unless material_type.nil?
-        end
+        #@insulation_cavity_r_value = XMLHelper.get_value(insulation, "Layer[InstallationType='cavity']/NominalRValue", :float)
+        #@insulation_cavity_material = XMLHelper.get_child_name(insulation, "Layer[InstallationType='cavity']/InsulationMaterial")
+        #if not @insulation_cavity_material.nil?
+        #  material_type = XMLHelper.get_value(insulation, "Layer[InstallationType='cavity']/InsulationMaterial/#{@insulation_cavity_material}", :string)
+        #  @insulation_cavity_material += "/#{material_type}" unless material_type.nil?
+        #end
+        #@insulation_continuous_r_value = XMLHelper.get_value(insulation, "Layer[InstallationType='continuous']/NominalRValue", :float)
+        #@insulation_continuous_material = XMLHelper.get_child_name(insulation, "Layer[InstallationType='continuous']/InsulationMaterial")
+        #if not @insulation_continuous_material.nil?
+        #  material_type = XMLHelper.get_value(insulation, "Layer[InstallationType='continuous']/InsulationMaterial/#{@insulation_continuous_material}", :string)
+        #  @insulation_continuous_material += "/#{material_type}" unless material_type.nil?
+        #end
       end
       @attached_to_space_idref = HPXML::get_idref(XMLHelper.get_elements(roof, 'AttachedToSpace')[0])
     end
@@ -4340,20 +4385,20 @@ class HPXML < Object
       if not insulation.nil?
         @insulation_id = HPXML::get_id(insulation)
         @insulation_assembly_r_value = XMLHelper.get_value(insulation, 'AssemblyEffectiveRValue', :float)
-        @insulation_cavity_r_value = XMLHelper.get_value(insulation, "Layer[InstallationType='cavity']/NominalRValue", :float)
-        @insulation_cavity_material = XMLHelper.get_child_name(insulation, "Layer[InstallationType='cavity']/InsulationMaterial")
-        if not @insulation_cavity_material.nil?
-          material_type = XMLHelper.get_value(insulation, "Layer[InstallationType='cavity']/InsulationMaterial/#{@insulation_cavity_material}", :string)
-          @insulation_cavity_material += "/#{material_type}" unless material_type.nil?
-        end
-        @insulation_continuous_r_value = XMLHelper.get_value(insulation, "Layer[InstallationType='continuous']/NominalRValue", :float)
-        @insulation_continuous_material = XMLHelper.get_child_name(insulation, "Layer[InstallationType='continuous']/InsulationMaterial")
-        if not @insulation_continuous_material.nil?
-          material_type = XMLHelper.get_value(insulation, "Layer[InstallationType='continuous']/InsulationMaterial/#{@insulation_continuous_material}", :string)
-          @insulation_continuous_material += "/#{material_type}" unless material_type.nil?
-        end
+        #@insulation_cavity_r_value = XMLHelper.get_value(insulation, "Layer[InstallationType='cavity']/NominalRValue", :float)
+        #@insulation_cavity_material = XMLHelper.get_child_name(insulation, "Layer[InstallationType='cavity']/InsulationMaterial")
+        #if not @insulation_cavity_material.nil?
+        #  material_type = XMLHelper.get_value(insulation, "Layer[InstallationType='cavity']/InsulationMaterial/#{@insulation_cavity_material}", :string)
+        #  @insulation_cavity_material += "/#{material_type}" unless material_type.nil?
+        #end
+        #@insulation_continuous_r_value = XMLHelper.get_value(insulation, "Layer[InstallationType='continuous']/NominalRValue", :float)
+        #@insulation_continuous_material = XMLHelper.get_child_name(insulation, "Layer[InstallationType='continuous']/InsulationMaterial")
+        #if not @insulation_continuous_material.nil?
+        #  material_type = XMLHelper.get_value(insulation, "Layer[InstallationType='continuous']/InsulationMaterial/#{@insulation_continuous_material}", :string)
+        #  @insulation_continuous_material += "/#{material_type}" unless material_type.nil?
+        #end
       end
-      @framing_size = XMLHelper.get_value(rim_joist, 'FloorJoists/Size', :string)
+      #@framing_size = XMLHelper.get_value(rim_joist, 'FloorJoists/Size', :string)
       @attached_to_space_idref = HPXML::get_idref(XMLHelper.get_elements(rim_joist, 'AttachedToSpace')[0])
     end
   end
@@ -4623,9 +4668,9 @@ class HPXML < Object
       @area = XMLHelper.get_value(wall, 'Area', :float)
       @orientation = XMLHelper.get_value(wall, 'Orientation', :string)
       @azimuth = XMLHelper.get_value(wall, 'Azimuth', :integer)
-      @framing_size = XMLHelper.get_value(wall, 'Studs/Size', :string)
-      @framing_spacing = XMLHelper.get_value(wall, 'Studs/Spacing', :float)
-      @framing_factor = XMLHelper.get_value(wall, 'Studs/FramingFactor', :float)
+      #@framing_size = XMLHelper.get_value(wall, 'Studs/Size', :string)
+      #@framing_spacing = XMLHelper.get_value(wall, 'Studs/Spacing', :float)
+      #@framing_factor = XMLHelper.get_value(wall, 'Studs/FramingFactor', :float)
       @siding = XMLHelper.get_value(wall, 'Siding', :string)
       @color = XMLHelper.get_value(wall, 'Color', :string)
       @solar_absorptance = XMLHelper.get_value(wall, 'SolarAbsorptance', :float)
@@ -4642,18 +4687,18 @@ class HPXML < Object
         @insulation_id = HPXML::get_id(insulation)
         @insulation_grade = XMLHelper.get_value(insulation, 'InsulationGrade', :integer)
         @insulation_assembly_r_value = XMLHelper.get_value(insulation, 'AssemblyEffectiveRValue', :float)
-        @insulation_cavity_r_value = XMLHelper.get_value(insulation, "Layer[InstallationType='cavity']/NominalRValue", :float)
-        @insulation_cavity_material = XMLHelper.get_child_name(insulation, "Layer[InstallationType='cavity']/InsulationMaterial")
-        if not @insulation_cavity_material.nil?
-          material_type = XMLHelper.get_value(insulation, "Layer[InstallationType='cavity']/InsulationMaterial/#{@insulation_cavity_material}", :string)
-          @insulation_cavity_material += "/#{material_type}" unless material_type.nil?
-        end
-        @insulation_continuous_r_value = XMLHelper.get_value(insulation, "Layer[InstallationType='continuous']/NominalRValue", :float)
-        @insulation_continuous_material = XMLHelper.get_child_name(insulation, "Layer[InstallationType='continuous']/InsulationMaterial")
-        if not @insulation_continuous_material.nil?
-          material_type = XMLHelper.get_value(insulation, "Layer[InstallationType='continuous']/InsulationMaterial/#{@insulation_continuous_material}", :string)
-          @insulation_continuous_material += "/#{material_type}" unless material_type.nil?
-        end
+        #@insulation_cavity_r_value = XMLHelper.get_value(insulation, "Layer[InstallationType='cavity']/NominalRValue", :float)
+        #@insulation_cavity_material = XMLHelper.get_child_name(insulation, "Layer[InstallationType='cavity']/InsulationMaterial")
+        #if not @insulation_cavity_material.nil?
+        #  material_type = XMLHelper.get_value(insulation, "Layer[InstallationType='cavity']/InsulationMaterial/#{@insulation_cavity_material}", :string)
+        #  @insulation_cavity_material += "/#{material_type}" unless material_type.nil?
+        #end
+        #@insulation_continuous_r_value = XMLHelper.get_value(insulation, "Layer[InstallationType='continuous']/NominalRValue", :float)
+        #@insulation_continuous_material = XMLHelper.get_child_name(insulation, "Layer[InstallationType='continuous']/InsulationMaterial")
+        #if not @insulation_continuous_material.nil?
+        #  material_type = XMLHelper.get_value(insulation, "Layer[InstallationType='continuous']/InsulationMaterial/#{@insulation_continuous_material}", :string)
+        #  @insulation_continuous_material += "/#{material_type}" unless material_type.nil?
+        #end
       end
       @attached_to_space_idref = HPXML::get_idref(XMLHelper.get_elements(wall, 'AttachedToSpace')[0])
     end
@@ -5251,9 +5296,9 @@ class HPXML < Object
       @interior_adjacent_to = XMLHelper.get_value(floor, 'InteriorAdjacentTo', :string)
       @floor_or_ceiling = XMLHelper.get_value(floor, 'FloorOrCeiling', :string)
       @floor_type = XMLHelper.get_child_name(floor, 'FloorType')
-      @framing_size = XMLHelper.get_value(floor, 'FloorJoists/Size', :string)
-      @framing_spacing = XMLHelper.get_value(floor, 'FloorJoists/Spacing', :float)
-      @framing_factor = XMLHelper.get_value(floor, 'FloorJoists/FramingFactor', :float)
+      #@framing_size = XMLHelper.get_value(floor, 'FloorJoists/Size', :string)
+      #@framing_spacing = XMLHelper.get_value(floor, 'FloorJoists/Spacing', :float)
+      #@framing_factor = XMLHelper.get_value(floor, 'FloorJoists/FramingFactor', :float)
       @area = XMLHelper.get_value(floor, 'Area', :float)
       interior_finish = XMLHelper.get_element(floor, 'InteriorFinish')
       if not interior_finish.nil?
@@ -5267,18 +5312,18 @@ class HPXML < Object
         @insulation_id = HPXML::get_id(insulation)
         @insulation_grade = XMLHelper.get_value(insulation, 'InsulationGrade', :float)
         @insulation_assembly_r_value = XMLHelper.get_value(insulation, 'AssemblyEffectiveRValue', :float)
-        @insulation_cavity_r_value = XMLHelper.get_value(insulation, "Layer[InstallationType='cavity']/NominalRValue", :float)
-        @insulation_cavity_material = XMLHelper.get_child_name(insulation, "Layer[InstallationType='cavity']/InsulationMaterial")
-        if not @insulation_cavity_material.nil?
-          material_type = XMLHelper.get_value(insulation, "Layer[InstallationType='cavity']/InsulationMaterial/#{@insulation_cavity_material}", :string)
-          @insulation_cavity_material += "/#{material_type}" unless material_type.nil?
-        end
-        @insulation_continuous_r_value = XMLHelper.get_value(insulation, "Layer[InstallationType='continuous']/NominalRValue", :float)
-        @insulation_continuous_material = XMLHelper.get_child_name(insulation, "Layer[InstallationType='continuous']/InsulationMaterial")
-        if not @insulation_continuous_material.nil?
-          material_type = XMLHelper.get_value(insulation, "Layer[InstallationType='continuous']/InsulationMaterial/#{@insulation_continuous_material}", :string)
-          @insulation_continuous_material += "/#{material_type}" unless material_type.nil?
-        end
+        #@insulation_cavity_r_value = XMLHelper.get_value(insulation, "Layer[InstallationType='cavity']/NominalRValue", :float)
+        #@insulation_cavity_material = XMLHelper.get_child_name(insulation, "Layer[InstallationType='cavity']/InsulationMaterial")
+        #if not @insulation_cavity_material.nil?
+        #  material_type = XMLHelper.get_value(insulation, "Layer[InstallationType='cavity']/InsulationMaterial/#{@insulation_cavity_material}", :string)
+        #  @insulation_cavity_material += "/#{material_type}" unless material_type.nil?
+        #end
+        #@insulation_continuous_r_value = XMLHelper.get_value(insulation, "Layer[InstallationType='continuous']/NominalRValue", :float)
+        #@insulation_continuous_material = XMLHelper.get_child_name(insulation, "Layer[InstallationType='continuous']/InsulationMaterial")
+        #if not @insulation_continuous_material.nil?
+        #  material_type = XMLHelper.get_value(insulation, "Layer[InstallationType='continuous']/InsulationMaterial/#{@insulation_continuous_material}", :string)
+        #  @insulation_continuous_material += "/#{material_type}" unless material_type.nil?
+        #end
       end
       @attached_to_space_idref = HPXML::get_idref(XMLHelper.get_elements(floor, 'AttachedToSpace')[0])
     end

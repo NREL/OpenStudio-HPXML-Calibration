@@ -1,4 +1,5 @@
-<HPXML xmlns="http://hpxmlonline.com/2023/09" schemaVersion="4.0">
+<?xml version='1.0' encoding='UTF-8'?>
+<HPXML xmlns='http://hpxmlonline.com/2023/09' schemaVersion='4.0'>
   <XMLTransactionHeaderInformation>
     <XMLType>HPXML</XMLType>
     <XMLGeneratedBy>BuildResidentialHPXML</XMLGeneratedBy>
@@ -10,9 +11,9 @@
     <SoftwareProgramVersion>3.2.0</SoftwareProgramVersion>
   </SoftwareInfo>
   <Building>
-    <BuildingID id="MyBuilding"/>
+    <BuildingID id='MyBuilding'/>
     <Site>
-      <SiteID id="SiteID"/>
+      <SiteID id='SiteID'/>
       <Address>
         <CityMunicipality>Chippewa Valley Rgn</CityMunicipality>
         <StateCode>WI</StateCode>
@@ -62,7 +63,7 @@
       <Enclosure>
         <AirInfiltration>
           <AirInfiltrationMeasurement>
-            <SystemIdentifier id="AirInfiltrationMeasurement1"/>
+            <SystemIdentifier id='AirInfiltrationMeasurement1'/>
             <HousePressure>50.0</HousePressure>
             <BuildingAirLeakage>
               <UnitofMeasure>ACH</UnitofMeasure>
@@ -73,46 +74,46 @@
         </AirInfiltration>
         <Attics>
           <Attic>
-            <SystemIdentifier id="Attic1"/>
+            <SystemIdentifier id='Attic1'/>
             <AtticType>
               <Attic>
                 <Vented>true</Vented>
               </Attic>
             </AtticType>
-            <AttachedToRoof idref="Roof1"/>
-            <AttachedToRoof idref="Roof2"/>
-            <AttachedToRoof idref="Roof3"/>
-            <AttachedToRoof idref="Roof4"/>
-            <AttachedToWall idref="Wall9"/>
-            <AttachedToWall idref="Wall10"/>
-            <AttachedToWall idref="Wall11"/>
-            <AttachedToFloor idref="Floor2"/>
+            <AttachedToRoof idref='Roof1'/>
+            <AttachedToRoof idref='Roof2'/>
+            <AttachedToRoof idref='Roof3'/>
+            <AttachedToRoof idref='Roof4'/>
+            <AttachedToWall idref='Wall9'/>
+            <AttachedToWall idref='Wall10'/>
+            <AttachedToWall idref='Wall11'/>
+            <AttachedToFloor idref='Floor2'/>
           </Attic>
         </Attics>
         <Foundations>
           <Foundation>
-            <SystemIdentifier id="Foundation1"/>
+            <SystemIdentifier id='Foundation1'/>
             <FoundationType>
               <Basement>
                 <Conditioned>true</Conditioned>
               </Basement>
             </FoundationType>
-            <AttachedToRimJoist idref="RimJoist1"/>
-            <AttachedToRimJoist idref="RimJoist2"/>
-            <AttachedToRimJoist idref="RimJoist3"/>
-            <AttachedToRimJoist idref="RimJoist4"/>
-            <AttachedToFoundationWall idref="FoundationWall1"/>
-            <AttachedToFoundationWall idref="FoundationWall2"/>
-            <AttachedToFoundationWall idref="FoundationWall3"/>
-            <AttachedToFoundationWall idref="FoundationWall4"/>
-            <AttachedToFoundationWall idref="FoundationWall5"/>
-            <AttachedToFoundationWall idref="FoundationWall6"/>
-            <AttachedToSlab idref="Slab2"/>
+            <AttachedToRimJoist idref='RimJoist1'/>
+            <AttachedToRimJoist idref='RimJoist2'/>
+            <AttachedToRimJoist idref='RimJoist3'/>
+            <AttachedToRimJoist idref='RimJoist4'/>
+            <AttachedToFoundationWall idref='FoundationWall1'/>
+            <AttachedToFoundationWall idref='FoundationWall2'/>
+            <AttachedToFoundationWall idref='FoundationWall3'/>
+            <AttachedToFoundationWall idref='FoundationWall4'/>
+            <AttachedToFoundationWall idref='FoundationWall5'/>
+            <AttachedToFoundationWall idref='FoundationWall6'/>
+            <AttachedToSlab idref='Slab2'/>
           </Foundation>
         </Foundations>
         <Roofs>
           <Roof>
-            <SystemIdentifier id="Roof1"/>
+            <SystemIdentifier id='Roof1'/>
             <InteriorAdjacentTo>attic - vented</InteriorAdjacentTo>
             <Area>255.7</Area>
             <Orientation>west</Orientation>
@@ -122,16 +123,12 @@
             <Pitch>6.0</Pitch>
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
-              <SystemIdentifier id="Roof1Insulation"/>
+              <SystemIdentifier id='Roof1Insulation'/>
               <AssemblyEffectiveRValue>2.3</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>0</NominalRValue>
-              </Layer>
             </Insulation>
           </Roof>
           <Roof>
-            <SystemIdentifier id="Roof2"/>
+            <SystemIdentifier id='Roof2'/>
             <InteriorAdjacentTo>attic - vented</InteriorAdjacentTo>
             <Area>100.6</Area>
             <Orientation>north</Orientation>
@@ -141,16 +138,12 @@
             <Pitch>6.0</Pitch>
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
-              <SystemIdentifier id="Roof2Insulation"/>
+              <SystemIdentifier id='Roof2Insulation'/>
               <AssemblyEffectiveRValue>2.3</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>0</NominalRValue>
-              </Layer>
             </Insulation>
           </Roof>
           <Roof>
-            <SystemIdentifier id="Roof3"/>
+            <SystemIdentifier id='Roof3'/>
             <InteriorAdjacentTo>attic - vented</InteriorAdjacentTo>
             <Area>100.6</Area>
             <Orientation>south</Orientation>
@@ -160,16 +153,12 @@
             <Pitch>6.0</Pitch>
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
-              <SystemIdentifier id="Roof3Insulation"/>
+              <SystemIdentifier id='Roof3Insulation'/>
               <AssemblyEffectiveRValue>2.3</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>0</NominalRValue>
-              </Layer>
             </Insulation>
           </Roof>
           <Roof>
-            <SystemIdentifier id="Roof4"/>
+            <SystemIdentifier id='Roof4'/>
             <InteriorAdjacentTo>attic - vented</InteriorAdjacentTo>
             <Area>255.7</Area>
             <Orientation>east</Orientation>
@@ -179,18 +168,14 @@
             <Pitch>6.0</Pitch>
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
-              <SystemIdentifier id="Roof4Insulation"/>
+              <SystemIdentifier id='Roof4Insulation'/>
               <AssemblyEffectiveRValue>2.3</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>0</NominalRValue>
-              </Layer>
             </Insulation>
           </Roof>
         </Roofs>
         <RimJoists>
           <RimJoist>
-            <SystemIdentifier id="RimJoist1"/>
+            <SystemIdentifier id='RimJoist1'/>
             <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
             <InteriorAdjacentTo>basement - conditioned</InteriorAdjacentTo>
             <Area>22.1</Area>
@@ -199,16 +184,12 @@
             <Siding>aluminum siding</Siding>
             <Color>light</Color>
             <Insulation>
-              <SystemIdentifier id="RimJoist1Insulation"/>
+              <SystemIdentifier id='RimJoist1Insulation'/>
               <AssemblyEffectiveRValue>4.0</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>0</NominalRValue>
-              </Layer>
             </Insulation>
           </RimJoist>
           <RimJoist>
-            <SystemIdentifier id="RimJoist2"/>
+            <SystemIdentifier id='RimJoist2'/>
             <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
             <InteriorAdjacentTo>basement - conditioned</InteriorAdjacentTo>
             <Area>12.3</Area>
@@ -217,16 +198,12 @@
             <Siding>aluminum siding</Siding>
             <Color>light</Color>
             <Insulation>
-              <SystemIdentifier id="RimJoist2Insulation"/>
+              <SystemIdentifier id='RimJoist2Insulation'/>
               <AssemblyEffectiveRValue>4.0</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>0</NominalRValue>
-              </Layer>
             </Insulation>
           </RimJoist>
           <RimJoist>
-            <SystemIdentifier id="RimJoist3"/>
+            <SystemIdentifier id='RimJoist3'/>
             <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
             <InteriorAdjacentTo>basement - conditioned</InteriorAdjacentTo>
             <Area>22.1</Area>
@@ -235,16 +212,12 @@
             <Siding>aluminum siding</Siding>
             <Color>light</Color>
             <Insulation>
-              <SystemIdentifier id="RimJoist3Insulation"/>
+              <SystemIdentifier id='RimJoist3Insulation'/>
               <AssemblyEffectiveRValue>4.0</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>0</NominalRValue>
-              </Layer>
             </Insulation>
           </RimJoist>
           <RimJoist>
-            <SystemIdentifier id="RimJoist4"/>
+            <SystemIdentifier id='RimJoist4'/>
             <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
             <InteriorAdjacentTo>basement - conditioned</InteriorAdjacentTo>
             <Area>12.3</Area>
@@ -253,18 +226,14 @@
             <Siding>aluminum siding</Siding>
             <Color>light</Color>
             <Insulation>
-              <SystemIdentifier id="RimJoist4Insulation"/>
+              <SystemIdentifier id='RimJoist4Insulation'/>
               <AssemblyEffectiveRValue>4.0</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>0</NominalRValue>
-              </Layer>
             </Insulation>
           </RimJoist>
         </RimJoists>
         <Walls>
           <Wall>
-            <SystemIdentifier id="Wall1"/>
+            <SystemIdentifier id='Wall1'/>
             <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
             <InteriorAdjacentTo>garage</InteriorAdjacentTo>
             <WallType>
@@ -277,15 +246,12 @@
             <Color>light</Color>
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
-              <SystemIdentifier id="Wall1Insulation"/>
+              <SystemIdentifier id='Wall1Insulation'/>
               <AssemblyEffectiveRValue>4.0</AssemblyEffectiveRValue>
-              <Layer>
-                <NominalRValue>0.0</NominalRValue>
-              </Layer>
             </Insulation>
           </Wall>
           <Wall>
-            <SystemIdentifier id="Wall2"/>
+            <SystemIdentifier id='Wall2'/>
             <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
             <InteriorAdjacentTo>garage</InteriorAdjacentTo>
             <WallType>
@@ -298,15 +264,12 @@
             <Color>light</Color>
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
-              <SystemIdentifier id="Wall2Insulation"/>
+              <SystemIdentifier id='Wall2Insulation'/>
               <AssemblyEffectiveRValue>4.0</AssemblyEffectiveRValue>
-              <Layer>
-                <NominalRValue>0.0</NominalRValue>
-              </Layer>
             </Insulation>
           </Wall>
           <Wall>
-            <SystemIdentifier id="Wall3"/>
+            <SystemIdentifier id='Wall3'/>
             <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
             <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
             <WallType>
@@ -319,16 +282,12 @@
             <Color>light</Color>
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
-              <SystemIdentifier id="Wall3Insulation"/>
+              <SystemIdentifier id='Wall3Insulation'/>
               <AssemblyEffectiveRValue>11.0</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>9</NominalRValue>
-              </Layer>
             </Insulation>
           </Wall>
           <Wall>
-            <SystemIdentifier id="Wall4"/>
+            <SystemIdentifier id='Wall4'/>
             <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
             <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
             <WallType>
@@ -341,16 +300,12 @@
             <Color>light</Color>
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
-              <SystemIdentifier id="Wall4Insulation"/>
+              <SystemIdentifier id='Wall4Insulation'/>
               <AssemblyEffectiveRValue>11.0</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>9</NominalRValue>
-              </Layer>
             </Insulation>
           </Wall>
           <Wall>
-            <SystemIdentifier id="Wall5"/>
+            <SystemIdentifier id='Wall5'/>
             <ExteriorAdjacentTo>garage</ExteriorAdjacentTo>
             <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
             <WallType>
@@ -362,16 +317,12 @@
             <Color>light</Color>
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
-              <SystemIdentifier id="Wall5Insulation"/>
+              <SystemIdentifier id='Wall5Insulation'/>
               <AssemblyEffectiveRValue>10.3</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>11</NominalRValue>
-              </Layer>
             </Insulation>
           </Wall>
           <Wall>
-            <SystemIdentifier id="Wall6"/>
+            <SystemIdentifier id='Wall6'/>
             <ExteriorAdjacentTo>garage</ExteriorAdjacentTo>
             <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
             <WallType>
@@ -383,16 +334,12 @@
             <Color>light</Color>
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
-              <SystemIdentifier id="Wall6Insulation"/>
+              <SystemIdentifier id='Wall6Insulation'/>
               <AssemblyEffectiveRValue>10.3</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>11</NominalRValue>
-              </Layer>
             </Insulation>
           </Wall>
           <Wall>
-            <SystemIdentifier id="Wall7"/>
+            <SystemIdentifier id='Wall7'/>
             <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
             <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
             <WallType>
@@ -405,16 +352,12 @@
             <Color>light</Color>
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
-              <SystemIdentifier id="Wall7Insulation"/>
+              <SystemIdentifier id='Wall7Insulation'/>
               <AssemblyEffectiveRValue>11.0</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>9</NominalRValue>
-              </Layer>
             </Insulation>
           </Wall>
           <Wall>
-            <SystemIdentifier id="Wall8"/>
+            <SystemIdentifier id='Wall8'/>
             <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
             <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
             <WallType>
@@ -427,16 +370,12 @@
             <Color>light</Color>
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
-              <SystemIdentifier id="Wall8Insulation"/>
+              <SystemIdentifier id='Wall8Insulation'/>
               <AssemblyEffectiveRValue>11.0</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>9</NominalRValue>
-              </Layer>
             </Insulation>
           </Wall>
           <Wall>
-            <SystemIdentifier id="Wall9"/>
+            <SystemIdentifier id='Wall9'/>
             <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
             <InteriorAdjacentTo>attic - vented</InteriorAdjacentTo>
             <AtticWallType>gable</AtticWallType>
@@ -450,15 +389,12 @@
             <Color>light</Color>
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
-              <SystemIdentifier id="Wall9Insulation"/>
+              <SystemIdentifier id='Wall9Insulation'/>
               <AssemblyEffectiveRValue>4.0</AssemblyEffectiveRValue>
-              <Layer>
-                <NominalRValue>0.0</NominalRValue>
-              </Layer>
             </Insulation>
           </Wall>
           <Wall>
-            <SystemIdentifier id="Wall10"/>
+            <SystemIdentifier id='Wall10'/>
             <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
             <InteriorAdjacentTo>attic - vented</InteriorAdjacentTo>
             <AtticWallType>gable</AtticWallType>
@@ -472,15 +408,12 @@
             <Color>light</Color>
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
-              <SystemIdentifier id="Wall10Insulation"/>
+              <SystemIdentifier id='Wall10Insulation'/>
               <AssemblyEffectiveRValue>4.0</AssemblyEffectiveRValue>
-              <Layer>
-                <NominalRValue>0.0</NominalRValue>
-              </Layer>
             </Insulation>
           </Wall>
           <Wall>
-            <SystemIdentifier id="Wall11"/>
+            <SystemIdentifier id='Wall11'/>
             <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
             <InteriorAdjacentTo>attic - vented</InteriorAdjacentTo>
             <AtticWallType>gable</AtticWallType>
@@ -494,15 +427,12 @@
             <Color>light</Color>
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
-              <SystemIdentifier id="Wall11Insulation"/>
+              <SystemIdentifier id='Wall11Insulation'/>
               <AssemblyEffectiveRValue>4.0</AssemblyEffectiveRValue>
-              <Layer>
-                <NominalRValue>0.0</NominalRValue>
-              </Layer>
             </Insulation>
           </Wall>
           <Wall>
-            <SystemIdentifier id="Wall12"/>
+            <SystemIdentifier id='Wall12'/>
             <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
             <InteriorAdjacentTo>garage</InteriorAdjacentTo>
             <WallType>
@@ -515,17 +445,14 @@
             <Color>light</Color>
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
-              <SystemIdentifier id="Wall12Insulation"/>
+              <SystemIdentifier id='Wall12Insulation'/>
               <AssemblyEffectiveRValue>4.0</AssemblyEffectiveRValue>
-              <Layer>
-                <NominalRValue>0.0</NominalRValue>
-              </Layer>
             </Insulation>
           </Wall>
         </Walls>
         <FoundationWalls>
           <FoundationWall>
-            <SystemIdentifier id="FoundationWall1"/>
+            <SystemIdentifier id='FoundationWall1'/>
             <ExteriorAdjacentTo>ground</ExteriorAdjacentTo>
             <InteriorAdjacentTo>basement - conditioned</InteriorAdjacentTo>
             <Type>solid concrete</Type>
@@ -535,7 +462,7 @@
             <Azimuth>270</Azimuth>
             <DepthBelowGrade>7.0</DepthBelowGrade>
             <Insulation>
-              <SystemIdentifier id="FoundationWall1Insulation"/>
+              <SystemIdentifier id='FoundationWall1Insulation'/>
               <Layer>
                 <InstallationType>continuous - exterior</InstallationType>
                 <NominalRValue>0.0</NominalRValue>
@@ -547,7 +474,7 @@
             </Insulation>
           </FoundationWall>
           <FoundationWall>
-            <SystemIdentifier id="FoundationWall2"/>
+            <SystemIdentifier id='FoundationWall2'/>
             <ExteriorAdjacentTo>ground</ExteriorAdjacentTo>
             <InteriorAdjacentTo>basement - conditioned</InteriorAdjacentTo>
             <Type>solid concrete</Type>
@@ -557,7 +484,7 @@
             <Azimuth>0</Azimuth>
             <DepthBelowGrade>7.0</DepthBelowGrade>
             <Insulation>
-              <SystemIdentifier id="FoundationWall2Insulation"/>
+              <SystemIdentifier id='FoundationWall2Insulation'/>
               <Layer>
                 <InstallationType>continuous - exterior</InstallationType>
                 <NominalRValue>0.0</NominalRValue>
@@ -569,7 +496,7 @@
             </Insulation>
           </FoundationWall>
           <FoundationWall>
-            <SystemIdentifier id="FoundationWall3"/>
+            <SystemIdentifier id='FoundationWall3'/>
             <ExteriorAdjacentTo>ground</ExteriorAdjacentTo>
             <InteriorAdjacentTo>basement - conditioned</InteriorAdjacentTo>
             <Type>solid concrete</Type>
@@ -579,7 +506,7 @@
             <Azimuth>90</Azimuth>
             <DepthBelowGrade>7.0</DepthBelowGrade>
             <Insulation>
-              <SystemIdentifier id="FoundationWall3Insulation"/>
+              <SystemIdentifier id='FoundationWall3Insulation'/>
               <Layer>
                 <InstallationType>continuous - exterior</InstallationType>
                 <NominalRValue>0.0</NominalRValue>
@@ -591,7 +518,7 @@
             </Insulation>
           </FoundationWall>
           <FoundationWall>
-            <SystemIdentifier id="FoundationWall4"/>
+            <SystemIdentifier id='FoundationWall4'/>
             <ExteriorAdjacentTo>ground</ExteriorAdjacentTo>
             <InteriorAdjacentTo>basement - conditioned</InteriorAdjacentTo>
             <Type>solid concrete</Type>
@@ -601,7 +528,7 @@
             <Azimuth>0</Azimuth>
             <DepthBelowGrade>7.0</DepthBelowGrade>
             <Insulation>
-              <SystemIdentifier id="FoundationWall4Insulation"/>
+              <SystemIdentifier id='FoundationWall4Insulation'/>
               <Layer>
                 <InstallationType>continuous - exterior</InstallationType>
                 <NominalRValue>0.0</NominalRValue>
@@ -613,7 +540,7 @@
             </Insulation>
           </FoundationWall>
           <FoundationWall>
-            <SystemIdentifier id="FoundationWall5"/>
+            <SystemIdentifier id='FoundationWall5'/>
             <ExteriorAdjacentTo>ground</ExteriorAdjacentTo>
             <InteriorAdjacentTo>basement - conditioned</InteriorAdjacentTo>
             <Type>solid concrete</Type>
@@ -623,7 +550,7 @@
             <Azimuth>90</Azimuth>
             <DepthBelowGrade>7.0</DepthBelowGrade>
             <Insulation>
-              <SystemIdentifier id="FoundationWall5Insulation"/>
+              <SystemIdentifier id='FoundationWall5Insulation'/>
               <Layer>
                 <InstallationType>continuous - exterior</InstallationType>
                 <NominalRValue>0.0</NominalRValue>
@@ -635,7 +562,7 @@
             </Insulation>
           </FoundationWall>
           <FoundationWall>
-            <SystemIdentifier id="FoundationWall6"/>
+            <SystemIdentifier id='FoundationWall6'/>
             <ExteriorAdjacentTo>ground</ExteriorAdjacentTo>
             <InteriorAdjacentTo>basement - conditioned</InteriorAdjacentTo>
             <Type>solid concrete</Type>
@@ -645,7 +572,7 @@
             <Azimuth>180</Azimuth>
             <DepthBelowGrade>7.0</DepthBelowGrade>
             <Insulation>
-              <SystemIdentifier id="FoundationWall6Insulation"/>
+              <SystemIdentifier id='FoundationWall6Insulation'/>
               <Layer>
                 <InstallationType>continuous - exterior</InstallationType>
                 <NominalRValue>0.0</NominalRValue>
@@ -659,7 +586,7 @@
         </FoundationWalls>
         <Floors>
           <Floor>
-            <SystemIdentifier id="Floor1"/>
+            <SystemIdentifier id='Floor1'/>
             <ExteriorAdjacentTo>garage</ExteriorAdjacentTo>
             <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
             <FloorOrCeiling>floor</FloorOrCeiling>
@@ -669,16 +596,12 @@
             <Area>288.0</Area>
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
-              <SystemIdentifier id="Floor1Insulation"/>
+              <SystemIdentifier id='Floor1Insulation'/>
               <AssemblyEffectiveRValue>3.1</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>0</NominalRValue>
-              </Layer>
             </Insulation>
           </Floor>
           <Floor>
-            <SystemIdentifier id="Floor2"/>
+            <SystemIdentifier id='Floor2'/>
             <ExteriorAdjacentTo>attic - vented</ExteriorAdjacentTo>
             <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
             <FloorOrCeiling>ceiling</FloorOrCeiling>
@@ -688,30 +611,26 @@
             <Area>601.3</Area>
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
-              <SystemIdentifier id="Floor2Insulation"/>
+              <SystemIdentifier id='Floor2Insulation'/>
               <AssemblyEffectiveRValue>31.6</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>30</NominalRValue>
-              </Layer>
             </Insulation>
           </Floor>
         </Floors>
         <Slabs>
           <Slab>
-            <SystemIdentifier id="Slab1"/>
+            <SystemIdentifier id='Slab1'/>
             <InteriorAdjacentTo>garage</InteriorAdjacentTo>
             <Area>288.0</Area>
             <ExposedPerimeter>48.0</ExposedPerimeter>
             <PerimeterInsulation>
-              <SystemIdentifier id="Slab1PerimeterInsulation"/>
+              <SystemIdentifier id='Slab1PerimeterInsulation'/>
               <Layer>
                 <NominalRValue>0.0</NominalRValue>
                 <InsulationDepth>0.0</InsulationDepth>
               </Layer>
             </PerimeterInsulation>
             <UnderSlabInsulation>
-              <SystemIdentifier id="Slab1UnderSlabInsulation"/>
+              <SystemIdentifier id='Slab1UnderSlabInsulation'/>
               <Layer>
                 <NominalRValue>0.0</NominalRValue>
                 <InsulationWidth>0.0</InsulationWidth>
@@ -719,19 +638,19 @@
             </UnderSlabInsulation>
           </Slab>
           <Slab>
-            <SystemIdentifier id="Slab2"/>
+            <SystemIdentifier id='Slab2'/>
             <InteriorAdjacentTo>basement - conditioned</InteriorAdjacentTo>
             <Area>313.3</Area>
             <ExposedPerimeter>65.3</ExposedPerimeter>
             <PerimeterInsulation>
-              <SystemIdentifier id="Slab2PerimeterInsulation"/>
+              <SystemIdentifier id='Slab2PerimeterInsulation'/>
               <Layer>
                 <NominalRValue>0.0</NominalRValue>
                 <InsulationDepth>0.0</InsulationDepth>
               </Layer>
             </PerimeterInsulation>
             <UnderSlabInsulation>
-              <SystemIdentifier id="Slab2UnderSlabInsulation"/>
+              <SystemIdentifier id='Slab2UnderSlabInsulation'/>
               <Layer>
                 <NominalRValue>0.0</NominalRValue>
                 <InsulationWidth>0.0</InsulationWidth>
@@ -741,7 +660,7 @@
         </Slabs>
         <Windows>
           <Window>
-            <SystemIdentifier id="Window1"/>
+            <SystemIdentifier id='Window1'/>
             <Area>41.3</Area>
             <Azimuth>270</Azimuth>
             <Orientation>west</Orientation>
@@ -755,10 +674,10 @@
               <DistanceToTopOfWindow>9.0</DistanceToTopOfWindow>
               <DistanceToBottomOfWindow>12.7</DistanceToBottomOfWindow>
             </Overhangs>
-            <AttachedToWall idref="Wall3"/>
+            <AttachedToWall idref='Wall3'/>
           </Window>
           <Window>
-            <SystemIdentifier id="Window2"/>
+            <SystemIdentifier id='Window2'/>
             <Area>41.3</Area>
             <Azimuth>270</Azimuth>
             <Orientation>west</Orientation>
@@ -772,10 +691,10 @@
               <DistanceToTopOfWindow>0.9999999999999982</DistanceToTopOfWindow>
               <DistanceToBottomOfWindow>4.7</DistanceToBottomOfWindow>
             </Overhangs>
-            <AttachedToWall idref="Wall3"/>
+            <AttachedToWall idref='Wall3'/>
           </Window>
           <Window>
-            <SystemIdentifier id="Window3"/>
+            <SystemIdentifier id='Window3'/>
             <Area>5.7</Area>
             <Azimuth>0</Azimuth>
             <Orientation>north</Orientation>
@@ -789,10 +708,10 @@
               <DistanceToTopOfWindow>9.0</DistanceToTopOfWindow>
               <DistanceToBottomOfWindow>11.7</DistanceToBottomOfWindow>
             </Overhangs>
-            <AttachedToWall idref="Wall4"/>
+            <AttachedToWall idref='Wall4'/>
           </Window>
           <Window>
-            <SystemIdentifier id="Window4"/>
+            <SystemIdentifier id='Window4'/>
             <Area>40.2</Area>
             <Azimuth>0</Azimuth>
             <Orientation>north</Orientation>
@@ -806,10 +725,10 @@
               <DistanceToTopOfWindow>0.9999999999999982</DistanceToTopOfWindow>
               <DistanceToBottomOfWindow>4.7</DistanceToBottomOfWindow>
             </Overhangs>
-            <AttachedToWall idref="Wall4"/>
+            <AttachedToWall idref='Wall4'/>
           </Window>
           <Window>
-            <SystemIdentifier id="Window5"/>
+            <SystemIdentifier id='Window5'/>
             <Area>20.6</Area>
             <Azimuth>90</Azimuth>
             <Orientation>east</Orientation>
@@ -823,10 +742,10 @@
               <DistanceToTopOfWindow>9.0</DistanceToTopOfWindow>
               <DistanceToBottomOfWindow>12.7</DistanceToBottomOfWindow>
             </Overhangs>
-            <AttachedToWall idref="Wall7"/>
+            <AttachedToWall idref='Wall7'/>
           </Window>
           <Window>
-            <SystemIdentifier id="Window6"/>
+            <SystemIdentifier id='Window6'/>
             <Area>18.7</Area>
             <Azimuth>90</Azimuth>
             <Orientation>east</Orientation>
@@ -840,10 +759,10 @@
               <DistanceToTopOfWindow>0.9999999999999982</DistanceToTopOfWindow>
               <DistanceToBottomOfWindow>4.5</DistanceToBottomOfWindow>
             </Overhangs>
-            <AttachedToWall idref="Wall7"/>
+            <AttachedToWall idref='Wall7'/>
           </Window>
           <Window>
-            <SystemIdentifier id="Window7"/>
+            <SystemIdentifier id='Window7'/>
             <Area>26.0</Area>
             <Azimuth>90</Azimuth>
             <Orientation>east</Orientation>
@@ -857,10 +776,10 @@
               <DistanceToTopOfWindow>0.9999999999999982</DistanceToTopOfWindow>
               <DistanceToBottomOfWindow>4.4</DistanceToBottomOfWindow>
             </Overhangs>
-            <AttachedToWall idref="Wall7"/>
+            <AttachedToWall idref='Wall7'/>
           </Window>
           <Window>
-            <SystemIdentifier id="Window8"/>
+            <SystemIdentifier id='Window8'/>
             <Area>23.0</Area>
             <Azimuth>180</Azimuth>
             <Orientation>south</Orientation>
@@ -874,10 +793,10 @@
               <DistanceToTopOfWindow>9.0</DistanceToTopOfWindow>
               <DistanceToBottomOfWindow>12.9</DistanceToBottomOfWindow>
             </Overhangs>
-            <AttachedToWall idref="Wall8"/>
+            <AttachedToWall idref='Wall8'/>
           </Window>
           <Window>
-            <SystemIdentifier id="Window9"/>
+            <SystemIdentifier id='Window9'/>
             <Area>17.3</Area>
             <Azimuth>180</Azimuth>
             <Orientation>south</Orientation>
@@ -891,10 +810,10 @@
               <DistanceToTopOfWindow>0.9999999999999982</DistanceToTopOfWindow>
               <DistanceToBottomOfWindow>4.4</DistanceToBottomOfWindow>
             </Overhangs>
-            <AttachedToWall idref="Wall8"/>
+            <AttachedToWall idref='Wall8'/>
           </Window>
           <Window>
-            <SystemIdentifier id="Window10"/>
+            <SystemIdentifier id='Window10'/>
             <Area>23.0</Area>
             <Azimuth>180</Azimuth>
             <Orientation>south</Orientation>
@@ -908,13 +827,13 @@
               <DistanceToTopOfWindow>0.9999999999999982</DistanceToTopOfWindow>
               <DistanceToBottomOfWindow>4.9</DistanceToBottomOfWindow>
             </Overhangs>
-            <AttachedToWall idref="Wall8"/>
+            <AttachedToWall idref='Wall8'/>
           </Window>
         </Windows>
         <Doors>
           <Door>
-            <SystemIdentifier id="Door1"/>
-            <AttachedToWall idref="Wall7"/>
+            <SystemIdentifier id='Door1'/>
+            <AttachedToWall idref='Wall7'/>
             <Area>20.0</Area>
             <Azimuth>90</Azimuth>
             <Orientation>east</Orientation>
@@ -926,13 +845,13 @@
         <HVAC>
           <HVACPlant>
             <PrimarySystems>
-              <PrimaryHeatingSystem idref="HeatingSystem1"/>
-              <PrimaryCoolingSystem idref="CoolingSystem1"/>
+              <PrimaryHeatingSystem idref='HeatingSystem1'/>
+              <PrimaryCoolingSystem idref='CoolingSystem1'/>
             </PrimarySystems>
             <HeatingSystem>
-              <SystemIdentifier id="HeatingSystem1"/>
+              <SystemIdentifier id='HeatingSystem1'/>
               <UnitLocation>conditioned space</UnitLocation>
-              <DistributionSystem idref="HVACDistribution1"/>
+              <DistributionSystem idref='HVACDistribution1'/>
               <HeatingSystemType>
                 <Furnace/>
               </HeatingSystemType>
@@ -944,7 +863,7 @@
               <FractionHeatLoadServed>1.0</FractionHeatLoadServed>
             </HeatingSystem>
             <CoolingSystem>
-              <SystemIdentifier id="CoolingSystem1"/>
+              <SystemIdentifier id='CoolingSystem1'/>
               <UnitLocation>conditioned space</UnitLocation>
               <CoolingSystemType>room air conditioner</CoolingSystemType>
               <CoolingSystemFuel>electricity</CoolingSystemFuel>
@@ -956,12 +875,12 @@
             </CoolingSystem>
           </HVACPlant>
           <HVACControl>
-            <SystemIdentifier id="HVACControl1"/>
-            <SetpointTempHeatingSeason>68</SetpointTempHeatingSeason>
-            <SetpointTempCoolingSeason>60</SetpointTempCoolingSeason>
+            <SystemIdentifier id='HVACControl1'/>
+            <SetpointTempHeatingSeason>68.0</SetpointTempHeatingSeason>
+            <SetpointTempCoolingSeason>60.0</SetpointTempCoolingSeason>
           </HVACControl>
           <HVACDistribution>
-            <SystemIdentifier id="HVACDistribution1"/>
+            <SystemIdentifier id='HVACDistribution1'/>
             <DistributionSystemType>
               <AirDistribution>
                 <AirDistributionType>regular velocity</AirDistributionType>
@@ -982,28 +901,28 @@
                   </DuctLeakage>
                 </DuctLeakageMeasurement>
                 <Ducts>
-                  <SystemIdentifier id="Ducts1"/>
+                  <SystemIdentifier id='Ducts1'/>
                   <DuctType>supply</DuctType>
                   <DuctInsulationRValue>0.0</DuctInsulationRValue>
                   <DuctLocation>basement - conditioned</DuctLocation>
                   <FractionDuctArea>0.75</FractionDuctArea>
                 </Ducts>
                 <Ducts>
-                  <SystemIdentifier id="Ducts2"/>
+                  <SystemIdentifier id='Ducts2'/>
                   <DuctType>return</DuctType>
                   <DuctInsulationRValue>0.0</DuctInsulationRValue>
                   <DuctLocation>basement - conditioned</DuctLocation>
                   <FractionDuctArea>0.75</FractionDuctArea>
                 </Ducts>
                 <Ducts>
-                  <SystemIdentifier id="Ducts3"/>
+                  <SystemIdentifier id='Ducts3'/>
                   <DuctType>supply</DuctType>
                   <DuctInsulationRValue>0.0</DuctInsulationRValue>
                   <DuctLocation>conditioned space</DuctLocation>
                   <FractionDuctArea>0.25</FractionDuctArea>
                 </Ducts>
                 <Ducts>
-                  <SystemIdentifier id="Ducts4"/>
+                  <SystemIdentifier id='Ducts4'/>
                   <DuctType>return</DuctType>
                   <DuctInsulationRValue>0.0</DuctInsulationRValue>
                   <DuctLocation>conditioned space</DuctLocation>
@@ -1017,12 +936,12 @@
         <MechanicalVentilation>
           <VentilationFans>
             <VentilationFan>
-              <SystemIdentifier id="VentilationFan1"/>
+              <SystemIdentifier id='VentilationFan1'/>
               <FanLocation>kitchen</FanLocation>
               <UsedForLocalVentilation>true</UsedForLocalVentilation>
             </VentilationFan>
             <VentilationFan>
-              <SystemIdentifier id="VentilationFan2"/>
+              <SystemIdentifier id='VentilationFan2'/>
               <FanLocation>bath</FanLocation>
               <UsedForLocalVentilation>true</UsedForLocalVentilation>
             </VentilationFan>
@@ -1030,7 +949,7 @@
         </MechanicalVentilation>
         <WaterHeating>
           <WaterHeatingSystem>
-            <SystemIdentifier id="WaterHeatingSystem1"/>
+            <SystemIdentifier id='WaterHeatingSystem1'/>
             <FuelType>electricity</FuelType>
             <WaterHeaterType>storage water heater</WaterHeaterType>
             <Location>basement - conditioned</Location>
@@ -1039,7 +958,7 @@
             <HotWaterTemperature>125.0</HotWaterTemperature>
           </WaterHeatingSystem>
           <HotWaterDistribution>
-            <SystemIdentifier id="HotWaterDistribution1"/>
+            <SystemIdentifier id='HotWaterDistribution1'/>
             <SystemType>
               <Standard/>
             </SystemType>
@@ -1048,12 +967,12 @@
             </PipeInsulation>
           </HotWaterDistribution>
           <WaterFixture>
-            <SystemIdentifier id="WaterFixture1"/>
+            <SystemIdentifier id='WaterFixture1'/>
             <WaterFixtureType>shower head</WaterFixtureType>
             <LowFlow>false</LowFlow>
           </WaterFixture>
           <WaterFixture>
-            <SystemIdentifier id="WaterFixture2"/>
+            <SystemIdentifier id='WaterFixture2'/>
             <WaterFixtureType>faucet</WaterFixtureType>
             <LowFlow>false</LowFlow>
           </WaterFixture>
@@ -1061,25 +980,25 @@
       </Systems>
       <Appliances>
         <ClothesWasher>
-          <SystemIdentifier id="ClothesWasher1"/>
+          <SystemIdentifier id='ClothesWasher1'/>
           <Location>conditioned space</Location>
         </ClothesWasher>
         <ClothesDryer>
-          <SystemIdentifier id="ClothesDryer1"/>
+          <SystemIdentifier id='ClothesDryer1'/>
           <Location>conditioned space</Location>
           <FuelType>electricity</FuelType>
         </ClothesDryer>
         <Refrigerator>
-          <SystemIdentifier id="Refrigerator1"/>
+          <SystemIdentifier id='Refrigerator1'/>
           <Location>conditioned space</Location>
         </Refrigerator>
         <CookingRange>
-          <SystemIdentifier id="CookingRange1"/>
+          <SystemIdentifier id='CookingRange1'/>
           <Location>conditioned space</Location>
           <FuelType>electricity</FuelType>
         </CookingRange>
         <Oven>
-          <SystemIdentifier id="Oven1"/>
+          <SystemIdentifier id='Oven1'/>
         </Oven>
       </Appliances>
       <Lighting>
@@ -1169,7 +1088,7 @@
     </BuildingDetails>
   </Building>
   <Consumption>
-    <BuildingID idref="MyBuilding"/>
+    <BuildingID idref='MyBuilding'/>
     <CustomerID/>
     <ConsumptionDetails>
       <ConsumptionInfo>
