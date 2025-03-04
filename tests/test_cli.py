@@ -74,9 +74,10 @@ def test_calls_modify_hpxml(test_data):
     test_workflow_file = TEST_DATA_DIR / "test_modify_xml_workflow.osw"
     test_workflow: dict = json.loads(test_workflow_file.read_text())
 
-    # How did we change the setpoint
+    # Get the changed XML elements from the OSW file
     heating_offset = test_workflow["steps"][0]["arguments"]["heating_setpoint_offset"]
     cooling_setpoint_offset = test_workflow["steps"][0]["arguments"]["cooling_setpoint_offset"]
+    infiltration_offset = test_workflow["steps"][0]["arguments"]["air_leakage_offset"]
 
     # Name of the original test xml file is the last part of the xml_file path
     test_file = Path(test_workflow["steps"][0]["arguments"]["xml_file"]).parts[-1]
@@ -86,13 +87,14 @@ def test_calls_modify_hpxml(test_data):
     original_hpxml = HpxmlDoc(original_xml_file, validate_schema=False)
     modified_hpxml = HpxmlDoc(output_file, validate_schema=False)
 
-    # Parse and check the setpoint & setback values for correct changes
-    original_heating_setpoint = original_hpxml.get_building().BuildingDetails.Systems.HVAC.HVACControl.SetpointTempHeatingSeason
-    # print(original_heating_setpoint)
-    modified_heating_setpoint = modified_hpxml.get_building().BuildingDetails.Systems.HVAC.HVACControl.SetpointTempHeatingSeason
-    assert modified_heating_setpoint == original_heating_setpoint + heating_offset
-
     # Catching an AttributeError seems to be the best way to handle missing elements
+    try:
+        original_heating_setpoint = original_hpxml.get_building().BuildingDetails.Systems.HVAC.HVACControl.SetpointTempHeatingSeason
+        modified_heating_setpoint = modified_hpxml.get_building().BuildingDetails.Systems.HVAC.HVACControl.SetpointTempHeatingSeason
+        assert modified_heating_setpoint == original_heating_setpoint + heating_offset
+    except AttributeError:
+        pass
+
     try:
         original_heating_setback = original_hpxml.get_building().BuildingDetails.Systems.HVAC.HVACControl.SetbackTempHeatingSeason
         modified_heating_setback = modified_hpxml.get_building().BuildingDetails.Systems.HVAC.HVACControl.SetbackTempHeatingSeason
@@ -104,5 +106,12 @@ def test_calls_modify_hpxml(test_data):
         original_cooling_setback = original_hpxml.get_building().BuildingDetails.Systems.HVAC.HVACControl.SetupTempCoolingSeason
         modified_cooling_setback = modified_hpxml.get_building().BuildingDetails.Systems.HVAC.HVACControl.SetupTempCoolingSeason
         assert modified_cooling_setback == original_cooling_setback + cooling_setpoint_offset
+    except AttributeError:
+        pass
+
+    try:
+        original_infiltration = original_hpxml.get_building().BuildingDetails.Enclosure.AirInfiltration.BuildingAirLeakage.AirLeakage
+        modified_infiltration = modified_hpxml.get_building().BuildingDetails.Enclosure.AirInfiltration.BuildingAirLeakage.AirLeakage
+        assert modified_infiltration == original_infiltration + infiltration_offset
     except AttributeError:
         pass

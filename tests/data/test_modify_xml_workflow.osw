@@ -9,7 +9,9 @@
         "xml_file": "../../../sample_files/house01.xml",
         "save_file_path": "../../modifications/new_output.xml",
         "heating_setpoint_offset": -2,
-        "cooling_setpoint_offset": -2
+        "cooling_setpoint_offset": -2,
+        "air_leakage_units": "CFM",
+        "air_leakage_offset": 100
       },
       "measure_dir_name": "ModifyXML"
     }
