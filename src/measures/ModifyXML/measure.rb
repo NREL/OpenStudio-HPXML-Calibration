@@ -54,6 +54,16 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     arg.setDescription('How much to change cooling setpoint')
     args << arg
 
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('air_leakage_units', false)
+    arg.setDisplayName('Air leakage units')
+    arg.setDescription('What the air leakage is measured in. Valid options are: "CFM", "ACH"')
+    args << arg
+
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('air_leakage_offset', false)
+    arg.setDisplayName('Air leakage ofsett')
+    arg.setDescription('How much to change the air leakage')
+    args << arg
+
     return args
   end
 
@@ -79,8 +89,15 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     hpxml_building = hpxml.buildings[0] # FIXME: This requires that each XML file contain only a single building
 
     # Modify XML fields
-    modify_heating_setpoint(hpxml_building, runner, args)
-    modify_cooling_setpoint(hpxml_building, runner, args)
+    if args[:heating_setpoint_offset]
+      modify_heating_setpoint(hpxml_building, runner, args)
+    end
+    if args[:cooling_setpoint_offset]
+      modify_cooling_setpoint(hpxml_building, runner, args)
+    end
+    if args[:air_leakage_offset] && args[:air_leakage_units]
+      modify_air_leakage(hpxml_building, runner, args)
+    end
     # ...
 
     # Save new file
@@ -111,6 +128,24 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     hpxml_building.hvac_controls[0].cooling_setpoint_temp += args[:cooling_setpoint_offset]
     if hpxml_building.hvac_controls[0].cooling_setup_temp
       hpxml_building.hvac_controls[0].cooling_setup_temp += args[:cooling_setpoint_offset]
+    end
+  end
+
+  def modify_air_leakage(hpxml_building, runner, args)
+    # As of 2025-02-25, this measure only modifies heating setpoint & setback (not hourly heating setpoints)
+    if args[:air_leakage_units].nil?
+      puts 'air_leakage_offset and air_leakage_units must be provided to modify air leakage'
+      return
+    end
+
+    # https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/src/OpenStudio-HPXML/HPXMLtoOpenStudio/resources/hpxml.rb#L3277-L3288
+    unless hpxml_building.air_infiltration_measurements[0].air_leakage_units == args[:air_leakage_units]
+      puts 'air_leakage_units provided does not match the air_leakage_units in the XML file'
+      puts 'Update your workflow file to match the air_leakage_units in the XML file'
+      return
+    end
+    if hpxml_building.air_infiltration_measurements[0].air_leakage
+      hpxml_building.air_infiltration_measurements[0].air_leakage += args[:heating_setpoint_offset]
     end
   end
 end

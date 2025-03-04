@@ -54,3 +54,21 @@ How much to change cooling setpoint
 **Units:** ,
 **Required:** false,
 **Model Dependent:** false
+
+### Air leakage units
+
+What the air leakage is measured in. Valid options are: "CFM", "ACH"
+**Name:** air_leakage_units,
+**Type:** Double,
+**Units:** ,
+**Required:** false,
+**Model Dependent:** false
+
+### Air leakage ofsett
+
+How much to change the air leakage
+**Name:** air_leakage_offset,
+**Type:** Double,
+**Units:** ,
+**Required:** false,
+**Model Dependent:** false
