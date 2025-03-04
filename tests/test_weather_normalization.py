@@ -17,7 +17,7 @@ sample_files = list((repo_root / "sample_files").glob("*.xml"))
 
 @pytest.mark.parametrize("filename", test_hpxml_files, ids=lambda x: x.stem)
 def test_hpxml_utility_bill_read(filename):
-    hpxml = HpxmlDoc(filename, validate_schematron=False)
+    hpxml = HpxmlDoc(filename)
     bills, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
     assert "electricity" in bills
 
@@ -29,7 +29,7 @@ def test_hpxml_utility_bill_read(filename):
 def test_hpxml_utility_bill_read_missing_start_end_date(filename):
     for start_end in ("start", "end"):
         # Remove all the EndDateTime elements
-        hpxml = HpxmlDoc(filename, validate_schematron=False)
+        hpxml = HpxmlDoc(filename)
         for el in hpxml.xpath(f"//h:{start_end.capitalize()}DateTime"):
             el.getparent().remove(el)
 
@@ -44,7 +44,7 @@ def test_hpxml_utility_bill_read_missing_start_end_date(filename):
 
 @pytest.mark.parametrize("filename", test_hpxml_files, ids=lambda x: x.stem)
 def test_weather_retrieval(results_dir, filename):
-    hpxml = HpxmlDoc(filename, validate_schematron=False)
+    hpxml = HpxmlDoc(filename)
     lat, lon = ud.get_lat_lon_from_hpxml(hpxml)
     bills_by_fuel_type, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
     for fuel_type, bills in bills_by_fuel_type.items():
@@ -68,7 +68,7 @@ def test_weather_retrieval(results_dir, filename):
 )
 @pytest.mark.parametrize("filename", test_hpxml_files + sample_files, ids=lambda x: x.stem)
 def test_curve_fit(results_dir, filename):
-    hpxml = HpxmlDoc(filename, validate_schematron=False)
+    hpxml = HpxmlDoc(filename)
     lat, lon = ud.get_lat_lon_from_hpxml(hpxml)
     bills_by_fuel_type, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
     for fuel_type, bills in bills_by_fuel_type.items():

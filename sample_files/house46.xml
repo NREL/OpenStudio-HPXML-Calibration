@@ -1,15 +1,16 @@
-<HPXML xmlns="http://hpxmlonline.com/2023/09" schemaVersion="4.0">
+<?xml version='1.0' encoding='UTF-8'?>
+<HPXML xmlns='http://hpxmlonline.com/2023/09' schemaVersion='4.0'>
   <XMLTransactionHeaderInformation>
     <XMLType>HPXML</XMLType>
-    <XMLGeneratedBy>NREL</XMLGeneratedBy>
+    <XMLGeneratedBy>redacted</XMLGeneratedBy>
     <CreatedDateAndTime>2021-01-01T00:00:00</CreatedDateAndTime>
     <Transaction>create</Transaction>
   </XMLTransactionHeaderInformation>
   <SoftwareInfo/>
   <Building>
-    <BuildingID id="bldg1"/>
+    <BuildingID id='bldg1'/>
     <Site>
-      <SiteID id="site1"/>
+      <SiteID id='site1'/>
       <Address>
         <AddressType>street</AddressType>
         <StateCode>VT</StateCode>
@@ -23,19 +24,12 @@
       <BuildingSummary>
         <BuildingConstruction>
           <YearBuilt>2010</YearBuilt>
-          <YearBuiltKnownOrEstimated>known</YearBuiltKnownOrEstimated>
           <ResidentialFacilityType>single-family detached</ResidentialFacilityType>
           <NumberofConditionedFloors>3.0</NumberofConditionedFloors>
           <NumberofConditionedFloorsAboveGrade>2.0</NumberofConditionedFloorsAboveGrade>
           <NumberofBedrooms>4</NumberofBedrooms>
           <ConditionedFloorArea>2848.0</ConditionedFloorArea>
           <ConditionedBuildingVolume>24288.0</ConditionedBuildingVolume>
-          <FoundationType>
-            <Basement>
-              <Conditioned>false</Conditioned>
-            </Basement>
-          </FoundationType>
-          <GaragePresent>true</GaragePresent>
         </BuildingConstruction>
       </BuildingSummary>
       <ClimateandRiskZones>
@@ -43,8 +37,8 @@
           <Year>2009</Year>
           <ClimateZone>6A</ClimateZone>
         </ClimateZoneIECC>
-        <WeatherStation dataSource="software">
-          <SystemIdentifier id="weather_station"/>
+        <WeatherStation>
+          <SystemIdentifier id='weather_station'/>
           <Name>Burlington, VT</Name>
           <WMO>726170</WMO>
           <extension>
@@ -55,9 +49,9 @@
       <Enclosure>
         <AirInfiltration>
           <AirInfiltrationMeasurement>
-            <SystemIdentifier id="infiltmeas3"/>
+            <SystemIdentifier id='infiltmeas3'/>
             <TypeOfInfiltrationMeasurement>blower door</TypeOfInfiltrationMeasurement>
-            <HousePressure>50</HousePressure>
+            <HousePressure>50.0</HousePressure>
             <BuildingAirLeakage>
               <UnitofMeasure>CFM</UnitofMeasure>
               <AirLeakage>1163.0</AirLeakage>
@@ -66,316 +60,169 @@
         </AirInfiltration>
         <Attics>
           <Attic>
-            <SystemIdentifier id="attic5"/>
+            <SystemIdentifier id='attic5'/>
             <AtticType>
-              <Attic>
-                <extension>
-                  <Vented>unknown</Vented>
-                </extension>
-              </Attic>
+              <Attic/>
             </AtticType>
-            <AttachedToRoof idref="roof4"/>
-            <AttachedToFloor idref="attic-floor-0"/>
+            <AttachedToRoof idref='roof4'/>
+            <AttachedToFloor idref='attic-floor-0'/>
           </Attic>
           <Attic>
-            <SystemIdentifier id="attic8"/>
+            <SystemIdentifier id='attic8'/>
             <AtticType>
-              <Attic>
-                <extension>
-                  <Vented>unknown</Vented>
-                </extension>
-              </Attic>
+              <Attic/>
             </AtticType>
-            <AttachedToRoof idref="roof7"/>
-            <AttachedToFloor idref="attic-floor-1"/>
+            <AttachedToRoof idref='roof7'/>
+            <AttachedToFloor idref='attic-floor-1'/>
           </Attic>
           <Attic>
-            <SystemIdentifier id="attic11"/>
+            <SystemIdentifier id='attic11'/>
             <AtticType>
-              <Attic>
-                <extension>
-                  <Vented>unknown</Vented>
-                </extension>
-              </Attic>
+              <Attic/>
             </AtticType>
-            <AttachedToRoof idref="roof10"/>
-            <AttachedToFloor idref="attic-floor-2"/>
+            <AttachedToRoof idref='roof10'/>
+            <AttachedToFloor idref='attic-floor-2'/>
           </Attic>
         </Attics>
         <Foundations>
           <Foundation>
-            <SystemIdentifier id="fnd16"/>
+            <SystemIdentifier id='fnd16'/>
             <FoundationType>
               <Basement>
                 <Conditioned>false</Conditioned>
               </Basement>
             </FoundationType>
-            <AttachedToFoundationWall idref="fw31"/>
-            <AttachedToFoundationWall idref="fw33"/>
-            <AttachedToFloor idref="ff29"/>
-            <AttachedToSlab idref="basement_slab_0"/>
+            <AttachedToFoundationWall idref='fw31'/>
+            <AttachedToFoundationWall idref='fw33'/>
+            <AttachedToFloor idref='ff29'/>
+            <AttachedToSlab idref='basement_slab_0'/>
           </Foundation>
         </Foundations>
         <Roofs>
           <Roof>
-            <SystemIdentifier id="roof4"/>
+            <SystemIdentifier id='roof4'/>
             <InteriorAdjacentTo>attic - unvented</InteriorAdjacentTo>
-            <Area dataSource="software">168.64</Area>
+            <Area>168.64</Area>
             <RoofColor>dark</RoofColor>
-            <Rafters>
-              <Size>2x6</Size>
-              <Spacing>16.0</Spacing>
-            </Rafters>
-            <Pitch dataSource="software">6</Pitch>
+            <Pitch>6.0</Pitch>
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
-              <SystemIdentifier id="roof_insul0"/>
-              <AssemblyEffectiveRValue dataSource="software">2.3</AssemblyEffectiveRValue>
+              <SystemIdentifier id='roof_insul0'/>
+              <AssemblyEffectiveRValue>2.3</AssemblyEffectiveRValue>
             </Insulation>
-            <extension>
-              <rowid>10217</rowid>
-            </extension>
           </Roof>
           <Roof>
-            <SystemIdentifier id="roof7"/>
+            <SystemIdentifier id='roof7'/>
             <InteriorAdjacentTo>attic - unvented</InteriorAdjacentTo>
-            <Area dataSource="software">1410.25</Area>
+            <Area>1410.25</Area>
             <RoofColor>dark</RoofColor>
-            <Rafters>
-              <Size>2x4</Size>
-              <Spacing>24.0</Spacing>
-            </Rafters>
-            <Pitch dataSource="software">6</Pitch>
+            <Pitch>6.0</Pitch>
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
-              <SystemIdentifier id="roof_insul1"/>
-              <AssemblyEffectiveRValue dataSource="software">2.3</AssemblyEffectiveRValue>
+              <SystemIdentifier id='roof_insul1'/>
+              <AssemblyEffectiveRValue>2.3</AssemblyEffectiveRValue>
             </Insulation>
-            <extension>
-              <rowid>10218</rowid>
-            </extension>
           </Roof>
           <Roof>
-            <SystemIdentifier id="roof10"/>
+            <SystemIdentifier id='roof10'/>
             <InteriorAdjacentTo>attic - unvented</InteriorAdjacentTo>
-            <Area dataSource="software">6.32</Area>
+            <Area>6.32</Area>
             <RoofColor>dark</RoofColor>
-            <Rafters>
-              <Size>2x12</Size>
-              <Spacing>36.0</Spacing>
-            </Rafters>
-            <Pitch dataSource="software">6</Pitch>
+            <Pitch>6.0</Pitch>
             <RadiantBarrier>false</RadiantBarrier>
             <Insulation>
-              <SystemIdentifier id="roof_insul2"/>
-              <AssemblyEffectiveRValue dataSource="software">2.3</AssemblyEffectiveRValue>
+              <SystemIdentifier id='roof_insul2'/>
+              <AssemblyEffectiveRValue>2.3</AssemblyEffectiveRValue>
             </Insulation>
-            <extension>
-              <rowid>10219</rowid>
-            </extension>
           </Roof>
-          <Roof dataSource="software">
-            <SystemIdentifier id="grg_roof"/>
+          <Roof>
+            <SystemIdentifier id='grg_roof'/>
             <InteriorAdjacentTo>garage</InteriorAdjacentTo>
             <Area>237.15</Area>
-            <Pitch>6</Pitch>
+            <Pitch>6.0</Pitch>
             <Insulation>
-              <SystemIdentifier id="grg_roof_insul"/>
+              <SystemIdentifier id='grg_roof_insul'/>
               <AssemblyEffectiveRValue>2.3</AssemblyEffectiveRValue>
             </Insulation>
           </Roof>
         </Roofs>
         <RimJoists>
           <RimJoist>
-            <SystemIdentifier id="rj35"/>
+            <SystemIdentifier id='rj35'/>
             <ExteriorAdjacentTo>garage</ExteriorAdjacentTo>
             <InteriorAdjacentTo>basement - unconditioned</InteriorAdjacentTo>
             <Area>12.5</Area>
             <Insulation>
-              <SystemIdentifier id="insul36"/>
+              <SystemIdentifier id='insul36'/>
               <AssemblyEffectiveRValue>20.2</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>continuous - interior</InstallationType>
-                <NominalRValue>0</NominalRValue>
-              </Layer>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>19.0</NominalRValue>
-                <Thickness>6.0</Thickness>
-              </Layer>
-              <Layer>
-                <InstallationType>continuous - exterior</InstallationType>
-                <NominalRValue>0.0</NominalRValue>
-              </Layer>
             </Insulation>
-            <FloorJoists>
-              <Spacing>16.0</Spacing>
-            </FloorJoists>
           </RimJoist>
           <RimJoist>
-            <SystemIdentifier id="rj37"/>
+            <SystemIdentifier id='rj37'/>
             <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
             <InteriorAdjacentTo>basement - unconditioned</InteriorAdjacentTo>
             <Area>155.5</Area>
             <Insulation>
-              <SystemIdentifier id="insul38"/>
+              <SystemIdentifier id='insul38'/>
               <AssemblyEffectiveRValue>20.2</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>continuous - interior</InstallationType>
-                <NominalRValue>0</NominalRValue>
-              </Layer>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>19.0</NominalRValue>
-                <Thickness>6.0</Thickness>
-              </Layer>
-              <Layer>
-                <InstallationType>continuous - exterior</InstallationType>
-                <NominalRValue>0.0</NominalRValue>
-              </Layer>
             </Insulation>
-            <FloorJoists>
-              <Spacing>16.0</Spacing>
-            </FloorJoists>
           </RimJoist>
           <RimJoist>
-            <SystemIdentifier id="rj39"/>
+            <SystemIdentifier id='rj39'/>
             <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
             <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
             <Area>140.0</Area>
             <Insulation>
-              <SystemIdentifier id="insul40"/>
+              <SystemIdentifier id='insul40'/>
               <AssemblyEffectiveRValue>20.2</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>continuous - interior</InstallationType>
-                <NominalRValue>0</NominalRValue>
-              </Layer>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>19.0</NominalRValue>
-                <Thickness>6.0</Thickness>
-              </Layer>
-              <Layer>
-                <InstallationType>continuous - exterior</InstallationType>
-                <NominalRValue>0.0</NominalRValue>
-              </Layer>
             </Insulation>
-            <FloorJoists>
-              <Spacing>16.0</Spacing>
-            </FloorJoists>
           </RimJoist>
         </RimJoists>
         <Walls>
           <Wall>
-            <SystemIdentifier id="agwall41"/>
+            <SystemIdentifier id='agwall41'/>
             <ExteriorAdjacentTo>garage</ExteriorAdjacentTo>
             <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
             <WallType>
               <WoodStud/>
             </WallType>
             <Area>112.5</Area>
-            <Studs>
-              <Size>2x6</Size>
-              <Spacing>16.0</Spacing>
-              <Material>wood</Material>
-            </Studs>
             <Color>medium</Color>
             <Insulation>
-              <SystemIdentifier id="insul42"/>
-              <InsulationGrade>3</InsulationGrade>
+              <SystemIdentifier id='insul42'/>
               <AssemblyEffectiveRValue>13.14</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>continuous - interior</InstallationType>
-                <NominalRValue>0</NominalRValue>
-              </Layer>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>18.0</NominalRValue>
-                <Thickness>5.5</Thickness>
-              </Layer>
-              <Layer>
-                <InstallationType>continuous - exterior</InstallationType>
-                <NominalRValue>0.0</NominalRValue>
-              </Layer>
             </Insulation>
-            <extension>
-              <rowid>15374</rowid>
-            </extension>
           </Wall>
           <Wall>
-            <SystemIdentifier id="agwall43"/>
+            <SystemIdentifier id='agwall43'/>
             <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
             <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
             <WallType>
               <WoodStud/>
             </WallType>
             <Area>96.0</Area>
-            <Studs>
-              <Size>2x6</Size>
-              <Spacing>16.0</Spacing>
-              <Material>wood</Material>
-            </Studs>
             <Color>medium</Color>
             <Insulation>
-              <SystemIdentifier id="insul44"/>
-              <InsulationGrade>3</InsulationGrade>
+              <SystemIdentifier id='insul44'/>
               <AssemblyEffectiveRValue>13.14</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>continuous - interior</InstallationType>
-                <NominalRValue>0</NominalRValue>
-              </Layer>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>18.0</NominalRValue>
-                <Thickness>5.5</Thickness>
-              </Layer>
-              <Layer>
-                <InstallationType>continuous - exterior</InstallationType>
-                <NominalRValue>0.0</NominalRValue>
-              </Layer>
             </Insulation>
-            <extension>
-              <rowid>15375</rowid>
-            </extension>
           </Wall>
           <Wall>
-            <SystemIdentifier id="agwall45"/>
+            <SystemIdentifier id='agwall45'/>
             <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
             <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
             <WallType>
               <WoodStud/>
             </WallType>
             <Area>2567.5</Area>
-            <Studs>
-              <Size>2x6</Size>
-              <Spacing>16.0</Spacing>
-              <Material>wood</Material>
-            </Studs>
             <Color>medium</Color>
             <Insulation>
-              <SystemIdentifier id="insul46"/>
-              <InsulationGrade>3</InsulationGrade>
+              <SystemIdentifier id='insul46'/>
               <AssemblyEffectiveRValue>13.14</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>continuous - interior</InstallationType>
-                <NominalRValue>0</NominalRValue>
-              </Layer>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>18.0</NominalRValue>
-                <Thickness>5.5</Thickness>
-              </Layer>
-              <Layer>
-                <InstallationType>continuous - exterior</InstallationType>
-                <NominalRValue>0.0</NominalRValue>
-              </Layer>
             </Insulation>
-            <extension>
-              <rowid>15376</rowid>
-            </extension>
           </Wall>
-          <Wall dataSource="software">
-            <SystemIdentifier id="grg_wall"/>
+          <Wall>
+            <SystemIdentifier id='grg_wall'/>
             <ExteriorAdjacentTo>outside</ExteriorAdjacentTo>
             <InteriorAdjacentTo>garage</InteriorAdjacentTo>
             <WallType>
@@ -383,14 +230,14 @@
             </WallType>
             <Area>112.5</Area>
             <Insulation>
-              <SystemIdentifier id="grg_wall_insul"/>
+              <SystemIdentifier id='grg_wall_insul'/>
               <AssemblyEffectiveRValue>4.0</AssemblyEffectiveRValue>
             </Insulation>
           </Wall>
         </Walls>
         <FoundationWalls>
           <FoundationWall>
-            <SystemIdentifier id="fw31"/>
+            <SystemIdentifier id='fw31'/>
             <ExteriorAdjacentTo>garage</ExteriorAdjacentTo>
             <InteriorAdjacentTo>basement - unconditioned</InteriorAdjacentTo>
             <Type>solid concrete</Type>
@@ -398,33 +245,20 @@
             <Height>7.5</Height>
             <Thickness>8.0</Thickness>
             <DepthBelowGrade>6.0</DepthBelowGrade>
-            <InteriorStuds>
-              <Size>2x4</Size>
-              <Spacing>16</Spacing>
-              <Material>wood</Material>
-            </InteriorStuds>
             <Insulation>
-              <SystemIdentifier id="insul32"/>
-              <InsulationGrade>3</InsulationGrade>
-              <Layer>
-                <InstallationType>continuous - interior</InstallationType>
-                <NominalRValue>0.0</NominalRValue>
-              </Layer>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>11.0</NominalRValue>
-              </Layer>
+              <SystemIdentifier id='insul32'/>
               <Layer>
                 <InstallationType>continuous - exterior</InstallationType>
                 <NominalRValue>0.0</NominalRValue>
               </Layer>
+              <Layer>
+                <InstallationType>continuous - interior</InstallationType>
+                <NominalRValue>0.0</NominalRValue>
+              </Layer>
             </Insulation>
-            <extension>
-              <rowid>11658</rowid>
-            </extension>
           </FoundationWall>
           <FoundationWall>
-            <SystemIdentifier id="fw33"/>
+            <SystemIdentifier id='fw33'/>
             <ExteriorAdjacentTo>ground</ExteriorAdjacentTo>
             <InteriorAdjacentTo>basement - unconditioned</InteriorAdjacentTo>
             <Type>solid concrete</Type>
@@ -432,265 +266,210 @@
             <Height>7.5</Height>
             <Thickness>8.0</Thickness>
             <DepthBelowGrade>6.0</DepthBelowGrade>
-            <InteriorStuds>
-              <Size>2x4</Size>
-              <Spacing>16</Spacing>
-              <Material>wood</Material>
-            </InteriorStuds>
             <Insulation>
-              <SystemIdentifier id="insul34"/>
-              <InsulationGrade>3</InsulationGrade>
+              <SystemIdentifier id='insul34'/>
+              <Layer>
+                <InstallationType>continuous - exterior</InstallationType>
+                <NominalRValue>0.0</NominalRValue>
+              </Layer>
               <Layer>
                 <InstallationType>continuous - interior</InstallationType>
                 <NominalRValue>0.0</NominalRValue>
               </Layer>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>11.0</NominalRValue>
-              </Layer>
-              <Layer>
-                <InstallationType>continuous - exterior</InstallationType>
-                <NominalRValue>0.0</NominalRValue>
-              </Layer>
             </Insulation>
-            <extension>
-              <rowid>11659</rowid>
-            </extension>
           </FoundationWall>
         </FoundationWalls>
         <Floors>
           <Floor>
-            <SystemIdentifier id="attic-floor-0"/>
+            <SystemIdentifier id='attic-floor-0'/>
             <ExteriorAdjacentTo>attic - unvented</ExteriorAdjacentTo>
             <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
             <FloorType>
-              <WoodFrame dataSource="software"/>
+              <WoodFrame/>
             </FloorType>
             <Area>160.0</Area>
             <Insulation>
-              <SystemIdentifier id="insul6"/>
-              <InsulationGrade>3</InsulationGrade>
+              <SystemIdentifier id='insul6'/>
               <AssemblyEffectiveRValue>14.96</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>38.0</NominalRValue>
-                <Thickness>12.0</Thickness>
-              </Layer>
-              <Layer>
-                <InstallationType>continuous - exterior</InstallationType>
-                <NominalRValue>0.0</NominalRValue>
-              </Layer>
             </Insulation>
           </Floor>
           <Floor>
-            <SystemIdentifier id="attic-floor-1"/>
+            <SystemIdentifier id='attic-floor-1'/>
             <ExteriorAdjacentTo>attic - unvented</ExteriorAdjacentTo>
             <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
             <FloorType>
-              <WoodFrame dataSource="software"/>
+              <WoodFrame/>
             </FloorType>
             <Area>1338.0</Area>
             <Insulation>
-              <SystemIdentifier id="insul9"/>
-              <InsulationGrade>1</InsulationGrade>
+              <SystemIdentifier id='insul9'/>
               <AssemblyEffectiveRValue>37.59</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>13.0</NominalRValue>
-                <Thickness>3.5</Thickness>
-              </Layer>
-              <Layer>
-                <InstallationType>continuous - exterior</InstallationType>
-                <NominalRValue>24.1</NominalRValue>
-              </Layer>
             </Insulation>
           </Floor>
           <Floor>
-            <SystemIdentifier id="attic-floor-2"/>
+            <SystemIdentifier id='attic-floor-2'/>
             <ExteriorAdjacentTo>attic - unvented</ExteriorAdjacentTo>
             <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
             <FloorType>
-              <WoodFrame dataSource="software"/>
+              <WoodFrame/>
             </FloorType>
             <Area>6.0</Area>
             <Insulation>
-              <SystemIdentifier id="insul12"/>
-              <InsulationGrade>1</InsulationGrade>
+              <SystemIdentifier id='insul12'/>
               <AssemblyEffectiveRValue>1.67</AssemblyEffectiveRValue>
-              <Layer>
-                <InstallationType>cavity</InstallationType>
-                <NominalRValue>0.0</NominalRValue>
-                <Thickness>0.0</Thickness>
-              </Layer>
-              <Layer>
-                <InstallationType>continuous - exterior</InstallationType>
-                <NominalRValue>0.0</NominalRValue>
-              </Layer>
             </Insulation>
           </Floor>
           <Floor>
-            <SystemIdentifier id="ff29"/>
+            <SystemIdentifier id='ff29'/>
             <ExteriorAdjacentTo>basement - unconditioned</ExteriorAdjacentTo>
             <InteriorAdjacentTo>conditioned space</InteriorAdjacentTo>
             <FloorType>
-              <WoodFrame dataSource="software"/>
+              <WoodFrame/>
             </FloorType>
             <Area>1504.0</Area>
             <Insulation>
-              <SystemIdentifier id="insul30"/>
+              <SystemIdentifier id='insul30'/>
               <AssemblyEffectiveRValue>3.59</AssemblyEffectiveRValue>
             </Insulation>
           </Floor>
         </Floors>
         <Slabs>
-          <Slab dataSource="software">
-            <SystemIdentifier id="basement_slab_0"/>
+          <Slab>
+            <SystemIdentifier id='basement_slab_0'/>
             <InteriorAdjacentTo>basement - unconditioned</InteriorAdjacentTo>
             <Area>1504.0</Area>
-            <Perimeter>155.13</Perimeter>
             <ExposedPerimeter>155.13</ExposedPerimeter>
-            <OnGradeExposedPerimeter>0</OnGradeExposedPerimeter>
-            <DepthBelowGrade>0</DepthBelowGrade>
+            <DepthBelowGrade>0.0</DepthBelowGrade>
             <PerimeterInsulation>
-              <SystemIdentifier id="basement_slab_0_perim_insul"/>
+              <SystemIdentifier id='basement_slab_0_perim_insul'/>
               <Layer>
-                <InstallationType>continuous</InstallationType>
-                <NominalRValue>0</NominalRValue>
-                <InsulationDepth>0</InsulationDepth>
+                <NominalRValue>0.0</NominalRValue>
+                <InsulationDepth>0.0</InsulationDepth>
               </Layer>
             </PerimeterInsulation>
             <UnderSlabInsulation>
-              <SystemIdentifier id="basement_slab_0_under_insul"/>
+              <SystemIdentifier id='basement_slab_0_under_insul'/>
               <Layer>
-                <InstallationType>continuous</InstallationType>
-                <NominalRValue>0</NominalRValue>
-                <InsulationWidth>0</InsulationWidth>
+                <NominalRValue>0.0</NominalRValue>
+                <InsulationWidth>0.0</InsulationWidth>
               </Layer>
             </UnderSlabInsulation>
           </Slab>
-          <Slab dataSource="software">
-            <SystemIdentifier id="grg_slab"/>
+          <Slab>
+            <SystemIdentifier id='grg_slab'/>
             <InteriorAdjacentTo>garage</InteriorAdjacentTo>
             <Area>225.0</Area>
-            <Perimeter>60.0</Perimeter>
             <ExposedPerimeter>60.0</ExposedPerimeter>
-            <OnGradeExposedPerimeter>60.0</OnGradeExposedPerimeter>
-            <DepthBelowGrade>0</DepthBelowGrade>
+            <DepthBelowGrade>0.0</DepthBelowGrade>
             <PerimeterInsulation>
-              <SystemIdentifier id="grg_slab_perim_insul"/>
+              <SystemIdentifier id='grg_slab_perim_insul'/>
               <Layer>
-                <InstallationType>continuous</InstallationType>
-                <NominalRValue>0</NominalRValue>
-                <InsulationDepth>0</InsulationDepth>
+                <NominalRValue>0.0</NominalRValue>
+                <InsulationDepth>0.0</InsulationDepth>
               </Layer>
             </PerimeterInsulation>
             <UnderSlabInsulation>
-              <SystemIdentifier id="grg_slab_under_insul"/>
+              <SystemIdentifier id='grg_slab_under_insul'/>
               <Layer>
-                <InstallationType>continuous</InstallationType>
-                <NominalRValue>0</NominalRValue>
-                <InsulationWidth>0</InsulationWidth>
+                <NominalRValue>0.0</NominalRValue>
+                <InsulationWidth>0.0</InsulationWidth>
               </Layer>
             </UnderSlabInsulation>
           </Slab>
         </Slabs>
         <Windows>
           <Window>
-            <SystemIdentifier id="window47"/>
+            <SystemIdentifier id='window47'/>
             <Area>7.4</Area>
             <Orientation>northwest</Orientation>
             <UFactor>0.53</UFactor>
             <SHGC>0.36</SHGC>
-            <AttachedToWall idref="agwall45"/>
+            <AttachedToWall idref='agwall45'/>
           </Window>
           <Window>
-            <SystemIdentifier id="window48"/>
+            <SystemIdentifier id='window48'/>
             <Area>61.0</Area>
             <Orientation>northwest</Orientation>
             <UFactor>0.33</UFactor>
             <SHGC>0.34</SHGC>
-            <AttachedToWall idref="agwall45"/>
+            <AttachedToWall idref='agwall45'/>
           </Window>
           <Window>
-            <SystemIdentifier id="window49"/>
+            <SystemIdentifier id='window49'/>
             <Area>58.5</Area>
             <Orientation>northwest</Orientation>
             <UFactor>0.33</UFactor>
             <SHGC>0.34</SHGC>
-            <AttachedToWall idref="agwall45"/>
+            <AttachedToWall idref='agwall45'/>
           </Window>
           <Window>
-            <SystemIdentifier id="window50"/>
+            <SystemIdentifier id='window50'/>
             <Area>144.0</Area>
             <Orientation>southwest</Orientation>
             <UFactor>0.32</UFactor>
             <SHGC>0.28</SHGC>
-            <AttachedToWall idref="agwall45"/>
+            <AttachedToWall idref='agwall45'/>
           </Window>
           <Window>
-            <SystemIdentifier id="window51"/>
+            <SystemIdentifier id='window51'/>
             <Area>40.5</Area>
             <Orientation>southwest</Orientation>
             <UFactor>0.33</UFactor>
             <SHGC>0.34</SHGC>
-            <AttachedToWall idref="agwall45"/>
+            <AttachedToWall idref='agwall45'/>
           </Window>
           <Window>
-            <SystemIdentifier id="window52"/>
+            <SystemIdentifier id='window52'/>
             <Area>82.0</Area>
             <Orientation>southeast</Orientation>
             <UFactor>0.33</UFactor>
             <SHGC>0.34</SHGC>
-            <AttachedToWall idref="agwall45"/>
+            <AttachedToWall idref='agwall45'/>
           </Window>
           <Window>
-            <SystemIdentifier id="window53"/>
+            <SystemIdentifier id='window53'/>
             <Area>78.0</Area>
             <Orientation>southeast</Orientation>
             <UFactor>0.33</UFactor>
             <SHGC>0.34</SHGC>
-            <AttachedToWall idref="agwall45"/>
+            <AttachedToWall idref='agwall45'/>
           </Window>
           <Window>
-            <SystemIdentifier id="window54"/>
+            <SystemIdentifier id='window54'/>
             <Area>20.0</Area>
             <Orientation>southeast</Orientation>
             <UFactor>0.32</UFactor>
             <SHGC>0.28</SHGC>
-            <AttachedToWall idref="agwall45"/>
+            <AttachedToWall idref='agwall45'/>
           </Window>
           <Window>
-            <SystemIdentifier id="window55"/>
+            <SystemIdentifier id='window55'/>
             <Area>3.5</Area>
             <Orientation>southeast</Orientation>
             <UFactor>0.53</UFactor>
             <SHGC>0.36</SHGC>
-            <AttachedToWall idref="fw33"/>
+            <AttachedToWall idref='fw33'/>
           </Window>
           <Window>
-            <SystemIdentifier id="window56"/>
+            <SystemIdentifier id='window56'/>
             <Area>3.5</Area>
             <Orientation>southwest</Orientation>
             <UFactor>0.53</UFactor>
             <SHGC>0.36</SHGC>
-            <AttachedToWall idref="fw33"/>
+            <AttachedToWall idref='fw33'/>
           </Window>
         </Windows>
         <Doors>
           <Door>
-            <SystemIdentifier id="door57"/>
-            <AttachedToWall idref="agwall45"/>
+            <SystemIdentifier id='door57'/>
+            <AttachedToWall idref='agwall45'/>
             <Area>28.1</Area>
-            <DoorType>exterior</DoorType>
-            <StormDoor>false</StormDoor>
             <RValue>7.93</RValue>
           </Door>
           <Door>
-            <SystemIdentifier id="door58"/>
-            <AttachedToWall idref="agwall41"/>
+            <SystemIdentifier id='door58'/>
+            <AttachedToWall idref='agwall41'/>
             <Area>20.0</Area>
-            <DoorType>exterior</DoorType>
-            <StormDoor>false</StormDoor>
             <RValue>7.93</RValue>
           </Door>
         </Doors>
@@ -699,10 +478,9 @@
         <HVAC>
           <HVACPlant>
             <HeatingSystem>
-              <SystemIdentifier id="htgsys59"/>
+              <SystemIdentifier id='htgsys59'/>
               <UnitLocation>basement - unconditioned</UnitLocation>
-              <PerformanceAdjustment>1.0</PerformanceAdjustment>
-              <DistributionSystem idref="hydronic60"/>
+              <DistributionSystem idref='hydronic60'/>
               <HeatingSystemType>
                 <Boiler/>
               </HeatingSystemType>
@@ -713,29 +491,26 @@
                 <Value>0.87</Value>
               </AnnualHeatingEfficiency>
               <FractionHeatLoadServed>1.0</FractionHeatLoadServed>
-              <extension>
-                <rowid>14588</rowid>
-              </extension>
             </HeatingSystem>
           </HVACPlant>
           <HVACControl>
-            <SystemIdentifier id="control63"/>
+            <SystemIdentifier id='control63'/>
             <ControlType>programmable thermostat</ControlType>
             <SetpointTempHeatingSeason>68.0</SetpointTempHeatingSeason>
             <SetpointTempCoolingSeason>78.0</SetpointTempCoolingSeason>
           </HVACControl>
           <HVACDistribution>
-            <SystemIdentifier id="hydronic60"/>
+            <SystemIdentifier id='hydronic60'/>
             <DistributionSystemType>
               <HydronicDistribution>
-                <HydronicDistributionType dataSource="software">baseboard</HydronicDistributionType>
+                <HydronicDistributionType>baseboard</HydronicDistributionType>
               </HydronicDistribution>
             </DistributionSystemType>
           </HVACDistribution>
         </HVAC>
         <WaterHeating>
           <WaterHeatingSystem>
-            <SystemIdentifier id="dhw62"/>
+            <SystemIdentifier id='dhw62'/>
             <WaterHeaterType>space-heating boiler with storage tank</WaterHeaterType>
             <Location>basement - unconditioned</Location>
             <TankVolume>50.0</TankVolume>
@@ -745,53 +520,52 @@
                 <JacketRValue>0.0</JacketRValue>
               </Jacket>
             </WaterHeaterInsulation>
-            <RelatedHVACSystem idref="htgsys59"/>
+            <RelatedHVACSystem idref='htgsys59'/>
           </WaterHeatingSystem>
-          <HotWaterDistribution dataSource="software">
-            <SystemIdentifier id="dhwdist"/>
+          <HotWaterDistribution>
+            <SystemIdentifier id='dhwdist'/>
             <SystemType>
-              <Standard dataSource="software"/>
+              <Standard/>
             </SystemType>
           </HotWaterDistribution>
-          <WaterFixture dataSource="software">
-            <SystemIdentifier id="shower_head_0.0"/>
+          <WaterFixture>
+            <SystemIdentifier id='shower_head_0.0'/>
             <WaterFixtureType>shower head</WaterFixtureType>
             <LowFlow>false</LowFlow>
           </WaterFixture>
-          <WaterFixture dataSource="software">
-            <SystemIdentifier id="faucet_0.0"/>
+          <WaterFixture>
+            <SystemIdentifier id='faucet_0.0'/>
             <WaterFixtureType>faucet</WaterFixtureType>
             <LowFlow>false</LowFlow>
           </WaterFixture>
         </WaterHeating>
       </Systems>
       <Appliances>
-        <ClothesWasher dataSource="software">
-          <SystemIdentifier id="clothes-washer"/>
+        <ClothesWasher>
+          <SystemIdentifier id='clothes-washer'/>
         </ClothesWasher>
         <ClothesDryer>
-          <SystemIdentifier id="clothesdryer64"/>
+          <SystemIdentifier id='clothesdryer64'/>
           <FuelType>natural gas</FuelType>
         </ClothesDryer>
         <Dishwasher>
-          <SystemIdentifier id="dishwasher65"/>
+          <SystemIdentifier id='dishwasher65'/>
         </Dishwasher>
         <Refrigerator>
-          <SystemIdentifier id="refrig66"/>
+          <SystemIdentifier id='refrig66'/>
           <RatedAnnualkWh>775.0</RatedAnnualkWh>
         </Refrigerator>
-        <CookingRange dataSource="software">
-          <SystemIdentifier id="cooking-range"/>
+        <CookingRange>
+          <SystemIdentifier id='cooking-range'/>
           <FuelType>natural gas</FuelType>
         </CookingRange>
         <Oven>
-          <SystemIdentifier id="oven67"/>
-          <FuelType>natural gas</FuelType>
+          <SystemIdentifier id='oven67'/>
         </Oven>
       </Appliances>
       <Lighting>
         <LightingGroup>
-          <SystemIdentifier id="lighting-fraction-1"/>
+          <SystemIdentifier id='lighting-fraction-1'/>
           <Location>interior</Location>
           <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
           <LightingType>
@@ -799,63 +573,63 @@
           </LightingType>
         </LightingGroup>
         <LightingGroup>
-          <SystemIdentifier id="lighting-fraction-2"/>
+          <SystemIdentifier id='lighting-fraction-2'/>
           <Location>interior</Location>
           <FractionofUnitsInLocation>0.25</FractionofUnitsInLocation>
           <LightingType>
             <FluorescentTube/>
           </LightingType>
         </LightingGroup>
-        <LightingGroup dataSource="software">
-          <SystemIdentifier id="lighting-led-interior"/>
+        <LightingGroup>
+          <SystemIdentifier id='lighting-led-interior'/>
           <Location>interior</Location>
           <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
           <LightingType>
             <LightEmittingDiode/>
           </LightingType>
         </LightingGroup>
-        <LightingGroup dataSource="software">
-          <SystemIdentifier id="lighting-cfl-exterior"/>
+        <LightingGroup>
+          <SystemIdentifier id='lighting-cfl-exterior'/>
           <Location>exterior</Location>
           <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
           <LightingType>
             <CompactFluorescent/>
           </LightingType>
         </LightingGroup>
-        <LightingGroup dataSource="software">
-          <SystemIdentifier id="lighting-led-exterior"/>
+        <LightingGroup>
+          <SystemIdentifier id='lighting-led-exterior'/>
           <Location>exterior</Location>
           <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
           <LightingType>
             <LightEmittingDiode/>
           </LightingType>
         </LightingGroup>
-        <LightingGroup dataSource="software">
-          <SystemIdentifier id="lighting-lfl-exterior"/>
+        <LightingGroup>
+          <SystemIdentifier id='lighting-lfl-exterior'/>
           <Location>exterior</Location>
           <FractionofUnitsInLocation>0.25</FractionofUnitsInLocation>
           <LightingType>
             <FluorescentTube/>
           </LightingType>
         </LightingGroup>
-        <LightingGroup dataSource="software">
-          <SystemIdentifier id="lighting-cfl-garage"/>
+        <LightingGroup>
+          <SystemIdentifier id='lighting-cfl-garage'/>
           <Location>garage</Location>
           <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
           <LightingType>
             <CompactFluorescent/>
           </LightingType>
         </LightingGroup>
-        <LightingGroup dataSource="software">
-          <SystemIdentifier id="lighting-led-garage"/>
+        <LightingGroup>
+          <SystemIdentifier id='lighting-led-garage'/>
           <Location>garage</Location>
           <FractionofUnitsInLocation>0.0</FractionofUnitsInLocation>
           <LightingType>
             <LightEmittingDiode/>
           </LightingType>
         </LightingGroup>
-        <LightingGroup dataSource="software">
-          <SystemIdentifier id="lighting-lfl-garage"/>
+        <LightingGroup>
+          <SystemIdentifier id='lighting-lfl-garage'/>
           <Location>garage</Location>
           <FractionofUnitsInLocation>0.25</FractionofUnitsInLocation>
           <LightingType>
@@ -863,37 +637,27 @@
           </LightingType>
         </LightingGroup>
         <CeilingFan>
-          <SystemIdentifier id="ceilingfan68"/>
-          <Airflow>
-            <Efficiency>70.400002</Efficiency>
-          </Airflow>
+          <SystemIdentifier id='ceilingfan68'/>
         </CeilingFan>
       </Lighting>
-      <MiscLoads dataSource="software">
+      <MiscLoads>
         <PlugLoad>
-          <SystemIdentifier id="plugload1"/>
+          <SystemIdentifier id='plugload1'/>
           <PlugLoadType>other</PlugLoadType>
         </PlugLoad>
         <PlugLoad>
-          <SystemIdentifier id="plugload2"/>
+          <SystemIdentifier id='plugload2'/>
           <PlugLoadType>TV other</PlugLoadType>
         </PlugLoad>
       </MiscLoads>
     </BuildingDetails>
   </Building>
-  <Utility>
-    <UtilitiesorFuelProviders>
-      <UtilityFuelProvider>
-        <SystemIdentifier id="UtilitySupplierFuel"/>
-      </UtilityFuelProvider>
-    </UtilitiesorFuelProviders>
-  </Utility>
   <Consumption>
-    <BuildingID idref="bldg1"/>
-    <CustomerID idref="Customer1"/>
+    <BuildingID idref='bldg1'/>
+    <CustomerID/>
     <ConsumptionDetails>
       <ConsumptionInfo>
-        <UtilityID idref="UtilitySupplierFuel"/>
+        <UtilityID/>
         <ConsumptionType>
           <Energy>
             <FuelType>electricity</FuelType>
@@ -1152,7 +916,7 @@
         </ConsumptionDetail>
       </ConsumptionInfo>
       <ConsumptionInfo>
-        <UtilityID idref="UtilitySupplierFuel"/>
+        <UtilityID/>
         <ConsumptionType>
           <Energy>
             <FuelType>natural gas</FuelType>
