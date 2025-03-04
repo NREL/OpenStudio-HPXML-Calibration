@@ -3,8 +3,8 @@
   <schema_version>3.1</schema_version>
   <name>modify_xml</name>
   <uid>afd74b96-8b2c-4ebd-83be-0d3fdc35bf9a</uid>
-  <version_id>35e96659-db67-4dcb-808b-4f9472292f81</version_id>
-  <version_modified>2025-03-04T21:25:33Z</version_modified>
+  <version_id>ff51b13d-c1d0-4820-a0b3-086527da0f7e</version_id>
+  <version_modified>2025-03-04T21:50:09Z</version_modified>
   <xml_checksum>1B7C870F</xml_checksum>
   <class_name>ModifyXML</class_name>
   <display_name>ModifyXML</display_name>
@@ -47,7 +47,7 @@
       <name>air_leakage_units</name>
       <display_name>Air leakage units</display_name>
       <description>What the air leakage is measured in. Valid options are: "CFM", "ACH"</description>
-      <type>Double</type>
+      <type>String</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
     </argument>
@@ -88,7 +88,7 @@
       <filename>README.md</filename>
       <filetype>md</filetype>
       <usage_type>readme</usage_type>
-      <checksum>CEF3CCBA</checksum>
+      <checksum>F84C055D</checksum>
     </file>
     <file>
       <filename>README.md.erb</filename>
@@ -111,7 +111,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>5CBEE27A</checksum>
+      <checksum>F7F2419F</checksum>
     </file>
     <file>
       <filename>example_model.osm</filename>

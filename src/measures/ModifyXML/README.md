@@ -59,7 +59,7 @@ How much to change cooling setpoint
 
 What the air leakage is measured in. Valid options are: "CFM", "ACH"
 **Name:** air_leakage_units,
-**Type:** Double,
+**Type:** String,
 **Units:** ,
 **Required:** false,
 **Model Dependent:** false
