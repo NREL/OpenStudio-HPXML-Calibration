@@ -101,7 +101,7 @@ def modify_xml(workflow_file: Path) -> None:
 
 @app.command
 def download_weather() -> None:
-    """Download the TMY3 weather files from NREL
+    """Download TMY3 weather files from NREL
 
     Parameters
     ----------
