@@ -3,8 +3,8 @@
   <schema_version>3.1</schema_version>
   <name>modify_xml</name>
   <uid>afd74b96-8b2c-4ebd-83be-0d3fdc35bf9a</uid>
-  <version_id>ff51b13d-c1d0-4820-a0b3-086527da0f7e</version_id>
-  <version_modified>2025-03-04T21:50:09Z</version_modified>
+  <version_id>b735f59a-45cd-4ec3-82e7-1f647cd6e369</version_id>
+  <version_modified>2025-03-06T19:31:30Z</version_modified>
   <xml_checksum>1B7C870F</xml_checksum>
   <class_name>ModifyXML</class_name>
   <display_name>ModifyXML</display_name>
@@ -44,17 +44,11 @@
       <model_dependent>false</model_dependent>
     </argument>
     <argument>
-      <name>air_leakage_units</name>
-      <display_name>Air leakage units</display_name>
-      <description>What the air leakage is measured in. Valid options are: "CFM", "ACH"</description>
-      <type>String</type>
-      <required>false</required>
-      <model_dependent>false</model_dependent>
-    </argument>
-    <argument>
-      <name>air_leakage_offset</name>
-      <display_name>Air leakage ofsett</display_name>
-      <description>How much to change the air leakage</description>
+      <name>air_leakage_pct_change</name>
+      <display_name>Air leakage percent change</display_name>
+      <description>What percentage to change the air leakage rate.
+      Positive value increases air leakage, negative value decreases air leakage.
+      Expressed as a decimal, 0 - 1.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
@@ -88,7 +82,7 @@
       <filename>README.md</filename>
       <filetype>md</filetype>
       <usage_type>readme</usage_type>
-      <checksum>F84C055D</checksum>
+      <checksum>52543915</checksum>
     </file>
     <file>
       <filename>README.md.erb</filename>
@@ -111,7 +105,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>F7F2419F</checksum>
+      <checksum>23C32F75</checksum>
     </file>
     <file>
       <filename>example_model.osm</filename>

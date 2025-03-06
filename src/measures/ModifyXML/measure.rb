@@ -54,14 +54,11 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     arg.setDescription('How much to change cooling setpoint')
     args << arg
 
-    arg = OpenStudio::Measure::OSArgument.makeStringArgument('air_leakage_units', false)
-    arg.setDisplayName('Air leakage units')
-    arg.setDescription('What the air leakage is measured in. Valid options are: "CFM", "ACH"')
-    args << arg
-
-    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('air_leakage_offset', false)
-    arg.setDisplayName('Air leakage ofsett')
-    arg.setDescription('How much to change the air leakage')
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('air_leakage_pct_change', false)
+    arg.setDisplayName('Air leakage percent change')
+    arg.setDescription('What percentage to change the air leakage rate.
+      Positive value increases air leakage, negative value decreases air leakage.
+      Expressed as a decimal, 0 - 1.')
     args << arg
 
     return args
@@ -95,7 +92,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     if args[:cooling_setpoint_offset]
       modify_cooling_setpoint(hpxml_building, runner, args)
     end
-    if args[:air_leakage_offset]
+    if args[:air_leakage_pct_change]
       modify_air_leakage(hpxml_building, runner, args)
     end
     # ...
@@ -132,20 +129,11 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_air_leakage(hpxml_building, runner, args)
-    # As of 2025-02-25, this measure only modifies heating setpoint & setback (not hourly heating setpoints)
-    if args[:air_leakage_units].nil?
-      puts 'air_leakage_offset and air_leakage_units must be provided to modify air leakage'
-      return
-    end
-
     # https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/src/OpenStudio-HPXML/HPXMLtoOpenStudio/resources/hpxml.rb#L3277-L3288
-    unless hpxml_building.air_infiltration_measurements[0].unit_of_measure == args[:air_leakage_units]
-      puts 'air_leakage_units provided does not match the air_leakage_units in the XML file'
-      puts 'Update your workflow file to match the air_leakage_units in the XML file'
-      return
-    end
     if hpxml_building.air_infiltration_measurements[0].air_leakage
-      hpxml_building.air_infiltration_measurements[0].air_leakage += args[:air_leakage_offset]
+      multiplier = 1 + args[:air_leakage_pct_change]
+      new_infiltration = hpxml_building.air_infiltration_measurements[0].air_leakage * multiplier
+      hpxml_building.air_infiltration_measurements[0].air_leakage = new_infiltration.round
     end
   end
 end

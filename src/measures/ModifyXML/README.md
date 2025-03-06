@@ -55,19 +55,12 @@ How much to change cooling setpoint
 **Required:** false,
 **Model Dependent:** false
 
-### Air leakage units
+### Air leakage percent change
 
-What the air leakage is measured in. Valid options are: "CFM", "ACH"
-**Name:** air_leakage_units,
-**Type:** String,
-**Units:** ,
-**Required:** false,
-**Model Dependent:** false
-
-### Air leakage ofsett
-
-How much to change the air leakage
-**Name:** air_leakage_offset,
+What percentage to change the air leakage rate.
+      Positive value increases air leakage, negative value decreases air leakage.
+      Expressed as a decimal, 0 - 1.
+**Name:** air_leakage_pct_change,
 **Type:** Double,
 **Units:** ,
 **Required:** false,
