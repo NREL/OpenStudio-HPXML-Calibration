@@ -5,14 +5,14 @@
   ],
   "steps": [
     {
+      "measure_dir_name": "ModifyXML",
       "arguments": {
         "xml_file": "../../../sample_files/house01.xml",
         "save_file_path": "../../modifications/new_output.xml",
         "heating_setpoint_offset": -2,
         "cooling_setpoint_offset": -2,
         "air_leakage_pct_change": 0.15
-      },
-      "measure_dir_name": "ModifyXML"
+      }
     }
   ]
 }
