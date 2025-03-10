@@ -7,6 +7,7 @@ import pandas as pd
 from lxml import objectify
 
 from openstudio_hpxml_calibration.hpxml import HpxmlDoc
+from openstudio_hpxml_calibration.units import convert_units
 
 
 def get_datetime_subel(el: objectify.ObjectifiedElement, subel_name: str) -> pd.Timestamp | None:
@@ -120,8 +121,7 @@ def join_bills_weather(bills_orig: pd.DataFrame, lat: float, lon: float, **kw) -
         )
         tempC, _ = isd_station.load_isd_hourly_temp_data(start_date, end_date)
     tempC = tempC.tz_convert(bills_orig["start_date"].dt.tz)
-    tempF = tempC * 1.8 + 32
-
+    tempF = convert_units(tempC, "c", "f")
     bills = bills_orig.copy()
     bills["n_days"] = (
         (bills_orig["end_date"] - bills_orig["start_date"]).dt.total_seconds() / 60 / 60 / 24
