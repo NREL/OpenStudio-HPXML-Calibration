@@ -84,8 +84,8 @@ def test_calls_modify_hpxml(test_data):
     original_xml_file = TEST_DIR.parent / "sample_files" / test_file
 
     # Instantiate the original and modified HPXML files
-    original_hpxml = HpxmlDoc(original_xml_file, validate_schema=False)
-    modified_hpxml = HpxmlDoc(output_file, validate_schema=False)
+    original_hpxml = HpxmlDoc(original_xml_file)
+    modified_hpxml = HpxmlDoc(output_file)
 
     # Catching an AttributeError seems to be the best way to handle missing elements
     try:
@@ -112,8 +112,6 @@ def test_calls_modify_hpxml(test_data):
     try:
         original_infiltration = original_hpxml.get_building().BuildingDetails.Enclosure.AirInfiltration.BuildingAirLeakage.AirLeakage
         modified_infiltration = modified_hpxml.get_building().BuildingDetails.Enclosure.AirInfiltration.BuildingAirLeakage.AirLeakage
-        print(original_infiltration)
-        print(modified_infiltration)
         assert modified_infiltration == original_infiltration * (1 + infiltration_offset)
     except AttributeError:
         pass
