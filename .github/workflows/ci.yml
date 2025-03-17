@@ -56,7 +56,7 @@ jobs:
       - name: Measure unit tests
         run: |
           cd src/measures/ModifyXML/tests
-          $OpenStudioBinPath modify_xml_test.rb
+          openstudio modify_xml_test.rb
       - name: Unit tests
         run: uv run pytest -v
       - name: Save test results
