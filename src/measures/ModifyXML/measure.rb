@@ -171,6 +171,11 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_air_leakage(hpxml_bldg, runner, args)
+    if args[:air_leakage_pct_change].nil?
+      @@logger.debug('No modifier for air leakage provided. Not modifying infiltration.')
+      return
+    end
+
     # https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/src/OpenStudio-HPXML/HPXMLtoOpenStudio/resources/hpxml.rb#L3277-L3288
     if hpxml_bldg.air_infiltration_measurements[0].air_leakage
       multiplier = 1 + args[:air_leakage_pct_change]
