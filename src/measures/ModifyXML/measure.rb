@@ -115,6 +115,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       hpxml_bldg.hvac_controls[0].heating_setpoint_temp += args[:heating_setpoint_offset]
       if hpxml_bldg.hvac_controls[0].heating_setback_temp
         hpxml_bldg.hvac_controls[0].heating_setback_temp += args[:heating_setpoint_offset]
+        @@logger.debug("New heating setback: #{hpxml_bldg.hvac_controls[0].heating_setback_temp}")
       end
       @@logger.debug("New heating setpoint: #{hpxml_bldg.hvac_controls[0].heating_setpoint_temp}")
     end
@@ -128,7 +129,8 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       processed_weekend_numbers = weekend_numbers.map { |n| n + args[:heating_setpoint_offset] }
       hpxml_bldg.hvac_controls[0].weekday_heating_setpoints = processed_weekday_numbers.join(", ")
       hpxml_bldg.hvac_controls[0].weekend_heating_setpoints = processed_weekend_numbers.join(", ")
-      @@logger.debug("New heating setpoints: #{hpxml_bldg.hvac_controls[0].weekday_heating_setpoints}")
+      @@logger.debug("New weekday heating setpoints: #{hpxml_bldg.hvac_controls[0].weekday_heating_setpoints}")
+      @@logger.debug("New weekend heating setpoints: #{hpxml_bldg.hvac_controls[0].weekend_heating_setpoints}")
     end
   end
 
@@ -144,6 +146,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       hpxml_bldg.hvac_controls[0].cooling_setpoint_temp += args[:cooling_setpoint_offset]
       if hpxml_bldg.hvac_controls[0].cooling_setup_temp
         hpxml_bldg.hvac_controls[0].cooling_setup_temp += args[:cooling_setpoint_offset]
+        @@logger.debug("New cooling setup: #{hpxml_bldg.hvac_controls[0].cooling_setup_temp}")
       end
       @@logger.debug("New cooling setpoint: #{hpxml_bldg.hvac_controls[0].cooling_setpoint_temp}")
     end
@@ -157,7 +160,8 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       processed_weekend_numbers = weekend_numbers.map { |n| n + args[:heating_setpoint_offset] }
       hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints = processed_weekday_numbers.join(", ")
       hpxml_bldg.hvac_controls[0].weekend_cooling_setpoints = processed_weekend_numbers.join(", ")
-      @@logger.debug("New cooling setpoints: #{hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints}")
+      @@logger.debug("New weekday cooling setpoints: #{hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints}")
+      @@logger.debug("New weekend cooling setpoints: #{hpxml_bldg.hvac_controls[0].weekend_cooling_setpoints}")
     end
   end
 
