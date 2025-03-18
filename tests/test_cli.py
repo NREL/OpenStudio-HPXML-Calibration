@@ -21,6 +21,7 @@ def test_data():
     yield data  # Provide data dict to the test
 
     # Teardown phase
+    # To debug, comment the appropriate line here and review the test output
     rmtree(TEST_SIM_DIR, ignore_errors=True)
     rmtree(TEST_MODIFY_DIR, ignore_errors=True)
     rmtree(TEST_DATA_DIR / "generated_files", ignore_errors=True)
