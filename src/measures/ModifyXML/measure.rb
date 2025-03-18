@@ -105,43 +105,45 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_heating_setpoint(hpxml_bldg, runner, args)
-    # As of 2025-02-25, this measure only modifies heating setpoint & setback (not hourly heating setpoints)
     if args[:heating_setpoint_offset].nil?
       @@logger.debug('No modifier for heating setpoint provided. Not modifying heating setpoints.')
       return
     end
-    # https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/src/OpenStudio-HPXML/HPXMLtoOpenStudio/resources/hpxml.rb#L7581-L7603
-    unless hpxml_bldg.hvac_controls[0].heating_setpoint_temp.nil?
+
+    if !hpxml_bldg.hvac_controls[0].heating_setpoint_temp.nil?
+      # https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/src/OpenStudio-HPXML/HPXMLtoOpenStudio/resources/hpxml.rb#L7581-L7603
       hpxml_bldg.hvac_controls[0].heating_setpoint_temp += args[:heating_setpoint_offset]
       if hpxml_bldg.hvac_controls[0].heating_setback_temp
         hpxml_bldg.hvac_controls[0].heating_setback_temp += args[:heating_setpoint_offset]
         @@logger.debug("New heating setback: #{hpxml_bldg.hvac_controls[0].heating_setback_temp}")
       end
       @@logger.debug("New heating setpoint: #{hpxml_bldg.hvac_controls[0].heating_setpoint_temp}")
-    end
-
-    unless hpxml_bldg.hvac_controls[0].weekday_heating_setpoints.nil?
+    elsif !hpxml_bldg.hvac_controls[0].weekday_heating_setpoints.nil?
       # Assumes if weekday_heating_setpoints is present, weekend_heating_setpoints is also present
-      # Turn string into array of integers, add offset, then turn back into string
+      # Turn string into array of integers
       weekday_numbers = hpxml_bldg.hvac_controls[0].weekday_heating_setpoints.split(", ").map(&:to_i)
       weekend_numbers = hpxml_bldg.hvac_controls[0].weekend_heating_setpoints.split(", ").map(&:to_i)
+      # Add offset
       processed_weekday_numbers = weekday_numbers.map { |n| n + args[:heating_setpoint_offset] }
       processed_weekend_numbers = weekend_numbers.map { |n| n + args[:heating_setpoint_offset] }
+      # Turn back into string
       hpxml_bldg.hvac_controls[0].weekday_heating_setpoints = processed_weekday_numbers.join(", ")
       hpxml_bldg.hvac_controls[0].weekend_heating_setpoints = processed_weekend_numbers.join(", ")
       @@logger.debug("New weekday heating setpoints: #{hpxml_bldg.hvac_controls[0].weekday_heating_setpoints}")
       @@logger.debug("New weekend heating setpoints: #{hpxml_bldg.hvac_controls[0].weekend_heating_setpoints}")
+    else
+      @@logger.warn('No valid heating setpoint found in XML file. Not modifying heating setpoints.')
+      return
     end
   end
 
   def modify_cooling_setpoint(hpxml_bldg, runner, args)
-    # As of 2025-02-25, this measure only modifies cooling setpoint & setback (not hourly cooling setpoints)
     if args[:cooling_setpoint_offset].nil?
       @@logger.debug('No modifier for cooling setpoint provided. Not modifying cooling setpoints.')
       return
     end
 
-    unless hpxml_bldg.hvac_controls[0].cooling_setpoint_temp.nil?
+    if !hpxml_bldg.hvac_controls[0].cooling_setpoint_temp.nil?
       # https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/src/OpenStudio-HPXML/HPXMLtoOpenStudio/resources/hpxml.rb#L7581-L7603
       hpxml_bldg.hvac_controls[0].cooling_setpoint_temp += args[:cooling_setpoint_offset]
       if hpxml_bldg.hvac_controls[0].cooling_setup_temp
@@ -149,19 +151,22 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
         @@logger.debug("New cooling setup: #{hpxml_bldg.hvac_controls[0].cooling_setup_temp}")
       end
       @@logger.debug("New cooling setpoint: #{hpxml_bldg.hvac_controls[0].cooling_setpoint_temp}")
-    end
-
-    unless hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints.nil?
+    elsif !hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints.nil?
       # Assumes if weekday_cooling_setpoints is present, weekend_cooling_setpoints is also present
-      # Turn string into array of integers, add offset, then turn back into string
+      # Turn string into array of integers
       weekday_numbers = hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints.split(", ").map(&:to_i)
       weekend_numbers = hpxml_bldg.hvac_controls[0].weekend_cooling_setpoints.split(", ").map(&:to_i)
+      # Add offset
       processed_weekday_numbers = weekday_numbers.map { |n| n + args[:heating_setpoint_offset] }
       processed_weekend_numbers = weekend_numbers.map { |n| n + args[:heating_setpoint_offset] }
+      # Turn back into string
       hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints = processed_weekday_numbers.join(", ")
       hpxml_bldg.hvac_controls[0].weekend_cooling_setpoints = processed_weekend_numbers.join(", ")
       @@logger.debug("New weekday cooling setpoints: #{hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints}")
       @@logger.debug("New weekend cooling setpoints: #{hpxml_bldg.hvac_controls[0].weekend_cooling_setpoints}")
+    else
+      @@logger.warn('No valid cooling setpoint found in XML file. Not modifying cooling setpoints.')
+      return
     end
   end
 
