@@ -3,8 +3,8 @@
   <schema_version>3.1</schema_version>
   <name>modify_xml</name>
   <uid>afd74b96-8b2c-4ebd-83be-0d3fdc35bf9a</uid>
-  <version_id>b735f59a-45cd-4ec3-82e7-1f647cd6e369</version_id>
-  <version_modified>2025-03-06T19:31:30Z</version_modified>
+  <version_id>e425b98b-e3b4-447f-93ad-31734de45b9f</version_id>
+  <version_modified>2025-03-17T21:53:37Z</version_modified>
   <xml_checksum>1B7C870F</xml_checksum>
   <class_name>ModifyXML</class_name>
   <display_name>ModifyXML</display_name>
@@ -73,30 +73,6 @@
   </attributes>
   <files>
     <file>
-      <filename>LICENSE.md</filename>
-      <filetype>md</filetype>
-      <usage_type>license</usage_type>
-      <checksum>8C1169D5</checksum>
-    </file>
-    <file>
-      <filename>README.md</filename>
-      <filetype>md</filetype>
-      <usage_type>readme</usage_type>
-      <checksum>52543915</checksum>
-    </file>
-    <file>
-      <filename>README.md.erb</filename>
-      <filetype>erb</filetype>
-      <usage_type>readmeerb</usage_type>
-      <checksum>F1C26127</checksum>
-    </file>
-    <file>
-      <filename>.gitkeep</filename>
-      <filetype>gitkeep</filetype>
-      <usage_type>doc</usage_type>
-      <checksum>00000000</checksum>
-    </file>
-    <file>
       <version>
         <software_program>OpenStudio</software_program>
         <identifier>3.9.0</identifier>
@@ -105,31 +81,13 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>23C32F75</checksum>
-    </file>
-    <file>
-      <filename>example_model.osm</filename>
-      <filetype>osm</filetype>
-      <usage_type>test</usage_type>
-      <checksum>6489488C</checksum>
+      <checksum>DD4F312F</checksum>
     </file>
     <file>
       <filename>modify_xml_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
-      <checksum>70016E42</checksum>
-    </file>
-    <file>
-      <filename>modify_xml_workflow.osw</filename>
-      <filetype>osw</filetype>
-      <usage_type>test</usage_type>
-      <checksum>1D35C196</checksum>
-    </file>
-    <file>
-      <filename>out.osw</filename>
-      <filetype>osw</filetype>
-      <usage_type>test</usage_type>
-      <checksum>507BAC5A</checksum>
+      <checksum>BB1F13CA</checksum>
     </file>
   </files>
 </measure>
