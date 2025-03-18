@@ -3,6 +3,7 @@
 # see the URL below for information on how to write OpenStudio measures
 # http://nrel.github.io/OpenStudio-user-documentation/reference/measure_writing_guide/
 
+require 'logger'
 require 'oga'
 require 'pathname'
 Dir["#{File.dirname(__FILE__)}/../../OpenStudio-HPXML/HPXMLtoOpenStudio/resources/*.rb"].each do |resource_file|
@@ -13,6 +14,7 @@ end
 
 # start the measure
 class ModifyXML < OpenStudio::Measure::ModelMeasure
+  @@logger = Logger.new($stdout)
   # human readable name
   def name
     # Measure name should be the title case of the class name.
@@ -104,27 +106,58 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
 
   def modify_heating_setpoint(hpxml_bldg, runner, args)
     # As of 2025-02-25, this measure only modifies heating setpoint & setback (not hourly heating setpoints)
-    if args[:heating_setpoint_offset].nil? || args[:weekday_heating_setpoints] || args[:weekend_heating_setpoints]
-      puts 'Only heating setpoint (& setback) is supported. Not modifying heating setpoints.'
+    if args[:heating_setpoint_offset].nil?
+      @@logger.debug('No modifier for heating setpoint provided. Not modifying heating setpoints.')
       return
     end
-    # https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/src/OpenStudio-HPXML/HPXMLtoOpenStudio/resources/hpxml.rb#L7508-L7530
-    hpxml_bldg.hvac_controls[0].heating_setpoint_temp += args[:heating_setpoint_offset]
-    if hpxml_bldg.hvac_controls[0].heating_setback_temp
-      hpxml_bldg.hvac_controls[0].heating_setback_temp += args[:heating_setpoint_offset]
+    # https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/src/OpenStudio-HPXML/HPXMLtoOpenStudio/resources/hpxml.rb#L7581-L7603
+    unless hpxml_bldg.hvac_controls[0].heating_setpoint_temp.nil?
+      hpxml_bldg.hvac_controls[0].heating_setpoint_temp += args[:heating_setpoint_offset]
+      if hpxml_bldg.hvac_controls[0].heating_setback_temp
+        hpxml_bldg.hvac_controls[0].heating_setback_temp += args[:heating_setpoint_offset]
+      end
+      @@logger.debug("New heating setpoint: #{hpxml_bldg.hvac_controls[0].heating_setpoint_temp}")
+    end
+
+    unless hpxml_bldg.hvac_controls[0].weekday_heating_setpoints.nil?
+      # Assumes if weekday_heating_setpoints is present, weekend_heating_setpoints is also present
+      # Turn string into array of integers, add offset, then turn back into string
+      weekday_numbers = hpxml_bldg.hvac_controls[0].weekday_heating_setpoints.split(", ").map(&:to_i)
+      weekend_numbers = hpxml_bldg.hvac_controls[0].weekend_heating_setpoints.split(", ").map(&:to_i)
+      processed_weekday_numbers = weekday_numbers.map { |n| n + args[:heating_setpoint_offset] }
+      processed_weekend_numbers = weekend_numbers.map { |n| n + args[:heating_setpoint_offset] }
+      hpxml_bldg.hvac_controls[0].weekday_heating_setpoints = processed_weekday_numbers.join(", ")
+      hpxml_bldg.hvac_controls[0].weekend_heating_setpoints = processed_weekend_numbers.join(", ")
+      @@logger.debug("New heating setpoints: #{hpxml_bldg.hvac_controls[0].weekday_heating_setpoints}")
     end
   end
 
   def modify_cooling_setpoint(hpxml_bldg, runner, args)
     # As of 2025-02-25, this measure only modifies cooling setpoint & setback (not hourly cooling setpoints)
-    if args[:cooling_setpoint_offset].nil? || args[:weekday_cooling_setpoints] || args[:weekend_cooling_setpoints]
-      puts 'Only cooling setpoint (& setback) is supported. Not modifying cooling setpoints.'
+    if args[:cooling_setpoint_offset].nil?
+      @@logger.debug('No modifier for cooling setpoint provided. Not modifying cooling setpoints.')
       return
     end
-    # https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/src/OpenStudio-HPXML/HPXMLtoOpenStudio/resources/hpxml.rb#L7508-L7530
-    hpxml_bldg.hvac_controls[0].cooling_setpoint_temp += args[:cooling_setpoint_offset]
-    if hpxml_bldg.hvac_controls[0].cooling_setup_temp
-      hpxml_bldg.hvac_controls[0].cooling_setup_temp += args[:cooling_setpoint_offset]
+
+    unless hpxml_bldg.hvac_controls[0].cooling_setpoint_temp.nil?
+      # https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/src/OpenStudio-HPXML/HPXMLtoOpenStudio/resources/hpxml.rb#L7581-L7603
+      hpxml_bldg.hvac_controls[0].cooling_setpoint_temp += args[:cooling_setpoint_offset]
+      if hpxml_bldg.hvac_controls[0].cooling_setup_temp
+        hpxml_bldg.hvac_controls[0].cooling_setup_temp += args[:cooling_setpoint_offset]
+      end
+      @@logger.debug("New cooling setpoint: #{hpxml_bldg.hvac_controls[0].cooling_setpoint_temp}")
+    end
+
+    unless hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints.nil?
+      # Assumes if weekday_cooling_setpoints is present, weekend_cooling_setpoints is also present
+      # Turn string into array of integers, add offset, then turn back into string
+      weekday_numbers = hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints.split(", ").map(&:to_i)
+      weekend_numbers = hpxml_bldg.hvac_controls[0].weekend_cooling_setpoints.split(", ").map(&:to_i)
+      processed_weekday_numbers = weekday_numbers.map { |n| n + args[:heating_setpoint_offset] }
+      processed_weekend_numbers = weekend_numbers.map { |n| n + args[:heating_setpoint_offset] }
+      hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints = processed_weekday_numbers.join(", ")
+      hpxml_bldg.hvac_controls[0].weekend_cooling_setpoints = processed_weekend_numbers.join(", ")
+      @@logger.debug("New cooling setpoints: #{hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints}")
     end
   end
 
