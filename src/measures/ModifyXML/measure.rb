@@ -106,7 +106,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
 
   def modify_heating_setpoint(hpxml_bldg, runner, args)
     if args[:heating_setpoint_offset].nil?
-      @@logger.debug('No modifier for heating setpoint provided. Not modifying heating setpoints.')
+      runner.registerWarning('No modifier for heating setpoint provided. Not modifying heating setpoints.')
       return
     end
 
@@ -115,9 +115,9 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       hpxml_bldg.hvac_controls[0].heating_setpoint_temp += args[:heating_setpoint_offset]
       if hpxml_bldg.hvac_controls[0].heating_setback_temp
         hpxml_bldg.hvac_controls[0].heating_setback_temp += args[:heating_setpoint_offset]
-        @@logger.debug("New heating setback: #{hpxml_bldg.hvac_controls[0].heating_setback_temp}")
+        puts "New heating setback: #{hpxml_bldg.hvac_controls[0].heating_setback_temp}"
       end
-      @@logger.debug("New heating setpoint: #{hpxml_bldg.hvac_controls[0].heating_setpoint_temp}")
+      puts "New heating setpoint: #{hpxml_bldg.hvac_controls[0].heating_setpoint_temp}"
     elsif !hpxml_bldg.hvac_controls[0].weekday_heating_setpoints.nil?
       # Assumes if weekday_heating_setpoints is present, weekend_heating_setpoints is also present
       # Turn string into array of integers
@@ -129,17 +129,17 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       # Turn back into string
       hpxml_bldg.hvac_controls[0].weekday_heating_setpoints = processed_weekday_numbers.join(", ")
       hpxml_bldg.hvac_controls[0].weekend_heating_setpoints = processed_weekend_numbers.join(", ")
-      @@logger.debug("New weekday heating setpoints: #{hpxml_bldg.hvac_controls[0].weekday_heating_setpoints}")
-      @@logger.debug("New weekend heating setpoints: #{hpxml_bldg.hvac_controls[0].weekend_heating_setpoints}")
+      puts "New weekday heating setpoints: #{hpxml_bldg.hvac_controls[0].weekday_heating_setpoints}"
+      puts "New weekend heating setpoints: #{hpxml_bldg.hvac_controls[0].weekend_heating_setpoints}"
     else
-      @@logger.warn('No valid heating setpoint found in XML file. Not modifying heating setpoints.')
+      runner.registerWarning('No valid heating setpoint found in XML file. Not modifying heating setpoints.')
       return
     end
   end
 
   def modify_cooling_setpoint(hpxml_bldg, runner, args)
     if args[:cooling_setpoint_offset].nil?
-      @@logger.debug('No modifier for cooling setpoint provided. Not modifying cooling setpoints.')
+      runner.registerWarning('No modifier for cooling setpoint provided. Not modifying cooling setpoints.')
       return
     end
 
@@ -148,9 +148,9 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       hpxml_bldg.hvac_controls[0].cooling_setpoint_temp += args[:cooling_setpoint_offset]
       if hpxml_bldg.hvac_controls[0].cooling_setup_temp
         hpxml_bldg.hvac_controls[0].cooling_setup_temp += args[:cooling_setpoint_offset]
-        @@logger.debug("New cooling setup: #{hpxml_bldg.hvac_controls[0].cooling_setup_temp}")
+        puts "New cooling setup: #{hpxml_bldg.hvac_controls[0].cooling_setup_temp}"
       end
-      @@logger.debug("New cooling setpoint: #{hpxml_bldg.hvac_controls[0].cooling_setpoint_temp}")
+      puts "New cooling setpoint: #{hpxml_bldg.hvac_controls[0].cooling_setpoint_temp}"
     elsif !hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints.nil?
       # Assumes if weekday_cooling_setpoints is present, weekend_cooling_setpoints is also present
       # Turn string into array of integers
@@ -162,17 +162,17 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       # Turn back into string
       hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints = processed_weekday_numbers.join(", ")
       hpxml_bldg.hvac_controls[0].weekend_cooling_setpoints = processed_weekend_numbers.join(", ")
-      @@logger.debug("New weekday cooling setpoints: #{hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints}")
-      @@logger.debug("New weekend cooling setpoints: #{hpxml_bldg.hvac_controls[0].weekend_cooling_setpoints}")
+      puts "New weekday cooling setpoints: #{hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints}"
+      puts "New weekend cooling setpoints: #{hpxml_bldg.hvac_controls[0].weekend_cooling_setpoints}"
     else
-      @@logger.warn('No valid cooling setpoint found in XML file. Not modifying cooling setpoints.')
+      runner.registerWarning('No valid cooling setpoint found in XML file. Not modifying cooling setpoints.')
       return
     end
   end
 
   def modify_air_leakage(hpxml_bldg, runner, args)
     if args[:air_leakage_pct_change].nil?
-      @@logger.debug('No modifier for air leakage provided. Not modifying infiltration.')
+      runner.registerWarning('No modifier for air leakage provided. Not modifying infiltration.')
       return
     end
 
