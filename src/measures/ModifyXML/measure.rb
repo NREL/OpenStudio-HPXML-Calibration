@@ -71,8 +71,8 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('cooling_efficiency_pct_change', false)
-    arg.setDisplayName('Heating efficiency percent change')
-    arg.setDescription('Percentage to change the heating equipment efficiency.
+    arg.setDisplayName('Cooling efficiency percent change')
+    arg.setDescription('Percentage to change the cooling equipment efficiency.
       Positive value increases efficiency, negative value decreases efficiency.
       Expressed as a decimal, -1 - 1.')
     args << arg
@@ -121,6 +121,11 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       modify_heating_efficiency(hpxml_bldg, runner, args)
     else
       runner.registerInfo('No modifier for heating equipment efficiency provided. Not modifying heating equipment.')
+    end
+    if args[:cooling_efficiency_pct_change]
+      modify_cooling_efficiency(hpxml_bldg, runner, args)
+    else
+      runner.registerInfo('No modifier for cooling equipment efficiency provided. Not modifying cooling equipment.')
     end
     # ...
 
@@ -242,6 +247,54 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
         new_cop = heat_pump.heating_efficiency_cop * multiplier
         heat_pump.heating_efficiency_cop = new_cop.round(2)
         puts "New COP: #{heat_pump.heating_efficiency_cop}"
+      end
+    end
+  end
+
+  def modify_cooling_efficiency(hpxml_bldg, runner, args)
+    multiplier = 1 + args[:cooling_efficiency_pct_change]
+    hpxml_bldg.cooling_systems.each do |cooling_system|
+      if cooling_system.cooling_efficiency_seer
+        new_seer = cooling_system.cooling_efficiency_seer * multiplier
+        cooling_system.cooling_efficiency_seer = new_seer.round(2)
+        puts "New SEER: #{cooling_system.cooling_efficiency_seer}"
+      end
+      if cooling_system.cooling_efficiency_seer2
+        new_seer2 = cooling_system.cooling_efficiency_seer2 * multiplier
+        cooling_system.cooling_efficiency_seer2 = new_seer2.round(2)
+        puts "New SEER2: #{cooling_system.cooling_efficiency_seer2}"
+      end
+      if cooling_system.cooling_efficiency_eer
+        new_eer = cooling_system.cooling_efficiency_eer * multiplier
+        cooling_system.cooling_efficiency_eer = new_eer.round(2)
+        puts "New EER: #{cooling_system.cooling_efficiency_eer}"
+      end
+      if cooling_system.cooling_efficiency_ceer
+        new_ceer = cooling_system.cooling_efficiency_ceer * multiplier
+        cooling_system.cooling_efficiency_ceer = new_ceer.round(2)
+        puts "New CEER: #{cooling_system.cooling_efficiency_ceer}"
+      end
+    end
+    hpxml_bldg.heat_pumps.each do |heat_pump|
+      if heat_pump.cooling_efficiency_seer
+        new_seer = heat_pump.cooling_efficiency_seer * multiplier
+        heat_pump.cooling_efficiency_seer = new_seer.round(2)
+        puts "New heat pump SEER: #{heat_pump.cooling_efficiency_seer}"
+      end
+      if heat_pump.cooling_efficiency_seer2
+        new_seer2 = heat_pump.cooling_efficiency_seer2 * multiplier
+        heat_pump.cooling_efficiency_seer2 = new_seer2.round(2)
+        puts "New heat pump SEER2: #{heat_pump.cooling_efficiency_seer2}"
+      end
+      if heat_pump.cooling_efficiency_eer
+        new_eer = heat_pump.cooling_efficiency_eer * multiplier
+        heat_pump.cooling_efficiency_eer = new_eer.round(2)
+        puts "New heat pump EER: #{heat_pump.cooling_efficiency_eer}"
+      end
+      if heat_pump.cooling_efficiency_ceer
+        new_ceer = heat_pump.cooling_efficiency_ceer * multiplier
+        heat_pump.cooling_efficiency_ceer = new_ceer.round(2)
+        puts "New heat pump CEER: #{heat_pump.cooling_efficiency_ceer}"
       end
     end
   end
