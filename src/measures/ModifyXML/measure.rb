@@ -130,80 +130,79 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_heating_setpoint(hpxml_bldg, runner, args)
-    if !hpxml_bldg.hvac_controls[0].heating_setpoint_temp.nil?
-      # https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/src/OpenStudio-HPXML/HPXMLtoOpenStudio/resources/hpxml.rb#L7581-L7603
-      hpxml_bldg.hvac_controls[0].heating_setpoint_temp += args[:heating_setpoint_offset]
-      if hpxml_bldg.hvac_controls[0].heating_setback_temp
-        hpxml_bldg.hvac_controls[0].heating_setback_temp += args[:heating_setpoint_offset]
-        # puts "New heating setback: #{hpxml_bldg.hvac_controls[0].heating_setback_temp}"
+    hpxml_bldg.hvac_controls.each do |hvac_control|
+      if hvac_control.heating_setpoint_temp
+        # https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/src/OpenStudio-HPXML/HPXMLtoOpenStudio/resources/hpxml.rb#L7581-L7603
+        hvac_control.heating_setpoint_temp += args[:heating_setpoint_offset]
+        if hvac_control.heating_setback_temp
+          hvac_control.heating_setback_temp += args[:heating_setpoint_offset]
+          # puts "New heating setback: #{hvac_control.heating_setback_temp}"
+        end
+        # puts "New heating setpoint: #{hvac_control.heating_setpoint_temp}"
       end
-      # puts "New heating setpoint: #{hpxml_bldg.hvac_controls[0].heating_setpoint_temp}"
-    elsif !hpxml_bldg.hvac_controls[0].weekday_heating_setpoints.nil?
-      # Assumes if weekday_heating_setpoints is present, weekend_heating_setpoints is also present
-      # Turn string into array of integers
-      weekday_numbers = hpxml_bldg.hvac_controls[0].weekday_heating_setpoints.split(", ").map(&:to_i)
-      weekend_numbers = hpxml_bldg.hvac_controls[0].weekend_heating_setpoints.split(", ").map(&:to_i)
-      # Add offset
-      processed_weekday_numbers = weekday_numbers.map { |n| n + args[:heating_setpoint_offset] }
-      processed_weekend_numbers = weekend_numbers.map { |n| n + args[:heating_setpoint_offset] }
-      # Turn back into string
-      hpxml_bldg.hvac_controls[0].weekday_heating_setpoints = processed_weekday_numbers.join(", ")
-      hpxml_bldg.hvac_controls[0].weekend_heating_setpoints = processed_weekend_numbers.join(", ")
-      # puts "New weekday heating setpoints: #{hpxml_bldg.hvac_controls[0].weekday_heating_setpoints}"
-      # puts "New weekend heating setpoints: #{hpxml_bldg.hvac_controls[0].weekend_heating_setpoints}"
-    else
-      runner.registerWarning('No valid heating setpoint found in XML file. Not modifying heating setpoints.')
-      return
+      if hvac_control.weekday_heating_setpoints
+        # Assumes if weekday_heating_setpoints is present, weekend_heating_setpoints is also present
+        # Turn string into array of integers
+        weekday_numbers = hvac_control.weekday_heating_setpoints.split(", ").map(&:to_i)
+        weekend_numbers = hvac_control.weekend_heating_setpoints.split(", ").map(&:to_i)
+        # Add offset
+        processed_weekday_numbers = weekday_numbers.map { |n| n + args[:heating_setpoint_offset] }
+        processed_weekend_numbers = weekend_numbers.map { |n| n + args[:heating_setpoint_offset] }
+        # Turn back into string
+        hvac_control.weekday_heating_setpoints = processed_weekday_numbers.join(", ")
+        hvac_control.weekend_heating_setpoints = processed_weekend_numbers.join(", ")
+        # puts "New weekday heating setpoints: #{hvac_control.weekday_heating_setpoints}"
+        # puts "New weekend heating setpoints: #{hvac_control.weekend_heating_setpoints}"
+      end
     end
   end
 
   def modify_cooling_setpoint(hpxml_bldg, runner, args)
-    if !hpxml_bldg.hvac_controls[0].cooling_setpoint_temp.nil?
-      # https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/src/OpenStudio-HPXML/HPXMLtoOpenStudio/resources/hpxml.rb#L7581-L7603
-      hpxml_bldg.hvac_controls[0].cooling_setpoint_temp += args[:cooling_setpoint_offset]
-      if hpxml_bldg.hvac_controls[0].cooling_setup_temp
-        hpxml_bldg.hvac_controls[0].cooling_setup_temp += args[:cooling_setpoint_offset]
-        # puts "New cooling setup: #{hpxml_bldg.hvac_controls[0].cooling_setup_temp}"
+    hpxml_bldg.hvac_controls.each do |hvac_control|
+      if hvac_control.cooling_setpoint_temp
+        hvac_control.cooling_setpoint_temp += args[:cooling_setpoint_offset]
+        if hvac_control.cooling_setup_temp
+          hvac_control.cooling_setup_temp += args[:cooling_setpoint_offset]
+          # puts "New cooling setup: #{hvac_control.cooling_setup_temp}"
+        end
+        # puts "New cooling setpoint: #{hvac_control.cooling_setpoint_temp}"
       end
-      # puts "New cooling setpoint: #{hpxml_bldg.hvac_controls[0].cooling_setpoint_temp}"
-    elsif !hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints.nil?
-      # Assumes if weekday_cooling_setpoints is present, weekend_cooling_setpoints is also present
-      # Turn string into array of integers
-      weekday_numbers = hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints.split(", ").map(&:to_i)
-      weekend_numbers = hpxml_bldg.hvac_controls[0].weekend_cooling_setpoints.split(", ").map(&:to_i)
-      # Add offset
-      processed_weekday_numbers = weekday_numbers.map { |n| n + args[:heating_setpoint_offset] }
-      processed_weekend_numbers = weekend_numbers.map { |n| n + args[:heating_setpoint_offset] }
-      # Turn back into string
-      hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints = processed_weekday_numbers.join(", ")
-      hpxml_bldg.hvac_controls[0].weekend_cooling_setpoints = processed_weekend_numbers.join(", ")
-      # puts "New weekday cooling setpoints: #{hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints}"
-      # puts "New weekend cooling setpoints: #{hpxml_bldg.hvac_controls[0].weekend_cooling_setpoints}"
-    else
-      runner.registerWarning('No valid cooling setpoint found in XML file. Not modifying cooling setpoints.')
-      return
+      if hvac_control.weekday_cooling_setpoints
+        # Assumes if weekday_cooling_setpoints is present, weekend_cooling_setpoints is also present
+        # Turn string into array of integers
+        weekday_numbers = hvac_control.weekday_cooling_setpoints.split(", ").map(&:to_i)
+        weekend_numbers = hvac_control.weekend_cooling_setpoints.split(", ").map(&:to_i)
+        # Add offset
+        processed_weekday_numbers = weekday_numbers.map { |n| n + args[:heating_setpoint_offset] }
+        processed_weekend_numbers = weekend_numbers.map { |n| n + args[:heating_setpoint_offset] }
+        # Turn back into string
+        hvac_control.weekday_cooling_setpoints = processed_weekday_numbers.join(", ")
+        hvac_control.weekend_cooling_setpoints = processed_weekend_numbers.join(", ")
+        # puts "New weekday cooling setpoints: #{hvac_control.weekday_cooling_setpoints}"
+        # puts "New weekend cooling setpoints: #{hvac_control.weekend_cooling_setpoints}"
+      end
     end
   end
 
   def modify_air_leakage(hpxml_bldg, runner, args)
     multiplier = 1 + args[:air_leakage_pct_change]
 
-    # https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/src/OpenStudio-HPXML/HPXMLtoOpenStudio/resources/hpxml.rb#L3277-L3288
-    if hpxml_bldg.air_infiltration_measurements[0].air_leakage
-      new_infiltration = hpxml_bldg.air_infiltration_measurements[0].air_leakage * multiplier
-      hpxml_bldg.air_infiltration_measurements[0].air_leakage = new_infiltration.round(2)
-      # puts "New infiltration 1: #{hpxml_bldg.air_infiltration_measurements[0].air_leakage}"
-    elsif hpxml_bldg.air_infiltration_measurements[0].effective_leakage_area
-      new_infiltration = hpxml_bldg.air_infiltration_measurements[0].effective_leakage_area * multiplier
-      hpxml_bldg.air_infiltration_measurements[0].effective_leakage_area = new_infiltration.round(1)
-      # puts "New infiltration 2: #{hpxml_bldg.air_infiltration_measurements[0].effective_leakage_area}"
-    elsif hpxml_bldg.air_infiltration_measurements[0].leakiness_description
-      new_infiltration = hpxml_bldg.air_infiltration_measurements[0].infiltration_volume * multiplier
-      hpxml_bldg.air_infiltration_measurements[0].infiltration_volume = new_infiltration.round(1)
-      # puts "New infiltration 3: #{hpxml_bldg.air_infiltration_measurements[0].infiltration_volume}"
-    else
-      runner.registerWarning('No valid air leakage found in XML file. Not modifying air leakage.')
-      return
+    hpxml_bldg.air_infiltration_measurements.each do |air_infiltration_measurement|
+      if air_infiltration_measurement.air_leakage
+        new_infiltration = air_infiltration_measurement.air_leakage * multiplier
+        air_infiltration_measurement.air_leakage = new_infiltration.round(2)
+        # puts "New infiltration 1: #{air_infiltration_measurement.air_leakage}"
+      end
+      if air_infiltration_measurement.effective_leakage_area
+        new_infiltration = air_infiltration_measurement.effective_leakage_area * multiplier
+        air_infiltration_measurement.effective_leakage_area = new_infiltration.round(1)
+        # puts "New infiltration 2: #{air_infiltration_measurement.effective_leakage_area}"
+      end
+      if air_infiltration_measurement.leakiness_description
+        new_infiltration = air_infiltration_measurement.infiltration_volume * multiplier
+        air_infiltration_measurement.infiltration_volume = new_infiltration.round(1)
+        # puts "New infiltration 3: #{air_infiltration_measurement.infiltration_volume}"
+      end
     end
   end
 
