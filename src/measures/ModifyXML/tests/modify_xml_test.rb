@@ -119,8 +119,30 @@ class ModifyXMLTest < Minitest::Test
     original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
     hpxml_bldg = _test_measure(args_hash)
 
-    new_hspf = (original_bldg.heat_pumps[0].heating_efficiency_hspf * ( 1 + args_hash['heating_efficiency_pct_change'])).round(2) #
+    new_hspf = (original_bldg.heat_pumps[0].heating_efficiency_hspf * ( 1 + args_hash['heating_efficiency_pct_change'])).round(2) # 8.47
     assert_equal(new_hspf, hpxml_bldg.heat_pumps[0].heating_efficiency_hspf)
+  end
+
+  def test_change_cooling_efficiency
+    # create hash of argument values.
+    args_hash = {}
+    args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base.xml')
+    args_hash['save_file_path'] = @tmp_hpxml_path
+    args_hash['cooling_efficiency_pct_change'] = 0.1
+
+    original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
+    hpxml_bldg = _test_measure(args_hash)
+
+    # new_seers = []
+    # original_bldg.cooling_systems.each do |cooling_system|
+    #   new_seers << (cooling_system.cooling_efficiency_seer * ( 1 + args_hash['cooling_efficiency_pct_change'])).round(2) #
+    # end
+    # hpxml_bldg.cooling_systems.each do |new_cooling_system|
+    #   assert(new_seers.include? new_cooling_system.cooling_efficiency_seer)
+    # end
+
+    new_seer = (original_bldg.cooling_systems[0].cooling_efficiency_seer * ( 1 + args_hash['cooling_efficiency_pct_change'])).round(2) #
+    assert_equal(new_seer, hpxml_bldg.cooling_systems[0].cooling_efficiency_seer)
   end
 
   def _test_measure(args_hash)
