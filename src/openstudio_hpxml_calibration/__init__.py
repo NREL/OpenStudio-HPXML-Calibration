@@ -9,6 +9,8 @@ from tqdm import tqdm
 
 from openstudio_hpxml_calibration.utils import OS_HPXML_PATH, calculate_sha256, get_cache_dir
 
+from .calibrate import Calibrate
+
 
 class Granularity(str, Enum):
     HOURLY = "hourly"
@@ -120,6 +122,22 @@ def download_weather() -> None:
         for filename in tqdm(zf.namelist(), desc="Extracting epws"):
             if filename.endswith(".epw") and not (weather_dir / filename).exists():
                 zf.extract(filename, path=weather_dir)
+
+
+@app.command
+def calibrate(hpxml_filepath: str, osw_filepath: str) -> None:
+    """Calibrate an HPXML model to utility data
+
+    Parameters
+    ----------
+    hpxml_filepath: str
+        Path to the HPXML file to calibrate
+    osw_filepath: str
+        Path to the OpenStudio Workflow file
+    """
+    calibrate = Calibrate(hpxml_filepath, osw_filepath)
+    calibrate.run_simulation()
+    calibrate.calibrate(calibrate.osw_file)
 
 
 if __name__ == "__main__":
