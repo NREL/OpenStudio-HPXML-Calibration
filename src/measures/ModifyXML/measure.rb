@@ -48,18 +48,32 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('heating_setpoint_offset', false)
     arg.setDisplayName('Heating setpoint offset')
-    arg.setDescription('How much to change heating setpoint')
+    arg.setDescription('Degrees to change heating setpoint')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('cooling_setpoint_offset', false)
     arg.setDisplayName('Cooling setpoint offset')
-    arg.setDescription('How much to change cooling setpoint')
+    arg.setDescription('Degrees to change cooling setpoint')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('air_leakage_pct_change', false)
     arg.setDisplayName('Air leakage percent change')
-    arg.setDescription('What percentage to change the air leakage rate.
+    arg.setDescription('Percentage to change the air leakage rate.
       Positive value increases air leakage, negative value decreases air leakage.
+      Expressed as a decimal, -1 - 1.')
+    args << arg
+
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('heating_efficiency_pct_change', false)
+    arg.setDisplayName('Heating efficiency percent change')
+    arg.setDescription('Percentage to change the heating equipment efficiency.
+      Positive value increases efficiency, negative value decreases efficiency.
+      Expressed as a decimal, -1 - 1.')
+    args << arg
+
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('cooling_efficiency_pct_change', false)
+    arg.setDisplayName('Heating efficiency percent change')
+    arg.setDescription('Percentage to change the heating equipment efficiency.
+      Positive value increases efficiency, negative value decreases efficiency.
       Expressed as a decimal, -1 - 1.')
     args << arg
 
@@ -90,12 +104,23 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     # Modify XML fields
     if args[:heating_setpoint_offset]
       modify_heating_setpoint(hpxml_bldg, runner, args)
+    else
+      runner.registerInfo('No modifier for heating setpoint provided. Not modifying heating setpoints.')
     end
     if args[:cooling_setpoint_offset]
       modify_cooling_setpoint(hpxml_bldg, runner, args)
+    else
+      runner.registerInfo('No modifier for cooling setpoint provided. Not modifying cooling setpoints.')
     end
     if args[:air_leakage_pct_change]
       modify_air_leakage(hpxml_bldg, runner, args)
+    else
+      runner.registerInfo('No modifier for air leakage provided. Not modifying infiltration.')
+    end
+    if args[:heating_efficiency_pct_change]
+      modify_heating_efficiency(hpxml_bldg, runner, args)
+    else
+      runner.registerInfo('No modifier for heating equipment efficiency provided. Not modifying heating equipment.')
     end
     # ...
 
@@ -105,11 +130,6 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_heating_setpoint(hpxml_bldg, runner, args)
-    if args[:heating_setpoint_offset].nil?
-      runner.registerWarning('No modifier for heating setpoint provided. Not modifying heating setpoints.')
-      return
-    end
-
     if !hpxml_bldg.hvac_controls[0].heating_setpoint_temp.nil?
       # https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/src/OpenStudio-HPXML/HPXMLtoOpenStudio/resources/hpxml.rb#L7581-L7603
       hpxml_bldg.hvac_controls[0].heating_setpoint_temp += args[:heating_setpoint_offset]
@@ -138,11 +158,6 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_cooling_setpoint(hpxml_bldg, runner, args)
-    if args[:cooling_setpoint_offset].nil?
-      runner.registerWarning('No modifier for cooling setpoint provided. Not modifying cooling setpoints.')
-      return
-    end
-
     if !hpxml_bldg.hvac_controls[0].cooling_setpoint_temp.nil?
       # https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/src/OpenStudio-HPXML/HPXMLtoOpenStudio/resources/hpxml.rb#L7581-L7603
       hpxml_bldg.hvac_controls[0].cooling_setpoint_temp += args[:cooling_setpoint_offset]
@@ -171,11 +186,6 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_air_leakage(hpxml_bldg, runner, args)
-    if args[:air_leakage_pct_change].nil?
-      runner.registerWarning('No modifier for air leakage provided. Not modifying infiltration.')
-      return
-    end
-
     multiplier = 1 + args[:air_leakage_pct_change]
 
     # https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/src/OpenStudio-HPXML/HPXMLtoOpenStudio/resources/hpxml.rb#L3277-L3288
@@ -193,6 +203,41 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       # puts "New infiltration 3: #{hpxml_bldg.air_infiltration_measurements[0].infiltration_volume}"
     else
       runner.registerWarning('No valid air leakage found in XML file. Not modifying air leakage.')
+      return
+    end
+  end
+
+  def modify_heating_efficiency(hpxml_bldg, runner, args)
+    multiplier = 1 + args[:heating_efficiency_pct_change]
+    if hpxml_bldg.heating_systems[0].heating_efficiency_afue
+      new_afue = hpxml_bldg.heating_systems[0].heating_efficiency_afue * multiplier
+      hpxml_bldg.heating_systems[0].heating_efficiency_afue = new_afue.round(2)
+      puts "New AFUE: #{hpxml_bldg.heating_systems[0].heating_efficiency_afue}"
+    elsif hpxml_bldg.heating_systems[0].heating_efficiency_percent
+      if hpxml_bldg.heating_systems[0].heating_efficiency_percent == 1.0
+        runner.registerWarning('Heating efficiency is 1.0. Cannot modify heating efficiency.')
+        return
+      end
+      new_heating_efficiency = hpxml_bldg.heating_systems[0].heating_efficiency_percent * multiplier
+      if new_heating_efficiency > 1.0
+        new_heating_efficiency = 1.0
+      end
+      hpxml_bldg.heating_systems[0].heating_efficiency_percent = new_heating_efficiency.round(2)
+      puts "New heating percent efficiency: #{hpxml_bldg.heating_systems[0].heating_efficiency_percent}"
+    elsif hpxml_bldg.heat_pumps[0].heating_efficiency_hspf
+      new_hspf = hpxml_bldg.heat_pumps[0].heating_efficiency_hspf * multiplier
+      hpxml_bldg.heat_pumps[0].heating_efficiency_hspf = new_hspf.round(2)
+      puts "New HSPF: #{hpxml_bldg.heat_pumps[0].heating_efficiency_hspf}"
+    elsif hpxml_bldg.heat_pumps[0].heating_efficiency_hspf2
+      new_hspf2 = hpxml_bldg.heat_pumps[0].heating_efficiency_hspf2 * multiplier
+      hpxml_bldg.heat_pumps[0].heating_efficiency_hspf2 = new_hspf2.round(2)
+      puts "New HSPF2: #{hpxml_bldg.heat_pumps[0].heating_efficiency_hspf2}"
+    elsif hpxml_bldg.heat_pumps[0].heating_efficiency_cop
+      new_cop = hpxml_bldg.heat_pumps[0].heating_efficiency_cop * multiplier
+      hpxml_bldg.heat_pumps[0].heating_efficiency_cop = new_cop.round(2)
+      puts "New COP: #{hpxml_bldg.heat_pumps[0].heating_efficiency_cop}"
+    else
+      runner.registerWarning('No valid heating efficiency found in XML file. Not modifying heating efficiency.')
       return
     end
   end
