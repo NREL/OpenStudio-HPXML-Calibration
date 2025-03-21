@@ -209,36 +209,41 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
 
   def modify_heating_efficiency(hpxml_bldg, runner, args)
     multiplier = 1 + args[:heating_efficiency_pct_change]
-    if hpxml_bldg.heating_systems[0].heating_efficiency_afue
-      new_afue = hpxml_bldg.heating_systems[0].heating_efficiency_afue * multiplier
-      hpxml_bldg.heating_systems[0].heating_efficiency_afue = new_afue.round(2)
-      puts "New AFUE: #{hpxml_bldg.heating_systems[0].heating_efficiency_afue}"
-    elsif hpxml_bldg.heating_systems[0].heating_efficiency_percent
-      if hpxml_bldg.heating_systems[0].heating_efficiency_percent == 1.0
-        runner.registerWarning('Heating efficiency is 1.0. Cannot modify heating efficiency.')
-        return
+    hpxml_bldg.heating_systems.each do |heating_system|
+      if heating_system.heating_efficiency_afue
+        new_afue = heating_system.heating_efficiency_afue * multiplier
+        heating_system.heating_efficiency_afue = new_afue.round(2)
+        puts "New AFUE: #{heating_system.heating_efficiency_afue}"
       end
-      new_heating_efficiency = hpxml_bldg.heating_systems[0].heating_efficiency_percent * multiplier
-      if new_heating_efficiency > 1.0
-        new_heating_efficiency = 1.0
+      if heating_system.heating_efficiency_percent
+        if heating_system.heating_efficiency_percent == 1.0
+          runner.registerWarning('Heating efficiency is 1.0. Cannot modify heating efficiency.')
+          return
+        end
+        new_heating_efficiency = heating_system.heating_efficiency_percent * multiplier
+        if new_heating_efficiency > 1.0
+          new_heating_efficiency = 1.0
+        end
+        heating_system.heating_efficiency_percent = new_heating_efficiency.round(2)
+        puts "New heating percent efficiency: #{heating_system.heating_efficiency_percent}"
       end
-      hpxml_bldg.heating_systems[0].heating_efficiency_percent = new_heating_efficiency.round(2)
-      puts "New heating percent efficiency: #{hpxml_bldg.heating_systems[0].heating_efficiency_percent}"
-    elsif hpxml_bldg.heat_pumps[0].heating_efficiency_hspf
-      new_hspf = hpxml_bldg.heat_pumps[0].heating_efficiency_hspf * multiplier
-      hpxml_bldg.heat_pumps[0].heating_efficiency_hspf = new_hspf.round(2)
-      puts "New HSPF: #{hpxml_bldg.heat_pumps[0].heating_efficiency_hspf}"
-    elsif hpxml_bldg.heat_pumps[0].heating_efficiency_hspf2
-      new_hspf2 = hpxml_bldg.heat_pumps[0].heating_efficiency_hspf2 * multiplier
-      hpxml_bldg.heat_pumps[0].heating_efficiency_hspf2 = new_hspf2.round(2)
-      puts "New HSPF2: #{hpxml_bldg.heat_pumps[0].heating_efficiency_hspf2}"
-    elsif hpxml_bldg.heat_pumps[0].heating_efficiency_cop
-      new_cop = hpxml_bldg.heat_pumps[0].heating_efficiency_cop * multiplier
-      hpxml_bldg.heat_pumps[0].heating_efficiency_cop = new_cop.round(2)
-      puts "New COP: #{hpxml_bldg.heat_pumps[0].heating_efficiency_cop}"
-    else
-      runner.registerWarning('No valid heating efficiency found in XML file. Not modifying heating efficiency.')
-      return
+    end
+    hpxml_bldg.heat_pumps.each do |heat_pump|
+      if heat_pump.heating_efficiency_hspf
+        new_hspf = heat_pump.heating_efficiency_hspf * multiplier
+        heat_pump.heating_efficiency_hspf = new_hspf.round(2)
+        puts "New HSPF: #{heat_pump.heating_efficiency_hspf}"
+      end
+      if heat_pump.heating_efficiency_hspf2
+        new_hspf2 = heat_pump.heating_efficiency_hspf2 * multiplier
+        heat_pump.heating_efficiency_hspf2 = new_hspf2.round(2)
+        puts "New HSPF2: #{heat_pump.heating_efficiency_hspf2}"
+      end
+      if heat_pump.heating_efficiency_cop
+        new_cop = heat_pump.heating_efficiency_cop * multiplier
+        heat_pump.heating_efficiency_cop = new_cop.round(2)
+        puts "New COP: #{heat_pump.heating_efficiency_cop}"
+      end
     end
   end
 end
