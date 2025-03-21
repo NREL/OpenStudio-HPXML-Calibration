@@ -33,15 +33,9 @@ class ModifyXMLTest < Minitest::Test
     new_cooling_setpoint = original_bldg.hvac_controls[0].cooling_setpoint_temp + args_hash['cooling_setpoint_offset'] # 80.5
     assert_equal(new_heating_setpoint, hpxml_bldg.hvac_controls[0].heating_setpoint_temp)
     assert_equal(new_cooling_setpoint, hpxml_bldg.hvac_controls[0].cooling_setpoint_temp)
-  end
 
-  def test_hourly_setpoints
-    # create hash of argument values.
-    args_hash = {}
+    # Test a file with a different way of specifying setpoints
     args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base-hvac-setpoints-daily-schedules.xml')
-    args_hash['save_file_path'] = @tmp_hpxml_path
-    args_hash['heating_setpoint_offset'] = -1.5
-    args_hash['cooling_setpoint_offset'] = 2.5
 
     hpxml_bldg = _test_measure(args_hash)
 
@@ -54,6 +48,77 @@ class ModifyXMLTest < Minitest::Test
     assert_equal(new_weekend_heating_setpoints, hpxml_bldg.hvac_controls[0].weekend_heating_setpoints)
     assert_equal(new_weekday_cooling_setpoints, hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints)
     assert_equal(new_weekend_cooling_setpoints, hpxml_bldg.hvac_controls[0].weekend_cooling_setpoints)
+  end
+
+  # def test_hourly_setpoints
+  #   # create hash of argument values.
+  #   args_hash = {}
+  #   args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base-hvac-setpoints-daily-schedules.xml')
+  #   args_hash['save_file_path'] = @tmp_hpxml_path
+  #   args_hash['heating_setpoint_offset'] = -1.5
+  #   args_hash['cooling_setpoint_offset'] = 2.5
+
+  #   hpxml_bldg = _test_measure(args_hash)
+
+  #   # Check for expected change
+  #   new_weekday_heating_setpoints = '62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 68.5, 68.5, 64.5, 64.5, 64.5, 64.5, 64.5, 64.5, 64.5, 64.5, 66.5, 66.5, 66.5, 66.5, 66.5, 62.5, 62.5'
+  #   new_weekend_heating_setpoints = '66.5, 66.5, 66.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5'
+  #   new_weekday_cooling_setpoints = '78.5, 78.5, 78.5, 78.5, 78.5, 78.5, 78.5, 73.5, 73.5, 78.5, 78.5, 78.5, 78.5, 78.5, 78.5, 78.5, 78.5, 76.5, 76.5, 76.5, 76.5, 76.5, 78.5, 78.5'
+  #   new_weekend_cooling_setpoints = '76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5'
+  #   assert_equal(new_weekday_heating_setpoints, hpxml_bldg.hvac_controls[0].weekday_heating_setpoints)
+  #   assert_equal(new_weekend_heating_setpoints, hpxml_bldg.hvac_controls[0].weekend_heating_setpoints)
+  #   assert_equal(new_weekday_cooling_setpoints, hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints)
+  #   assert_equal(new_weekend_cooling_setpoints, hpxml_bldg.hvac_controls[0].weekend_cooling_setpoints)
+  # end
+
+  def test_changing_air_leakage
+    # create hash of argument values.
+    args_hash = {}
+    args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base.xml')
+    args_hash['save_file_path'] = @tmp_hpxml_path
+    args_hash['air_leakage_pct_change'] = -0.1
+
+    original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
+    hpxml_bldg = _test_measure(args_hash)
+
+    new_infiltration = original_bldg.air_infiltration_measurements[0].air_leakage * ( 1 + args_hash['air_leakage_pct_change']) # 2.7
+    assert_equal(new_infiltration, hpxml_bldg.air_infiltration_measurements[0].air_leakage)
+
+    # Test a file with a different way of specifying air leakage
+    args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base-enclosure-infil-cfm50.xml')
+
+    original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
+    hpxml_bldg = _test_measure(args_hash)
+
+    new_infiltration = original_bldg.air_infiltration_measurements[0].air_leakage * ( 1 + args_hash['air_leakage_pct_change']) # 972.0
+    assert_equal(new_infiltration, hpxml_bldg.air_infiltration_measurements[0].air_leakage)
+
+    # Test a file with a different way of specifying air leakage
+    args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base-enclosure-infil-ela.xml')
+
+    original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
+    hpxml_bldg = _test_measure(args_hash)
+
+    new_infiltration = original_bldg.air_infiltration_measurements[0].effective_leakage_area * ( 1 + args_hash['air_leakage_pct_change']) # 110.7
+    assert_equal(new_infiltration, hpxml_bldg.air_infiltration_measurements[0].effective_leakage_area)
+
+    # Test a file with a different way of specifying air leakage
+    args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base-enclosure-infil-leakiness-description.xml')
+
+    original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
+    hpxml_bldg = _test_measure(args_hash)
+
+    new_infiltration = original_bldg.air_infiltration_measurements[0].infiltration_volume * ( 1 + args_hash['air_leakage_pct_change']) # 19440.0
+    assert_equal(new_infiltration, hpxml_bldg.air_infiltration_measurements[0].infiltration_volume)
+
+    # Test a file with a different way of specifying air leakage
+    args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base-enclosure-infil-natural-ach.xml')
+
+    original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
+    hpxml_bldg = _test_measure(args_hash)
+
+    new_infiltration = (original_bldg.air_infiltration_measurements[0].air_leakage * ( 1 + args_hash['air_leakage_pct_change'])).round(2) # 0.18
+    assert_equal(new_infiltration, hpxml_bldg.air_infiltration_measurements[0].air_leakage)
   end
 
   def _test_measure(args_hash)
