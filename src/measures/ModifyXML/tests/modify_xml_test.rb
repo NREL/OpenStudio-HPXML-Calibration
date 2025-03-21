@@ -128,7 +128,7 @@ class ModifyXMLTest < Minitest::Test
     args_hash = {}
     args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base.xml')
     args_hash['save_file_path'] = @tmp_hpxml_path
-    args_hash['cooling_efficiency_pct_change'] = 0.1
+    args_hash['cooling_efficiency_pct_change'] = -0.05
 
     original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
     hpxml_bldg = _test_measure(args_hash)
@@ -141,62 +141,65 @@ class ModifyXMLTest < Minitest::Test
     original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
     hpxml_bldg = _test_measure(args_hash)
 
-    new_efficiencies = []
+    cooling_system_efficiencies = []
+    # Test cooling systems
     original_bldg.cooling_systems.each do |cooling_system|
       if cooling_system.cooling_efficiency_seer
-        new_efficiencies << (cooling_system.cooling_efficiency_seer * ( 1 + args_hash['cooling_efficiency_pct_change'])).round(2) #
+        cooling_system_efficiencies << (cooling_system.cooling_efficiency_seer * ( 1 + args_hash['cooling_efficiency_pct_change'])).round(2) #
       end
       if cooling_system.cooling_efficiency_eer
-        new_efficiencies << (cooling_system.cooling_efficiency_eer * ( 1 + args_hash['cooling_efficiency_pct_change'])).round(2) #
+        cooling_system_efficiencies << (cooling_system.cooling_efficiency_eer * ( 1 + args_hash['cooling_efficiency_pct_change'])).round(2) #
       end
       if cooling_system.cooling_efficiency_seer2
-        new_efficiencies << (cooling_system.cooling_efficiency_seer2 * ( 1 + args_hash['cooling_efficiency_pct_change'])).round(2) #
+        cooling_system_efficiencies << (cooling_system.cooling_efficiency_seer2 * ( 1 + args_hash['cooling_efficiency_pct_change'])).round(2) #
       end
       if cooling_system.cooling_efficiency_ceer
-        new_efficiencies << (cooling_system.cooling_efficiency_ceer * ( 1 + args_hash['cooling_efficiency_pct_change'])).round(2) #
+        cooling_system_efficiencies << (cooling_system.cooling_efficiency_ceer * ( 1 + args_hash['cooling_efficiency_pct_change'])).round(2) #
       end
     end
     hpxml_bldg.cooling_systems.each do |new_cooling_system|
       if new_cooling_system.cooling_efficiency_seer
-        assert(new_efficiencies.include? new_cooling_system.cooling_efficiency_seer)
+        assert(cooling_system_efficiencies.include? new_cooling_system.cooling_efficiency_seer)
       end
       if new_cooling_system.cooling_efficiency_eer
-        assert(new_efficiencies.include? new_cooling_system.cooling_efficiency_eer)
+        assert(cooling_system_efficiencies.include? new_cooling_system.cooling_efficiency_eer)
       end
       if new_cooling_system.cooling_efficiency_seer2
-        assert(new_efficiencies.include? new_cooling_system.cooling_efficiency_seer2)
+        assert(cooling_system_efficiencies.include? new_cooling_system.cooling_efficiency_seer2)
       end
       if new_cooling_system.cooling_efficiency_ceer
-        assert(new_efficiencies.include? new_cooling_system.cooling_efficiency_ceer)
+        assert(cooling_system_efficiencies.include? new_cooling_system.cooling_efficiency_ceer)
       end
     end
 
+    heat_pump_efficiencies = []
+    # Test heat pumps
     original_bldg.heat_pumps.each do |heat_pump|
       if heat_pump.cooling_efficiency_seer
-        new_efficiencies << (heat_pump.cooling_efficiency_seer * ( 1 + args_hash['cooling_efficiency_pct_change'])).round(2) #
+        heat_pump_efficiencies << (heat_pump.cooling_efficiency_seer * ( 1 + args_hash['cooling_efficiency_pct_change'])).round(2) #
       end
       if heat_pump.cooling_efficiency_eer
-        new_efficiencies << (heat_pump.cooling_efficiency_eer * ( 1 + args_hash['cooling_efficiency_pct_change'])).round(2) #
+        heat_pump_efficiencies << (heat_pump.cooling_efficiency_eer * ( 1 + args_hash['cooling_efficiency_pct_change'])).round(2) #
       end
       if heat_pump.cooling_efficiency_seer2
-        new_efficiencies << (heat_pump.cooling_efficiency_seer2 * ( 1 + args_hash['cooling_efficiency_pct_change'])).round(2) #
+        heat_pump_efficiencies << (heat_pump.cooling_efficiency_seer2 * ( 1 + args_hash['cooling_efficiency_pct_change'])).round(2) #
       end
       if heat_pump.cooling_efficiency_ceer
-        new_efficiencies << (heat_pump.cooling_efficiency_ceer * ( 1 + args_hash['cooling_efficiency_pct_change'])).round(2) #
+        heat_pump_efficiencies << (heat_pump.cooling_efficiency_ceer * ( 1 + args_hash['cooling_efficiency_pct_change'])).round(2) #
       end
     end
     hpxml_bldg.heat_pumps.each do |new_heat_pump|
       if new_heat_pump.cooling_efficiency_seer
-        assert(new_efficiencies.include? new_heat_pump.cooling_efficiency_seer)
+        assert(heat_pump_efficiencies.include? new_heat_pump.cooling_efficiency_seer)
       end
       if new_heat_pump.cooling_efficiency_eer
-        assert(new_efficiencies.include? new_heat_pump.cooling_efficiency_eer)
+        assert(heat_pump_efficiencies.include? new_heat_pump.cooling_efficiency_eer)
       end
       if new_heat_pump.cooling_efficiency_seer2
-        assert(new_efficiencies.include? new_heat_pump.cooling_efficiency_seer2)
+        assert(heat_pump_efficiencies.include? new_heat_pump.cooling_efficiency_seer2)
       end
       if new_heat_pump.cooling_efficiency_ceer
-        assert(new_efficiencies.include? new_heat_pump.cooling_efficiency_ceer)
+        assert(heat_pump_efficiencies.include? new_heat_pump.cooling_efficiency_ceer)
       end
     end
   end
