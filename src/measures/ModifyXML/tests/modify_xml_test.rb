@@ -50,7 +50,7 @@ class ModifyXMLTest < Minitest::Test
     assert_equal(new_weekend_cooling_setpoints, hpxml_bldg.hvac_controls[0].weekend_cooling_setpoints)
   end
 
-  def test_changing_air_leakage
+  def test_change_air_leakage
     # create hash of argument values.
     args_hash = {}
     args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base.xml')
@@ -98,6 +98,29 @@ class ModifyXMLTest < Minitest::Test
 
     new_infiltration = (original_bldg.air_infiltration_measurements[0].air_leakage * ( 1 + args_hash['air_leakage_pct_change'])).round(2) # 0.18
     assert_equal(new_infiltration, hpxml_bldg.air_infiltration_measurements[0].air_leakage)
+  end
+
+  def test_change_heating_efficiency
+    # create hash of argument values.
+    args_hash = {}
+    args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base.xml')
+    args_hash['save_file_path'] = @tmp_hpxml_path
+    args_hash['heating_efficiency_pct_change'] = 0.1
+
+    original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
+    hpxml_bldg = _test_measure(args_hash)
+
+    new_afue = (original_bldg.heating_systems[0].heating_efficiency_afue * ( 1 + args_hash['heating_efficiency_pct_change'])).round(2) # 1.01
+    assert_equal(new_afue, hpxml_bldg.heating_systems[0].heating_efficiency_afue)
+
+    # Test a file with a different way of specifying heating efficiency
+    args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base-hvac-air-to-air-heat-pump-1-speed.xml')
+
+    original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
+    hpxml_bldg = _test_measure(args_hash)
+
+    new_hspf = (original_bldg.heat_pumps[0].heating_efficiency_hspf * ( 1 + args_hash['heating_efficiency_pct_change'])).round(2) #
+    assert_equal(new_hspf, hpxml_bldg.heat_pumps[0].heating_efficiency_hspf)
   end
 
   def _test_measure(args_hash)
