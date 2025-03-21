@@ -34,7 +34,8 @@ class Calibrate:
             # Read measured utility usage from user-provided csv
             print("Utility bills must be provided in the HPXML file")
 
-        # Percent Difference = |Value1 - Value2| / (Value1 + Value2) / 2 * 100
+        # Percent Difference
+        # |Value1 - Value2| [abs diff of values] / (Value1 + Value2) / 2 [mean of the two values]
         high_elec_difference = electricity_usages.max() - highest_modeled_elec_usage
         mean_high_elec_value = mean(electricity_usages.max(), highest_modeled_elec_usage)
         low_elec_difference = electricity_usages.min() - lowest_modeled_elec_usage
@@ -67,17 +68,20 @@ class Calibrate:
             check=True,
         )
 
-    def calibrate(self, workflow_file):
-        modify_xml_command = [
-            "openstudio",
-            "run",
-            "--workflow",
-            str(workflow_file),
-            "--measures_only",
-        ]
+    # def calibrate(self, workflow_file):
+    # modify_xml_command = [
+    #     "openstudio",
+    #     "run",
+    #     "--workflow",
+    #     str(workflow_file),
+    #     "--measures_only",
+    # ]
 
-        subprocess.run(
-            modify_xml_command,
-            capture_output=True,
-            check=True,
-        )
+    # subprocess.run(
+    #     modify_xml_command,
+    #     capture_output=True,
+    #     check=True,
+    # )
+
+    def read_value_from_hpxml(self, xpath):
+        return self.hp_xml.get_building().xpath(xpath)
