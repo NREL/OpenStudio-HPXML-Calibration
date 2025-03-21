@@ -60,7 +60,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     arg.setDisplayName('Air leakage percent change')
     arg.setDescription('What percentage to change the air leakage rate.
       Positive value increases air leakage, negative value decreases air leakage.
-      Expressed as a decimal, 0 - 1.')
+      Expressed as a decimal, -1 - 1.')
     args << arg
 
     return args
@@ -115,9 +115,9 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       hpxml_bldg.hvac_controls[0].heating_setpoint_temp += args[:heating_setpoint_offset]
       if hpxml_bldg.hvac_controls[0].heating_setback_temp
         hpxml_bldg.hvac_controls[0].heating_setback_temp += args[:heating_setpoint_offset]
-        puts "New heating setback: #{hpxml_bldg.hvac_controls[0].heating_setback_temp}"
+        # puts "New heating setback: #{hpxml_bldg.hvac_controls[0].heating_setback_temp}"
       end
-      puts "New heating setpoint: #{hpxml_bldg.hvac_controls[0].heating_setpoint_temp}"
+      # puts "New heating setpoint: #{hpxml_bldg.hvac_controls[0].heating_setpoint_temp}"
     elsif !hpxml_bldg.hvac_controls[0].weekday_heating_setpoints.nil?
       # Assumes if weekday_heating_setpoints is present, weekend_heating_setpoints is also present
       # Turn string into array of integers
@@ -129,8 +129,8 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       # Turn back into string
       hpxml_bldg.hvac_controls[0].weekday_heating_setpoints = processed_weekday_numbers.join(", ")
       hpxml_bldg.hvac_controls[0].weekend_heating_setpoints = processed_weekend_numbers.join(", ")
-      puts "New weekday heating setpoints: #{hpxml_bldg.hvac_controls[0].weekday_heating_setpoints}"
-      puts "New weekend heating setpoints: #{hpxml_bldg.hvac_controls[0].weekend_heating_setpoints}"
+      # puts "New weekday heating setpoints: #{hpxml_bldg.hvac_controls[0].weekday_heating_setpoints}"
+      # puts "New weekend heating setpoints: #{hpxml_bldg.hvac_controls[0].weekend_heating_setpoints}"
     else
       runner.registerWarning('No valid heating setpoint found in XML file. Not modifying heating setpoints.')
       return
@@ -148,9 +148,9 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       hpxml_bldg.hvac_controls[0].cooling_setpoint_temp += args[:cooling_setpoint_offset]
       if hpxml_bldg.hvac_controls[0].cooling_setup_temp
         hpxml_bldg.hvac_controls[0].cooling_setup_temp += args[:cooling_setpoint_offset]
-        puts "New cooling setup: #{hpxml_bldg.hvac_controls[0].cooling_setup_temp}"
+        # puts "New cooling setup: #{hpxml_bldg.hvac_controls[0].cooling_setup_temp}"
       end
-      puts "New cooling setpoint: #{hpxml_bldg.hvac_controls[0].cooling_setpoint_temp}"
+      # puts "New cooling setpoint: #{hpxml_bldg.hvac_controls[0].cooling_setpoint_temp}"
     elsif !hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints.nil?
       # Assumes if weekday_cooling_setpoints is present, weekend_cooling_setpoints is also present
       # Turn string into array of integers
@@ -162,8 +162,8 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       # Turn back into string
       hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints = processed_weekday_numbers.join(", ")
       hpxml_bldg.hvac_controls[0].weekend_cooling_setpoints = processed_weekend_numbers.join(", ")
-      puts "New weekday cooling setpoints: #{hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints}"
-      puts "New weekend cooling setpoints: #{hpxml_bldg.hvac_controls[0].weekend_cooling_setpoints}"
+      # puts "New weekday cooling setpoints: #{hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints}"
+      # puts "New weekend cooling setpoints: #{hpxml_bldg.hvac_controls[0].weekend_cooling_setpoints}"
     else
       runner.registerWarning('No valid cooling setpoint found in XML file. Not modifying cooling setpoints.')
       return
@@ -176,11 +176,24 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       return
     end
 
+    multiplier = 1 + args[:air_leakage_pct_change]
+
     # https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/src/OpenStudio-HPXML/HPXMLtoOpenStudio/resources/hpxml.rb#L3277-L3288
     if hpxml_bldg.air_infiltration_measurements[0].air_leakage
-      multiplier = 1 + args[:air_leakage_pct_change]
       new_infiltration = hpxml_bldg.air_infiltration_measurements[0].air_leakage * multiplier
-      hpxml_bldg.air_infiltration_measurements[0].air_leakage = new_infiltration.round
+      hpxml_bldg.air_infiltration_measurements[0].air_leakage = new_infiltration.round(2)
+      # puts "New infiltration 1: #{hpxml_bldg.air_infiltration_measurements[0].air_leakage}"
+    elsif hpxml_bldg.air_infiltration_measurements[0].effective_leakage_area
+      new_infiltration = hpxml_bldg.air_infiltration_measurements[0].effective_leakage_area * multiplier
+      hpxml_bldg.air_infiltration_measurements[0].effective_leakage_area = new_infiltration.round(1)
+      # puts "New infiltration 2: #{hpxml_bldg.air_infiltration_measurements[0].effective_leakage_area}"
+    elsif hpxml_bldg.air_infiltration_measurements[0].leakiness_description
+      new_infiltration = hpxml_bldg.air_infiltration_measurements[0].infiltration_volume * multiplier
+      hpxml_bldg.air_infiltration_measurements[0].infiltration_volume = new_infiltration.round(1)
+      # puts "New infiltration 3: #{hpxml_bldg.air_infiltration_measurements[0].infiltration_volume}"
+    else
+      runner.registerWarning('No valid air leakage found in XML file. Not modifying air leakage.')
+      return
     end
   end
 end
