@@ -60,8 +60,13 @@ class ModifyXMLTest < Minitest::Test
     original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
     hpxml_bldg = _test_measure(args_hash)
 
-    new_infiltration = original_bldg.air_infiltration_measurements[0].air_leakage * ( 1 + args_hash['air_leakage_pct_change']) # 2.7
-    assert_equal(new_infiltration, hpxml_bldg.air_infiltration_measurements[0].air_leakage)
+    original_bldg.air_infiltration_measurements.each do |infiltration_measurement|
+      new_infiltration = hpxml_bldg.air_infiltration_measurements.find{ |infil| infil.id == infiltration_measurement.id }
+      if infiltration_measurement.air_leakage
+        expected_infiltration = (infiltration_measurement.air_leakage * ( 1 + args_hash['air_leakage_pct_change'])).round(2)
+        assert_equal(expected_infiltration, new_infiltration.air_leakage)
+      end
+    end
 
     # Test a file with a different way of specifying air leakage
     args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base-enclosure-infil-cfm50.xml')
@@ -69,8 +74,13 @@ class ModifyXMLTest < Minitest::Test
     original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
     hpxml_bldg = _test_measure(args_hash)
 
-    new_infiltration = original_bldg.air_infiltration_measurements[0].air_leakage * ( 1 + args_hash['air_leakage_pct_change']) # 972.0
-    assert_equal(new_infiltration, hpxml_bldg.air_infiltration_measurements[0].air_leakage)
+    original_bldg.air_infiltration_measurements.each do |infiltration_measurement|
+      new_infiltration = hpxml_bldg.air_infiltration_measurements.find{ |infil| infil.id == infiltration_measurement.id }
+      if infiltration_measurement.air_leakage
+        expected_infiltration = (infiltration_measurement.air_leakage * ( 1 + args_hash['air_leakage_pct_change'])).round(2)
+        assert_equal(expected_infiltration, new_infiltration.air_leakage)
+      end
+    end
 
     # Test a file with a different way of specifying air leakage
     args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base-enclosure-infil-ela.xml')
@@ -78,8 +88,13 @@ class ModifyXMLTest < Minitest::Test
     original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
     hpxml_bldg = _test_measure(args_hash)
 
-    new_infiltration = original_bldg.air_infiltration_measurements[0].effective_leakage_area * ( 1 + args_hash['air_leakage_pct_change']) # 110.7
-    assert_equal(new_infiltration, hpxml_bldg.air_infiltration_measurements[0].effective_leakage_area)
+    original_bldg.air_infiltration_measurements.each do |infiltration_measurement|
+      new_infiltration = hpxml_bldg.air_infiltration_measurements.find{ |infil| infil.id == infiltration_measurement.id }
+      if infiltration_measurement.effective_leakage_area
+        expected_infiltration = (infiltration_measurement.effective_leakage_area * ( 1 + args_hash['air_leakage_pct_change'])).round(2)
+        assert_equal(expected_infiltration, new_infiltration.effective_leakage_area)
+      end
+    end
 
     # Test a file with a different way of specifying air leakage
     args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base-enclosure-infil-leakiness-description.xml')
@@ -87,8 +102,13 @@ class ModifyXMLTest < Minitest::Test
     original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
     hpxml_bldg = _test_measure(args_hash)
 
-    new_infiltration = original_bldg.air_infiltration_measurements[0].infiltration_volume * ( 1 + args_hash['air_leakage_pct_change']) # 19440.0
-    assert_equal(new_infiltration, hpxml_bldg.air_infiltration_measurements[0].infiltration_volume)
+    original_bldg.air_infiltration_measurements.each do |infiltration_measurement|
+      new_infiltration = hpxml_bldg.air_infiltration_measurements.find{ |infil| infil.id == infiltration_measurement.id }
+      if infiltration_measurement.infiltration_volume
+        expected_infiltration = (infiltration_measurement.infiltration_volume * ( 1 + args_hash['air_leakage_pct_change'])).round(2)
+        assert_equal(expected_infiltration, new_infiltration.infiltration_volume)
+      end
+    end
 
     # Test a file with a different way of specifying air leakage
     args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base-enclosure-infil-natural-ach.xml')
@@ -96,8 +116,13 @@ class ModifyXMLTest < Minitest::Test
     original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
     hpxml_bldg = _test_measure(args_hash)
 
-    new_infiltration = (original_bldg.air_infiltration_measurements[0].air_leakage * ( 1 + args_hash['air_leakage_pct_change'])).round(2) # 0.18
-    assert_equal(new_infiltration, hpxml_bldg.air_infiltration_measurements[0].air_leakage)
+    original_bldg.air_infiltration_measurements.each do |infiltration_measurement|
+      new_infiltration = hpxml_bldg.air_infiltration_measurements.find{ |infil| infil.id == infiltration_measurement.id }
+      if infiltration_measurement.air_leakage
+        expected_infiltration = (infiltration_measurement.air_leakage * ( 1 + args_hash['air_leakage_pct_change'])).round(2)
+        assert_equal(expected_infiltration, new_infiltration.air_leakage)
+      end
+    end
   end
 
   def test_change_heating_efficiency
