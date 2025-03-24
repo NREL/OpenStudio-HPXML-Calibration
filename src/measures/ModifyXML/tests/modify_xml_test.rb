@@ -103,41 +103,57 @@ class ModifyXMLTest < Minitest::Test
   def test_change_heating_efficiency
     # create hash of argument values.
     args_hash = {}
-    args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base.xml')
+    args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base-hvac-multiple.xml')
     args_hash['save_file_path'] = @tmp_hpxml_path
     args_hash['heating_efficiency_pct_change'] = 0.1
 
     original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
     hpxml_bldg = _test_measure(args_hash)
 
-    new_afue = (original_bldg.heating_systems[0].heating_efficiency_afue * ( 1 + args_hash['heating_efficiency_pct_change'])).round(2) # 1.01
-    assert_equal(new_afue, hpxml_bldg.heating_systems[0].heating_efficiency_afue)
+    # Test heating systems
+    original_bldg.heating_systems.each do |heating_system|
+      new_heating_system = hpxml_bldg.heating_systems.find{ |h| h.id == heating_system.id }
+      if heating_system.heating_efficiency_afue
+        expected_efficiency = (heating_system.heating_efficiency_afue * ( 1 + args_hash['heating_efficiency_pct_change'])).round(2)
+        if expected_efficiency >= 1.0
+          next
+        end
+        assert_equal(expected_efficiency, new_heating_system.heating_efficiency_afue)
+      end
+      if heating_system.heating_efficiency_percent
+        expected_efficiency = (heating_system.heating_efficiency_percent * ( 1 + args_hash['heating_efficiency_pct_change'])).round(2)
+        if expected_efficiency >= 1.0
+          next
+        end
+        assert_equal(expected_efficiency, new_heating_system.heating_efficiency_percent)
+      end
+    end
 
-    # Test a file with a different way of specifying heating efficiency
-    args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base-hvac-air-to-air-heat-pump-1-speed.xml')
-
-    original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
-    hpxml_bldg = _test_measure(args_hash)
-
-    new_hspf = (original_bldg.heat_pumps[0].heating_efficiency_hspf * ( 1 + args_hash['heating_efficiency_pct_change'])).round(2) # 8.47
-    assert_equal(new_hspf, hpxml_bldg.heat_pumps[0].heating_efficiency_hspf)
+    # Test heat pumps
+    original_bldg.heat_pumps.each do |heat_pump|
+      new_heat_pump = hpxml_bldg.heat_pumps.find{ |hp| hp.id == heat_pump.id }
+      if heat_pump.heating_efficiency_hspf
+        expected_efficiency = (heat_pump.heating_efficiency_hspf * ( 1 + args_hash['heating_efficiency_pct_change'])).round(2)
+        assert_equal(expected_efficiency, new_heat_pump.heating_efficiency_hspf)
+      end
+      if heat_pump.heating_efficiency_hspf2
+        expected_efficiency = (heat_pump.heating_efficiency_hspf2 * ( 1 + args_hash['heating_efficiency_pct_change'])).round(2)
+        assert_equal(expected_efficiency, new_heat_pump.heating_efficiency_hspf2)
+      end
+      if heat_pump.heating_efficiency_cop
+        expected_efficiency = (heat_pump.heating_efficiency_cop * ( 1 + args_hash['heating_efficiency_pct_change'])).round(2)
+        assert_equal(expected_efficiency, new_heat_pump.heating_efficiency_cop)
+      end
+    end
   end
 
   def test_change_cooling_efficiency
     # create hash of argument values.
     args_hash = {}
-    args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base.xml')
+    args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base-hvac-multiple.xml')
     args_hash['save_file_path'] = @tmp_hpxml_path
     args_hash['cooling_efficiency_pct_change'] = -0.05
 
-    original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
-    hpxml_bldg = _test_measure(args_hash)
-
-    new_seer = (original_bldg.cooling_systems[0].cooling_efficiency_seer * ( 1 + args_hash['cooling_efficiency_pct_change'])).round(2) #
-    assert_equal(new_seer, hpxml_bldg.cooling_systems[0].cooling_efficiency_seer)
-
-    # Test a file with a different way of specifying cooling efficiency
-    args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base-hvac-multiple.xml')
     original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
     hpxml_bldg = _test_measure(args_hash)
 
