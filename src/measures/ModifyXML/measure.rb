@@ -216,18 +216,16 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     hpxml_bldg.heating_systems.each do |heating_system|
       if heating_system.heating_efficiency_afue
         new_afue = heating_system.heating_efficiency_afue * multiplier
-        if heating_system.heating_efficiency_afue == 1.0 || new_afue > 1.0
-          runner.registerWarning('Heating efficiency is 1.0. Cannot modify heating efficiency.')
-          return
+        if new_afue > 1.0
+          new_afue = 1.0
         end
         heating_system.heating_efficiency_afue = new_afue.round(2)
         puts "New AFUE: #{heating_system.heating_efficiency_afue}"
       end
       if heating_system.heating_efficiency_percent
         new_heating_efficiency = heating_system.heating_efficiency_percent * multiplier
-        if heating_system.heating_efficiency_percent == 1.0 || new_heating_efficiency > 1.0
-          runner.registerWarning('Heating efficiency is 1.0. Cannot modify heating efficiency.')
-          return
+        if new_heating_efficiency > 1.0
+          new_heating_efficiency = 1.0
         end
         heating_system.heating_efficiency_percent = new_heating_efficiency.round(2)
         puts "New heating percent efficiency: #{heating_system.heating_efficiency_percent}"
