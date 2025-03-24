@@ -3,8 +3,8 @@
   <schema_version>3.1</schema_version>
   <name>modify_xml</name>
   <uid>afd74b96-8b2c-4ebd-83be-0d3fdc35bf9a</uid>
-  <version_id>e425b98b-e3b4-447f-93ad-31734de45b9f</version_id>
-  <version_modified>2025-03-17T21:53:37Z</version_modified>
+  <version_id>7da41ab7-6ad7-4035-8ef7-cc3b73a153f6</version_id>
+  <version_modified>2025-03-24T17:39:00Z</version_modified>
   <xml_checksum>1B7C870F</xml_checksum>
   <class_name>ModifyXML</class_name>
   <display_name>ModifyXML</display_name>
@@ -30,7 +30,7 @@
     <argument>
       <name>heating_setpoint_offset</name>
       <display_name>Heating setpoint offset</display_name>
-      <description>How much to change heating setpoint</description>
+      <description>Degrees to change heating setpoint</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
@@ -38,7 +38,7 @@
     <argument>
       <name>cooling_setpoint_offset</name>
       <display_name>Cooling setpoint offset</display_name>
-      <description>How much to change cooling setpoint</description>
+      <description>Degrees to change cooling setpoint</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
@@ -46,9 +46,29 @@
     <argument>
       <name>air_leakage_pct_change</name>
       <display_name>Air leakage percent change</display_name>
-      <description>What percentage to change the air leakage rate.
+      <description>Percentage to change the air leakage rate.
       Positive value increases air leakage, negative value decreases air leakage.
-      Expressed as a decimal, 0 - 1.</description>
+      Expressed as a decimal, -1 - 1.</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>heating_efficiency_pct_change</name>
+      <display_name>Heating efficiency percent change</display_name>
+      <description>Percentage to change the heating equipment efficiency.
+      Positive value increases efficiency, negative value decreases efficiency.
+      Expressed as a decimal, -1 - 1.</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>cooling_efficiency_pct_change</name>
+      <display_name>Cooling efficiency percent change</display_name>
+      <description>Percentage to change the cooling equipment efficiency.
+      Positive value increases efficiency, negative value decreases efficiency.
+      Expressed as a decimal, -1 - 1.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
@@ -81,13 +101,13 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>DD4F312F</checksum>
+      <checksum>3210E4D5</checksum>
     </file>
     <file>
       <filename>modify_xml_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
-      <checksum>BB1F13CA</checksum>
+      <checksum>0212C67B</checksum>
     </file>
   </files>
 </measure>
