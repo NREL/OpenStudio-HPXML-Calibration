@@ -105,7 +105,7 @@ class ModifyXMLTest < Minitest::Test
     args_hash = {}
     args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base-hvac-multiple.xml')
     args_hash['save_file_path'] = @tmp_hpxml_path
-    args_hash['heating_efficiency_pct_change'] = 0.1
+    args_hash['heating_efficiency_pct_change'] = 0.05
 
     original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
     hpxml_bldg = _test_measure(args_hash)
@@ -115,15 +115,15 @@ class ModifyXMLTest < Minitest::Test
       new_heating_system = hpxml_bldg.heating_systems.find{ |h| h.id == heating_system.id }
       if heating_system.heating_efficiency_afue
         expected_efficiency = (heating_system.heating_efficiency_afue * ( 1 + args_hash['heating_efficiency_pct_change'])).round(2)
-        if expected_efficiency >= 1.0
-          next
+        if expected_efficiency > 1.0
+          expected_efficiency = heating_system.heating_efficiency_afue
         end
         assert_equal(expected_efficiency, new_heating_system.heating_efficiency_afue)
       end
       if heating_system.heating_efficiency_percent
         expected_efficiency = (heating_system.heating_efficiency_percent * ( 1 + args_hash['heating_efficiency_pct_change'])).round(2)
-        if expected_efficiency >= 1.0
-          next
+        if expected_efficiency > 1.0
+          expected_efficiency = heating_system.heating_efficiency_percent
         end
         assert_equal(expected_efficiency, new_heating_system.heating_efficiency_percent)
       end
