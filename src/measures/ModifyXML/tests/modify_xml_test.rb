@@ -233,6 +233,34 @@ class ModifyXMLTest < Minitest::Test
     end
   end
 
+  def test_plug_load_change
+    files_to_test = [
+      'base.xml',
+      'base-misc-usage-multiplier.xml',
+    ]
+
+    # Run test on each sample file
+    files_to_test.each do |file|
+      # create hash of argument values.
+      args_hash = {}
+      args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', file)
+      args_hash['save_file_path'] = @tmp_hpxml_path
+      args_hash['plug_load_pct_change'] = 0.05
+
+      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
+      hpxml_bldg = _test_measure(args_hash)
+
+      original_bldg.plug_loads.each do |plug_load|
+        new_plug_load = hpxml_bldg.plug_loads.find{ |pl| pl.id == plug_load.id }
+        if plug_load.usage_multiplier.nil?
+          plug_load.usage_multiplier = 1.0
+        end
+        expected_usage_multiplier = (plug_load.usage_multiplier * ( 1 + args_hash['plug_load_pct_change'])).round(2)
+        assert_equal(expected_usage_multiplier, new_plug_load.usage_multiplier)
+      end
+    end
+  end
+
   def _test_measure(args_hash)
     # create an instance of the measure
     measure = ModifyXML.new
