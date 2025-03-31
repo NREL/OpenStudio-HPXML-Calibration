@@ -18,117 +18,95 @@ class ModifyXMLTest < Minitest::Test
   end
 
   def test_setpoint_offsets
-    # create hash of argument values.
-    args_hash = {}
-    args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base.xml')
-    args_hash['save_file_path'] = @tmp_hpxml_path
-    args_hash['heating_setpoint_offset'] = -1.5
-    args_hash['cooling_setpoint_offset'] = 2.5
+    files_to_test = [
+      'base.xml',
+      'base-hvac-setpoints-daily-schedules.xml'
+    ]
 
-    original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
-    hpxml_bldg = _test_measure(args_hash)
+    # Run test on each sample file
+    files_to_test.each do |file|
+      # create hash of argument values.
+      args_hash = {}
+      args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', file)
+      args_hash['save_file_path'] = @tmp_hpxml_path
+      args_hash['heating_setpoint_offset'] = -1.5
+      args_hash['cooling_setpoint_offset'] = 2.5
 
-    # Check for expected change
-    original_bldg.hvac_controls.each do |hvac_control|
-      new_setpoint = hpxml_bldg.hvac_controls.find{ |control| control.id == hvac_control.id }
-      if hvac_control.heating_setpoint_temp
-        expected_setpoint = (hvac_control.heating_setpoint_temp + args_hash['heating_setpoint_offset']).round(2)
-        assert_equal(expected_setpoint, new_setpoint.heating_setpoint_temp)
-      end
-      if hvac_control.cooling_setpoint_temp
-        expected_setpoint = (hvac_control.cooling_setpoint_temp + args_hash['cooling_setpoint_offset']).round(2)
-        assert_equal(expected_setpoint, new_setpoint.cooling_setpoint_temp)
+      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
+      hpxml_bldg = _test_measure(args_hash)
+
+      # Check for expected change
+      original_bldg.hvac_controls.each do |hvac_control|
+        new_setpoint = hpxml_bldg.hvac_controls.find{ |control| control.id == hvac_control.id }
+        if hvac_control.heating_setpoint_temp
+          expected_setpoint = (hvac_control.heating_setpoint_temp + args_hash['heating_setpoint_offset']).round(2)
+          assert_equal(expected_setpoint, new_setpoint.heating_setpoint_temp)
+        end
+        if hvac_control.cooling_setpoint_temp
+          expected_setpoint = (hvac_control.cooling_setpoint_temp + args_hash['cooling_setpoint_offset']).round(2)
+          assert_equal(expected_setpoint, new_setpoint.cooling_setpoint_temp)
+        end
+        if hvac_control.weekday_heating_setpoints
+          new_weekday_heating_setpoints = '62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 68.5, 68.5, 64.5, 64.5, 64.5, 64.5, 64.5, 64.5, 64.5, 64.5, 66.5, 66.5, 66.5, 66.5, 66.5, 62.5, 62.5'
+          new_weekend_heating_setpoints = '66.5, 66.5, 66.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5'
+          new_weekday_cooling_setpoints = '78.5, 78.5, 78.5, 78.5, 78.5, 78.5, 78.5, 73.5, 73.5, 78.5, 78.5, 78.5, 78.5, 78.5, 78.5, 78.5, 78.5, 76.5, 76.5, 76.5, 76.5, 76.5, 78.5, 78.5'
+          new_weekend_cooling_setpoints = '76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5'
+          assert_equal(new_weekday_heating_setpoints, new_setpoint.weekday_heating_setpoints)
+          assert_equal(new_weekend_heating_setpoints, new_setpoint.weekend_heating_setpoints)
+          assert_equal(new_weekday_cooling_setpoints, new_setpoint.weekday_cooling_setpoints)
+          assert_equal(new_weekend_cooling_setpoints, new_setpoint.weekend_cooling_setpoints)
+        end
       end
     end
 
-    # Test a file with a different way of specifying setpoints
-    args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base-hvac-setpoints-daily-schedules.xml')
+    # # Test a file with a different way of specifying setpoints
+    # args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base-hvac-setpoints-daily-schedules.xml')
 
-    # No need for original_bldg because we're hard-coding the expected values
-    hpxml_bldg = _test_measure(args_hash)
+    # # No need for original_bldg because we're hard-coding the expected values
+    # hpxml_bldg = _test_measure(args_hash)
 
     # Check for expected change
-    new_weekday_heating_setpoints = '62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 68.5, 68.5, 64.5, 64.5, 64.5, 64.5, 64.5, 64.5, 64.5, 64.5, 66.5, 66.5, 66.5, 66.5, 66.5, 62.5, 62.5'
-    new_weekend_heating_setpoints = '66.5, 66.5, 66.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5'
-    new_weekday_cooling_setpoints = '78.5, 78.5, 78.5, 78.5, 78.5, 78.5, 78.5, 73.5, 73.5, 78.5, 78.5, 78.5, 78.5, 78.5, 78.5, 78.5, 78.5, 76.5, 76.5, 76.5, 76.5, 76.5, 78.5, 78.5'
-    new_weekend_cooling_setpoints = '76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5'
-    assert_equal(new_weekday_heating_setpoints, hpxml_bldg.hvac_controls[0].weekday_heating_setpoints)
-    assert_equal(new_weekend_heating_setpoints, hpxml_bldg.hvac_controls[0].weekend_heating_setpoints)
-    assert_equal(new_weekday_cooling_setpoints, hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints)
-    assert_equal(new_weekend_cooling_setpoints, hpxml_bldg.hvac_controls[0].weekend_cooling_setpoints)
+    # new_weekday_heating_setpoints = '62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 68.5, 68.5, 64.5, 64.5, 64.5, 64.5, 64.5, 64.5, 64.5, 64.5, 66.5, 66.5, 66.5, 66.5, 66.5, 62.5, 62.5'
+    # new_weekend_heating_setpoints = '66.5, 66.5, 66.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5, 68.5'
+    # new_weekday_cooling_setpoints = '78.5, 78.5, 78.5, 78.5, 78.5, 78.5, 78.5, 73.5, 73.5, 78.5, 78.5, 78.5, 78.5, 78.5, 78.5, 78.5, 78.5, 76.5, 76.5, 76.5, 76.5, 76.5, 78.5, 78.5'
+    # new_weekend_cooling_setpoints = '76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5, 76.5'
+    # assert_equal(new_weekday_heating_setpoints, hpxml_bldg.hvac_controls[0].weekday_heating_setpoints)
+    # assert_equal(new_weekend_heating_setpoints, hpxml_bldg.hvac_controls[0].weekend_heating_setpoints)
+    # assert_equal(new_weekday_cooling_setpoints, hpxml_bldg.hvac_controls[0].weekday_cooling_setpoints)
+    # assert_equal(new_weekend_cooling_setpoints, hpxml_bldg.hvac_controls[0].weekend_cooling_setpoints)
   end
 
   def test_change_air_leakage
-    # create hash of argument values.
-    args_hash = {}
-    args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base.xml')
-    args_hash['save_file_path'] = @tmp_hpxml_path
-    args_hash['air_leakage_pct_change'] = -0.1
+    files_to_test = [
+      'base.xml',
+      'base-enclosure-infil-cfm50.xml',
+      'base-enclosure-infil-ela.xml',
+      # We do not support qualitative infiltration descriptions
+      # 'base-enclosure-infil-leakiness-description.xml',
+      'base-enclosure-infil-natural-ach.xml',
+    ]
 
-    original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
-    hpxml_bldg = _test_measure(args_hash)
+    # Run test on each sample file
+    files_to_test.each do |file|
+      # create hash of argument values.
+      args_hash = {}
+      args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', file)
+      args_hash['save_file_path'] = @tmp_hpxml_path
+      args_hash['air_leakage_pct_change'] = -0.1
 
-    original_bldg.air_infiltration_measurements.each do |infiltration_measurement|
-      new_infiltration = hpxml_bldg.air_infiltration_measurements.find{ |infil| infil.id == infiltration_measurement.id }
-      if infiltration_measurement.air_leakage
-        expected_infiltration = (infiltration_measurement.air_leakage * ( 1 + args_hash['air_leakage_pct_change'])).round(2)
-        assert_equal(expected_infiltration, new_infiltration.air_leakage)
-      end
-    end
+      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
+      hpxml_bldg = _test_measure(args_hash)
 
-    # Test a file with a different way of specifying air leakage
-    args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base-enclosure-infil-cfm50.xml')
-
-    original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
-    hpxml_bldg = _test_measure(args_hash)
-
-    original_bldg.air_infiltration_measurements.each do |infiltration_measurement|
-      new_infiltration = hpxml_bldg.air_infiltration_measurements.find{ |infil| infil.id == infiltration_measurement.id }
-      if infiltration_measurement.air_leakage
-        expected_infiltration = (infiltration_measurement.air_leakage * ( 1 + args_hash['air_leakage_pct_change'])).round(2)
-        assert_equal(expected_infiltration, new_infiltration.air_leakage)
-      end
-    end
-
-    # Test a file with a different way of specifying air leakage
-    args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base-enclosure-infil-ela.xml')
-
-    original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
-    hpxml_bldg = _test_measure(args_hash)
-
-    original_bldg.air_infiltration_measurements.each do |infiltration_measurement|
-      new_infiltration = hpxml_bldg.air_infiltration_measurements.find{ |infil| infil.id == infiltration_measurement.id }
-      if infiltration_measurement.effective_leakage_area
-        expected_infiltration = (infiltration_measurement.effective_leakage_area * ( 1 + args_hash['air_leakage_pct_change'])).round(2)
-        assert_equal(expected_infiltration, new_infiltration.effective_leakage_area)
-      end
-    end
-
-    # Test a file with a different way of specifying air leakage
-    args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base-enclosure-infil-leakiness-description.xml')
-
-    original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
-    hpxml_bldg = _test_measure(args_hash)
-
-    original_bldg.air_infiltration_measurements.each do |infiltration_measurement|
-      new_infiltration = hpxml_bldg.air_infiltration_measurements.find{ |infil| infil.id == infiltration_measurement.id }
-      if infiltration_measurement.infiltration_volume
-        expected_infiltration = (infiltration_measurement.infiltration_volume * ( 1 + args_hash['air_leakage_pct_change'])).round(2)
-        assert_equal(expected_infiltration, new_infiltration.infiltration_volume)
-      end
-    end
-
-    # Test a file with a different way of specifying air leakage
-    args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base-enclosure-infil-natural-ach.xml')
-
-    original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
-    hpxml_bldg = _test_measure(args_hash)
-
-    original_bldg.air_infiltration_measurements.each do |infiltration_measurement|
-      new_infiltration = hpxml_bldg.air_infiltration_measurements.find{ |infil| infil.id == infiltration_measurement.id }
-      if infiltration_measurement.air_leakage
-        expected_infiltration = (infiltration_measurement.air_leakage * ( 1 + args_hash['air_leakage_pct_change'])).round(2)
-        assert_equal(expected_infiltration, new_infiltration.air_leakage)
+      original_bldg.air_infiltration_measurements.each do |infiltration_measurement|
+        new_infiltration = hpxml_bldg.air_infiltration_measurements.find{ |infil| infil.id == infiltration_measurement.id }
+        if infiltration_measurement.air_leakage
+          expected_infiltration = (infiltration_measurement.air_leakage * ( 1 + args_hash['air_leakage_pct_change'])).round(2)
+          assert_equal(expected_infiltration, new_infiltration.air_leakage)
+        end
+        if infiltration_measurement.effective_leakage_area
+          expected_infiltration = (infiltration_measurement.effective_leakage_area * ( 1 + args_hash['air_leakage_pct_change'])).round(2)
+          assert_equal(expected_infiltration, new_infiltration.effective_leakage_area)
+        end
       end
     end
   end
