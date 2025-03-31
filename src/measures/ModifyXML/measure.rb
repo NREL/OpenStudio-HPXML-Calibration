@@ -216,9 +216,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
         # puts "New infiltration 2: #{air_infiltration_measurement.effective_leakage_area}"
       end
       if air_infiltration_measurement.leakiness_description
-        new_infiltration = air_infiltration_measurement.infiltration_volume * multiplier
-        air_infiltration_measurement.infiltration_volume = new_infiltration.round(1)
-        # puts "New infiltration 3: #{air_infiltration_measurement.infiltration_volume}"
+        runner.registerWarning('Automatic modification of air infiltration leakiness description is not supported.')
       end
     end
   end
