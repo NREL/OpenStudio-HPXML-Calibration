@@ -77,6 +77,13 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       Expressed as a decimal, -1 - 1.')
     args << arg
 
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('plug_load_pct_change', false)
+    arg.setDisplayName('Plug load percent change')
+    arg.setDescription('Percentage to change the plug load usage multiplier.
+      Positive value increases load, negative value decreases load.
+      Expressed as a decimal, -1 - 1.')
+    args << arg
+
     return args
   end
 
@@ -126,6 +133,11 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       modify_cooling_efficiency(hpxml_bldg, runner, args)
     else
       runner.registerInfo('No modifier for cooling equipment efficiency provided. Not modifying cooling equipment.')
+    end
+    if args[:plug_load_pct_change]
+      modify_plug_loads(hpxml_bldg, runner, args)
+    else
+      runner.registerInfo('No modifier for plug loads provided. Not modifying plug loads.')
     end
     # ...
 
@@ -295,6 +307,18 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
         heat_pump.cooling_efficiency_ceer = new_ceer.round(2)
         # puts "New heat pump CEER: #{heat_pump.cooling_efficiency_ceer}"
       end
+    end
+  end
+
+  def modify_plug_loads(hpxml_bldg, runner, args)
+    multiplier = 1 + args[:plug_load_pct_change]
+    hpxml_bldg.plug_loads.each do |plug_load|
+      if plug_load.usage_multiplier.nil?
+        plug_load.usage_multiplier = 1.0
+      end
+      new_multiplier = plug_load.usage_multiplier * multiplier
+      plug_load.usage_multiplier = new_multiplier.round(2)
+      puts "New plug load multiplier: #{plug_load.usage_multiplier}"
     end
   end
 end
