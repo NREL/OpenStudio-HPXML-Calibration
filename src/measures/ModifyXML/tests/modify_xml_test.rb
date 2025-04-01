@@ -223,6 +223,121 @@ class ModifyXMLTest < Minitest::Test
     end
   end
 
+  def test_ag_r_value_change
+    files_to_test = [
+      'base.xml',
+      'base-atticroof-cathedral.xml',
+      'base-atticroof-flat.xml',
+    ]
+
+    # Run test on each sample file
+    files_to_test.each do |file|
+      # create hash of argument values.
+      args_hash = {}
+      args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', file)
+      args_hash['save_file_path'] = @tmp_hpxml_path
+      args_hash['roof_attic_r_value_pct_change'] = 0.05
+      args_hash['ag_walls_r_value_pct_change'] = 0.05
+
+      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
+      hpxml_bldg = _test_measure(args_hash)
+
+      # Test roof and attic surfaces
+      (original_bldg.roofs + original_bldg.floors).each do |surface|
+        new_building_surface = (hpxml_bldg.roofs + hpxml_bldg.floors).find{ |roof_or_attic| roof_or_attic.id == surface.id }
+        if surface.insulation_assembly_r_value && surface.is_thermal_boundary
+          expected_r_value = (surface.insulation_assembly_r_value * ( 1 + args_hash['roof_attic_r_value_pct_change'])).round(1)
+          assert_equal(expected_r_value, new_building_surface.insulation_assembly_r_value)
+        end
+      end
+
+      # Test walls and rim joists
+      (original_bldg.rim_joists + original_bldg.walls).each do |surface|
+        new_building_surface = (hpxml_bldg.rim_joists + hpxml_bldg.walls).find{ |ag_wall| ag_wall.id == surface.id }
+        if surface.insulation_assembly_r_value && surface.is_thermal_boundary
+          expected_r_value = (surface.insulation_assembly_r_value * ( 1 + args_hash['ag_walls_r_value_pct_change'])).round(1)
+          assert_equal(expected_r_value, new_building_surface.insulation_assembly_r_value)
+        end
+      end
+    end
+  end
+
+  def test_bg_r_value_change
+    files_to_test = [
+      'base.xml',
+      'base-foundation-conditioned-basement-slab-insulation.xml',
+      'base-foundation-slab.xml',
+      'base-foundation-unconditioned-basement.xml',
+      'base-foundation-unconditioned-basement-wall-insulation.xml',
+    ]
+
+    # Run test on each sample file
+    files_to_test.each do |file|
+      # create hash of argument values.
+      args_hash = {}
+      args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', file)
+      args_hash['save_file_path'] = @tmp_hpxml_path
+      args_hash['bg_walls_r_value_pct_change'] = 0.05
+
+      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
+      hpxml_bldg = _test_measure(args_hash)
+
+      original_bldg.foundation_walls.each do |foundation_wall|
+        new_foundation_wall = hpxml_bldg.foundation_walls.find{ |bg_wall| bg_wall.id == foundation_wall.id }
+        if foundation_wall.insulation_exterior_r_value != 0 && foundation_wall.is_thermal_boundary
+          expected_r_value = (foundation_wall.insulation_exterior_r_value * ( 1 + args_hash['bg_walls_r_value_pct_change'])).round(1)
+          assert_equal(expected_r_value, new_foundation_wall.insulation_exterior_r_value)
+        end
+        if foundation_wall.insulation_interior_r_value != 0 && foundation_wall.is_thermal_boundary
+          expected_r_value = (foundation_wall.insulation_interior_r_value * ( 1 + args_hash['bg_walls_r_value_pct_change'])).round(1)
+          assert_equal(expected_r_value, new_foundation_wall.insulation_interior_r_value)
+        end
+      end
+    end
+  end
+
+  def test_slab_r_value_change
+    files_to_test = [
+      'base.xml',
+      'base-foundation-conditioned-basement-slab-insulation.xml',
+      'base-foundation-slab.xml',
+      'base-foundation-unconditioned-basement.xml',
+      'base-foundation-unconditioned-basement-wall-insulation.xml',
+    ]
+
+    # Run test on each sample file
+    files_to_test.each do |file|
+      # create hash of argument values.
+      args_hash = {}
+      args_hash['xml_file'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', file)
+      args_hash['save_file_path'] = @tmp_hpxml_path
+      args_hash['slab_r_value_pct_change'] = 0.05
+
+      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file']).buildings[0]
+      hpxml_bldg = _test_measure(args_hash)
+
+      original_bldg.slabs.each do |slab|
+        new_slab = hpxml_bldg.slabs.find{ |slb| slb.id == slab.id }
+        if slab.under_slab_insulation_r_value && slab.is_thermal_boundary
+          expected_r_value = (slab.under_slab_insulation_r_value * ( 1 + args_hash['slab_r_value_pct_change'])).round(1)
+          assert_equal(expected_r_value, new_slab.under_slab_insulation_r_value)
+        end
+        if slab.perimeter_insulation_r_value && slab.is_thermal_boundary
+          expected_r_value = (slab.perimeter_insulation_r_value * ( 1 + args_hash['slab_r_value_pct_change'])).round(1)
+          assert_equal(expected_r_value, new_slab.perimeter_insulation_r_value)
+        end
+        if slab.exterior_horizontal_insulation_r_value && slab.is_thermal_boundary
+          expected_r_value = (slab.exterior_horizontal_insulation_r_value * ( 1 + args_hash['slab_r_value_pct_change'])).round(1)
+          assert_equal(expected_r_value, new_slab.exterior_horizontal_insulation_r_value)
+        end
+        if slab.gap_insulation_r_value && slab.is_thermal_boundary
+          expected_r_value = (slab.gap_insulation_r_value * ( 1 + args_hash['slab_r_value_pct_change'])).round(1)
+          assert_equal(expected_r_value, new_slab.gap_insulation_r_value)
+        end
+      end
+    end
+  end
+
   def _test_measure(args_hash)
     # create an instance of the measure
     measure = ModifyXML.new
