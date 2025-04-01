@@ -84,6 +84,34 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       Expressed as a decimal, -1 - 1.')
     args << arg
 
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('roof_attic_r_value_pct_change', false)
+    arg.setDisplayName('Roof and/or attic R-Value percent change')
+    arg.setDescription('Percentage to change the Roof and/or attic R-value.
+      Positive value increases R-Value, negative value decreases R-value.
+      Expressed as a decimal, -1 - 1.')
+    args << arg
+
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('ag_walls_r_value_pct_change', false)
+    arg.setDisplayName('Above-ground wall R-Value percent change')
+    arg.setDescription('Percentage to change the above-ground wall R-value.
+      Positive value increases R-Value, negative value decreases R-value.
+      Expressed as a decimal, -1 - 1.')
+    args << arg
+
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('bg_walls_r_value_pct_change', false)
+    arg.setDisplayName('Below-ground wall R-Value percent change')
+    arg.setDescription('Percentage to change the below-ground wall R-value.
+      Positive value increases R-Value, negative value decreases R-value.
+      Expressed as a decimal, -1 - 1.')
+    args << arg
+
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('slab_r_value_pct_change', false)
+    arg.setDisplayName('Slab R-Value percent change')
+    arg.setDescription('Percentage to change the foundation slab R-value.
+      Positive value increases R-Value, negative value decreases R-value.
+      Expressed as a decimal, -1 - 1.')
+    args << arg
+
     return args
   end
 
@@ -138,6 +166,26 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       modify_plug_loads(hpxml_bldg, runner, args)
     else
       runner.registerInfo('No modifier for plug loads provided. Not modifying plug loads.')
+    end
+    if args[:roof_attic_r_value_pct_change]
+      modify_top_r_values(hpxml_bldg, runner, args)
+    else
+      runner.registerInfo('No modifier for R-values provided. Not modifying roof or attic.')
+    end
+    if args[:ag_walls_r_value_pct_change]
+      modify_ag_wall_r_values(hpxml_bldg, runner, args)
+    else
+      runner.registerInfo('No modifier for R-values provided. Not modifying above-ground walls.')
+    end
+    if args[:bg_walls_r_value_pct_change]
+      modify_bg_wall_r_values(hpxml_bldg, runner, args)
+    else
+      runner.registerInfo('No modifier for R-values provided. Not modifying below-ground walls.')
+    end
+    if args[:slab_r_value_pct_change]
+      modify_slab_r_values(hpxml_bldg, runner, args)
+    else
+      runner.registerInfo('No modifier for R-values provided. Not modifying below-ground walls.')
     end
     # ...
 
@@ -316,7 +364,83 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       end
       new_multiplier = plug_load.usage_multiplier * multiplier
       plug_load.usage_multiplier = new_multiplier.round(2)
-      puts "New plug load multiplier: #{plug_load.usage_multiplier}"
+      # puts "New plug load multiplier: #{plug_load.usage_multiplier}"
+    end
+  end
+
+  def modify_top_r_values(hpxml_bldg, runner, args)
+    multiplier = 1 + args[:roof_attic_r_value_pct_change]
+    (hpxml_bldg.roofs + hpxml_bldg.floors).each do |surface|
+      # Check if this floor is the floor of an attic
+      if surface.is_a?(HPXML::Floor) && !surface.exterior_adjacent_to.include?('attic')
+        next
+      end
+      if surface.insulation_assembly_r_value && surface.is_thermal_boundary
+        # puts "Original #{surface.insulation_id} R-value: #{surface.insulation_assembly_r_value}"
+        new_r_value = surface.insulation_assembly_r_value * multiplier
+        surface.insulation_assembly_r_value = new_r_value.round(1)
+        # puts "New #{surface.insulation_id} R-value: #{surface.insulation_assembly_r_value}"
+      end
+    end
+  end
+
+  def modify_ag_wall_r_values(hpxml_bldg, runner, args)
+    multiplier = 1 + args[:ag_walls_r_value_pct_change]
+    (hpxml_bldg.rim_joists + hpxml_bldg.walls).each do |surface|
+      if surface.insulation_assembly_r_value && surface.is_thermal_boundary
+        # puts "Original #{surface.insulation_id} R-value: #{surface.insulation_assembly_r_value}"
+        new_r_value = surface.insulation_assembly_r_value * multiplier
+        surface.insulation_assembly_r_value = new_r_value.round(1)
+        # puts "New #{surface.insulation_id} R-value: #{surface.insulation_assembly_r_value}"
+      end
+    end
+  end
+
+  def modify_bg_wall_r_values(hpxml_bldg, runner, args)
+    multiplier = 1 + args[:bg_walls_r_value_pct_change]
+    hpxml_bldg.foundation_walls.each do |foundation_wall|
+      if foundation_wall.insulation_exterior_r_value != 0 && foundation_wall.is_thermal_boundary
+        # puts "Original #{foundation_wall.insulation_id} R-value: #{foundation_wall.insulation_exterior_r_value}"
+        new_r_value = foundation_wall.insulation_exterior_r_value * multiplier
+        foundation_wall.insulation_exterior_r_value = new_r_value.round(1)
+        # puts "New #{foundation_wall.insulation_id} R-value: #{foundation_wall.insulation_exterior_r_value}"
+      end
+      if foundation_wall.insulation_interior_r_value != 0 && foundation_wall.is_thermal_boundary
+        # puts "Original #{foundation_wall.insulation_id} R-value: #{foundation_wall.insulation_interior_r_value}"
+        new_r_value = foundation_wall.insulation_interior_r_value * multiplier
+        foundation_wall.insulation_interior_r_value = new_r_value.round(1)
+        # puts "New #{foundation_wall.insulation_id} R-value: #{foundation_wall.insulation_interior_r_value}"
+      end
+    end
+  end
+
+  def modify_slab_r_values(hpxml_bldg, runner, args)
+    multiplier = 1 + args[:slab_r_value_pct_change]
+    hpxml_bldg.slabs.each do |slab|
+      if slab.under_slab_insulation_r_value && slab.is_thermal_boundary
+        # puts "Original #{slab.under_slab_insulation_id} R-value: #{slab.under_slab_insulation_r_value}"
+        new_r_value = slab.under_slab_insulation_r_value * multiplier
+        slab.under_slab_insulation_r_value = new_r_value.round(1)
+        # puts "New #{slab.under_slab_insulation_id} R-value: #{slab.under_slab_insulation_r_value}"
+      end
+      if slab.perimeter_insulation_r_value && slab.is_thermal_boundary
+        # puts "Original #{slab.perimeter_insulation_id} R-value: #{slab.perimeter_insulation_r_value}"
+        new_r_value = slab.perimeter_insulation_r_value * multiplier
+        slab.perimeter_insulation_r_value = new_r_value.round(1)
+        # puts "New #{slab.perimeter_insulation_id} R-value: #{slab.perimeter_insulation_r_value}"
+      end
+      if slab.exterior_horizontal_insulation_r_value && slab.is_thermal_boundary
+        # puts "Original #{slab.exterior_horizontal_insulation_id} R-value: #{slab.exterior_horizontal_insulation_r_value}"
+        new_r_value = slab.exterior_horizontal_insulation_r_value * multiplier
+        slab.exterior_horizontal_insulation_r_value = new_r_value.round(1)
+        # puts "New #{slab.exterior_horizontal_insulation_id} R-value: #{slab.exterior_horizontal_insulation_r_value}"
+      end
+      if slab.gap_insulation_r_value && slab.is_thermal_boundary
+        # puts "Original #{slab.id} R-value: #{slab.gap_insulation_r_value}"
+        new_r_value = slab.gap_insulation_r_value * multiplier
+        slab.gap_insulation_r_value = new_r_value.round(1)
+        # puts "New #{slab.id} R-value: #{slab.gap_insulation_r_value}"
+      end
     end
   end
 end

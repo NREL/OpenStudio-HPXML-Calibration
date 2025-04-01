@@ -3,8 +3,8 @@
   <schema_version>3.1</schema_version>
   <name>modify_xml</name>
   <uid>afd74b96-8b2c-4ebd-83be-0d3fdc35bf9a</uid>
-  <version_id>7da41ab7-6ad7-4035-8ef7-cc3b73a153f6</version_id>
-  <version_modified>2025-03-24T17:39:00Z</version_modified>
+  <version_id>b092293e-3b0c-4779-a206-0299f2307056</version_id>
+  <version_modified>2025-04-01T20:26:37Z</version_modified>
   <xml_checksum>1B7C870F</xml_checksum>
   <class_name>ModifyXML</class_name>
   <display_name>ModifyXML</display_name>
@@ -73,6 +73,56 @@
       <required>false</required>
       <model_dependent>false</model_dependent>
     </argument>
+    <argument>
+      <name>plug_load_pct_change</name>
+      <display_name>Plug load percent change</display_name>
+      <description>Percentage to change the plug load usage multiplier.
+      Positive value increases load, negative value decreases load.
+      Expressed as a decimal, -1 - 1.</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>roof_attic_r_value_pct_change</name>
+      <display_name>Roof and/or attic R-Value percent change</display_name>
+      <description>Percentage to change the Roof and/or attic R-value.
+      Positive value increases R-Value, negative value decreases R-value.
+      Expressed as a decimal, -1 - 1.</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>ag_walls_r_value_pct_change</name>
+      <display_name>Above-ground wall R-Value percent change</display_name>
+      <description>Percentage to change the above-ground wall R-value.
+      Positive value increases R-Value, negative value decreases R-value.
+      Expressed as a decimal, -1 - 1.</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>bg_walls_r_value_pct_change</name>
+      <display_name>Below-ground wall R-Value percent change</display_name>
+      <description>Percentage to change the below-ground wall R-value.
+      Positive value increases R-Value, negative value decreases R-value.
+      Expressed as a decimal, -1 - 1.</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>slab_r_value_pct_change</name>
+      <display_name>Slab R-Value percent change</display_name>
+      <description>Percentage to change the foundation slab R-value.
+      Positive value increases R-Value, negative value decreases R-value.
+      Expressed as a decimal, -1 - 1.</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
   </arguments>
   <outputs />
   <provenances />
@@ -101,13 +151,13 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>3210E4D5</checksum>
+      <checksum>1D093DB7</checksum>
     </file>
     <file>
       <filename>modify_xml_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
-      <checksum>0212C67B</checksum>
+      <checksum>067E04C5</checksum>
     </file>
   </files>
 </measure>
