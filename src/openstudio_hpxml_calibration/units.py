@@ -3,6 +3,8 @@ import math
 import numpy as np
 import pandas as pd
 
+from openstudio_hpxml_calibration.hpxml import EnergyUnitType, FuelType
+
 SCALARS = {
     # Energy
     ("btu", "j"): 1055.05585262,
@@ -179,3 +181,36 @@ def convert_units(
         return x - 459.67
 
     raise ValueError(f"Conversion from {from_} to {to_} not found")
+
+
+def convert_hpxml_energy_units(
+    x: float | np.ndarray | pd.Series,
+    from_: EnergyUnitType,
+    to_: EnergyUnitType,
+    fuel_type: FuelType | None = None,
+):
+    hpxml_fuel_type_mapping = {
+        x: x.value
+        for x in (
+            EnergyUnitType.KWH,
+            EnergyUnitType.MWH,
+            EnergyUnitType.BTU,
+            EnergyUnitType.KBTU,
+            EnergyUnitType.MBTU,
+        )
+    }
+    hpxml_fuel_type_mapping.update({EnergyUnitType.THERMS: "therm"})
+    from_val = hpxml_fuel_type_mapping[from_]
+    to_val = hpxml_fuel_type_mapping[to_]
+    try:
+        return convert_units(x, from_val, to_val)
+    except ValueError as ex:
+        if fuel_type == (FuelType.PROPANE, FuelType.FUEL_OIL):
+            gal_energy_val = f"gal_{'_'.join(fuel_type.value.split())}"
+            if from_ == EnergyUnitType.GAL:
+                from_val = gal_energy_val
+            if to_ == EnergyUnitType.GAL:
+                to_val = gal_energy_val
+            return convert_units(x, from_val, to_val)
+        else:
+            raise ex

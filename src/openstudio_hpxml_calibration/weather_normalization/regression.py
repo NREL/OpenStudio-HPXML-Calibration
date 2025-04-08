@@ -32,7 +32,8 @@ class UtilityBillRegressionModel:
             bills_temps["daily_consumption"].to_numpy(),
             p0=self.INITIAL_GUESSES,
             bounds=self.BOUNDS,
-            method="dogbox",
+            method="trf",
+            x_scale=self.XSCALE,
         )
         self.parameters = popt
         self.pcov = pcov
@@ -49,7 +50,17 @@ class UtilityBillRegressionModel:
         """
         return self.func(temperatures, *self.parameters)
 
-    def func(self, x: Sequence[float], *args: list[float | np.floating]) -> np.ndarray:
+    def predict_disaggregated(self, temperatures: Sequence[float] | np.ndarray) -> pd.DataFrame:
+        """Predict the disaggregated energy use for a given array of temperatures.
+
+        :param temperatures: An array of daily temperatures in degF.
+        :type temperatures: np.ndarray
+        :return: A dataframe with "baseline", "heating", and "cooling" columns.
+        :rtype: np.ndarray
+        """
+        raise NotImplementedError
+
+    def func(self, x: Sequence[float] | np.ndarray, *args: list[float | np.floating]) -> np.ndarray:
         raise NotImplementedError
 
     def calc_cvrmse(self, bills_temps: pd.DataFrame) -> float:
@@ -69,12 +80,13 @@ class ThreeParameterCooling(UtilityBillRegressionModel):
     """3-parameter cooling model from ASHRAE Guideline 14"""
 
     MODEL_NAME = "3-parameter Cooling"
-    INITIAL_GUESSES = [10.0, 5.0, 70.0]
+    INITIAL_GUESSES = [5e3, 10e3, 70.0]
     BOUNDS = Bounds(lb=[0.0, 0.0, 40.0], ub=np.inf)
+    XSCALE = np.array([5000.0, 1000.0, 1.0])
 
     def func(
         self,
-        x: Sequence[float],
+        x: Sequence[float] | np.ndarray,
         b1: float | np.floating,
         b2: float | np.floating,
         b3: float | np.floating,
@@ -82,13 +94,22 @@ class ThreeParameterCooling(UtilityBillRegressionModel):
         x_arr = np.array(x)
         return b1 + b2 * np.maximum(x_arr - b3, 0)
 
+    def predict_disaggregated(self, temperatures: Sequence[float] | np.ndarray) -> pd.DataFrame:
+        temperatures_arr = np.array(temperatures)
+        b1, b2, b3 = self.parameters  # unpack the parameters
+        heating = np.zeros_like(temperatures_arr, dtype=float)
+        cooling = b2 * np.maximum(temperatures_arr - b3, 0)
+        baseload = np.ones_like(temperatures_arr, dtype=float) * b1
+        return pd.DataFrame({"baseload": baseload, "heating": heating, "cooling": cooling})
+
 
 class ThreeParameterHeating(UtilityBillRegressionModel):
     """3-parameter heating model from ASHRAE Guideline 14"""
 
     MODEL_NAME = "3-parameter Heating"
-    INITIAL_GUESSES = [10.0, -1.0, 70.0]
+    INITIAL_GUESSES = [5e3, -10e3, 70.0]
     BOUNDS = Bounds(lb=[0.0, -np.inf, 20.0], ub=[np.inf, 0.0, 80.0])
+    XSCALE = np.array([5000.0, 1000.0, 1.0])
 
     def func(
         self,
@@ -100,13 +121,22 @@ class ThreeParameterHeating(UtilityBillRegressionModel):
         x_arr = np.array(x)
         return b1 + b2 * np.minimum(x_arr - b3, 0)
 
+    def predict_disaggregated(self, temperatures: Sequence[float] | np.ndarray) -> pd.DataFrame:
+        temperatures_arr = np.array(temperatures)
+        b1, b2, b3 = self.parameters  # unpack the parameters
+        heating = b2 * np.minimum(temperatures_arr - b3, 0)
+        cooling = np.zeros_like(temperatures_arr, dtype=float)
+        baseload = np.ones_like(temperatures_arr, dtype=float) * b1
+        return pd.DataFrame({"baseload": baseload, "heating": heating, "cooling": cooling})
+
 
 class FiveParameter(UtilityBillRegressionModel):
     """5-parameter heating and cooling model from ASHRAE Guideline 14"""
 
     MODEL_NAME = "5-parameter"
-    INITIAL_GUESSES = [10.0, -5.0, 5.0, 50.0, 70.0]
+    INITIAL_GUESSES = [5e3, -10e3, 10e3, 50.0, 70.0]
     BOUNDS = Bounds(lb=[0.0, -np.inf, 0.0, 20.0, 40.0], ub=[np.inf, 0.0, np.inf, 80.0, np.inf])
+    XSCALE = np.array([5000.0, 1000.0, 1.0, 1000.0, 1.0])
 
     def func(
         self,
@@ -119,6 +149,14 @@ class FiveParameter(UtilityBillRegressionModel):
     ) -> np.ndarray:
         x_arr = np.array(x)
         return b1 + b2 * np.minimum(x_arr - b4, 0) + b3 * np.maximum(x_arr - b5, 0)
+
+    def predict_disaggregated(self, temperatures: Sequence[float] | np.ndarray) -> pd.DataFrame:
+        temperatures_arr = np.array(temperatures)
+        b1, b2, b3, b4, b5 = self.parameters  # unpack the parameters
+        heating = b2 * np.minimum(temperatures_arr - b4, 0)
+        cooling = b3 * np.maximum(temperatures_arr - b5, 0)
+        baseload = np.ones_like(temperatures_arr, dtype=float) * b1
+        return pd.DataFrame({"baseload": baseload, "heating": heating, "cooling": cooling})
 
 
 class Bpi2400ModelFitError(Exception):
