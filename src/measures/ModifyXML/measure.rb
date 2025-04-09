@@ -354,8 +354,8 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     end
     multiplier = 1 + args[:roof_attic_r_value_pct_change]
     (hpxml_bldg.roofs + hpxml_bldg.floors).each do |surface|
-      # Check if this floor is the floor of an attic
-      if surface.is_a?(HPXML::Floor) && !surface.exterior_adjacent_to.include?('attic')
+      # Check if this floor surface is a ceiling
+      if surface.is_a?(HPXML::Floor) && !surface.is_ceiling
         next
       end
       if surface.insulation_assembly_r_value && surface.is_thermal_boundary
