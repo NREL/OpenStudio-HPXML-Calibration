@@ -255,10 +255,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
         # puts "New AFUE: #{heating_system.heating_efficiency_afue}"
       end
       if heating_system.heating_efficiency_percent
-        new_heating_efficiency = heating_system.heating_efficiency_percent * multiplier
-        if new_heating_efficiency > 1.0
-          new_heating_efficiency = 1.0
-        end
+        new_heating_efficiency = [heating_system.heating_efficiency_percent * multiplier, 1.0].min
         heating_system.heating_efficiency_percent = new_heating_efficiency.round(2)
         # puts "New heating percent efficiency: #{heating_system.heating_efficiency_percent}"
       end
