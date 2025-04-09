@@ -402,6 +402,12 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
         foundation_wall.insulation_interior_r_value = new_r_value.round(1)
         # puts "New #{foundation_wall.insulation_id} R-value: #{foundation_wall.insulation_interior_r_value}"
       end
+      if foundation_wall.insulation_assembly_r_value != 0 && foundation_wall.is_thermal_boundary
+        # puts "Original #{foundation_wall.insulation_id} R-value: #{foundation_wall.insulation_assembly_r_value}"
+        new_r_value = foundation_wall.insulation_assembly_r_value * multiplier
+        foundation_wall.insulation_assembly_r_value = new_r_value.round(1)
+        # puts "New #{foundation_wall.insulation_id} R-value: #{foundation_wall.insulation_assembly_r_value}"
+      end
     end
   end
 
