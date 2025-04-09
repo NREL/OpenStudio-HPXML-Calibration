@@ -7,7 +7,7 @@
     {
       "measure_dir_name": "ModifyXML",
       "arguments": {
-        "xml_file": "../../../sample_files/house01.xml",
+        "xml_file_path": "../../../sample_files/house01.xml",
         "save_file_path": "../../modifications/new_output.xml",
         "heating_setpoint_offset": -2,
         "cooling_setpoint_offset": -2,

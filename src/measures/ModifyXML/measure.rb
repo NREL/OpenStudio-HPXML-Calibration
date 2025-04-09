@@ -129,7 +129,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     # assign the user inputs to variables
     args = runner.getArgumentValues(arguments(model), user_arguments)
 
-    xml_file = args[:xml_file]
+    xml_file = args[:xml_file_path]
 
     unless (Pathname.new xml_file).absolute?
       xml_file = File.expand_path(xml_file)
@@ -250,10 +250,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     multiplier = 1 + args[:heating_efficiency_pct_change]
     hpxml_bldg.heating_systems.each do |heating_system|
       if heating_system.heating_efficiency_afue
-        new_afue = heating_system.heating_efficiency_afue * multiplier
-        if new_afue > 1.0
-          new_afue = 1.0
-        end
+        new_afue = [heating_system.heating_efficiency_afue * multiplier, 1.0].min
         heating_system.heating_efficiency_afue = new_afue.round(2)
         # puts "New AFUE: #{heating_system.heating_efficiency_afue}"
       end
