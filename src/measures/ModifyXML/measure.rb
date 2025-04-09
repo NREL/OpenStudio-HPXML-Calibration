@@ -173,8 +173,8 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       if hvac_control.weekday_heating_setpoints
         # Assumes if weekday_heating_setpoints is present, weekend_heating_setpoints is also present
         # Turn string into array of integers
-        weekday_numbers = hvac_control.weekday_heating_setpoints.split(", ").map(&:to_i)
-        weekend_numbers = hvac_control.weekend_heating_setpoints.split(", ").map(&:to_i)
+        weekday_numbers = hvac_control.weekday_heating_setpoints.split(", ").map(&:to_f)
+        weekend_numbers = hvac_control.weekend_heating_setpoints.split(", ").map(&:to_f)
         # Add offset
         processed_weekday_numbers = weekday_numbers.map { |n| n + args[:heating_setpoint_offset] }
         processed_weekend_numbers = weekend_numbers.map { |n| n + args[:heating_setpoint_offset] }
@@ -204,8 +204,8 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       if hvac_control.weekday_cooling_setpoints
         # Assumes if weekday_cooling_setpoints is present, weekend_cooling_setpoints is also present
         # Turn string into array of integers
-        weekday_numbers = hvac_control.weekday_cooling_setpoints.split(", ").map(&:to_i)
-        weekend_numbers = hvac_control.weekend_cooling_setpoints.split(", ").map(&:to_i)
+        weekday_numbers = hvac_control.weekday_cooling_setpoints.split(", ").map(&:to_f)
+        weekend_numbers = hvac_control.weekend_cooling_setpoints.split(", ").map(&:to_f)
         # Add offset
         processed_weekday_numbers = weekday_numbers.map { |n| n + args[:heating_setpoint_offset] }
         processed_weekend_numbers = weekend_numbers.map { |n| n + args[:heating_setpoint_offset] }
