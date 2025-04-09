@@ -10,6 +10,9 @@ wheels/
 .venv
 .python-version
 
+# Language setup
+.ruby-lsp
+
 # IDE
 .vscode
 
