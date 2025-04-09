@@ -36,7 +36,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     args = OpenStudio::Measure::OSArgumentVector.new
 
     # the name of the space to add to the model
-    arg = OpenStudio::Measure::OSArgument.makeStringArgument('xml_file', true)
+    arg = OpenStudio::Measure::OSArgument.makeStringArgument('xml_file_path', true)
     arg.setDisplayName('Path to XML file')
     arg.setDescription('Path to existing XML file to modify')
     args << arg
