@@ -49,11 +49,13 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('heating_setpoint_offset', false)
     arg.setDisplayName('Heating setpoint offset')
     arg.setDescription('Degrees to change heating setpoint')
+    arg.setUnits('F')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('cooling_setpoint_offset', false)
     arg.setDisplayName('Cooling setpoint offset')
     arg.setDescription('Degrees to change cooling setpoint')
+    arg.setUnits('F')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('air_leakage_pct_change', false)
@@ -137,57 +139,16 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     hpxml_bldg = hpxml.buildings[0] # FIXME: This requires that each XML file contain only a single building
 
     # Modify XML fields
-    if args[:heating_setpoint_offset]
-      modify_heating_setpoint(hpxml_bldg, runner, args)
-    else
-      runner.registerInfo('No modifier for heating setpoint provided. Not modifying heating setpoints.')
-    end
-    if args[:cooling_setpoint_offset]
-      modify_cooling_setpoint(hpxml_bldg, runner, args)
-    else
-      runner.registerInfo('No modifier for cooling setpoint provided. Not modifying cooling setpoints.')
-    end
-    if args[:air_leakage_pct_change]
-      modify_air_leakage(hpxml_bldg, runner, args)
-    else
-      runner.registerInfo('No modifier for air leakage provided. Not modifying infiltration.')
-    end
-    if args[:heating_efficiency_pct_change]
-      modify_heating_efficiency(hpxml_bldg, runner, args)
-    else
-      runner.registerInfo('No modifier for heating equipment efficiency provided. Not modifying heating equipment.')
-    end
-    if args[:cooling_efficiency_pct_change]
-      modify_cooling_efficiency(hpxml_bldg, runner, args)
-    else
-      runner.registerInfo('No modifier for cooling equipment efficiency provided. Not modifying cooling equipment.')
-    end
-    if args[:plug_load_pct_change]
-      modify_plug_loads(hpxml_bldg, runner, args)
-    else
-      runner.registerInfo('No modifier for plug loads provided. Not modifying plug loads.')
-    end
-    if args[:roof_attic_r_value_pct_change]
-      modify_top_r_values(hpxml_bldg, runner, args)
-    else
-      runner.registerInfo('No modifier for R-values provided. Not modifying roof or attic.')
-    end
-    if args[:ag_walls_r_value_pct_change]
-      modify_ag_wall_r_values(hpxml_bldg, runner, args)
-    else
-      runner.registerInfo('No modifier for R-values provided. Not modifying above-ground walls.')
-    end
-    if args[:bg_walls_r_value_pct_change]
-      modify_bg_wall_r_values(hpxml_bldg, runner, args)
-    else
-      runner.registerInfo('No modifier for R-values provided. Not modifying below-ground walls.')
-    end
-    if args[:slab_r_value_pct_change]
-      modify_slab_r_values(hpxml_bldg, runner, args)
-    else
-      runner.registerInfo('No modifier for R-values provided. Not modifying below-ground walls.')
-    end
-    # ...
+    modify_heating_setpoint(hpxml_bldg, runner, args)
+    modify_cooling_setpoint(hpxml_bldg, runner, args)
+    modify_air_leakage(hpxml_bldg, runner, args)
+    modify_heating_efficiency(hpxml_bldg, runner, args)
+    modify_cooling_efficiency(hpxml_bldg, runner, args)
+    modify_plug_loads(hpxml_bldg, runner, args)
+    modify_top_r_values(hpxml_bldg, runner, args)
+    modify_ag_wall_r_values(hpxml_bldg, runner, args)
+    modify_bg_wall_r_values(hpxml_bldg, runner, args)
+    modify_slab_r_values(hpxml_bldg, runner, args)
 
     # Save new file
     XMLHelper.write_file(hpxml.to_doc(), args[:save_file_path])
@@ -195,6 +156,10 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_heating_setpoint(hpxml_bldg, runner, args)
+    if not args[:heating_setpoint_offset]
+      runner.registerInfo('No modifier for heating setpoint provided. Not modifying heating setpoints.')
+      return
+    end
     hpxml_bldg.hvac_controls.each do |hvac_control|
       if hvac_control.heating_setpoint_temp
         # https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/src/OpenStudio-HPXML/HPXMLtoOpenStudio/resources/hpxml.rb#L7581-L7603
@@ -223,6 +188,10 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_cooling_setpoint(hpxml_bldg, runner, args)
+    if not args[:cooling_setpoint_offset]
+      runner.registerInfo('No modifier for cooling setpoint provided. Not modifying cooling setpoints.')
+      return
+    end
     hpxml_bldg.hvac_controls.each do |hvac_control|
       if hvac_control.cooling_setpoint_temp
         hvac_control.cooling_setpoint_temp += args[:cooling_setpoint_offset]
@@ -250,6 +219,10 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_air_leakage(hpxml_bldg, runner, args)
+    if not args[:air_leakage_pct_change]
+      runner.registerInfo('No modifier for air leakage provided. Not modifying air leakage.')
+      return
+    end
     multiplier = 1 + args[:air_leakage_pct_change]
 
     hpxml_bldg.air_infiltration_measurements.each do |air_infiltration_measurement|
@@ -270,6 +243,10 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_heating_efficiency(hpxml_bldg, runner, args)
+    if not args[:heating_efficiency_pct_change]
+      runner.registerInfo('No modifier for heating efficiency provided. Not modifying heating efficiency.')
+      return
+    end
     multiplier = 1 + args[:heating_efficiency_pct_change]
     hpxml_bldg.heating_systems.each do |heating_system|
       if heating_system.heating_efficiency_afue
@@ -309,6 +286,10 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_cooling_efficiency(hpxml_bldg, runner, args)
+    if not args[:cooling_efficiency_pct_change]
+      runner.registerInfo('No modifier for cooling efficiency provided. Not modifying cooling efficiency.')
+      return
+    end
     multiplier = 1 + args[:cooling_efficiency_pct_change]
     hpxml_bldg.cooling_systems.each do |cooling_system|
       if cooling_system.cooling_efficiency_seer
@@ -357,6 +338,10 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_plug_loads(hpxml_bldg, runner, args)
+    if not args[:plug_load_pct_change]
+      runner.registerInfo('No modifier for plug loads provided. Not modifying plug loads.')
+      return
+    end
     multiplier = 1 + args[:plug_load_pct_change]
     hpxml_bldg.plug_loads.each do |plug_load|
       if plug_load.usage_multiplier.nil?
@@ -369,6 +354,10 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_top_r_values(hpxml_bldg, runner, args)
+    if not args[:roof_attic_r_value_pct_change]
+      runner.registerInfo('No modifier for roof or attic provided. Not modifying roof or attic.')
+      return
+    end
     multiplier = 1 + args[:roof_attic_r_value_pct_change]
     (hpxml_bldg.roofs + hpxml_bldg.floors).each do |surface|
       # Check if this floor is the floor of an attic
@@ -385,6 +374,10 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_ag_wall_r_values(hpxml_bldg, runner, args)
+    if not args[:ag_walls_r_value_pct_change]
+      runner.registerInfo('No modifier for above-ground walls provided. Not modifying above-ground walls.')
+      return
+    end
     multiplier = 1 + args[:ag_walls_r_value_pct_change]
     (hpxml_bldg.rim_joists + hpxml_bldg.walls).each do |surface|
       if surface.insulation_assembly_r_value && surface.is_thermal_boundary
@@ -397,6 +390,10 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_bg_wall_r_values(hpxml_bldg, runner, args)
+    if not args[:bg_walls_r_value_pct_change]
+      runner.registerInfo('No modifier for below-ground walls provided. Not modifying below-ground walls.')
+      return
+    end
     multiplier = 1 + args[:bg_walls_r_value_pct_change]
     hpxml_bldg.foundation_walls.each do |foundation_wall|
       if foundation_wall.insulation_exterior_r_value != 0 && foundation_wall.is_thermal_boundary
@@ -415,6 +412,10 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_slab_r_values(hpxml_bldg, runner, args)
+    if not args[:slab_r_value_pct_change]
+      runner.registerInfo('No modifier for slab provided. Not modifying slab.')
+      return
+    end
     multiplier = 1 + args[:slab_r_value_pct_change]
     hpxml_bldg.slabs.each do |slab|
       if slab.under_slab_insulation_r_value && slab.is_thermal_boundary
