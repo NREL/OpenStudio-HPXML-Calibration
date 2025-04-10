@@ -408,9 +408,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     multiplier = 1 + args[:floor_r_value_pct_change]
     hpxml_bldg.floors.each do |floor|
       # Check if this floor surface is a ceiling
-      if floor.is_ceiling
-        next
-      end
+      next if floor.is_ceiling
       if floor.insulation_assembly_r_value > @@estimated_uninsulated_r_value
         # puts "Original #{floor.insulation_id} R-value: #{floor.insulation_assembly_r_value}"
         new_r_value = floor.insulation_assembly_r_value * multiplier
