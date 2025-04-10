@@ -87,9 +87,16 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       Expressed as a decimal, -1 - 1.')
     args << arg
 
-    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('roof_attic_r_value_pct_change', false)
-    arg.setDisplayName('Roof and/or attic R-Value percent change')
-    arg.setDescription('Percentage to change the Roof and/or attic R-value.
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('roof_r_value_pct_change', false)
+    arg.setDisplayName('Roof R-Value percent change')
+    arg.setDescription('Percentage to change the Roof R-value.
+      Positive value increases R-Value, negative value decreases R-value.
+      Expressed as a decimal, -1 - 1.')
+    args << arg
+
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('ceiling_r_value_pct_change', false)
+    arg.setDisplayName('Ceiling R-Value percent change')
+    arg.setDescription('Percentage to change the ceiling (attic floor) R-value.
       Positive value increases R-Value, negative value decreases R-value.
       Expressed as a decimal, -1 - 1.')
     args << arg
@@ -153,7 +160,8 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     modify_heating_efficiency(hpxml_bldg, runner, args)
     modify_cooling_efficiency(hpxml_bldg, runner, args)
     modify_plug_loads(hpxml_bldg, runner, args)
-    modify_top_r_values(hpxml_bldg, runner, args)
+    modify_roof_r_values(hpxml_bldg, runner, args)
+    modify_ceiling_r_values(hpxml_bldg, runner, args)
     modify_floor_r_values(hpxml_bldg, runner, args)
     modify_ag_wall_r_values(hpxml_bldg, runner, args)
     modify_bg_wall_r_values(hpxml_bldg, runner, args)
@@ -356,22 +364,38 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     end
   end
 
-  def modify_top_r_values(hpxml_bldg, runner, args)
-    if not args[:roof_attic_r_value_pct_change]
-      runner.registerInfo('No modifier for roof or attic provided. Not modifying roof or attic.')
+  def modify_roof_r_values(hpxml_bldg, runner, args)
+    if not args[:roof_r_value_pct_change]
+      runner.registerInfo('No modifier for roof provided. Not modifying roof.')
       return
     end
-    multiplier = 1 + args[:roof_attic_r_value_pct_change]
-    (hpxml_bldg.roofs + hpxml_bldg.floors).each do |surface|
+    multiplier = 1 + args[:roof_r_value_pct_change]
+    hpxml_bldg.roofs.each do |roof|
+      if roof.insulation_assembly_r_value > @@estimated_uninsulated_r_value
+        # puts "Original #{roof.insulation_id} R-value: #{roof.insulation_assembly_r_value}"
+        new_r_value = roof.insulation_assembly_r_value * multiplier
+        roof.insulation_assembly_r_value = new_r_value.round(1)
+        # puts "New #{roof.insulation_id} R-value: #{roof.insulation_assembly_r_value}"
+      end
+    end
+  end
+
+  def modify_ceiling_r_values(hpxml_bldg, runner, args)
+    if not args[:ceiling_r_value_pct_change]
+      runner.registerInfo('No modifier for ceiling (attic floor) provided. Not modifying ceiling.')
+      return
+    end
+    multiplier = 1 + args[:ceiling_r_value_pct_change]
+    hpxml_bldg.floors.each do |floor|
       # Check if this floor surface is a ceiling
-      if surface.is_a?(HPXML::Floor) && !surface.is_ceiling
+      unless floor.is_ceiling
         next
       end
-      if surface.insulation_assembly_r_value > @@estimated_uninsulated_r_value
-        # puts "Original #{surface.insulation_id} R-value: #{surface.insulation_assembly_r_value}"
-        new_r_value = surface.insulation_assembly_r_value * multiplier
-        surface.insulation_assembly_r_value = new_r_value.round(1)
-        # puts "New #{surface.insulation_id} R-value: #{surface.insulation_assembly_r_value}"
+      if floor.insulation_assembly_r_value > @@estimated_uninsulated_r_value
+        # puts "Original #{floor.insulation_id} R-value: #{floor.insulation_assembly_r_value}"
+        new_r_value = floor.insulation_assembly_r_value * multiplier
+        floor.insulation_assembly_r_value = new_r_value.round(1)
+        # puts "New #{floor.insulation_id} R-value: #{floor.insulation_assembly_r_value}"
       end
     end
   end
