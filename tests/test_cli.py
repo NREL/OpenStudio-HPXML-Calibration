@@ -5,6 +5,7 @@ from shutil import rmtree
 import pytest
 
 from openstudio_hpxml_calibration import app
+from openstudio_hpxml_calibration.hpxml import HpxmlDoc
 
 TEST_DIR = Path(__file__).parent
 TEST_DATA_DIR = TEST_DIR / "data"
@@ -60,40 +61,41 @@ def test_cli_calls_run_sim(test_data):
     assert output_data["Energy Use"]["Total (MBtu)"] == 59.617
 
 
-# def test_calls_modify_hpxml(test_data):
-#     app(
-#         [
-#             "modify-xml",
-#             test_data["test_workflow"],
-#         ]
-#     )
+def test_calls_modify_hpxml(test_data):
+    app(
+        [
+            "modify-xml",
+            test_data["test_workflow"],
+        ]
+    )
 
-#     output_file = TEST_MODIFY_DIR / "new_output.xml"
-#     assert output_file.exists()
+    output_file = TEST_MODIFY_DIR / "new_output.xml"
+    assert output_file.exists()
 
-#     test_workflow_file = TEST_DATA_DIR / "test_modify_xml_workflow.osw"
-#     test_workflow: dict = json.loads(test_workflow_file.read_text())
+    test_workflow_file = TEST_DATA_DIR / "test_modify_xml_workflow.osw"
+    test_workflow: dict = json.loads(test_workflow_file.read_text())
 
-#     # Get the changed XML elements from the OSW file
-#     heating_offset = test_workflow["steps"][0]["arguments"]["heating_setpoint_offset"]
-#     cooling_setpoint_offset = test_workflow["steps"][0]["arguments"]["cooling_setpoint_offset"]
-#     infiltration_offset = test_workflow["steps"][0]["arguments"]["air_leakage_pct_change"]
+    # Get the changed XML elements from the OSW file
+    heating_offset = test_workflow["steps"][0]["arguments"]["heating_setpoint_offset"]
+    # cooling_setpoint_offset = test_workflow["steps"][0]["arguments"]["cooling_setpoint_offset"]
+    # infiltration_offset = test_workflow["steps"][0]["arguments"]["air_leakage_pct_change"]
 
-#     # Name of the original test xml file is the last part of the xml_file path
-#     test_file = Path(test_workflow["steps"][0]["arguments"]["xml_file"]).parts[-1]
-#     original_xml_file = TEST_DIR.parent / "sample_files" / test_file
+    # Name of the original test xml file is the last part of the xml_file path
+    test_file = Path(test_workflow["steps"][0]["arguments"]["xml_file_path"]).parts[-1]
+    original_xml_file = TEST_DIR.parent / "sample_files" / test_file
 
-#     # Instantiate the original and modified HPXML files
-#     original_hpxml = HpxmlDoc(original_xml_file)
-#     modified_hpxml = HpxmlDoc(output_file)
+    # Instantiate the original and modified HPXML files
+    original_hpxml = HpxmlDoc(original_xml_file)
+    modified_hpxml = HpxmlDoc(output_file)
 
-#     # Catching an AttributeError seems to be the best way to handle missing elements
-#     try:
-#         original_heating_setpoint = original_hpxml.get_building().BuildingDetails.Systems.HVAC.HVACControl.SetpointTempHeatingSeason
-#         modified_heating_setpoint = modified_hpxml.get_building().BuildingDetails.Systems.HVAC.HVACControl.SetpointTempHeatingSeason
-#         assert modified_heating_setpoint == original_heating_setpoint + heating_offset
-#     except AttributeError:
-#         pass
+    # Catching an AttributeError seems to be the best way to handle missing elements
+    try:
+        original_heating_setpoint = original_hpxml.get_building().BuildingDetails.Systems.HVAC.HVACControl.SetpointTempHeatingSeason
+        modified_heating_setpoint = modified_hpxml.get_building().BuildingDetails.Systems.HVAC.HVACControl.SetpointTempHeatingSeason
+        assert modified_heating_setpoint == original_heating_setpoint + heating_offset
+    except AttributeError:
+        pass
+
 
 #     try:
 #         original_heating_setback = original_hpxml.get_building().BuildingDetails.Systems.HVAC.HVACControl.SetbackTempHeatingSeason
