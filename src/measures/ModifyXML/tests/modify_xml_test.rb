@@ -234,7 +234,7 @@ class ModifyXMLTest < Minitest::Test
     end
   end
 
-  def test_ag_r_value_change
+  def test_above_ground_r_value_change
     files_to_test = [
       'base.xml',
       'base-atticroof-cathedral.xml',
@@ -250,7 +250,7 @@ class ModifyXMLTest < Minitest::Test
       args_hash['save_file_path'] = @tmp_hpxml_path
       args_hash['roof_r_value_pct_change'] = 0.05
       args_hash['ceiling_r_value_pct_change'] = 0.05
-      args_hash['ag_walls_r_value_pct_change'] = 0.05
+      args_hash['above_ground_walls_r_value_pct_change'] = 0.05
       args_hash['floor_r_value_pct_change'] = 0.05
 
       original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
@@ -281,7 +281,7 @@ class ModifyXMLTest < Minitest::Test
       (original_bldg.rim_joists + original_bldg.walls).each do |surface|
         new_building_surface = (hpxml_bldg.rim_joists + hpxml_bldg.walls).find{ |ag_wall| ag_wall.id == surface.id }
         if surface.insulation_assembly_r_value && surface.insulation_assembly_r_value > @@estimated_uninsulated_r_value
-          expected_r_value = (surface.insulation_assembly_r_value * ( 1 + args_hash['ag_walls_r_value_pct_change'])).round(1)
+          expected_r_value = (surface.insulation_assembly_r_value * ( 1 + args_hash['above_ground_walls_r_value_pct_change'])).round(1)
           assert_equal(expected_r_value, new_building_surface.insulation_assembly_r_value)
         end
       end
@@ -297,7 +297,7 @@ class ModifyXMLTest < Minitest::Test
     end
   end
 
-  def test_bg_r_value_change
+  def test_below_ground_r_value_change
     files_to_test = [
       'base.xml',
       'base-foundation-conditioned-basement-slab-insulation.xml',
@@ -312,7 +312,7 @@ class ModifyXMLTest < Minitest::Test
       args_hash = {}
       args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', file)
       args_hash['save_file_path'] = @tmp_hpxml_path
-      args_hash['bg_walls_r_value_pct_change'] = 0.05
+      args_hash['below_ground_walls_r_value_pct_change'] = 0.05
 
       original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
       hpxml_bldg = _test_measure(args_hash)
@@ -320,11 +320,11 @@ class ModifyXMLTest < Minitest::Test
       original_bldg.foundation_walls.each do |foundation_wall|
         new_foundation_wall = hpxml_bldg.foundation_walls.find{ |bg_wall| bg_wall.id == foundation_wall.id }
         if foundation_wall.insulation_exterior_r_value != 0 && foundation_wall.is_thermal_boundary
-          expected_r_value = (foundation_wall.insulation_exterior_r_value * ( 1 + args_hash['bg_walls_r_value_pct_change'])).round(1)
+          expected_r_value = (foundation_wall.insulation_exterior_r_value * ( 1 + args_hash['below_ground_walls_r_value_pct_change'])).round(1)
           assert_equal(expected_r_value, new_foundation_wall.insulation_exterior_r_value)
         end
         if foundation_wall.insulation_interior_r_value != 0 && foundation_wall.is_thermal_boundary
-          expected_r_value = (foundation_wall.insulation_interior_r_value * ( 1 + args_hash['bg_walls_r_value_pct_change'])).round(1)
+          expected_r_value = (foundation_wall.insulation_interior_r_value * ( 1 + args_hash['below_ground_walls_r_value_pct_change'])).round(1)
           assert_equal(expected_r_value, new_foundation_wall.insulation_interior_r_value)
         end
       end

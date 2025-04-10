@@ -108,14 +108,14 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       Expressed as a decimal, -1 - 1.')
     args << arg
 
-    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('ag_walls_r_value_pct_change', false)
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('above_ground_walls_r_value_pct_change', false)
     arg.setDisplayName('Above-ground wall R-Value percent change')
     arg.setDescription('Percentage to change the above-ground wall R-value.
       Positive value increases R-Value, negative value decreases R-value.
       Expressed as a decimal, -1 - 1.')
     args << arg
 
-    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('bg_walls_r_value_pct_change', false)
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('below_ground_walls_r_value_pct_change', false)
     arg.setDisplayName('Below-ground wall R-Value percent change')
     arg.setDescription('Percentage to change the below-ground wall R-value.
       Positive value increases R-Value, negative value decreases R-value.
@@ -163,8 +163,8 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     modify_roof_r_values(hpxml_bldg, runner, args)
     modify_ceiling_r_values(hpxml_bldg, runner, args)
     modify_floor_r_values(hpxml_bldg, runner, args)
-    modify_ag_wall_r_values(hpxml_bldg, runner, args)
-    modify_bg_wall_r_values(hpxml_bldg, runner, args)
+    modify_above_ground_wall_r_values(hpxml_bldg, runner, args)
+    modify_below_ground_wall_r_values(hpxml_bldg, runner, args)
     modify_slab_r_values(hpxml_bldg, runner, args)
 
     # Save new file
@@ -420,12 +420,12 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     end
   end
 
-  def modify_ag_wall_r_values(hpxml_bldg, runner, args)
-    if not args[:ag_walls_r_value_pct_change]
+  def modify_above_ground_wall_r_values(hpxml_bldg, runner, args)
+    if not args[:above_ground_walls_r_value_pct_change]
       runner.registerInfo('No modifier for above-ground walls provided. Not modifying above-ground walls.')
       return
     end
-    multiplier = 1 + args[:ag_walls_r_value_pct_change]
+    multiplier = 1 + args[:above_ground_walls_r_value_pct_change]
     (hpxml_bldg.rim_joists + hpxml_bldg.walls).each do |surface|
       if surface.insulation_assembly_r_value > @@estimated_uninsulated_r_value
         # puts "Original #{surface.insulation_id} R-value: #{surface.insulation_assembly_r_value}"
@@ -436,12 +436,12 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     end
   end
 
-  def modify_bg_wall_r_values(hpxml_bldg, runner, args)
-    if not args[:bg_walls_r_value_pct_change]
+  def modify_below_ground_wall_r_values(hpxml_bldg, runner, args)
+    if not args[:below_ground_walls_r_value_pct_change]
       runner.registerInfo('No modifier for below-ground walls provided. Not modifying below-ground walls.')
       return
     end
-    multiplier = 1 + args[:bg_walls_r_value_pct_change]
+    multiplier = 1 + args[:below_ground_walls_r_value_pct_change]
     hpxml_bldg.foundation_walls.each do |foundation_wall|
       if foundation_wall.insulation_exterior_r_value && foundation_wall.insulation_exterior_r_value > @@estimated_uninsulated_r_value
         # puts "Original #{foundation_wall.insulation_id} R-value: #{foundation_wall.insulation_exterior_r_value}"
