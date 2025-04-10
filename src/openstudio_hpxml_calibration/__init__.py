@@ -1,7 +1,7 @@
 import subprocess
 import zipfile
-from enum import Enum
 from importlib.metadata import version
+from pathlib import Path
 
 import requests
 from cyclopts import App
@@ -10,20 +10,7 @@ from tqdm import tqdm
 from openstudio_hpxml_calibration.utils import OS_HPXML_PATH, calculate_sha256, get_cache_dir
 
 from .calibrate import Calibrate
-
-
-class Granularity(str, Enum):
-    HOURLY = "hourly"
-    DAILY = "daily"
-    MONTHLY = "monthly"
-
-
-class Format(str, Enum):
-    CSV = "csv"
-    JSON = "json"
-    MSGPACK = "msgpack"
-    CSV_DVIEW = "csv_dview"
-
+from .enums import Format, Granularity
 
 app = App(
     version=version("openstudio-hpxml-calibration"),
@@ -90,7 +77,37 @@ def run_sim(
 
 
 @app.command
+def modify_xml(workflow_file: Path) -> None:
+    """Modify the XML file using the OpenStudio-HPXML workflow
+
+    Parameters
+    ----------
+    workflow_file: Path
+        Path to the workflow file (osw) that defines the modifications to be made
+    """
+    modify_xml_command = [
+        "openstudio",
+        "run",
+        "--workflow",
+        str(workflow_file),
+        "--measures_only",
+    ]
+
+    subprocess.run(
+        modify_xml_command,
+        capture_output=True,
+        check=True,
+    )
+
+
+@app.command
 def download_weather() -> None:
+    """Download TMY3 weather files from NREL
+
+    Parameters
+    ----------
+    None
+    """
     weather_files_url = "https://data.nrel.gov/system/files/128/tmy3s-cache-csv.zip"
     weather_zip_filename = weather_files_url.split("/")[-1]
     weather_zip_sha256 = "58f5d2821931e235de34a5a7874f040f7f766b46e5e6a4f85448b352de4c8846"

@@ -1,0 +1,27 @@
+{
+  "run_directory": "../modifications",
+  "measure_paths": [
+    "../../src/measures"
+  ],
+  "steps": [
+    {
+      "measure_dir_name": "ModifyXML",
+      "arguments": {
+        "xml_file_path": "../../../sample_files/house01.xml",
+        "save_file_path": "../../modifications/new_output.xml",
+        "heating_setpoint_offset": -2,
+        "cooling_setpoint_offset": -2,
+        "air_leakage_pct_change": 0.15,
+        "heating_efficiency_pct_change": 0.05,
+        "cooling_efficiency_pct_change": -0.05,
+        "plug_load_pct_change":0.05,
+        "roof_r_value_pct_change": 0.05,
+        "ceiling_r_value_pct_change": 0.05,
+        "above_ground_walls_r_value_pct_change": 0.05,
+        "below_ground_walls_r_value_pct_change": 0.05,
+        "slab_r_value_pct_change": 0.05,
+        "floor_r_value_pct_change": 0.05
+      }
+    }
+  ]
+}

@@ -29,4 +29,4 @@ There's a Dev Container configuration in this repo which installs all the necess
 
 ## Testing
 
-Can be run with `uv run pytest`
+Can be run with `uv run pytest` from the repo root.
