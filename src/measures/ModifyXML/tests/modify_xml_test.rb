@@ -8,6 +8,8 @@ require 'fileutils'
 require_relative '../measure'
 
 class ModifyXMLTest < Minitest::Test
+  @@estimated_uninsulated_r_value = 4
+
   def setup
     @oshpxml_root_path = File.absolute_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'OpenStudio-HPXML'))
     @tmp_hpxml_path = File.join(File.dirname(__FILE__), 'tmp.xml')
@@ -20,7 +22,8 @@ class ModifyXMLTest < Minitest::Test
   def test_setpoint_offsets
     files_to_test = [
       'base.xml',
-      'base-hvac-setpoints-daily-schedules.xml'
+      'base-hvac-setpoints-daily-schedules.xml',
+      'base-hvac-setpoints-daily-setbacks.xml',
     ]
 
     # Run test on each sample file
@@ -247,7 +250,7 @@ class ModifyXMLTest < Minitest::Test
       # Test roof and attic surfaces
       (original_bldg.roofs + original_bldg.floors).each do |surface|
         new_building_surface = (hpxml_bldg.roofs + hpxml_bldg.floors).find{ |roof_or_attic| roof_or_attic.id == surface.id }
-        if surface.insulation_assembly_r_value && surface.is_thermal_boundary
+        if surface.insulation_assembly_r_value && surface.insulation_assembly_r_value > @@estimated_uninsulated_r_value
           expected_r_value = (surface.insulation_assembly_r_value * ( 1 + args_hash['roof_attic_r_value_pct_change'])).round(1)
           assert_equal(expected_r_value, new_building_surface.insulation_assembly_r_value)
         end
@@ -256,7 +259,7 @@ class ModifyXMLTest < Minitest::Test
       # Test walls and rim joists
       (original_bldg.rim_joists + original_bldg.walls).each do |surface|
         new_building_surface = (hpxml_bldg.rim_joists + hpxml_bldg.walls).find{ |ag_wall| ag_wall.id == surface.id }
-        if surface.insulation_assembly_r_value && surface.is_thermal_boundary
+        if surface.insulation_assembly_r_value && surface.insulation_assembly_r_value > @@estimated_uninsulated_r_value
           expected_r_value = (surface.insulation_assembly_r_value * ( 1 + args_hash['ag_walls_r_value_pct_change'])).round(1)
           assert_equal(expected_r_value, new_building_surface.insulation_assembly_r_value)
         end
@@ -265,7 +268,7 @@ class ModifyXMLTest < Minitest::Test
       # Test floors
       original_bldg.floors.each do |floor|
         new_floor = hpxml_bldg.floors.find{ |fl| fl.id == floor.id }
-        if floor.insulation_assembly_r_value && floor.is_thermal_boundary
+        if floor.insulation_assembly_r_value && floor.insulation_assembly_r_value > @@estimated_uninsulated_r_value
           expected_r_value = (floor.insulation_assembly_r_value * ( 1 + args_hash['floor_r_value_pct_change'])).round(1)
           assert_equal(expected_r_value, new_floor.insulation_assembly_r_value)
         end
