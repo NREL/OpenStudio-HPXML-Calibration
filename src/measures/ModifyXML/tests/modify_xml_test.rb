@@ -248,19 +248,32 @@ class ModifyXMLTest < Minitest::Test
       args_hash = {}
       args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', file)
       args_hash['save_file_path'] = @tmp_hpxml_path
-      args_hash['roof_attic_r_value_pct_change'] = 0.05
+      args_hash['roof_r_value_pct_change'] = 0.05
+      args_hash['ceiling_r_value_pct_change'] = 0.05
       args_hash['ag_walls_r_value_pct_change'] = 0.05
       args_hash['floor_r_value_pct_change'] = 0.05
 
       original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
       hpxml_bldg = _test_measure(args_hash)
 
-      # Test roof and attic surfaces
-      (original_bldg.roofs + original_bldg.floors).each do |surface|
-        new_building_surface = (hpxml_bldg.roofs + hpxml_bldg.floors).find{ |roof_or_attic| roof_or_attic.id == surface.id }
-        if surface.insulation_assembly_r_value && surface.insulation_assembly_r_value > @@estimated_uninsulated_r_value
-          expected_r_value = (surface.insulation_assembly_r_value * ( 1 + args_hash['roof_attic_r_value_pct_change'])).round(1)
-          assert_equal(expected_r_value, new_building_surface.insulation_assembly_r_value)
+      # Test roof surfaces
+      original_bldg.roofs.each do |roof|
+        new_building_roof = hpxml_bldg.roofs.find{ |rf| rf.id == roof.id }
+        if roof.insulation_assembly_r_value && roof.insulation_assembly_r_value > @@estimated_uninsulated_r_value
+          expected_r_value = (roof.insulation_assembly_r_value * ( 1 + args_hash['roof_r_value_pct_change'])).round(1)
+          assert_equal(expected_r_value, new_building_roof.insulation_assembly_r_value)
+        end
+      end
+
+      # Test ceiling (attic floor) surfaces
+      original_bldg.floors.each do |floor|
+        unless floor.is_ceiling
+          next
+        end
+        new_ceiling_surface = hpxml_bldg.floors.find{ |ceiling| ceiling.id == floor.id }
+        if floor.insulation_assembly_r_value && floor.insulation_assembly_r_value > @@estimated_uninsulated_r_value
+          expected_r_value = (floor.insulation_assembly_r_value * ( 1 + args_hash['ceiling_r_value_pct_change'])).round(1)
+          assert_equal(expected_r_value, new_ceiling_surface.insulation_assembly_r_value)
         end
       end
 
