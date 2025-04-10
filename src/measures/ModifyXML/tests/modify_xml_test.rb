@@ -45,9 +45,17 @@ class ModifyXMLTest < Minitest::Test
           expected_setpoint = (hvac_control.heating_setpoint_temp + args_hash['heating_setpoint_offset']).round(2)
           assert_equal(expected_setpoint, new_setpoint.heating_setpoint_temp)
         end
+        if hvac_control.heating_setback_temp
+          expected_setback = (hvac_control.heating_setback_temp + args_hash['heating_setpoint_offset']).round(2)
+          assert_equal(expected_setback, new_setpoint.heating_setback_temp)
+        end
         if hvac_control.cooling_setpoint_temp
           expected_setpoint = (hvac_control.cooling_setpoint_temp + args_hash['cooling_setpoint_offset']).round(2)
           assert_equal(expected_setpoint, new_setpoint.cooling_setpoint_temp)
+        end
+        if hvac_control.cooling_setup_temp
+          expected_setup = (hvac_control.cooling_setup_temp + args_hash['cooling_setpoint_offset']).round(2)
+          assert_equal(expected_setup, new_setpoint.cooling_setup_temp)
         end
         if hvac_control.weekday_heating_setpoints
           new_weekday_heating_setpoints = '62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 68.5, 68.5, 64.5, 64.5, 64.5, 64.5, 64.5, 64.5, 64.5, 64.5, 66.5, 66.5, 66.5, 66.5, 66.5, 62.5, 62.5'
