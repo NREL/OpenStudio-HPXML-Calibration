@@ -10,8 +10,8 @@ _log = logging.getLogger(__name__)
 
 
 class Calibrate:
-    def __init__(self, hp_xml: HpxmlDoc, osw_file: Path):
-        self.hp_xml = hp_xml
+    def __init__(self, hpxml: HpxmlDoc, osw_file: Path):
+        self.original_hpxml = hpxml
         self.osw_file = osw_file.resolve()
 
         # Read these values from the utility data (either in the HPXML or user-provided csv)
@@ -23,9 +23,9 @@ class Calibrate:
         lowest_modeled_gas_usage = 10
 
         # Read measured utility usage from HPXML
-        if self.hp_xml.get_building().Consumption:
+        if self.original_hpxml.get_building().Consumption:
             _log.info("Reading utility bills from HPXML")
-            for bill in self.hp_xml.get_building().Consumption.ConsumptionDetails:
+            for bill in self.original_hpxml.get_building().Consumption.ConsumptionDetails:
                 if bill.ConsumptionInfo.ConsumptionType.Energy.FuelType == "electricity":
                     electricity_usages = [usage.Consumption for usage in bill.ConsumptionDetail]
                 if bill.ConsumptionInfo.ConsumptionType.Energy.FuelType == "natural gas":
@@ -59,7 +59,7 @@ class Calibrate:
             "openstudio",
             str(OS_HPXML_PATH / "workflow" / "run_simulation.rb"),
             "--xml",
-            self.hp_xml.file_path,
+            self.original_hpxml.file_path,
         ]
 
         subprocess.run(
@@ -84,4 +84,4 @@ class Calibrate:
     # )
 
     def read_value_from_hpxml(self, xpath):
-        return self.hp_xml.get_building().xpath(xpath)
+        return self.original_hpxml.get_building().xpath(xpath)
