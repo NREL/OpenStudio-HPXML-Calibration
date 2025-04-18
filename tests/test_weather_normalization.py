@@ -19,7 +19,7 @@ sample_files = list((repo_root / "sample_files").glob("*.xml"))
 def test_hpxml_utility_bill_read(filename):
     hpxml = HpxmlDoc(filename)
     bills, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
-    assert "electricity" in bills
+    assert any("electricity" in fuel_type.value for fuel_type in bills)
 
     for fuel_type, df in bills.items():
         assert not pd.isna(df).any().any()
@@ -35,7 +35,7 @@ def test_hpxml_utility_bill_read_missing_start_end_date(filename):
 
         # Load the bills
         bills_by_fuel_type, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
-        assert "electricity" in bills_by_fuel_type
+        assert any("electricity" in fuel_type.value for fuel_type in bills_by_fuel_type)
 
         # Ensure the dates got filled in
         for fuel_type, bills in bills_by_fuel_type.items():
