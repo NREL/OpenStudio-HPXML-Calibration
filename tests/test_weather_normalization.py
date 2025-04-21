@@ -81,11 +81,29 @@ def test_curve_fit(results_dir, filename):
         fig = plt.figure(figsize=(8, 6))
         daily_consumption_pred = model(temps_range)
         cvrmse = model.calc_cvrmse(bills_temps)
-        plt.plot(
-            temps_range,
-            daily_consumption_pred,
-            label=f"{model.MODEL_NAME}, CVRMSE = {cvrmse:.1%}\n{model.parameters}",
-        )
+        num_params = len(model.parameters)
+        if num_params == 5:
+            plt.plot(
+                temps_range,
+                daily_consumption_pred,
+                label=(
+                    f"{model.MODEL_NAME}, CVRMSE = {cvrmse:.1%}\n Model parameters:\n"
+                    f"1) Baseload value: {model.parameters[0]:.3f}\n"
+                    f"2) Slopes: {model.parameters[1]:.3f}, {model.parameters[2]:.3f}\n"
+                    f"3) Inflection points: {model.parameters[-2]:.1f}, {model.parameters[-1]:.1f}"
+                ),
+            )
+        elif num_params == 3:
+            plt.plot(
+                temps_range,
+                daily_consumption_pred,
+                label=(
+                    f"{model.MODEL_NAME}, CVRMSE = {cvrmse:.1%}\n Model parameters:\n"
+                    f"1) Baseload value: {model.parameters[0]:.3f}\n"
+                    f"2) Slope: {model.parameters[1]:.3f}\n"
+                    f"3) Inflection point: {model.parameters[-1]:.1f}"
+                ),
+            )
         plt.scatter(
             bills_temps["avg_temp"],
             bills_temps["daily_consumption"],
