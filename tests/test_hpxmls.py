@@ -4,9 +4,9 @@ import pytest
 
 from openstudio_hpxml_calibration.hpxml import HpxmlDoc
 
-sample_files = list((pathlib.Path(__file__).resolve().parent.parent / "sample_files").glob("*.xml"))
+real_home_hpxmls = list((pathlib.Path(__file__).resolve().parent.parent / "test_hpxmls" / "real_homes").glob("*.xml"))
 
 
-@pytest.mark.parametrize("filename", sample_files, ids=lambda x: x.stem)
+@pytest.mark.parametrize("filename", real_home_hpxmls, ids=lambda x: x.stem)
 def test_hpxml_valid(filename):
     HpxmlDoc(filename)

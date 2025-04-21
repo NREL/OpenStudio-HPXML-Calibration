@@ -82,7 +82,7 @@ def test_calls_modify_hpxml(test_data):
 
     # Name of the original test xml file is the last part of the xml_file path
     test_file = Path(test_workflow["steps"][0]["arguments"]["xml_file_path"]).parts[-1]
-    original_xml_file = TEST_DIR.parent / "sample_files" / test_file
+    original_xml_file = TEST_DIR.parent / "test_hpxmls" / "real_homes" / test_file
 
     # Instantiate the original and modified HPXML files
     original_hpxml = HpxmlDoc(original_xml_file)
