@@ -1,0 +1,21 @@
+# https://www.mkdocs.org/user-guide/configuration/
+# https://squidfunk.github.io/mkdocs-material/creating-your-site/#advanced-configuration
+
+site_name: OpenStudio HPXML Calibration
+repo_url: https://github.com/NREL/OpenStudio-HPXML-Calibration
+# site_url: https://NREL.github.io/OpenStudio-HPXML-Calibration
+
+theme:
+  name: material
+
+plugins:
+  - search
+  # - schema_reader:
+  #     include:
+  #       - "path to schema files"
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            # https://mkdocstrings.github.io/griffe/reference/docstrings/
+            docstring_style: sphinx
