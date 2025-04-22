@@ -30,7 +30,7 @@ class ModifyXMLTest < Minitest::Test
     files_to_test.each do |file|
       # create hash of argument values.
       args_hash = {}
-      args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'test_hpxmls', 'real_homes', file)
+      args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', file)
       args_hash['save_file_path'] = @tmp_hpxml_path
       args_hash['heating_setpoint_offset'] = -1.5
       args_hash['cooling_setpoint_offset'] = 2.5
@@ -85,7 +85,7 @@ class ModifyXMLTest < Minitest::Test
     files_to_test.each do |file|
       # create hash of argument values.
       args_hash = {}
-      args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'test_hpxmls', 'real_homes', file)
+      args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', file)
       args_hash['save_file_path'] = @tmp_hpxml_path
       args_hash['air_leakage_pct_change'] = -0.1
 
@@ -109,7 +109,7 @@ class ModifyXMLTest < Minitest::Test
   def test_change_heating_efficiency
     # create hash of argument values.
     args_hash = {}
-    args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'test_hpxmls', 'real_homes', 'base-hvac-multiple.xml')
+    args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base-hvac-multiple.xml')
     args_hash['save_file_path'] = @tmp_hpxml_path
     args_hash['heating_efficiency_pct_change'] = 0.05
 
@@ -156,7 +156,7 @@ class ModifyXMLTest < Minitest::Test
   def test_change_cooling_efficiency
     # create hash of argument values.
     args_hash = {}
-    args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'test_hpxmls', 'real_homes', 'base-hvac-multiple.xml')
+    args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', 'base-hvac-multiple.xml')
     args_hash['save_file_path'] = @tmp_hpxml_path
     args_hash['cooling_efficiency_pct_change'] = -0.05
 
@@ -216,7 +216,7 @@ class ModifyXMLTest < Minitest::Test
     files_to_test.each do |file|
       # create hash of argument values.
       args_hash = {}
-      args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'test_hpxmls', 'real_homes', file)
+      args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', file)
       args_hash['save_file_path'] = @tmp_hpxml_path
       args_hash['plug_load_pct_change'] = 0.05
 
@@ -246,7 +246,7 @@ class ModifyXMLTest < Minitest::Test
     files_to_test.each do |file|
       # create hash of argument values.
       args_hash = {}
-      args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'test_hpxmls', 'real_homes', file)
+      args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', file)
       args_hash['save_file_path'] = @tmp_hpxml_path
       args_hash['roof_r_value_pct_change'] = 0.05
       args_hash['ceiling_r_value_pct_change'] = 0.05
@@ -310,7 +310,7 @@ class ModifyXMLTest < Minitest::Test
     files_to_test.each do |file|
       # create hash of argument values.
       args_hash = {}
-      args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'test_hpxmls', 'real_homes', file)
+      args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', file)
       args_hash['save_file_path'] = @tmp_hpxml_path
       args_hash['below_ground_walls_r_value_pct_change'] = 0.05
 
@@ -344,7 +344,7 @@ class ModifyXMLTest < Minitest::Test
     files_to_test.each do |file|
       # create hash of argument values.
       args_hash = {}
-      args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'test_hpxmls', 'real_homes', file)
+      args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', file)
       args_hash['save_file_path'] = @tmp_hpxml_path
       args_hash['slab_r_value_pct_change'] = 0.05
 
