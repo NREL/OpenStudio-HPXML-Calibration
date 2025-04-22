@@ -2,6 +2,10 @@
 
 A package to automatically calibrate an OS-HPXML model to provided utilities bills
 
+## Documentation
+
+Available at <https://NREL.github.io/OpenStudio-HPXML-Calibration>
+
 ## Developer installation & usage
 
 - Clone the repository: `git clone https://github.com/NREL/OpenStudio-HPXML-Calibration.git`
@@ -29,3 +33,14 @@ There's a Dev Container configuration in this repo which installs all the necess
 ## Testing
 
 Can be run with `uv run pytest` from the repo root.
+
+## Developing documentation
+
+During development we can serve docs locally and view updates as they are made.
+
+1. Start a documentation update branch: `git switch -c <branch_name>`
+1. `uv run mkdocs serve`
+1. Point browser to <http://127.0.0.1:8000/>
+
+- To deploy, push a commit in the `docs` folder to the `main` branch
+- Wait a few minutes, then verify the new documentation on the [docs website](https://NREL.github.io/OpenStudio-HPXML-Calibration)
