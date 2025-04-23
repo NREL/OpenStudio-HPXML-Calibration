@@ -20,3 +20,8 @@ def calculate_sha256(filepath: os.PathLike, block_size: int = 65536):
         for byte_block in iter(lambda: f.read(block_size), b""):
             sha256_hash.update(byte_block)
     return sha256_hash.hexdigest()
+
+
+def convert_c_to_f(temp_c: float) -> float:
+    """Convert Celsius to Fahrenheit."""
+    return (temp_c * 9 / 5) + 32
