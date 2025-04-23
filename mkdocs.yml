@@ -19,3 +19,8 @@ plugins:
           options:
             # https://mkdocstrings.github.io/griffe/reference/docstrings/
             docstring_style: sphinx
+
+# Add these dirs/files to live updating during development (in addition to docs & this file)
+# https://www.mkdocs.org/user-guide/configuration/#watch
+watch:
+  - src/openstudio_hpxml_calibration
