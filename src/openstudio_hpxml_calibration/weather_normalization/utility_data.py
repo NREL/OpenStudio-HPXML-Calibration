@@ -66,6 +66,10 @@ def get_bills_from_hpxml(
             bills["end_date"] = bills["start_date"].shift(-1)
         if pd.isna(bills["start_date"]).all():
             bills["start_date"] = bills["end_date"].shift(1)
+
+        bills["start_hour"] = bills["start_date"].dt.dayofyear * 24
+        bills["end_hour"] = bills["end_date"].dt.dayofyear * 24
+
         bills["start_date"] = bills["start_date"].dt.tz_localize(local_standard_tz)
         bills["end_date"] = bills["end_date"].dt.tz_localize(local_standard_tz)
         bills_by_fuel_type[fuel_type] = bills
@@ -98,7 +102,7 @@ def get_lat_lon_from_hpxml(hpxml: HpxmlDoc, building_id: str | None = None) -> t
 
 
 def join_bills_weather(bills_orig: pd.DataFrame, lat: float, lon: float, **kw) -> pd.DataFrame:
-    """Join the bills dataframe with an average daily temperatue
+    """Join the bills dataframe with an average daily temperature
 
     :param bills_orig: Dataframe with columns `start_date`, `end_date`, and `consumption` representing each bill period.
     :type bills_orig: pd.DataFrame
