@@ -133,8 +133,9 @@ def download_weather() -> None:
                     pbar.update(len(chunk))
 
     # Extract weather files
-    print(weather_zip_filepath)
+    print(f"zip saved to: {weather_zip_filepath}")
     weather_dir = OS_HPXML_PATH / "weather"
+    print(f"Extracting weather files to {weather_dir}")
     with zipfile.ZipFile(weather_zip_filepath, "r") as zf:
         for filename in tqdm(zf.namelist(), desc="Extracting epws"):
             if filename.endswith(".epw") and not (weather_dir / filename).exists():
