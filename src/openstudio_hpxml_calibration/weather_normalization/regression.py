@@ -19,7 +19,7 @@ class UtilityBillRegressionModel:
     BOUNDS: Bounds
 
     def __init__(self):
-        self.parameters = np.array(self.INITIAL_GUESSES)
+        self.parameters = None
 
     @property
     def n_parameters(self) -> int:
@@ -37,6 +37,11 @@ class UtilityBillRegressionModel:
         )
         self.parameters = popt
         self.pcov = pcov
+
+    def _reset_model_state(self) -> None:
+        self.parameters = None
+        self.pcov = None
+        self.INITIAL_GUESSES = []
 
     def __call__(self, temperatures: np.ndarray) -> np.ndarray:
         """Given an array of temperatures [degF], return the predicted energy use.
@@ -76,13 +81,72 @@ class UtilityBillRegressionModel:
         return np.sqrt(np.sum((y - y_hat) ** 2) / (y.shape[0] - self.n_parameters)) / y.mean()
 
 
+def estimate_initial_guesses(model_type: str, bills_temps: pd.DataFrame) -> list[float]:
+    temps = bills_temps["avg_temp"].to_numpy()
+    usage = bills_temps["daily_consumption"].to_numpy()
+    b1 = np.percentile(usage, 10)
+
+    if model_type == "cooling":
+        sorted_indices = np.argsort(temps)
+        sorted_temps = temps[sorted_indices]
+        sorted_usage = usage[sorted_indices]
+        b3 = sorted_temps[np.argmax(np.gradient(sorted_usage))]
+        slope = (np.max(usage) - b1) / (np.max(temps) - b3 + 1e-6)
+        b2 = max(slope, 1.0)
+
+        return [b1, b2, b3]
+
+    elif model_type == "heating":
+        sorted_indices = np.argsort(-temps)
+        sorted_temps = temps[sorted_indices]
+        sorted_usage = usage[sorted_indices]
+        b3 = sorted_temps[np.argmax(np.gradient(sorted_usage))]
+        slope = (np.max(usage) - b1) / (b3 - np.min(temps) + 1e-6)
+        b2 = -abs(slope)
+
+        return [b1, b2, b3]
+
+    else:
+        raise ValueError("Unknown model type")
+
+
+def estimate_initial_guesses_5param(bills_temps: pd.DataFrame) -> list[float]:
+    temps = bills_temps["avg_temp"].to_numpy()
+    usage = bills_temps["daily_consumption"].to_numpy()
+
+    # Baseline (b1)
+    b1 = np.percentile(usage, 10)
+
+    # Heating slope (b2) and balance point (b4)
+    cold_mask = temps < np.median(temps)
+    cold_temps = temps[cold_mask]
+    cold_usage = usage[cold_mask]
+    b4 = np.percentile(cold_temps, 40)  # heating balance point
+    heating_slope = -abs((np.max(cold_usage) - b1) / (b4 - np.min(cold_temps) + 1e-6))
+    b2 = heating_slope
+
+    # Cooling slope (b3) and balance point (b5)
+    hot_mask = temps > np.median(temps)
+    hot_temps = temps[hot_mask]
+    hot_usage = usage[hot_mask]
+    b5 = np.percentile(hot_temps, 60)  # cooling balance point
+    cooling_slope = max((np.max(hot_usage) - b1) / (np.max(hot_temps) - b5 + 1e-6), 1.0)
+    b3 = cooling_slope
+
+    return [b1, b2, b3, b4, b5]
+
+
 class ThreeParameterCooling(UtilityBillRegressionModel):
     """3-parameter cooling model from ASHRAE Guideline 14"""
 
     MODEL_NAME = "3-parameter Cooling"
-    INITIAL_GUESSES = [5e3, 10e3, 70.0]
-    BOUNDS = Bounds(lb=[0.0, 0.0, 40.0], ub=np.inf)
+    BOUNDS = Bounds(lb=[0.0, 0.0, 0.0], ub=np.inf)
     XSCALE = np.array([5000.0, 1000.0, 1.0])
+
+    def fit(self, bills_temps: pd.DataFrame) -> None:
+        super()._reset_model_state()
+        self.INITIAL_GUESSES = estimate_initial_guesses("cooling", bills_temps)
+        super().fit(bills_temps)
 
     def func(
         self,
@@ -107,9 +171,13 @@ class ThreeParameterHeating(UtilityBillRegressionModel):
     """3-parameter heating model from ASHRAE Guideline 14"""
 
     MODEL_NAME = "3-parameter Heating"
-    INITIAL_GUESSES = [5e3, -10e3, 70.0]
-    BOUNDS = Bounds(lb=[0.0, -np.inf, 20.0], ub=[np.inf, 0.0, 80.0])
+    BOUNDS = Bounds(lb=[0.0, -np.inf, 0.0], ub=[np.inf, 0.0, np.inf])
     XSCALE = np.array([5000.0, 1000.0, 1.0])
+
+    def fit(self, bills_temps: pd.DataFrame) -> None:
+        super()._reset_model_state()
+        self.INITIAL_GUESSES = estimate_initial_guesses("heating", bills_temps)
+        super().fit(bills_temps)
 
     def func(
         self,
@@ -134,9 +202,13 @@ class FiveParameter(UtilityBillRegressionModel):
     """5-parameter heating and cooling model from ASHRAE Guideline 14"""
 
     MODEL_NAME = "5-parameter"
-    INITIAL_GUESSES = [5e3, -10e3, 10e3, 50.0, 70.0]
-    BOUNDS = Bounds(lb=[0.0, -np.inf, 0.0, 20.0, 40.0], ub=[np.inf, 0.0, np.inf, 80.0, np.inf])
+    BOUNDS = Bounds(lb=[0.0, -np.inf, 0.0, 0.0, 0.0], ub=[np.inf, 0.0, np.inf, np.inf, np.inf])
     XSCALE = np.array([5000.0, 1000.0, 1.0, 1000.0, 1.0])
+
+    def fit(self, bills_temps: pd.DataFrame) -> None:
+        super()._reset_model_state()
+        self.INITIAL_GUESSES = estimate_initial_guesses_5param(bills_temps)
+        super().fit(bills_temps)
 
     def func(
         self,
@@ -186,6 +258,7 @@ def fit_model(bills_temps: pd.DataFrame, bpi2400=True) -> UtilityBillRegressionM
         model = ModelClass()
         try:
             model.fit(bills_temps)
+            models.append(model)
         except RuntimeError as ex:
             if (
                 str(ex)
@@ -195,7 +268,6 @@ def fit_model(bills_temps: pd.DataFrame, bpi2400=True) -> UtilityBillRegressionM
                 continue
             else:
                 raise
-        models.append(model)
     best_model = min(models, key=lambda x: x.calc_cvrmse(bills_temps))
     if bpi2400 and (cvrmse := best_model.calc_cvrmse(bills_temps)) > 0.2:
         raise Bpi2400ModelFitError(f"CVRMSE = {cvrmse:0.1%}, which is greater than 20%")
