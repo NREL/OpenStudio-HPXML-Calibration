@@ -10,8 +10,6 @@ from openstudio_hpxml_calibration.weather_normalization.regression import (
 
 
 class InverseModel:
-    regression_models: dict[FuelType, UtilityBillRegressionModel] = {}
-
     def __init__(self, hpxml: HpxmlDoc, building_id: str | None = None):
         self.hpxml = hpxml
         self.building_id = building_id
@@ -20,6 +18,7 @@ class InverseModel:
         )
         self.bills_weather_by_fuel_type_in_btu = {}
         self.lat_lon = hpxml.get_lat_lon()
+        self.regression_models: dict[FuelType, UtilityBillRegressionModel] = {}
         for fuel_type, bills in self.bills_by_fuel_type.items():
             bills_weather = ud.join_bills_weather(bills, *self.lat_lon)
             for col in ["consumption", "daily_consumption"]:
