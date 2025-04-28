@@ -1,0 +1,38 @@
+name: Documentation
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - docs/**
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.13
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          activate-environment: true
+      - name: Install the package & dependencies
+        run: |
+          uv version
+          uv sync
+      - name: Deploy the docs to GitHub Pages
+        run: uv run mkdocs gh-deploy
+      # - name: Deploy docs
+      #   uses: mhausenblas/mkdocs-deploy-gh-pages@master
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     CUSTOM_DOMAIN: https://docs.urbanopt.net/geojson-modelica-translator/
+      #     CONFIG_FILE: mkdocs.yml
+      #     REQUIREMENTS: docs/docs_requirements.txt
