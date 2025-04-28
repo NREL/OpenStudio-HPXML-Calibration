@@ -18,7 +18,7 @@ TEST_DATA_DIR = TEST_DIR / "data"
 
 
 def test_calibrate_reads_hpxml():
-    foo = Calibrate("sample_files/house21.xml")
+    foo = Calibrate("test_hpxmls/real_homes/house21.xml")
     normalized_usage = foo.normalize_bills()
     for fuel_type, (normalized_heating_usage, normalized_cooling_usage) in normalized_usage.items():
         assert normalized_heating_usage is not None
