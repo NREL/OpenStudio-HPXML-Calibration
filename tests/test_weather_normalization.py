@@ -11,11 +11,11 @@ from openstudio_hpxml_calibration.hpxml import HpxmlDoc
 from openstudio_hpxml_calibration.weather_normalization import regression as reg
 
 repo_root = pathlib.Path(__file__).resolve().parent.parent
-test_hpxml_files = list((repo_root / "test_hpxmls").glob("*.xml"))
-sample_files = list((repo_root / "sample_files").glob("*.xml"))
+ira_rebate_hpxmls = list((repo_root / "test_hpxmls" / "ira_rebates").glob("*.xml"))
+real_home_hpxmls = list((repo_root / "test_hpxmls" / "real_homes").glob("*.xml"))
 
 
-@pytest.mark.parametrize("filename", test_hpxml_files, ids=lambda x: x.stem)
+@pytest.mark.parametrize("filename", ira_rebate_hpxmls, ids=lambda x: x.stem)
 def test_hpxml_utility_bill_read(filename):
     hpxml = HpxmlDoc(filename)
     bills, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
@@ -25,7 +25,7 @@ def test_hpxml_utility_bill_read(filename):
         assert not pd.isna(df).any().any()
 
 
-@pytest.mark.parametrize("filename", test_hpxml_files, ids=lambda x: x.stem)
+@pytest.mark.parametrize("filename", ira_rebate_hpxmls, ids=lambda x: x.stem)
 def test_hpxml_utility_bill_read_missing_start_end_date(filename):
     for start_end in ("start", "end"):
         # Remove all the EndDateTime elements
@@ -42,7 +42,7 @@ def test_hpxml_utility_bill_read_missing_start_end_date(filename):
             assert not pd.isna(bills[f"{start_end}_date"]).all()
 
 
-@pytest.mark.parametrize("filename", test_hpxml_files, ids=lambda x: x.stem)
+@pytest.mark.parametrize("filename", ira_rebate_hpxmls, ids=lambda x: x.stem)
 def test_weather_retrieval(results_dir, filename):
     hpxml = HpxmlDoc(filename)
     lat, lon = ud.get_lat_lon_from_hpxml(hpxml)
@@ -66,7 +66,7 @@ def test_weather_retrieval(results_dir, filename):
     and sys.version_info.micro <= 2,
     reason="Skipping Windows and Python <= 3.13.2 due to known bug",
 )
-@pytest.mark.parametrize("filename", test_hpxml_files + sample_files, ids=lambda x: x.stem)
+@pytest.mark.parametrize("filename", ira_rebate_hpxmls + real_home_hpxmls, ids=lambda x: x.stem)
 def test_curve_fit(results_dir, filename):
     hpxml = HpxmlDoc(filename)
     lat, lon = ud.get_lat_lon_from_hpxml(hpxml)
