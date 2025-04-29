@@ -33,6 +33,10 @@ class Calibrate:
 
             # calculate mean temp of tmy data between bill dates
             def calculate_wrapped_mean(row):
+                """Extract the epw rows that correspond to the bill dates and calculate the mean
+
+                Search by row index because epw files have non-sequential dates, which invalidates date searches
+                """
                 start = row["start_hour"]
                 end = row["end_hour"]
 
@@ -84,6 +88,7 @@ class Calibrate:
                 low_temp_inflection_point,
                 high_temp_inflection_point,
             )
+            normalized_baseload_monthly = daily_baseload * bills["days_in_bill"].to_numpy()
             normalized_heating_usage_monthly = (
                 normalized_heating_usage * bills["days_in_bill"].to_numpy()
             )
@@ -94,6 +99,7 @@ class Calibrate:
             normalized_usage[fuel_type] = (
                 normalized_heating_usage_monthly,
                 normalized_cooling_usage_monthly,
+                normalized_baseload_monthly,
             )
 
         return normalized_usage
