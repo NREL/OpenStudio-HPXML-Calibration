@@ -1,0 +1,185 @@
+<?xml version="1.0"?>
+<measure>
+  <schema_version>3.1</schema_version>
+  <name>modify_xml</name>
+  <uid>afd74b96-8b2c-4ebd-83be-0d3fdc35bf9a</uid>
+  <version_id>b5ef7d02-8bcb-44dc-a8d7-02071b934bc3</version_id>
+  <version_modified>2025-04-22T00:03:38Z</version_modified>
+  <xml_checksum>1B7C870F</xml_checksum>
+  <class_name>ModifyXML</class_name>
+  <display_name>ModifyXML</display_name>
+  <description>Modify the contents of an existing, valid XML file</description>
+  <modeler_description>The measure changes values of requested XML fields</modeler_description>
+  <arguments>
+    <argument>
+      <name>xml_file_path</name>
+      <display_name>Path to XML file</display_name>
+      <description>Path to existing XML file to modify</description>
+      <type>String</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>save_file_path</name>
+      <display_name>Save file path</display_name>
+      <description>Path to save new xml file</description>
+      <type>String</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>heating_setpoint_offset</name>
+      <display_name>Heating setpoint offset</display_name>
+      <description>Degrees to change heating setpoint</description>
+      <type>Double</type>
+      <units>F</units>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>cooling_setpoint_offset</name>
+      <display_name>Cooling setpoint offset</display_name>
+      <description>Degrees to change cooling setpoint</description>
+      <type>Double</type>
+      <units>F</units>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>air_leakage_pct_change</name>
+      <display_name>Air leakage percent change</display_name>
+      <description>Percentage to change the air leakage rate.
+      Positive value increases air leakage, negative value decreases air leakage.
+      Expressed as a decimal, -1 - 1.</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>heating_efficiency_pct_change</name>
+      <display_name>Heating efficiency percent change</display_name>
+      <description>Percentage to change the heating equipment efficiency.
+      Positive value increases efficiency, negative value decreases efficiency.
+      Expressed as a decimal, -1 - 1.</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>cooling_efficiency_pct_change</name>
+      <display_name>Cooling efficiency percent change</display_name>
+      <description>Percentage to change the cooling equipment efficiency.
+      Positive value increases efficiency, negative value decreases efficiency.
+      Expressed as a decimal, -1 - 1.</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>plug_load_pct_change</name>
+      <display_name>Plug load percent change</display_name>
+      <description>Percentage to change the plug load usage multiplier.
+      Positive value increases load, negative value decreases load.
+      Expressed as a decimal, -1 - 1.</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>roof_r_value_pct_change</name>
+      <display_name>Roof R-Value percent change</display_name>
+      <description>Percentage to change the Roof R-value.
+      Positive value increases R-Value, negative value decreases R-value.
+      Expressed as a decimal, -1 - 1.</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>ceiling_r_value_pct_change</name>
+      <display_name>Ceiling R-Value percent change</display_name>
+      <description>Percentage to change the ceiling (attic floor) R-value.
+      Positive value increases R-Value, negative value decreases R-value.
+      Expressed as a decimal, -1 - 1.</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>floor_r_value_pct_change</name>
+      <display_name>Floor R-Value percent change</display_name>
+      <description>Percentage to change the floor R-value.
+      Positive value increases R-Value, negative value decreases R-value.
+      Expressed as a decimal, -1 - 1.</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>above_ground_walls_r_value_pct_change</name>
+      <display_name>Above-ground wall R-Value percent change</display_name>
+      <description>Percentage to change the above-ground wall R-value.
+      Positive value increases R-Value, negative value decreases R-value.
+      Expressed as a decimal, -1 - 1.</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>below_ground_walls_r_value_pct_change</name>
+      <display_name>Below-ground wall R-Value percent change</display_name>
+      <description>Percentage to change the below-ground wall R-value.
+      Positive value increases R-Value, negative value decreases R-value.
+      Expressed as a decimal, -1 - 1.</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>slab_r_value_pct_change</name>
+      <display_name>Slab R-Value percent change</display_name>
+      <description>Percentage to change the foundation slab R-value.
+      Positive value increases R-Value, negative value decreases R-value.
+      Expressed as a decimal, -1 - 1.</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+  </arguments>
+  <outputs />
+  <provenances />
+  <tags>
+    <tag>Envelope.Fenestration</tag>
+  </tags>
+  <attributes>
+    <attribute>
+      <name>Measure Type</name>
+      <value>ModelMeasure</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Measure Language</name>
+      <value>Ruby</value>
+      <datatype>string</datatype>
+    </attribute>
+  </attributes>
+  <files>
+    <file>
+      <version>
+        <software_program>OpenStudio</software_program>
+        <identifier>3.9.0</identifier>
+        <min_compatible>3.9.0</min_compatible>
+      </version>
+      <filename>measure.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>script</usage_type>
+      <checksum>7F1F54A4</checksum>
+    </file>
+    <file>
+      <filename>modify_xml_test.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>30882422</checksum>
+    </file>
+  </files>
+</measure>

@@ -53,6 +53,10 @@ jobs:
           echo $OpenStudioBinPath >> $env:GITHUB_PATH
       - name: Download Weather
         run: uv run openstudio-hpxml-calibration download-weather
+      - name: Measure unit tests
+        run: |
+          cd src/measures/ModifyXML/tests
+          openstudio modify_xml_test.rb
       - name: Unit tests
         run: uv run pytest -v
       - name: Save test results

@@ -10,6 +10,9 @@ wheels/
 .venv
 .python-version
 
+# Language setup
+.ruby-lsp
+
 # IDE
 .vscode
 
@@ -18,4 +21,8 @@ wheels/
 .ruff_cache/
 .mypy_cache/
 .DS_Store
+
+# test dirs
+src/measures/ModifyXML/tests/run
+tests/run
 tests/results/
