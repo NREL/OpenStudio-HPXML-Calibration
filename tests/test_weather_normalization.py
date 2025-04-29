@@ -105,7 +105,7 @@ def test_curve_fit(results_dir, filename):
 
 
 def test_normalize_consumption_to_epw():
-    filename = repo_root / "sample_files" / "house21.xml"
+    filename = repo_root / "test_hpxmls" / "real_homes" / "house21.xml"
     hpxml = HpxmlDoc(filename)
     inv_model = InverseModel(hpxml)
 
