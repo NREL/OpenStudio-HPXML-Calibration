@@ -16,11 +16,11 @@ _log = logging.getLogger(__name__)
 class Calibrate:
     def __init__(self, original_hpxml_filepath: Path):
         self.hpxml = HpxmlDoc(Path(original_hpxml_filepath).resolve())
-        self.epw_data, self.epw_metadata = self.hpxml.get_epw_data()
 
     def normalize_bills(self) -> dict:
         lat, lon = ud.get_lat_lon_from_hpxml(self.hpxml)
         bills_by_fuel_type, bill_units, tz = ud.get_bills_from_hpxml(self.hpxml)
+        epw_data, epw_metadata = self.hpxml.get_epw_data()
 
         # generate models and compare weather files
         normalized_usage = {}
@@ -32,7 +32,7 @@ class Calibrate:
             bills["days_in_bill"] = (bills["end_date"] - bills["start_date"]).dt.days
 
             # calculate mean temp of tmy data between bill dates
-            def calculate_wrapped_mean(row):
+            def _calculate_wrapped_mean(row):
                 """Extract the epw rows that correspond to the bill dates and calculate the mean
 
                 Search by row index because epw files have non-sequential dates, which invalidates date searches
@@ -41,16 +41,16 @@ class Calibrate:
                 end = row["end_hour"]
 
                 if start <= end:
-                    subset = self.epw_data.iloc[start : end + 1]  # +1 to include end_hour
+                    subset = epw_data.iloc[start : end + 1]  # +1 to include end_hour
                 else:
                     # handle bills that wrap around the end of the year
-                    part1 = self.epw_data.iloc[start:]
-                    part2 = self.epw_data.iloc[0 : end + 1]
+                    part1 = epw_data.iloc[start:]
+                    part2 = epw_data.iloc[0 : end + 1]
                     subset = pd.concat([part1, part2])
 
                 return subset["temp_air"].mean()
 
-            bills["mean_temp_air_tmy"] = bills.apply(calculate_wrapped_mean, axis=1)
+            bills["mean_temp_air_tmy"] = bills.apply(_calculate_wrapped_mean, axis=1)
 
             bills["mean_temp_air_tmy_fahrenheit"] = convert_c_to_f(
                 bills["mean_temp_air_tmy"]
@@ -81,7 +81,7 @@ class Calibrate:
 
             normalized_temps_range = bills["mean_temp_air_tmy_fahrenheit"].to_numpy()
             normalized_daily_consumption_pred = model(normalized_temps_range)
-            normalized_heating_usage, normalized_cooling_usage = self.calculate_normalized_loads(
+            normalized_heating_usage, normalized_cooling_usage = self._calculate_normalized_loads(
                 daily_baseload,
                 normalized_daily_consumption_pred,
                 bills["mean_temp_air_tmy_fahrenheit"],
@@ -103,6 +103,9 @@ class Calibrate:
             )
 
         return normalized_usage
+
+    def compare_model_to_measured(self):
+        pass
 
         # TODO: read from user's output file
         # annual_json_results_path = (
@@ -136,7 +139,7 @@ class Calibrate:
         # ):
         #     self.calibrate(self.osw_file)
 
-    def calculate_normalized_loads(
+    def _calculate_normalized_loads(
         self,
         baseload,
         predictions,
