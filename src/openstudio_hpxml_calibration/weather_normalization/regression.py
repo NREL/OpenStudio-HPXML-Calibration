@@ -52,7 +52,9 @@ class UtilityBillRegressionModel:
         """
         return self.func(temperatures, *self.parameters)
 
-    def predict_disaggregated(self, temperatures: Sequence[float] | np.ndarray) -> pd.DataFrame:
+    def predict_disaggregated(
+        self, temperatures: Sequence[float] | np.ndarray
+    ) -> pd.DataFrame:
         """Predict the disaggregated energy use for a given array of temperatures.
 
         :param temperatures: An array of daily temperatures in degF.
@@ -62,7 +64,9 @@ class UtilityBillRegressionModel:
         """
         raise NotImplementedError
 
-    def func(self, x: Sequence[float] | np.ndarray, *args: list[float | np.floating]) -> np.ndarray:
+    def func(
+        self, x: Sequence[float] | np.ndarray, *args: list[float | np.floating]
+    ) -> np.ndarray:
         raise NotImplementedError
 
     def calc_cvrmse(self, bills_temps: pd.DataFrame) -> float:
@@ -75,14 +79,19 @@ class UtilityBillRegressionModel:
         """
         y = bills_temps["daily_consumption"].to_numpy()
         y_hat = self(bills_temps["avg_temp"].to_numpy())
-        return np.sqrt(np.sum((y - y_hat) ** 2) / (y.shape[0] - self.n_parameters)) / y.mean()
+        return (
+            np.sqrt(np.sum((y - y_hat) ** 2) / (y.shape[0] - self.n_parameters))
+            / y.mean()
+        )
 
 
 def estimate_initial_guesses(model_type: str, bills_temps: pd.DataFrame) -> list[float]:
     temps = bills_temps["avg_temp"].to_numpy()
     usage = bills_temps["daily_consumption"].to_numpy()
     # Estimate baseload by taking the 10th percentile of usage data
-    b1 = np.percentile(usage, 10)  # TODO: There might be a better way to estimate baseload
+    b1 = np.percentile(
+        usage, 10
+    )  # TODO: There might be a better way to estimate baseload
 
     if model_type == "cooling":
         b3 = 65  # TODO: There might be a better way to estimate balance point
@@ -106,7 +115,9 @@ def estimate_initial_guesses_5param(bills_temps: pd.DataFrame) -> list[float]:
     temps = bills_temps["avg_temp"].to_numpy()
     usage = bills_temps["daily_consumption"].to_numpy()
     # Estimate baseload by taking the 10th percentile of usage data
-    b1 = np.percentile(usage, 10)  # TODO: There might be a better way to estimate baseload
+    b1 = np.percentile(
+        usage, 10
+    )  # TODO: There might be a better way to estimate baseload
 
     # Heating slope (b2) and balance point (b4)
     cold_mask = temps < np.median(temps)
@@ -152,13 +163,17 @@ class ThreeParameterCooling(UtilityBillRegressionModel):
         x_arr = np.array(x)
         return b1 + b2 * np.maximum(x_arr - b3, 0)
 
-    def predict_disaggregated(self, temperatures: Sequence[float] | np.ndarray) -> pd.DataFrame:
+    def predict_disaggregated(
+        self, temperatures: Sequence[float] | np.ndarray
+    ) -> pd.DataFrame:
         temperatures_arr = np.array(temperatures)
         b1, b2, b3 = self.parameters  # unpack the parameters
         heating = np.zeros_like(temperatures_arr, dtype=float)
         cooling = b2 * np.maximum(temperatures_arr - b3, 0)
         baseload = np.ones_like(temperatures_arr, dtype=float) * b1
-        return pd.DataFrame({"baseload": baseload, "heating": heating, "cooling": cooling})
+        return pd.DataFrame(
+            {"baseload": baseload, "heating": heating, "cooling": cooling}
+        )
 
 
 class ThreeParameterHeating(UtilityBillRegressionModel):
@@ -186,13 +201,17 @@ class ThreeParameterHeating(UtilityBillRegressionModel):
         x_arr = np.array(x)
         return b1 + b2 * np.minimum(x_arr - b3, 0)
 
-    def predict_disaggregated(self, temperatures: Sequence[float] | np.ndarray) -> pd.DataFrame:
+    def predict_disaggregated(
+        self, temperatures: Sequence[float] | np.ndarray
+    ) -> pd.DataFrame:
         temperatures_arr = np.array(temperatures)
         b1, b2, b3 = self.parameters  # unpack the parameters
         heating = b2 * np.minimum(temperatures_arr - b3, 0)
         cooling = np.zeros_like(temperatures_arr, dtype=float)
         baseload = np.ones_like(temperatures_arr, dtype=float) * b1
-        return pd.DataFrame({"baseload": baseload, "heating": heating, "cooling": cooling})
+        return pd.DataFrame(
+            {"baseload": baseload, "heating": heating, "cooling": cooling}
+        )
 
 
 class FiveParameter(UtilityBillRegressionModel):
@@ -202,7 +221,9 @@ class FiveParameter(UtilityBillRegressionModel):
 
     def __init__(self):
         super().__init__()
-        self.BOUNDS = Bounds(lb=[0.0, -np.inf, 0.0, 40.0, 40.0], ub=[np.inf, 0.0, np.inf, 90.0, 90.0])
+        self.BOUNDS = Bounds(
+            lb=[0.0, -np.inf, 0.0, 40.0, 40.0], ub=[np.inf, 0.0, np.inf, 90.0, 90.0]
+        )
         self.XSCALE = np.array([5000.0, 1000.0, 1000.0, 1.0, 1.0])
         self.INITIAL_GUESSES = []
 
@@ -222,13 +243,17 @@ class FiveParameter(UtilityBillRegressionModel):
         x_arr = np.array(x)
         return b1 + b2 * np.minimum(x_arr - b4, 0) + b3 * np.maximum(x_arr - b5, 0)
 
-    def predict_disaggregated(self, temperatures: Sequence[float] | np.ndarray) -> pd.DataFrame:
+    def predict_disaggregated(
+        self, temperatures: Sequence[float] | np.ndarray
+    ) -> pd.DataFrame:
         temperatures_arr = np.array(temperatures)
         b1, b2, b3, b4, b5 = self.parameters  # unpack the parameters
         heating = b2 * np.minimum(temperatures_arr - b4, 0)
         cooling = b3 * np.maximum(temperatures_arr - b5, 0)
         baseload = np.ones_like(temperatures_arr, dtype=float) * b1
-        return pd.DataFrame({"baseload": baseload, "heating": heating, "cooling": cooling})
+        return pd.DataFrame(
+            {"baseload": baseload, "heating": heating, "cooling": cooling}
+        )
 
 
 class Bpi2400ModelFitError(Exception):
