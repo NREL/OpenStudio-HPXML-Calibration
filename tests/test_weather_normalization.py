@@ -83,7 +83,7 @@ def test_curve_fit(results_dir, filename):
         plt.plot(
             temps_range,
             daily_consumption_pred,
-            label=f"{model.MODEL_NAME}, CVRMSE = {cvrmse:.1%}\n{model.parameters}",
+            label=f"{model.MODEL_NAME}, CVRMSE = {cvrmse:.1%}\n{[float(format(value, '.2f')) for value in model.parameters]}",
         )
         plt.scatter(
             bills_temps["avg_temp"],
