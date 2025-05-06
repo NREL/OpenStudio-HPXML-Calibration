@@ -6,8 +6,8 @@ import numpy as np
 import pandas as pd
 from lxml import objectify
 
-from openstudio_hpxml_calibration.hpxml import HpxmlDoc
-from openstudio_hpxml_calibration.utils import convert_c_to_f
+from openstudio_hpxml_calibration.hpxml import EnergyUnitType, FuelType, HpxmlDoc
+from openstudio_hpxml_calibration.units import convert_units
 
 
 def get_datetime_subel(el: objectify.ObjectifiedElement, subel_name: str) -> pd.Timestamp | None:
@@ -20,7 +20,7 @@ def get_datetime_subel(el: objectify.ObjectifiedElement, subel_name: str) -> pd.
 
 def get_bills_from_hpxml(
     hpxml: HpxmlDoc, building_id: str | None = None
-) -> tuple[dict[str, pd.DataFrame], dict[str, str], dt.timezone]:
+) -> tuple[dict[FuelType, pd.DataFrame], dict[FuelType, EnergyUnitType], dt.timezone]:
     """Get utility bills from an HPXML file.
 
     :param hpxml: The HPXML file
@@ -32,7 +32,7 @@ def get_bills_from_hpxml(
           dataframe as the values with columns `start_date`, `end_date`, and `consumption`
         * `bill_units`, a dictionary with a map of fuel type to units in the HPXML file.
         * `local_standard_tz`, the timezone (standard, no DST) of the location.
-    :rtype: tuple[dict[str, pd.DataFrame], dict[str, str], dt.timezone]
+    :rtype: tuple[dict[FuelType, pd.DataFrame], dict[FuelType, EnergyUnitType], dt.timezone]
     """
     if building_id is None:
         building_id = hpxml.get_first_building_id()
@@ -51,8 +51,8 @@ def get_bills_from_hpxml(
         "h:Consumption[h:BuildingID/@idref=$building_id]/h:ConsumptionDetails/h:ConsumptionInfo",
         building_id=building_id,
     ):
-        fuel_type = str(cons_info.ConsumptionType.Energy.FuelType)
-        bill_units[fuel_type] = str(cons_info.ConsumptionType.Energy.UnitofMeasure)
+        fuel_type = FuelType(cons_info.ConsumptionType.Energy.FuelType)
+        bill_units[fuel_type] = EnergyUnitType(cons_info.ConsumptionType.Energy.UnitofMeasure)
         rows = []
         for el in cons_info.ConsumptionDetail:
             rows.append(
@@ -78,30 +78,6 @@ def get_bills_from_hpxml(
     return bills_by_fuel_type, bill_units, local_standard_tz
 
 
-def get_lat_lon_from_hpxml(hpxml: HpxmlDoc, building_id: str | None = None) -> tuple[float, float]:
-    """Get latitude, longitude from hpxml file
-
-    :param hpxml: _description_
-    :type hpxml: HpxmlDoc
-    :param building_id: Optional building_id of the building you want to get location for.
-    :type building_id: str | None
-    :return: _description_
-    :rtype: tuple[float, float]
-    """
-    building = hpxml.get_building(building_id)
-    try:
-        # Option 1: Get directly from HPXML
-        geolocation = building.Site.GeoLocation
-        lat = float(geolocation.Latitude)
-        lon = float(geolocation.Longitude)
-    except AttributeError:
-        _, epw_metadata = hpxml.get_epw_data(building_id)
-        lat = epw_metadata["latitude"]
-        lon = epw_metadata["longitude"]
-
-    return lat, lon
-
-
 def join_bills_weather(bills_orig: pd.DataFrame, lat: float, lon: float, **kw) -> pd.DataFrame:
     """Join the bills dataframe with an average daily temperature
 
@@ -125,8 +101,7 @@ def join_bills_weather(bills_orig: pd.DataFrame, lat: float, lon: float, **kw) -
         )
         tempC, _ = isd_station.load_isd_hourly_temp_data(start_date, end_date)
     tempC = tempC.tz_convert(bills_orig["start_date"].dt.tz)
-    tempF = convert_c_to_f(tempC)
-
+    tempF = convert_units(tempC, "c", "f")
     bills = bills_orig.copy()
     bills["n_days"] = (
         (bills_orig["end_date"] - bills_orig["start_date"]).dt.total_seconds() / 60 / 60 / 24

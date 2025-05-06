@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 
 import openstudio_hpxml_calibration.weather_normalization.utility_data as ud
 from openstudio_hpxml_calibration.hpxml import HpxmlDoc
-from openstudio_hpxml_calibration.weather_normalization import regression as reg
+from openstudio_hpxml_calibration.weather_normalization.inverse_model import InverseModel
 
 repo_root = pathlib.Path(__file__).resolve().parent.parent
 ira_rebate_hpxmls = list((repo_root / "test_hpxmls" / "ira_rebates").glob("*.xml"))
@@ -19,7 +19,7 @@ real_home_hpxmls = list((repo_root / "test_hpxmls" / "real_homes").glob("*.xml")
 def test_hpxml_utility_bill_read(filename):
     hpxml = HpxmlDoc(filename)
     bills, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
-    assert "electricity" in bills
+    assert any("electricity" in fuel_type.value for fuel_type in bills)
 
     for fuel_type, df in bills.items():
         assert not pd.isna(df).any().any()
@@ -35,7 +35,7 @@ def test_hpxml_utility_bill_read_missing_start_end_date(filename):
 
         # Load the bills
         bills_by_fuel_type, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
-        assert "electricity" in bills_by_fuel_type
+        assert any("electricity" in fuel_type.value for fuel_type in bills_by_fuel_type)
 
         # Ensure the dates got filled in
         for fuel_type, bills in bills_by_fuel_type.items():
@@ -45,7 +45,7 @@ def test_hpxml_utility_bill_read_missing_start_end_date(filename):
 @pytest.mark.parametrize("filename", ira_rebate_hpxmls, ids=lambda x: x.stem)
 def test_weather_retrieval(results_dir, filename):
     hpxml = HpxmlDoc(filename)
-    lat, lon = ud.get_lat_lon_from_hpxml(hpxml)
+    lat, lon = hpxml.get_lat_lon()
     bills_by_fuel_type, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
     for fuel_type, bills in bills_by_fuel_type.items():
         bills_temps = ud.join_bills_weather(bills, lat, lon)
@@ -69,14 +69,13 @@ def test_weather_retrieval(results_dir, filename):
 @pytest.mark.parametrize("filename", ira_rebate_hpxmls + real_home_hpxmls, ids=lambda x: x.stem)
 def test_curve_fit(results_dir, filename):
     hpxml = HpxmlDoc(filename)
-    lat, lon = ud.get_lat_lon_from_hpxml(hpxml)
-    bills_by_fuel_type, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
-    for fuel_type, bills in bills_by_fuel_type.items():
+    inv_model = InverseModel(hpxml)
+    for fuel_type, bills in inv_model.bills_by_fuel_type.items():
         if bills.shape[0] < 10:
             # Rudimentary check for delivered fuels.
             continue
-        bills_temps = ud.join_bills_weather(bills, lat, lon)
-        model = reg.fit_model(bills_temps, bpi2400=False)
+        model = inv_model.get_model(fuel_type)
+        bills_temps = inv_model.bills_weather_by_fuel_type_in_btu[fuel_type]
         temps_range = np.linspace(bills_temps["avg_temp"].min(), bills_temps["avg_temp"].max(), 500)
         fig = plt.figure(figsize=(8, 6))
         daily_consumption_pred = model(temps_range)
@@ -110,11 +109,24 @@ def test_curve_fit(results_dir, filename):
             label="data",
             color="darkgreen",
         )
-        plt.title(f"{fuel_type} [{bill_units[fuel_type]}]")
+        plt.title(f"{filename.stem} {fuel_type.value}")
+        plt.xlabel("Avg Daily Temperature [degF]")
+        plt.ylabel("Daily Consumption [BTU]")
         plt.legend()
         fig.savefig(
-            results_dir / "weather_normalization" / f"{filename.stem}_{fuel_type}_fit.png", dpi=200
+            results_dir / "weather_normalization" / f"{filename.stem}_{fuel_type.value}_fit.png",
+            dpi=200,
         )
         plt.close(fig)
         # TODO: reinstate this check, but for now some are coming in with larger CVRMSE
         # assert cvrmse <= 0.2
+
+
+def test_normalize_consumption_to_epw():
+    filename = repo_root / "test_hpxmls" / "real_homes" / "house21.xml"
+    hpxml = HpxmlDoc(filename)
+    inv_model = InverseModel(hpxml)
+
+    for fuel_type in inv_model.bills_by_fuel_type:
+        epw_annual = inv_model.predict_epw_annual(fuel_type)
+        assert not pd.isna(epw_annual).any()
