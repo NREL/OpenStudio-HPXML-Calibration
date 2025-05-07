@@ -26,14 +26,14 @@ def generate_cvrmse_comparison_plot():
     cvrmse_values = list(model_cvrmses.values())
 
     fig, ax = plt.subplots(figsize=(12, max(6, len(model_names) * 0.3)))
-    bars = ax.barh(model_names, cvrmse_values, color='skyblue')
+    bars = ax.barh(model_names, cvrmse_values, color="skyblue")
 
     ax.set_xlabel("CVRMSE")
     ax.set_title("CVRMSE comparison across all test HPXMLs")
     ax.invert_yaxis()
 
     for bar, value in zip(bars, cvrmse_values):
-        ax.text(value + 0.005, bar.get_y() + bar.get_height() / 2, f"{value:.2%}", va='center')
+        ax.text(value + 0.005, bar.get_y() + bar.get_height() / 2, f"{value:.2%}", va="center")
 
     fig.tight_layout()
     fig.savefig(results_dir / "cvrmse_comparison.png", dpi=200)

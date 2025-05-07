@@ -101,7 +101,7 @@ def test_curve_fit(results_dir, filename):
         plt.close(fig)
         # TODO: reinstate this check, but for now some are coming in with larger CVRMSE
         # assert cvrmse <= 0.2
-        
+
         # Save CVRMSE result per test
         individual_result = {f"{filename.stem}_{fuel_type}": cvrmse}
         json_path = results_dir / "weather_normalization" / f"{filename.stem}_{fuel_type}.json"
