@@ -47,4 +47,5 @@ def generate_cvrmse_comparison_plot():
     with open(results_dir / "cvrmse_average.txt", "w") as f:
         f.write(f"Average CVRMSE: {average_cvrmse:.2%}")
 
-    assert average_cvrmse < 0.3, "Average CVRMSE is greater than 30%"
+    if average_cvrmse >= 0.30:
+        raise ValueError(f"Average CVRMSE too high: {average_cvrmse:.2%}")
