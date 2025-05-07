@@ -43,6 +43,6 @@ def generate_cvrmse_comparison_plot():
     plt.close(fig)
 
     # Save overall average
-    overall_cvrmse = np.mean(cvrmse_values)
-    with open(results_dir / "overall_cvrmse.txt", "w") as f:
-        f.write(f"Overall CVRMSE: {overall_cvrmse:.2%}")
+   average_cvrmse = np.mean(cvrmse_values)
+    with open(results_dir / "cvrmse_average.txt", "w") as f:
+        f.write(f"Average CVRMSE: {average_cvrmse:.2%}")
