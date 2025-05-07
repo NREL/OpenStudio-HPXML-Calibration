@@ -1,7 +1,8 @@
-import matplotlib.pyplot as plt
-import numpy as np
 import json
 from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 def generate_cvrmse_comparison_plot():
@@ -16,7 +17,7 @@ def generate_cvrmse_comparison_plot():
     for jf in all_jsons:
         if jf.name == summary_file.name:
             continue
-        with open(jf, "r") as f:
+        with open(jf) as f:
             partial = json.load(f)
             model_cvrmses.update(partial)
 
