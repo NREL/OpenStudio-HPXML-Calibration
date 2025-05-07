@@ -1,6 +1,10 @@
 from pathlib import Path
 import pytest
-from post_process import generate_cvrmse_comparison_plot
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utils.post_process import generate_cvrmse_comparison_plot
 
 
 @pytest.fixture(scope="session")

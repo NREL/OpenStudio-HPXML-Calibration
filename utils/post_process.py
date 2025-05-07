@@ -5,7 +5,9 @@ from pathlib import Path
 
 
 def generate_cvrmse_comparison_plot():
-    results_dir = Path(__file__).resolve().parent / "results" / "weather_normalization"
+    results_dir = (
+        Path(__file__).resolve().parent.parent / "tests" / "results" / "weather_normalization"
+    )
     summary_file = results_dir / "cvrmse_summary.json"
     all_jsons = list(results_dir.glob("*.json"))
 
