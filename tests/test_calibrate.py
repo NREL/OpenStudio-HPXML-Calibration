@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-# from shutil import rmtree
+import pandas as pd
 import pytest
 
 from openstudio_hpxml_calibration.calibrate import Calibrate
@@ -19,19 +19,18 @@ def test_data():
     # Teardown phase
 
 
-def test_calibrate_reads_hpxml(test_data):
+def test_calibrate_normalizes_bills_to_weather(test_data):
     foo = Calibrate(test_data["sample_xml_file"])
-    normalized_usage = foo.normalize_bills()
-    for fuel_type, (
-        normalized_heating_usage,
-        normalized_cooling_usage,
-        normalized_baseload_usage,
-    ) in normalized_usage.items():
-        assert normalized_heating_usage is not None
-        assert normalized_cooling_usage is not None
-        assert normalized_baseload_usage is not None
-    #     print(f"Fuel Type: {fuel_type}")
-    #     print(f"Normalized Heating Usage: {normalized_heating_usage}")
-    #     print(f"Normalized Cooling Usage: {normalized_cooling_usage}")
-    #     print(f"Normalized Baseload Usage: {normalized_baseload_usage}")
-    # assert False is True
+    normalized_usage = foo.get_normalized_consumption_per_bill()
+    for fuel_type, normalized_consumption in normalized_usage.items():
+        assert normalized_consumption.shape == (12, 5)
+        # Assert that baseload has 12 non-zero values
+        assert not pd.isna(normalized_consumption["baseload"]).any()
+
+
+def test_get_model_results(test_data):
+    foo = Calibrate(test_data["sample_xml_file"])
+    simulation_results = foo.get_model_results(Path(test_data["timeseries_json_results_path"]))
+    for fuel_type, disagg_results in simulation_results.items():
+        # assert that this string is one of the keys in the disaggregated results
+        assert [s for s in disagg_results if "_heating_energy" in s]
