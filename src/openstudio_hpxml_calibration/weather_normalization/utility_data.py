@@ -68,8 +68,9 @@ def get_bills_from_hpxml(
         if pd.isna(bills["start_date"]).all():
             bills["start_date"] = bills["end_date"].shift(1)
 
-        bills["start_hour"] = bills["start_date"].dt.dayofyear * 24
-        bills["end_hour"] = bills["end_date"].dt.dayofyear * 24
+        bills["start_day_of_year"] = bills["start_date"].dt.dayofyear
+        # Subtract 1 from end day because the bill shows it at hour 00:00 of the end date
+        bills["end_day_of_year"] = bills["end_date"].dt.dayofyear - 1
 
         bills["start_date"] = bills["start_date"].dt.tz_localize(local_standard_tz)
         bills["end_date"] = bills["end_date"].dt.tz_localize(local_standard_tz)
