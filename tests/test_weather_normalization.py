@@ -8,6 +8,7 @@ from matplotlib import pyplot as plt
 
 import openstudio_hpxml_calibration.weather_normalization.utility_data as ud
 from openstudio_hpxml_calibration.hpxml import HpxmlDoc
+from openstudio_hpxml_calibration.units import convert_units
 from openstudio_hpxml_calibration.weather_normalization.inverse_model import InverseModel
 
 repo_root = pathlib.Path(__file__).resolve().parent.parent
@@ -127,6 +128,9 @@ def test_normalize_consumption_to_epw():
     hpxml = HpxmlDoc(filename)
     inv_model = InverseModel(hpxml)
 
-    for fuel_type in inv_model.bills_by_fuel_type:
-        epw_annual = inv_model.predict_epw_annual(fuel_type)
+    for fuel_type, bills in inv_model.bills_by_fuel_type.items():
+        epw_daily = convert_units(inv_model.predict_epw_daily(fuel_type), "BTU", "kBTU")
+        print(f"EPW Daily {fuel_type.value} (kbtu):\n", epw_daily)
+        epw_annual = epw_daily.sum()
+        print(f"EPW Annual {fuel_type.value} (kbtu):\n", epw_annual)
         assert not pd.isna(epw_annual).any()
