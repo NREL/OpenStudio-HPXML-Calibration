@@ -68,7 +68,9 @@ def test_weather_retrieval(results_dir, filename):
     and sys.version_info.micro <= 2,
     reason="Skipping Windows and Python <= 3.13.2 due to known bug",
 )
-@pytest.mark.parametrize("filename", ira_rebate_hpxmls + real_home_hpxmls + ihmh_home_hpxmls, ids=lambda x: x.stem)
+@pytest.mark.parametrize(
+    "filename", ira_rebate_hpxmls + real_home_hpxmls + ihmh_home_hpxmls, ids=lambda x: x.stem
+)
 def test_curve_fit(results_dir, filename):
     hpxml = HpxmlDoc(filename)
     lat, lon = ud.get_lat_lon_from_hpxml(hpxml)
