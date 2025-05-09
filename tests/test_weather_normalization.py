@@ -1,3 +1,4 @@
+import json
 import pathlib
 import sys
 
@@ -78,9 +79,10 @@ def test_curve_fit(results_dir, filename):
         bills_temps = ud.join_bills_weather(bills, lat, lon)
         model = reg.fit_model(bills_temps, bpi2400=False)
         temps_range = np.linspace(bills_temps["avg_temp"].min(), bills_temps["avg_temp"].max(), 500)
-        fig = plt.figure(figsize=(8, 6))
         daily_consumption_pred = model(temps_range)
         cvrmse = model.calc_cvrmse(bills_temps)
+
+        fig = plt.figure(figsize=(8, 6))
         plt.plot(
             temps_range,
             daily_consumption_pred,
@@ -100,3 +102,9 @@ def test_curve_fit(results_dir, filename):
         plt.close(fig)
         # TODO: reinstate this check, but for now some are coming in with larger CVRMSE
         # assert cvrmse <= 0.2
+
+        # Save CVRMSE result per test
+        individual_result = {f"{filename.stem}_{fuel_type}": cvrmse}
+        json_path = results_dir / "weather_normalization" / f"{filename.stem}_{fuel_type}.json"
+        with open(json_path, "w") as f:
+            json.dump(individual_result, f, indent=2)
