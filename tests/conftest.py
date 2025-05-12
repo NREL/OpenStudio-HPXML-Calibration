@@ -1,6 +1,11 @@
+import os
+import sys
 from pathlib import Path
 
 import pytest
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utils.post_process import generate_cvrmse_comparison_plot
 
 
 @pytest.fixture(scope="session")
@@ -23,3 +28,8 @@ def results_dir(worker_id):
         (results_dir / dir).mkdir(parents=True, exist_ok=True)
 
     return results_dir
+
+
+def pytest_sessionfinish(session, exitstatus):
+    """Hook to run after all tests finish."""
+    generate_cvrmse_comparison_plot()

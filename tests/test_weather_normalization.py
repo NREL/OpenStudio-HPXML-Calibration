@@ -1,3 +1,4 @@
+import json
 import pathlib
 import sys
 
@@ -13,6 +14,7 @@ from openstudio_hpxml_calibration.weather_normalization.inverse_model import Inv
 repo_root = pathlib.Path(__file__).resolve().parent.parent
 ira_rebate_hpxmls = list((repo_root / "test_hpxmls" / "ira_rebates").glob("*.xml"))
 real_home_hpxmls = list((repo_root / "test_hpxmls" / "real_homes").glob("*.xml"))
+ihmh_home_hpxmls = list((repo_root / "test_hpxmls" / "ihmh_homes").glob("*.xml"))
 
 
 @pytest.mark.parametrize("filename", ira_rebate_hpxmls, ids=lambda x: x.stem)
@@ -66,7 +68,9 @@ def test_weather_retrieval(results_dir, filename):
     and sys.version_info.micro <= 2,
     reason="Skipping Windows and Python <= 3.13.2 due to known bug",
 )
-@pytest.mark.parametrize("filename", ira_rebate_hpxmls + real_home_hpxmls, ids=lambda x: x.stem)
+@pytest.mark.parametrize(
+    "filename", ira_rebate_hpxmls + real_home_hpxmls + ihmh_home_hpxmls, ids=lambda x: x.stem
+)
 def test_curve_fit(results_dir, filename):
     hpxml = HpxmlDoc(filename)
     inv_model = InverseModel(hpxml)
@@ -77,9 +81,10 @@ def test_curve_fit(results_dir, filename):
         model = inv_model.get_model(fuel_type)
         bills_temps = inv_model.bills_weather_by_fuel_type_in_btu[fuel_type]
         temps_range = np.linspace(bills_temps["avg_temp"].min(), bills_temps["avg_temp"].max(), 500)
-        fig = plt.figure(figsize=(8, 6))
         daily_consumption_pred = model(temps_range)
         cvrmse = model.calc_cvrmse(bills_temps)
+
+        fig = plt.figure(figsize=(8, 6))
         plt.plot(
             temps_range,
             daily_consumption_pred,
@@ -102,6 +107,12 @@ def test_curve_fit(results_dir, filename):
         plt.close(fig)
         # TODO: reinstate this check, but for now some are coming in with larger CVRMSE
         # assert cvrmse <= 0.2
+
+        # Save CVRMSE result per test
+        individual_result = {f"{filename.stem}_{fuel_type}": cvrmse}
+        json_path = results_dir / "weather_normalization" / f"{filename.stem}_{fuel_type}.json"
+        with open(json_path, "w") as f:
+            json.dump(individual_result, f, indent=2)
 
 
 def test_normalize_consumption_to_epw():
