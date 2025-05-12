@@ -54,7 +54,7 @@ def test_weather_retrieval(results_dir, filename):
         fig = plt.figure(figsize=(8, 6))
         plt.scatter(bills_temps["avg_temp"], bills_temps["daily_consumption"])
         fig.savefig(
-            results_dir / "weather_normalization" / f"{filename.stem}_{fuel_type}.png", dpi=200
+            results_dir / "weather_normalization" / f"{filename.stem}_{fuel_type.value}.png", dpi=200
         )
         plt.close(fig)
         assert not pd.isna(bills_temps["avg_temp"]).any()
@@ -110,7 +110,7 @@ def test_curve_fit(results_dir, filename):
 
         # Save CVRMSE result per test
         individual_result = {f"{filename.stem}_{fuel_type}": cvrmse}
-        json_path = results_dir / "weather_normalization" / f"{filename.stem}_{fuel_type}.json"
+        json_path = results_dir / "weather_normalization" / f"{filename.stem}_{fuel_type.value}.json"
         with open(json_path, "w") as f:
             json.dump(individual_result, f, indent=2)
 
