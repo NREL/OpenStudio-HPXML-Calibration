@@ -78,23 +78,21 @@ class UtilityBillRegressionModel:
         return np.sqrt(np.sum((y - y_hat) ** 2) / (y.shape[0] - self.n_parameters)) / y.mean()
 
 
-def estimate_initial_guesses(model_type: str, bills_temps: pd.DataFrame) -> list[float]:
-    temps = bills_temps["avg_temp"].to_numpy()
+def estimate_initial_guesses_3param(model_type: str, bills_temps: pd.DataFrame) -> list[float]:
     usage = bills_temps["daily_consumption"].to_numpy()
     # Estimate baseload by taking the 10th percentile of usage data
     b1 = np.percentile(usage, 10)  # TODO: There might be a better way to estimate baseload
+    slope = 5200  # Assumes BLC of 650 Btu/hr-F for 8 hours of operation
 
     if model_type == "cooling":
-        b3 = 65  # TODO: There might be a better way to estimate balance point
-        slope = (np.max(usage) - b1) / (np.max(temps) - b3 + 1e-6)
-        b2 = max(slope, 1.0)
+        b2 = slope
+        b3 = 65  # TODO: There might be a better way to estimate balance temperature
 
         return [b1, b2, b3]
 
     elif model_type == "heating":
-        b3 = 65  # TODO: There might be a better way to estimate balance point
-        slope = (np.max(usage) - b1) / (b3 - np.min(temps) + 1e-6)
         b2 = -abs(slope)
+        b3 = 65  # TODO: There might be a better way to estimate balance temperature
 
         return [b1, b2, b3]
 
@@ -103,28 +101,57 @@ def estimate_initial_guesses(model_type: str, bills_temps: pd.DataFrame) -> list
 
 
 def estimate_initial_guesses_5param(bills_temps: pd.DataFrame) -> list[float]:
-    temps = bills_temps["avg_temp"].to_numpy()
     usage = bills_temps["daily_consumption"].to_numpy()
     # Estimate baseload by taking the 10th percentile of usage data
     b1 = np.percentile(usage, 10)  # TODO: There might be a better way to estimate baseload
+    slope = 5200  # Assumes BLC of 650 Btu/hr-F for 8 hours of operation
 
-    # Heating slope (b2) and balance point (b4)
-    cold_mask = temps < np.median(temps)
-    cold_temps = temps[cold_mask]
-    cold_usage = usage[cold_mask]
-    b4 = 65  # TODO: There might be a better way to estimate balance point
-    heating_slope = -abs((np.max(cold_usage) - b1) / (b4 - np.min(cold_temps) + 1e-6))
-    b2 = heating_slope
+    # Heating slope (b2) and balance temperature (b4)
+    b2 = -abs(slope)
 
-    # Cooling slope (b3) and balance point (b5)
-    hot_mask = temps > np.median(temps)
-    hot_temps = temps[hot_mask]
-    hot_usage = usage[hot_mask]
-    b5 = 70  # TODO: There might be a better way to estimate balance point
-    cooling_slope = max((np.max(hot_usage) - b1) / (np.max(hot_temps) - b5 + 1e-6), 1.0)
-    b3 = cooling_slope
+    # Cooling slope (b3) and balance temperature
+    b3 = slope
 
-    return [b1, b2, b3, b4, b5]
+    # Balance temperature (b4) and delta heating and cooling balance temperatures (delta)
+    b4 = 65
+    delta = 10
+
+    return [b1, b2, b3, b4, delta]
+
+
+def estimate_bounds_3param(model_type: str, bills_temps: pd.DataFrame) -> Bounds:
+    usage = bills_temps["daily_consumption"].to_numpy()
+    baseload_lb = np.min(usage)
+    slope = 7800  # Assumes BLC of 650 Btu/hr-F for 8 hours of operation, with a +50% buffer
+
+    if model_type == "heating":
+        heating_slope_lb = -abs(slope)
+
+        return Bounds(lb=[baseload_lb, heating_slope_lb, 30.0], ub=[np.inf, 0.0, 75.0])
+
+    elif model_type == "cooling":
+        cooling_slope_ub = slope
+
+        return Bounds(lb=[baseload_lb, 0.0, 30.0], ub=[np.inf, cooling_slope_ub, 75.0])
+    else:
+        raise ValueError("Unknown model type")
+
+
+def estimate_bounds_5param(bills_temps: pd.DataFrame) -> Bounds:
+    usage = bills_temps["daily_consumption"].to_numpy()
+    baseload_lb = np.min(usage)
+    slope = 7800  # Assumes BLC of 650 Btu/hr-F for 8 hours of operation, with a +50% buffer
+
+    # Heating slope lower bound
+    heating_slope_lb = -abs(slope)
+
+    # Cooling slope upper bound
+    cooling_slope_ub = slope
+
+    return Bounds(
+        lb=[baseload_lb, heating_slope_lb, 0.0, 30.0, 0.0],
+        ub=[np.inf, 0.0, cooling_slope_ub, 65.0, 30.0],
+    )
 
 
 class ThreeParameterCooling(UtilityBillRegressionModel):
@@ -134,12 +161,11 @@ class ThreeParameterCooling(UtilityBillRegressionModel):
 
     def __init__(self):
         super().__init__()
-        self.BOUNDS = Bounds(lb=[0.0, 0.0, 40.0], ub=[np.inf, np.inf, 90.0])
         self.XSCALE = np.array([5000.0, 1000.0, 1.0])
-        self.INITIAL_GUESSES = []
 
     def fit(self, bills_temps: pd.DataFrame) -> None:
-        self.INITIAL_GUESSES = estimate_initial_guesses("cooling", bills_temps)
+        self.INITIAL_GUESSES = estimate_initial_guesses_3param("cooling", bills_temps)
+        self.BOUNDS = estimate_bounds_3param("cooling", bills_temps)
         super().fit(bills_temps)
 
     def func(
@@ -168,12 +194,11 @@ class ThreeParameterHeating(UtilityBillRegressionModel):
 
     def __init__(self):
         super().__init__()
-        self.BOUNDS = Bounds(lb=[0.0, -np.inf, 40.0], ub=[np.inf, 0.0, 90.0])
         self.XSCALE = np.array([5000.0, 1000.0, 1.0])
-        self.INITIAL_GUESSES = []
 
     def fit(self, bills_temps: pd.DataFrame) -> None:
-        self.INITIAL_GUESSES = estimate_initial_guesses("heating", bills_temps)
+        self.INITIAL_GUESSES = estimate_initial_guesses_3param("heating", bills_temps)
+        self.BOUNDS = estimate_bounds_3param("heating", bills_temps)
         super().fit(bills_temps)
 
     def func(
@@ -202,14 +227,11 @@ class FiveParameter(UtilityBillRegressionModel):
 
     def __init__(self):
         super().__init__()
-        self.BOUNDS = Bounds(
-            lb=[0.0, -np.inf, 0.0, 40.0, 40.0], ub=[np.inf, 0.0, np.inf, 90.0, 90.0]
-        )
         self.XSCALE = np.array([5000.0, 1000.0, 1000.0, 1.0, 1.0])
-        self.INITIAL_GUESSES = []
 
     def fit(self, bills_temps: pd.DataFrame) -> None:
         self.INITIAL_GUESSES = estimate_initial_guesses_5param(bills_temps)
+        self.BOUNDS = estimate_bounds_5param(bills_temps)
         super().fit(bills_temps)
 
     def func(
@@ -219,15 +241,17 @@ class FiveParameter(UtilityBillRegressionModel):
         b2: float | np.floating,
         b3: float | np.floating,
         b4: float | np.floating,
-        b5: float | np.floating,
+        delta: float | np.floating,
     ) -> np.ndarray:
         x_arr = np.array(x)
+        b5 = b4 + np.abs(delta) + 10  # heating balance temperature to be at least 10F higher
         return b1 + b2 * np.minimum(x_arr - b4, 0) + b3 * np.maximum(x_arr - b5, 0)
 
     def predict_disaggregated(self, temperatures: Sequence[float] | np.ndarray) -> pd.DataFrame:
         temperatures_arr = np.array(temperatures)
-        b1, b2, b3, b4, b5 = self.parameters  # unpack the parameters
+        b1, b2, b3, b4, delta = self.parameters  # unpack the parameters
         heating = b2 * np.minimum(temperatures_arr - b4, 0)
+        b5 = b4 + np.abs(delta) + 10
         cooling = b3 * np.maximum(temperatures_arr - b5, 0)
         baseload = np.ones_like(temperatures_arr, dtype=float) * b1
         return pd.DataFrame({"baseload": baseload, "heating": heating, "cooling": cooling})
