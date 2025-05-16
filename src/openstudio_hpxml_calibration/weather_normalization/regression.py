@@ -112,7 +112,7 @@ def estimate_initial_guesses_5param(bills_temps: pd.DataFrame) -> list[float]:
     select_cold_temps = temps < np.median(temps)
     cold_temps = temps[select_cold_temps]
     cold_usage = usage[select_cold_temps]
-    b4 = 65  # TODO: There might be a better way to estimate balance point
+    b4 = 55  # TODO: There might be a better way to estimate balance point
     heating_slope = -abs((np.max(cold_usage) - b1) / (b4 - np.min(cold_temps) + 1e-6))
     b2 = heating_slope
 
@@ -251,7 +251,7 @@ class FiveParameter(UtilityBillRegressionModel):
             constraints=constraints,
             options={
                 "verbose": 1,
-                "maxiter": 5000,
+                "maxiter": 20000,
             },
         )
         if not result.success:
