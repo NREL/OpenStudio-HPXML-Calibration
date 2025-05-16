@@ -3,7 +3,7 @@ from collections.abc import Sequence
 
 import numpy as np
 import pandas as pd
-from scipy.optimize import Bounds, curve_fit
+from scipy.optimize import Bounds, curve_fit, minimize
 
 
 class UtilityBillRegressionModel:
@@ -229,7 +229,33 @@ class FiveParameter(UtilityBillRegressionModel):
         self.INITIAL_GUESSES = estimate_initial_guesses_5param(bills_temps)
         self.BOUNDS = estimate_bounds_5param(bills_temps)
         self.XSCALE = np.array([5000.0, 1000.0, 1000.0, 1.0, 1.0])
-        super().fit(bills_temps)
+
+        x = bills_temps["avg_temp"].to_numpy()
+        y = bills_temps["daily_consumption"].to_numpy()
+
+        def objective(params):
+            return np.sum((self.func(x, *params) - y) ** 2)
+
+        # Contrain the heating and cooling balance temps to differ by more than 10
+        constraints = {
+            "type": "ineq",
+            "fun": lambda params: params[4] - params[3] - 10,
+        }
+
+        bounds = list(zip(self.BOUNDS.lb, self.BOUNDS.ub))
+        result = minimize(
+            objective,
+            self.INITIAL_GUESSES,
+            method="trust-constr",  # trust-constr supports both bounds and constraints
+            bounds=bounds,
+            constraints=constraints,
+            options={"verbose": 1},
+        )
+        if not result.success:
+            raise RuntimeError(f"Optimization failed: {result.message}")
+
+        self.parameters = result.x
+        self.pcov = None  # scipy.optimize.minimize doesn't calculate it
 
     def func(
         self,
