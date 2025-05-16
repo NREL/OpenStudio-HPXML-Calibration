@@ -120,7 +120,7 @@ def estimate_initial_guesses_5param(bills_temps: pd.DataFrame) -> list[float]:
     select_hot_temps = temps > np.median(temps)
     hot_temps = temps[select_hot_temps]
     hot_usage = usage[select_hot_temps]
-    b5 = 70  # TODO: There might be a better way to estimate balance point
+    b5 = 65  # TODO: There might be a better way to estimate balance point
     cooling_slope = max((np.max(hot_usage) - b1) / (np.max(hot_temps) - b5 + 1e-6), 1.0)
     b3 = cooling_slope
 
@@ -236,10 +236,10 @@ class FiveParameter(UtilityBillRegressionModel):
         def objective(params):
             return np.sum((self.func(x, *params) - y) ** 2)
 
-        # Contrain the heating and cooling balance temps to differ by more than 10
+        # Contrain the heating and cooling balance temps to differ by more than 5
         constraints = {
             "type": "ineq",
-            "fun": lambda params: params[4] - params[3] - 10,
+            "fun": lambda params: params[4] - params[3] - 5,
         }
 
         bounds = list(zip(self.BOUNDS.lb, self.BOUNDS.ub))
@@ -249,7 +249,10 @@ class FiveParameter(UtilityBillRegressionModel):
             method="trust-constr",  # trust-constr supports both bounds and constraints
             bounds=bounds,
             constraints=constraints,
-            options={"verbose": 1},
+            options={
+                "verbose": 1,
+                "maxiter": 5000,
+            },
         )
         if not result.success:
             raise RuntimeError(f"Optimization failed: {result.message}")
