@@ -42,7 +42,7 @@ def check_bpi2400_utility_bill_validity(
 
     criteria_config_path = Path(__file__).resolve().parent.parent / "config.yaml"
     criteria_config = load_config(criteria_config_path)
-    min_n_days = criteria_config.get("bpi2400_utility_bill_criteria", {}).get("minimum_n_days", 330)
+    min_n_days = criteria_config.get("bpi2400_utility_bill_criteria", {}).get("min_n_days", 330)
 
     for fuel_type, bill_by_fuel in bills.items():
         bills_temps = join_bills_weather(bill_by_fuel, lat, lon)
