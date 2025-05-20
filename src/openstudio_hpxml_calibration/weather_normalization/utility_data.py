@@ -1,12 +1,86 @@
 import datetime as dt
 import warnings
+from pathlib import Path
 
 import eeweather
 import numpy as np
 import pandas as pd
+import yaml
 from lxml import objectify
 
 from openstudio_hpxml_calibration.hpxml import HpxmlDoc
+
+
+def load_config(config_path: str):
+    with open(config_path) as file:
+        return yaml.safe_load(file)
+
+
+# def get_hdd_for_period(start_date: pd.Timestamp, end_date: pd.Timestamp) -> float:
+#     hdd_total = 0
+#     for date in pd.date_range(start=start_date, end=end_date):
+#         hdd_total += get_daily_hdd(date)
+#     return hdd_total
+
+
+# def get_cdd_for_period(start_date: pd.Timestamp, end_date: pd.Timestamp) -> float:
+#     cdd_total = 0
+#     for date in pd.date_range(start=start_date, end=end_date):
+#         cdd_total += get_daily_cdd(date)
+#     return cdd_total
+
+
+def check_bpi2400_utility_bill_validity(
+    hpxml: HpxmlDoc, bills: tuple[dict[str, pd.DataFrame]], building_id: str | None = None
+) -> bool:
+    if building_id is None:
+        building_id = hpxml.get_first_building_id()
+    heating_fuels, cooling_fuels = hpxml.get_fuel_types(building_id)
+    epw_data, epw_metadata = hpxml.get_epw_data(building_id)
+    # epw_data['temp_air']  # deg C
+    lat, lon = get_lat_lon_from_hpxml(hpxml)
+
+    criteria_config_path = Path(__file__).resolve().parent.parent / "config.yaml"
+    criteria_config = load_config(criteria_config_path)
+    min_n_days = criteria_config.get("bpi2400_utility_bill_criteria", {}).get("minimum_n_days", 330)
+
+    for fuel_type, bill_by_fuel in bills.items():
+        bills_temps = join_bills_weather(bill_by_fuel, lat, lon)
+        total_n_days = sum(bills_temps["n_days"])
+        if total_n_days >= min_n_days:
+            continue
+        # elif total_days >= 183:
+        #     hdd65 = get_hdd65(bill)
+        #     cdd65 = get_cdd65(bill)
+        #     hdd_per_day_low = 0.2 * (hdd65 / 365)
+        #     hdd_per_day_high = 1.2 * (hdd65 / 365)
+        #     cdd_per_day_low = 0.2 * (cdd65 / 365)
+        #     cdd_per_day_high = 1.2 * (cdd65 / 365)
+
+        #     for _, row in bill.iterrows():
+        #         period_start = row["start_date"]
+        #         period_end = row["end_date"]
+        #         period_days = (period_end - period_start).days
+
+        #         if period_days == 0:
+        #             return False
+
+        #         hdd = get_hdd_for_period(period_start, period_end)
+        #         cdd = get_cdd_for_period(period_start, period_end)
+
+        #         if fuel_type in heating_fuels:
+        #             hdd_per_day = hdd / period_days
+        #             if not (hdd_per_day_low <= hdd_per_day <= hdd_per_day_high):
+        #                 return False
+
+        #         if fuel_type in cooling_fuels:
+        #             cdd_per_day = cdd / period_days
+        #             if not (cdd_per_day_low <= cdd_per_day <= cdd_per_day_high):
+        #                 return False
+        else:
+            return False
+
+    return True
 
 
 def get_datetime_subel(el: objectify.ObjectifiedElement, subel_name: str) -> pd.Timestamp | None:

@@ -111,3 +111,15 @@ def test_curve_fit(results_dir, filename):
         json_path = results_dir / "weather_normalization" / f"{filename.stem}_{fuel_type}.json"
         with open(json_path, "w") as f:
             json.dump(individual_result, f, indent=2)
+
+
+@pytest.mark.parametrize(
+    "filename", ira_rebate_hpxmls + real_home_hpxmls + ihmh_home_hpxmls, ids=lambda x: x.stem
+)
+def test_bpi2400_utility_bill_validity(filename):
+    hpxml = HpxmlDoc(filename)
+    bills_by_fuel_type, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
+    bpi2400_utility_bill_validity = ud.check_bpi2400_utility_bill_validity(
+        hpxml, bills_by_fuel_type
+    )
+    assert bpi2400_utility_bill_validity

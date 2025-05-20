@@ -1,6 +1,7 @@
 import functools
 import os
 import re
+from contextlib import suppress
 from pathlib import Path
 
 import pandas as pd
@@ -101,6 +102,44 @@ class HpxmlDoc:
             return self.xpath("h:Building[h:BuildingID/@id=$building_id]", building_id=building_id)[
                 0
             ]
+
+    def get_fuel_types(self, building_id: str | None = None) -> tuple[list[str], list[str]]:
+        """Get fuel types providing heating or cooling
+
+        :param building_id: The id of the Building to retrieve, gets first one if missing
+        :type building_id: str
+        :return: lists of fuel types provide heating and cooling
+        :rtype: tuple[list[str], list[str]]
+        """
+        fuel_provides_heating = set()
+        fuel_provides_cooling = set()
+
+        building = self.get_building(building_id)
+        heating_fuels = []
+        heatpump_fuels = []
+        cooling_fuels = []
+        with suppress(AttributeError):
+            heating_fuels.append(
+                building.BuildingDetails.Systems.HVAC.HVACPlant.HeatingSystem.HeatingSystemFuel.text
+            )  # TODO: Can it handle a case where there are multiple heating systems?
+            heatpump_fuels.append(
+                building.BuildingDetails.Systems.HVAC.HVACPlant.HeatPump.HeatPumpFuel.text
+            )
+            heatpump_fuels.append(
+                building.BuildingDetails.Systems.HVAC.HVACPlant.HeatPump.BackupSystemFuel.text
+            )  # TODO: Need to capture fuel used for integrated AC?
+            cooling_fuels.append(
+                building.BuildingDetails.Systems.HVAC.HVACPlant.CoolingSystem.CoolingSystemFuel.text
+            )
+
+        for heating_fuel in heating_fuels:
+            fuel_provides_heating.add(heating_fuel.strip())
+        for heatpump_fuel in heatpump_fuels:
+            fuel_provides_heating.add(heatpump_fuel.strip())
+        for cooling_fuel in cooling_fuels:
+            fuel_provides_cooling.add(cooling_fuel.strip())
+
+        return list(fuel_provides_heating), list(fuel_provides_cooling)
 
     @functools.cache
     def get_epw_path(self, building_id: str | None = None) -> Path:
