@@ -47,10 +47,17 @@ def get_bills_from_hpxml(
 
     bills_by_fuel_type = {}
     bill_units = {}
-    for cons_info in hpxml.xpath(
-        "h:Consumption[h:BuildingID/@idref=$building_id]/h:ConsumptionDetails/h:ConsumptionInfo",
+
+    consumptions = hpxml.xpath(
+        "h:Consumption[h:BuildingID/@idref=$building_id]",
         building_id=building_id,
-    ):
+    )
+    if not consumptions:
+        raise ValueError(
+            f"No matching Consumption/BuildingID/@idref equal to Building/BuildingID/@id={building_id} was found in HPXML."
+        )
+    for consumption in consumptions:
+        cons_info = consumption.ConsumptionDetails.ConsumptionInfo
         fuel_type = FuelType(cons_info.ConsumptionType.Energy.FuelType)
         bill_units[fuel_type] = EnergyUnitType(cons_info.ConsumptionType.Energy.UnitofMeasure)
         rows = []
