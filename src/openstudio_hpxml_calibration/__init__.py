@@ -52,7 +52,7 @@ def run_sim(
     output_dir: str
         Output directory to save simulation results dir. Default is HPXML file dir.
     granularity: str
-        Granularity of simulation results. Default is annual.
+        Granularity of simulation results. Annual results returned if not provided.
     """
     run_simulation_command = [
         "openstudio",

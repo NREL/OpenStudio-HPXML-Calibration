@@ -5,7 +5,6 @@ class Granularity(str, Enum):
     HOURLY = "hourly"
     DAILY = "daily"
     MONTHLY = "monthly"
-    ANNUAL = "annual"
 
 
 class Format(str, Enum):
