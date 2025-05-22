@@ -78,9 +78,9 @@ def test_curve_fit(results_dir, filename):
     successful_fits = 0  # Track number of successful fits
 
     for fuel_type, bills in inv_model.bills_by_fuel_type.items():
-        if bills.shape[0] < 10:
-            # Rudimentary check for delivered fuels.
-            continue
+        # if bills.shape[0] < 10:
+        #     # Rudimentary check for delivered fuels.
+        #     continue
         model = inv_model.get_model(fuel_type)
         bills_temps = inv_model.bills_weather_by_fuel_type_in_btu[fuel_type]
         temps_range = np.linspace(bills_temps["avg_temp"].min(), bills_temps["avg_temp"].max(), 500)
@@ -121,8 +121,7 @@ def test_curve_fit(results_dir, filename):
 
         successful_fits += 1
 
-    # TODO: Reinstate this check. Failures are occurring for homes with billing periods under 10
-    # assert successful_fits > 0, f"No successful regression fits for {filename.stem}_{fuel_type.value}"
+    assert successful_fits > 0, f"No successful regression fits for {filename.stem}_{fuel_type.value}"
 
 
 def test_normalize_consumption_to_epw():
