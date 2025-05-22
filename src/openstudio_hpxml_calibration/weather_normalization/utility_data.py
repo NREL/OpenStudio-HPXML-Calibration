@@ -57,26 +57,27 @@ def get_bills_from_hpxml(
             f"No matching Consumption/BuildingID/@idref equal to Building/BuildingID/@id={building_id} was found in HPXML."
         )
     for consumption in consumptions:
-        cons_info = consumption.ConsumptionDetails.ConsumptionInfo
-        fuel_type = FuelType(cons_info.ConsumptionType.Energy.FuelType)
-        bill_units[fuel_type] = EnergyUnitType(cons_info.ConsumptionType.Energy.UnitofMeasure)
-        rows = []
-        for el in cons_info.ConsumptionDetail:
-            rows.append(
-                [
-                    get_datetime_subel(el, "StartDateTime"),
-                    get_datetime_subel(el, "EndDateTime"),
-                    float(el.Consumption),
-                ]
-            )
-        bills = pd.DataFrame.from_records(rows, columns=["start_date", "end_date", "consumption"])
-        if pd.isna(bills["end_date"]).all():
-            bills["end_date"] = bills["start_date"].shift(-1)
-        if pd.isna(bills["start_date"]).all():
-            bills["start_date"] = bills["end_date"].shift(1)
-        bills["start_date"] = bills["start_date"].dt.tz_localize(local_standard_tz)
-        bills["end_date"] = bills["end_date"].dt.tz_localize(local_standard_tz)
-        bills_by_fuel_type[fuel_type] = bills
+        cons_infos = consumption.xpath("h:ConsumptionDetails/h:ConsumptionInfo", namespaces=hpxml.ns)
+        for cons_info in cons_infos:
+            fuel_type = FuelType(cons_info.ConsumptionType.Energy.FuelType)
+            bill_units[fuel_type] = EnergyUnitType(cons_info.ConsumptionType.Energy.UnitofMeasure)
+            rows = []
+            for el in cons_info.ConsumptionDetail:
+                rows.append(
+                    [
+                        get_datetime_subel(el, "StartDateTime"),
+                        get_datetime_subel(el, "EndDateTime"),
+                        float(el.Consumption),
+                    ]
+                )
+            bills = pd.DataFrame.from_records(rows, columns=["start_date", "end_date", "consumption"])
+            if pd.isna(bills["end_date"]).all():
+                bills["end_date"] = bills["start_date"].shift(-1)
+            if pd.isna(bills["start_date"]).all():
+                bills["start_date"] = bills["end_date"].shift(1)
+            bills["start_date"] = bills["start_date"].dt.tz_localize(local_standard_tz)
+            bills["end_date"] = bills["end_date"].dt.tz_localize(local_standard_tz)
+            bills_by_fuel_type[fuel_type] = bills
 
     return bills_by_fuel_type, bill_units, local_standard_tz
 
