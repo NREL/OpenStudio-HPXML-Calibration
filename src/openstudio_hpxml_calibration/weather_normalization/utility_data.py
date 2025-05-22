@@ -57,7 +57,9 @@ def get_bills_from_hpxml(
             f"No matching Consumption/BuildingID/@idref equal to Building/BuildingID/@id={building_id} was found in HPXML."
         )
     for consumption in consumptions:
-        cons_infos = consumption.xpath("h:ConsumptionDetails/h:ConsumptionInfo", namespaces=hpxml.ns)
+        cons_infos = consumption.xpath(
+            "h:ConsumptionDetails/h:ConsumptionInfo", namespaces=hpxml.ns
+        )
         for cons_info in cons_infos:
             fuel_type = FuelType(cons_info.ConsumptionType.Energy.FuelType)
             bill_units[fuel_type] = EnergyUnitType(cons_info.ConsumptionType.Energy.UnitofMeasure)
@@ -70,7 +72,9 @@ def get_bills_from_hpxml(
                         float(el.Consumption),
                     ]
                 )
-            bills = pd.DataFrame.from_records(rows, columns=["start_date", "end_date", "consumption"])
+            bills = pd.DataFrame.from_records(
+                rows, columns=["start_date", "end_date", "consumption"]
+            )
             if pd.isna(bills["end_date"]).all():
                 bills["end_date"] = bills["start_date"].shift(-1)
             if pd.isna(bills["start_date"]).all():

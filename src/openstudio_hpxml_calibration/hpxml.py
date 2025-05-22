@@ -86,7 +86,7 @@ class HpxmlDoc:
         self.file_path = Path(filename).resolve()
         self.tree = objectify.parse(str(filename))
         self.root = self.tree.getroot()
-        self.ns = {'h': self.root.nsmap.get('h', self.root.nsmap.get(None))}
+        self.ns = {"h": self.root.nsmap.get("h", self.root.nsmap.get(None))}
 
         if validate_schema:
             hpxml_schema_filename = (
