@@ -28,4 +28,4 @@ There's a Dev Container configuration in this repo which installs all the necess
 
 ## Testing
 
-Can be run with `uv run pytest` from the repo root.
+Can be run with `uv run pytest` from the repo root. (If you need to restrict the number of concurrent workers, you can use e.g. `uv run pytest -n <NUM>`.)
