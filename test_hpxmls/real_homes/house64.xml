@@ -752,7 +752,7 @@
     </ConsumptionDetails>
   </Consumption>
   <Consumption>
-    <BuildingID idref='Building1'/>
+    <BuildingID idref='bldg1'/>
     <CustomerID/>
     <ConsumptionDetails>
       <ConsumptionInfo>
