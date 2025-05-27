@@ -23,8 +23,8 @@ def test_calibrate_normalizes_bills_to_weather(test_data) -> None:
     foo = Calibrate(original_hpxml_filepath=test_data["sample_xml_file"])
     normalized_usage = foo.get_normalized_consumption_per_bill()
     for fuel_type, normalized_consumption in normalized_usage.items():
-        print(fuel_type)
-        print(normalized_consumption)
+        # print(fuel_type)
+        # print(normalized_consumption)
         assert normalized_consumption.shape == (12, 5)
         # Assert that baseload has 12 non-zero values
         assert not pd.isna(normalized_consumption["baseload"]).any()
@@ -34,14 +34,14 @@ def test_calibrate_normalizes_bills_to_weather(test_data) -> None:
 def test_get_model_results(test_data) -> None:
     foo = Calibrate(original_hpxml_filepath=test_data["sample_xml_file"])
     simulation_results = foo.get_model_results(
-        daily_json_results_path=Path(test_data["timeseries_json_results_path"])
+        json_results_path=Path(test_data["annual_json_results_path"])
     )
     for fuel_type, disagg_results in simulation_results.items():
         # assert that this string is one of the keys in the disaggregated results
-        print(fuel_type)
-        print(len(disagg_results))
-        print(disagg_results)
-        assert [s for s in disagg_results if "heating_energy" in s]
+        # print(fuel_type)
+        # print(len(disagg_results))
+        # print(disagg_results)
+        assert [s for s in disagg_results if "heating" in s]
         # assert False is True
 
 
@@ -49,9 +49,11 @@ def test_compare_results(test_data):
     foo = Calibrate(original_hpxml_filepath=test_data["sample_xml_file"])
     normalized_usage = foo.get_normalized_consumption_per_bill()
     simulation_results = foo.get_model_results(
-        daily_json_results_path=Path(test_data["timeseries_json_results_path"])
+        json_results_path=Path(test_data["annual_json_results_path"])
     )
-    foo.compare_results(normalized_consumption=normalized_usage, model_results=simulation_results)
+    foo.compare_results(
+        normalized_consumption=normalized_usage, annual_model_results=simulation_results
+    )
     # for fuel_type, comparison in results_comparison.items():
     #     print(fuel_type)
     #     print(comparison["model_results"].keys())
