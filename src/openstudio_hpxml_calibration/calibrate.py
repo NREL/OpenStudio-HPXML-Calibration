@@ -242,8 +242,21 @@ class Calibrate:
             annual_model_results (dict): Model results data (mbtu)
 
         Returns:
-            dict: A dictionary containing the comparison results. Bias Error is expressed as a percentage, and Absolute Error is in mbtu.
+            dict: A dictionary containing the comparison results:
+            "{
+                <fuel_type>: {
+                    "Bias Error": {
+                        <load_type>: <percentage error>
+                    },
+                    "Absolute Error": {
+                        <load_type>: <error in mbtu or kWh>
+                    }
+                },
+                <fuel_type>: {...}
+            }"
         """
+
+        # TODO: prevent double-calculating when running multiple times in the same kernel session
 
         # Build annual normalized bill consumption dicts
         annual_normalized_bill_consumption = {}
