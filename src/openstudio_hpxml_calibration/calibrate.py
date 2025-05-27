@@ -264,7 +264,7 @@ class Calibrate:
             annual_normalized_bill_consumption[fuel_type] = {}
             for end_use in ["heating", "cooling", "baseload"]:
                 annual_normalized_bill_consumption[fuel_type][end_use] = (
-                    consumption[end_use].sum().round(3)
+                    consumption[end_use].sum().round(1)
                 )
 
         comparison_results = {}
@@ -300,14 +300,14 @@ class Calibrate:
                             / annual_normalized_bill_consumption[model_fuel_type][load_type]
                         )
                         * 100,
-                        3,
+                        1,
                     )
                     comparison_results[model_fuel_type]["Absolute Error"][load_type] = round(
                         abs(
                             annual_normalized_bill_consumption[model_fuel_type][load_type]
                             - disagg_results[load_type]
                         ),
-                        3,
+                        1,
                     )
                     if (
                         abs(comparison_results[model_fuel_type]["Bias Error"][load_type])
