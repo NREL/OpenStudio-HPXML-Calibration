@@ -75,5 +75,6 @@ ignore = [
 
 [lint.per-file-ignores]
 "tests/*" = ["S101", "S607", "S603"] # assert statements are allowed in tests, and paths are safe
+"calibrate_playground.py" = ["N803"] # allow non-lowercase variable in function name
 
 # [lint.pylint]
