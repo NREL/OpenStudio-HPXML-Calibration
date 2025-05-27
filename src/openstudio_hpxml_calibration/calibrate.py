@@ -1,6 +1,5 @@
 import json
 import logging
-from ast import literal_eval
 from pathlib import Path
 
 import pandas as pd
@@ -22,7 +21,7 @@ class Calibrate:
         Get the normalized consumption for the building.
 
         Returns:
-            dict: A dictionary containing the normalized daily consumption for each fuel type, in kbtu.
+            dict: A dictionary containing dataframes for the normalized consumption by end use and fuel type, in mbtu.
         """
 
         normalized_consumption = {}
@@ -37,11 +36,11 @@ class Calibrate:
                 end = row["end_day_of_year"]
 
                 if start <= end:
-                    subset = epw_daily.iloc[start:end].sum()
+                    subset = epw_daily_mbtu.iloc[start:end].sum()
                 else:
                     # handle bills that wrap around the end of the year
-                    part1 = epw_daily.iloc[start:].sum()
-                    part2 = epw_daily.iloc[0:end].sum()
+                    part1 = epw_daily_mbtu.iloc[start:].sum()
+                    part2 = epw_daily_mbtu.iloc[0:end].sum()
                     subset = pd.concat(objs=[part1, part2])
                     subset = subset[~subset.index.duplicated()]
 
@@ -51,6 +50,8 @@ class Calibrate:
                 x=self.inv_model.predict_epw_daily(fuel_type=fuel_type), from_="btu", to_="kbtu"
             )
 
+            epw_daily_mbtu = convert_units(epw_daily, from_="kbtu", to_="mbtu")
+
             normalized_consumption[fuel_type.value] = pd.DataFrame(
                 data=bills.apply(_calculate_wrapped_total, axis=1)
             )
@@ -59,7 +60,7 @@ class Calibrate:
 
         return normalized_consumption
 
-    def get_model_results(self, daily_json_results_path: Path) -> dict[str, pd.DataFrame]:
+    def get_model_results(self, json_results_path: Path) -> dict[str, dict[str, float]]:
         """
         Retrieve annual energy usage from the HPXML model.
 
@@ -70,140 +71,171 @@ class Calibrate:
             dict[str, pd.DataFrame]: A dict of dataframes containing the model results for each fuel type by end use
         """
 
-        daily_results = json.loads(daily_json_results_path.read_text())
+        results = json.loads(json_results_path.read_text())
+        if "Time" in results:
+            raise ValueError(f"your file {json_results_path} is not an annual results file")
 
-        model_output = {}
-        for fuel_type, bills in self.inv_model.bills_by_fuel_type.items():
-            bill_dates = list(zip(bills["start_day_of_year"], bills["end_day_of_year"]))
-            model_output[fuel_type.value] = {}
-            for bill in bill_dates:
-                # bill is a tuple of start_day_of_year and end_day_of_year of utility bill
-                model_output[fuel_type.value][f"{bill}"] = {}
-                for end_use, consumption_list in daily_results["End Use"].items():
-                    if "Heating" in end_use:
-                        if "heating_energy" in model_output[fuel_type.value][f"{bill}"]:
-                            if bill[0] > bill[1]:
-                                # handle bills that wrap around the end of the year
-                                model_output[fuel_type.value][f"{bill}"]["heating_energy"] += sum(
-                                    consumption_list[bill[0] : len(consumption_list)]
-                                )
-                                model_output[fuel_type.value][f"{bill}"]["heating_energy"] += sum(
-                                    consumption_list[0 : bill[1]]
-                                )
-                            else:
-                                model_output[fuel_type.value][f"{bill}"]["heating_energy"] += sum(
-                                    consumption_list[bill[0] : bill[1]]
-                                )
-                        else:  # noqa: PLR5501
-                            if bill[0] > bill[1]:
-                                # handle bills that wrap around the end of the year
-                                model_output[fuel_type.value][f"{bill}"]["heating_energy"] = sum(
-                                    consumption_list[bill[0] : len(consumption_list)]
-                                ) + sum(consumption_list[0 : bill[1]])
-                            else:
-                                model_output[fuel_type.value][f"{bill}"]["heating_energy"] = sum(
-                                    consumption_list[bill[0] : bill[1]]
-                                )
-                    elif "Cooling" in end_use:
-                        if "cooling_energy" in model_output[fuel_type.value][f"{bill}"]:
-                            if bill[0] > bill[1]:
-                                # handle bills that wrap around the end of the year
-                                model_output[fuel_type.value][f"{bill}"]["cooling_energy"] += sum(
-                                    consumption_list[bill[0] : len(consumption_list)]
-                                )
-                                model_output[fuel_type.value][f"{bill}"]["cooling_energy"] += sum(
-                                    consumption_list[0 : bill[1]]
-                                )
-                            else:
-                                model_output[fuel_type.value][f"{bill}"]["cooling_energy"] += sum(
-                                    consumption_list[bill[0] : bill[1]]
-                                )
-                        else:  # noqa: PLR5501
-                            if bill[0] > bill[1]:
-                                # handle bills that wrap around the end of the year
-                                model_output[fuel_type.value][f"{bill}"]["cooling_energy"] = sum(
-                                    consumption_list[bill[0] : len(consumption_list)]
-                                ) + sum(consumption_list[0 : bill[1]])
-                            else:
-                                model_output[fuel_type.value][f"{bill}"]["cooling_energy"] = sum(
-                                    consumption_list[bill[0] : bill[1]]
-                                )
-                    # elif "Hot Water" in end_use:
-                    #     if "hot_water_energy" in model_output[fuel_type.value][f"{bill}"]:
-                    #         model_output[fuel_type.value][f"{bill}"]["hot_water_energy"] += sum(
-                    #             consumption_list[bill[0] : bill[1]]
-                    #         )
-                    #     else:
-                    #         model_output[fuel_type.value][f"{bill}"]["hot_water_energy"] = sum(
-                    #             consumption_list[bill[0] : bill[1]]
-                    #         )
-                    # elif "Lighting" in end_use:
-                    #     if "lighting_energy" in model_output[fuel_type.value][f"{bill}"]:
-                    #         model_output[fuel_type.value][f"{bill}"]["lighting_energy"] += sum(
-                    #             consumption_list[bill[0] : bill[1]]
-                    #         )
-                    #     else:
-                    #         model_output[fuel_type.value][f"{bill}"]["lighting_energy"] = sum(
-                    #             consumption_list[bill[0] : bill[1]]
-                    #         )
-                    else:  # noqa: PLR5501
-                        if "other_energy" in model_output[fuel_type.value][f"{bill}"]:
-                            if bill[0] > bill[1]:
-                                # handle bills that wrap around the end of the year
-                                model_output[fuel_type.value][f"{bill}"]["other_energy"] += sum(
-                                    consumption_list[bill[0] : len(consumption_list)]
-                                )
-                                model_output[fuel_type.value][f"{bill}"]["other_energy"] += sum(
-                                    consumption_list[0 : bill[1]]
-                                )
-                            else:
-                                model_output[fuel_type.value][f"{bill}"]["other_energy"] += sum(
-                                    consumption_list[bill[0] : bill[1]]
-                                )
-                        else:  # noqa: PLR5501
-                            if bill[0] > bill[1]:
-                                # handle bills that wrap around the end of the year
-                                model_output[fuel_type.value][f"{bill}"]["other_energy"] = sum(
-                                    consumption_list[bill[0] : len(consumption_list)]
-                                ) + sum(consumption_list[0 : bill[1]])
-                            else:
-                                model_output[fuel_type.value][f"{bill}"]["other_energy"] = sum(
-                                    consumption_list[bill[0] : bill[1]]
-                                )
+        model_output = {
+            "Electricity": {},
+            "Natural Gas": {},
+            "Propane": {},
+            "Fuel Oil": {},
+            "Wood Cord": {},
+            "Wood Pellets": {},
+            "Coal": {},
+        }
 
-        model_output_dfs = {}
-        for fuel_type, monthly_usage in model_output.items():
-            monthly_usage_df = pd.DataFrame(monthly_usage)
-            rows = []
-            for col in monthly_usage_df.columns:
-                # Parse the column name to get start_date and end_date
-                start_date, end_date = literal_eval(col)
-                row = {
-                    "heating_energy": monthly_usage_df.loc["heating_energy", col],
-                    "cooling_energy": monthly_usage_df.loc["cooling_energy", col],
-                    "other_energy": monthly_usage_df.loc["other_energy", col],
-                    "start_date": start_date,
-                    "end_date": end_date,
-                }
-                rows.append(row)
+        for end_use, consumption in results["End Use"].items():
+            fuel_type = end_use.split(":")[0]
+            if "Heating" in end_use:
+                model_output[fuel_type]["heating_energy_mbtu"] = (
+                    model_output[fuel_type].get("heating_energy_mbtu", 0) + consumption
+                )
+            elif "Cooling" in end_use:
+                model_output[fuel_type]["cooling_energy_mbtu"] = (
+                    model_output[fuel_type].get("cooling_energy_mbtu", 0) + consumption
+                )
+            else:
+                model_output[fuel_type]["baseload_energy_mbtu"] = (
+                    model_output[fuel_type].get("baseload_energy_mbtu", 0) + consumption
+                )
 
-            reshaped_df = pd.DataFrame(
-                rows,
-                columns=[
-                    "heating_energy",
-                    "cooling_energy",
-                    "other_energy",
-                    "start_date",
-                    "end_date",
-                ],
-            ).reset_index(drop=True)
-            model_output_dfs[f"{fuel_type}_df"] = reshaped_df
+        # results = json.loads(json_results_path.read_text())
+        # # if "Time" in results:
+        # #     daily_results = results
+        # model_output = {}
+        # for fuel_type, bills in self.inv_model.bills_by_fuel_type.items():
+        #     bill_dates = list(zip(bills["start_day_of_year"], bills["end_day_of_year"]))
+        #     model_output[fuel_type.value] = {}
+        #     for bill in bill_dates:
+        #         # bill is a tuple of start_day_of_year and end_day_of_year of utility bill
+        #         model_output[fuel_type.value][f"{bill}"] = {}
+        #         for end_use, consumption_list in results["End Use"].items():
+        #             if "Heating" in end_use:
+        #                 # if end_use.lower().startswith(fuel_type.value):
+        #                 if "heating_energy" in model_output[fuel_type.value][f"{bill}"]:
+        #                     if bill[0] > bill[1]:
+        #                         # handle bills that wrap around the end of the year
+        #                         model_output[fuel_type.value][f"{bill}"]["heating_energy"] += sum(
+        #                             consumption_list[bill[0] : len(consumption_list)]
+        #                         )
+        #                         model_output[fuel_type.value][f"{bill}"]["heating_energy"] += sum(
+        #                             consumption_list[0 : bill[1]]
+        #                         )
+        #                     else:
+        #                         model_output[fuel_type.value][f"{bill}"]["heating_energy"] += sum(
+        #                             consumption_list[bill[0] : bill[1]]
+        #                         )
+        #                 else:
+        #                     if bill[0] > bill[1]:
+        #                         # handle bills that wrap around the end of the year
+        #                         model_output[fuel_type.value][f"{bill}"]["heating_energy"] = sum(
+        #                             consumption_list[bill[0] : len(consumption_list)]
+        #                         ) + sum(consumption_list[0 : bill[1]])
+        #                     else:
+        #                         model_output[fuel_type.value][f"{bill}"]["heating_energy"] = sum(
+        #                             consumption_list[bill[0] : bill[1]]
+        #                         )
+        #             elif "Cooling" in end_use:
+        #                 if "cooling_energy" in model_output[fuel_type.value][f"{bill}"]:
+        #                     if bill[0] > bill[1]:
+        #                         # handle bills that wrap around the end of the year
+        #                         model_output[fuel_type.value][f"{bill}"]["cooling_energy"] += sum(
+        #                             consumption_list[bill[0] : len(consumption_list)]
+        #                         )
+        #                         model_output[fuel_type.value][f"{bill}"]["cooling_energy"] += sum(
+        #                             consumption_list[0 : bill[1]]
+        #                         )
+        #                     else:
+        #                         model_output[fuel_type.value][f"{bill}"]["cooling_energy"] += sum(
+        #                             consumption_list[bill[0] : bill[1]]
+        #                         )
+        #                 else:
+        #                     if bill[0] > bill[1]:
+        #                         # handle bills that wrap around the end of the year
+        #                         model_output[fuel_type.value][f"{bill}"]["cooling_energy"] = sum(
+        #                             consumption_list[bill[0] : len(consumption_list)]
+        #                         ) + sum(consumption_list[0 : bill[1]])
+        #                     else:
+        #                         model_output[fuel_type.value][f"{bill}"]["cooling_energy"] = sum(
+        #                             consumption_list[bill[0] : bill[1]]
+        #                         )
+        #             # elif "Hot Water" in end_use:
+        #             #     if "hot_water_energy" in model_output[fuel_type.value][f"{bill}"]:
+        #             #         model_output[fuel_type.value][f"{bill}"]["hot_water_energy"] += sum(
+        #             #             consumption_list[bill[0] : bill[1]]
+        #             #         )
+        #             #     else:
+        #             #         model_output[fuel_type.value][f"{bill}"]["hot_water_energy"] = sum(
+        #             #             consumption_list[bill[0] : bill[1]]
+        #             #         )
+        #             # elif "Lighting" in end_use:
+        #             #     if "lighting_energy" in model_output[fuel_type.value][f"{bill}"]:
+        #             #         model_output[fuel_type.value][f"{bill}"]["lighting_energy"] += sum(
+        #             #             consumption_list[bill[0] : bill[1]]
+        #             #         )
+        #             #     else:
+        #             #         model_output[fuel_type.value][f"{bill}"]["lighting_energy"] = sum(
+        #             #             consumption_list[bill[0] : bill[1]]
+        #             #         )
+        #             else:
+        #                 if "other_energy" in model_output[fuel_type.value][f"{bill}"]:
+        #                     if bill[0] > bill[1]:
+        #                         # handle bills that wrap around the end of the year
+        #                         model_output[fuel_type.value][f"{bill}"]["other_energy"] += sum(
+        #                             consumption_list[bill[0] : len(consumption_list)]
+        #                         )
+        #                         model_output[fuel_type.value][f"{bill}"]["other_energy"] += sum(
+        #                             consumption_list[0 : bill[1]]
+        #                         )
+        #                     else:
+        #                         model_output[fuel_type.value][f"{bill}"]["other_energy"] += sum(
+        #                             consumption_list[bill[0] : bill[1]]
+        #                         )
+        #                 else:
+        #                     if bill[0] > bill[1]:
+        #                         # handle bills that wrap around the end of the year
+        #                         model_output[fuel_type.value][f"{bill}"]["other_energy"] = sum(
+        #                             consumption_list[bill[0] : len(consumption_list)]
+        #                         ) + sum(consumption_list[0 : bill[1]])
+        #                     else:
+        #                         model_output[fuel_type.value][f"{bill}"]["other_energy"] = sum(
+        #                             consumption_list[bill[0] : bill[1]]
+        #                         )
 
-        return model_output_dfs
+        # model_output_dfs = {}
+        # for fuel_type, monthly_usage in model_output.items():
+        #     monthly_usage_df = pd.DataFrame(monthly_usage)
+        #     rows = []
+        #     for col in monthly_usage_df.columns:
+        #         # Parse the column name to get start_date and end_date
+        #         start_date, end_date = literal_eval(col)
+        #         row = {
+        #             "heating_energy": monthly_usage_df.loc["heating_energy", col],
+        #             "cooling_energy": monthly_usage_df.loc["cooling_energy", col],
+        #             "other_energy": monthly_usage_df.loc["other_energy", col],
+        #             "start_date": start_date,
+        #             "end_date": end_date,
+        #         }
+        #         rows.append(row)
+
+        #     reshaped_df = pd.DataFrame(
+        #         rows,
+        #         columns=[
+        #             "heating_energy",
+        #             "cooling_energy",
+        #             "other_energy",
+        #             "start_date",
+        #             "end_date",
+        #         ],
+        #     ).reset_index(drop=True)
+        #     model_output_dfs[f"{fuel_type}_df"] = reshaped_df
+
+        return model_output
 
     def compare_results(
         self, normalized_consumption: dict[str, dict[str, float]], model_results
-    ) -> dict[str, dict]:
+    ) -> dict[str, dict[str, float]]:
         """
         Compare the normalized consumption with the model results.
 
@@ -218,7 +250,7 @@ class Calibrate:
         for fuel_type, consumption in normalized_consumption.items():
             comparison_results[fuel_type] = {
                 "normalized_consumption": consumption,
-                "model_results": model_results[f"{fuel_type}_df"],
+                "model_results": model_results[fuel_type],
             }
         return comparison_results
 
