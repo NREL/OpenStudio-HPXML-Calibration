@@ -1,14 +1,12 @@
 import json
-import logging
 from pathlib import Path
 
 import pandas as pd
+from loguru import logger
 
 from openstudio_hpxml_calibration.hpxml import FuelType, HpxmlDoc
 from openstudio_hpxml_calibration.units import convert_units
 from openstudio_hpxml_calibration.weather_normalization.inverse_model import InverseModel
-
-_log = logging.getLogger(__name__)
 
 
 class Calibrate:
@@ -68,7 +66,7 @@ class Calibrate:
             annual_json_results_path (Path): Path to the JSON file containing annual results from the HPXML model
 
         Returns:
-            dict[str, pd.DataFrame]: A dict of dataframes containing the model results for each fuel type by end use
+            dict[str, dict[str, float]]: A dict of dicts containing the model results for each fuel type by end use in mbtu (because the annual results are in mbtu).
         """
 
         results = json.loads(json_results_path.read_text())
@@ -76,28 +74,28 @@ class Calibrate:
             raise ValueError(f"your file {json_results_path} is not an annual results file")
 
         model_output = {
-            "Electricity": {},
-            "Natural Gas": {},
-            "Propane": {},
-            "Fuel Oil": {},
-            "Wood Cord": {},
-            "Wood Pellets": {},
-            "Coal": {},
+            "electricity": {},
+            "natural gas": {},
+            "propane": {},
+            "fuel oil": {},
+            "wood cord": {},
+            "wood pellets": {},
+            "coal": {},
         }
 
         for end_use, consumption in results["End Use"].items():
-            fuel_type = end_use.split(":")[0]
+            fuel_type = end_use.split(":")[0].lower().strip()
             if "Heating" in end_use:
-                model_output[fuel_type]["heating_energy_mbtu"] = (
-                    model_output[fuel_type].get("heating_energy_mbtu", 0) + consumption
+                model_output[fuel_type]["heating"] = round(
+                    number=(model_output[fuel_type].get("heating", 0) + consumption), ndigits=3
                 )
             elif "Cooling" in end_use:
-                model_output[fuel_type]["cooling_energy_mbtu"] = (
-                    model_output[fuel_type].get("cooling_energy_mbtu", 0) + consumption
+                model_output[fuel_type]["cooling"] = round(
+                    number=(model_output[fuel_type].get("cooling", 0) + consumption), ndigits=3
                 )
             else:
-                model_output[fuel_type]["baseload_energy_mbtu"] = (
-                    model_output[fuel_type].get("baseload_energy_mbtu", 0) + consumption
+                model_output[fuel_type]["baseload"] = round(
+                    number=(model_output[fuel_type].get("baseload", 0) + consumption), ndigits=3
                 )
 
         # results = json.loads(json_results_path.read_text())
@@ -234,24 +232,85 @@ class Calibrate:
         return model_output
 
     def compare_results(
-        self, normalized_consumption: dict[str, dict[str, float]], model_results
-    ) -> dict[str, dict[str, float]]:
+        self, normalized_consumption: dict[str, pd.DataFrame], annual_model_results
+    ) -> dict[str, dict[str, dict[str, float]]]:
         """
         Compare the normalized consumption with the model results.
 
         Args:
-            normalized_consumption (dict): Normalized consumption data
-            model_results (dict): Model results data
+            normalized_consumption (dict): Normalized consumption data (mbtu)
+            annual_model_results (dict): Model results data (mbtu)
 
         Returns:
-            dict: A dictionary containing the comparison results
+            dict: A dictionary containing the comparison results. Bias Error is expressed as a percentage, and Absolute Error is in mbtu.
         """
-        comparison_results = {}
+
+        # Build annual normalized bill consumption dicts
+        annual_normalized_bill_consumption = {}
         for fuel_type, consumption in normalized_consumption.items():
-            comparison_results[fuel_type] = {
-                "normalized_consumption": consumption,
-                "model_results": model_results[fuel_type],
-            }
+            annual_normalized_bill_consumption[fuel_type] = {}
+            for end_use in ["heating", "cooling", "baseload"]:
+                annual_normalized_bill_consumption[fuel_type][end_use] = (
+                    consumption[end_use].sum().round(3)
+                )
+
+        comparison_results = {}
+
+        # combine the annual normalized bill consumption with the model results
+        for model_fuel_type, disagg_results in annual_model_results.items():
+            bias_error_criteria = 5  # percent
+            absolute_error_criteria = 5  # measured in mbtu
+            if model_fuel_type in annual_normalized_bill_consumption:
+                comparison_results[model_fuel_type] = {"Bias Error": {}, "Absolute Error": {}}
+                for load_type in disagg_results:
+                    if model_fuel_type == "electricity":
+                        absolute_error_criteria = 500  # measured in kWh
+                        # convert from mbtu to kWh
+                        annual_normalized_bill_consumption[model_fuel_type][load_type] = (
+                            convert_units(
+                                annual_normalized_bill_consumption[model_fuel_type][load_type],
+                                from_="mbtu",
+                                to_="kwh",
+                            )
+                        )
+                        disagg_results[load_type] = convert_units(
+                            disagg_results[load_type], from_="mbtu", to_="kwh"
+                        )
+
+                    # Calculate error levels
+                    comparison_results[model_fuel_type]["Bias Error"][load_type] = round(
+                        (
+                            (
+                                annual_normalized_bill_consumption[model_fuel_type][load_type]
+                                - disagg_results[load_type]
+                            )
+                            / annual_normalized_bill_consumption[model_fuel_type][load_type]
+                        )
+                        * 100,
+                        3,
+                    )
+                    comparison_results[model_fuel_type]["Absolute Error"][load_type] = round(
+                        abs(
+                            annual_normalized_bill_consumption[model_fuel_type][load_type]
+                            - disagg_results[load_type]
+                        ),
+                        3,
+                    )
+                    if (
+                        abs(comparison_results[model_fuel_type]["Bias Error"][load_type])
+                        > bias_error_criteria
+                    ):
+                        logger.warning(
+                            f"Bias error for {model_fuel_type} {load_type} is {comparison_results[model_fuel_type]['Bias Error'][load_type]} but the limit is +/- {bias_error_criteria}"
+                        )
+                    if (
+                        abs(comparison_results[model_fuel_type]["Absolute Error"][load_type])
+                        > absolute_error_criteria
+                    ):
+                        logger.warning(
+                            f"Absolute error for {model_fuel_type} {load_type} is {comparison_results[model_fuel_type]['Absolute Error'][load_type]} but the limit is +/- {absolute_error_criteria}"
+                        )
+
         return comparison_results
 
     # def run_simulation(self):
@@ -282,6 +341,3 @@ class Calibrate:
     #     capture_output=True,
     #     check=True,
     # )
-
-    def read_value_from_hpxml(self, xpath):
-        return self.original_hpxml.get_building().xpath(xpath)
