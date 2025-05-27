@@ -1,6 +1,7 @@
 import functools
 import os
 import re
+from enum import Enum
 from pathlib import Path
 
 import pandas as pd
@@ -8,6 +9,55 @@ from lxml import etree, isoschematron, objectify
 from pvlib.iotools import read_epw
 
 from openstudio_hpxml_calibration import OS_HPXML_PATH
+
+
+class FuelType(Enum):
+    ELECTRICITY = "electricity"
+    RENEWABLE_ELECTRICITY = "renewable electricity"
+    NATURAL_GAS = "natural gas"
+    RENEWABLE_NATURAL_GAS = "renewable natural gas"
+    FUEL_OIL = "fuel oil"
+    FUEL_OIL_1 = "fuel oil 1"
+    FUEL_OIL_2 = "fuel oil 2"
+    FUEL_OIL_4 = "fuel oil 4"
+    FUEL_OIL_5_6 = "fuel oil 5/6"
+    DISTRICT_STEAM = "district steam"
+    DISTRICT_HOT_WATER = "district hot water"
+    DISTRICT_CHILLED_WATER = "district chilled water"
+    SOLAR_HOT_WATER = "solar hot water"
+    PROPANE = "propane"
+    KEROSENE = "kerosene"
+    DIESEL = "diesel"
+    COAL = "coal"
+    ANTHRACITE_COAL = "anthracite coal"
+    BITUMINOUS_COAL = "bituminous coal"
+    COKE = "coke"
+    WOOD = "wood"
+    WOOD_PELLETS = "wood pellets"
+    COMBINATION = "combination"
+    OTHER = "other"
+
+
+class EnergyUnitType(Enum):
+    CMH = "cmh"
+    CCF = "ccf"
+    KCF = "kcf"
+    MCF = "Mcf"
+    CFH = "cfh"
+    KWH = "kWh"
+    MWH = "MWh"
+    BTU = "Btu"
+    KBTU = "kBtu"
+    MBTU = "MBtu"
+    THERMS = "therms"
+    LBS = "lbs"
+    KLBS = "kLbs"
+    MLBS = "MLbs"
+    TONNES = "tonnes"
+    CORDS = "cords"
+    GAL = "gal"
+    KGAL = "kgal"
+    TON_HOURS = "ton hours"
 
 
 class HpxmlDoc:
@@ -36,6 +86,7 @@ class HpxmlDoc:
         self.file_path = Path(filename).resolve()
         self.tree = objectify.parse(str(filename))
         self.root = self.tree.getroot()
+        self.ns = {"h": self.root.nsmap.get("h", self.root.nsmap.get(None))}
 
         if validate_schema:
             hpxml_schema_filename = (
@@ -154,3 +205,26 @@ class HpxmlDoc:
         :rtype: tuple[pd.DataFrame, dict]
         """
         return read_epw(self.get_epw_path(building_id), **kw)
+
+    def get_lat_lon(self, building_id: str | None = None) -> tuple[float, float]:
+        """Get latitude, longitude from hpxml file
+
+        :param hpxml: _description_
+        :type hpxml: HpxmlDoc
+        :param building_id: Optional building_id of the building you want to get location for.
+        :type building_id: str | None
+        :return: _description_
+        :rtype: tuple[float, float]
+        """
+        building = self.get_building(building_id)
+        try:
+            # Option 1: Get directly from HPXML
+            geolocation = building.Site.GeoLocation
+            lat = float(geolocation.Latitude)
+            lon = float(geolocation.Longitude)
+        except AttributeError:
+            _, epw_metadata = self.get_epw_data(building_id)
+            lat = epw_metadata["latitude"]
+            lon = epw_metadata["longitude"]
+
+        return lat, lon

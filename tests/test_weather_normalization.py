@@ -9,19 +9,28 @@ from matplotlib import pyplot as plt
 
 import openstudio_hpxml_calibration.weather_normalization.utility_data as ud
 from openstudio_hpxml_calibration.hpxml import HpxmlDoc
-from openstudio_hpxml_calibration.weather_normalization import regression as reg
+from openstudio_hpxml_calibration.weather_normalization.inverse_model import InverseModel
 
 repo_root = pathlib.Path(__file__).resolve().parent.parent
 ira_rebate_hpxmls = list((repo_root / "test_hpxmls" / "ira_rebates").glob("*.xml"))
 real_home_hpxmls = list((repo_root / "test_hpxmls" / "real_homes").glob("*.xml"))
 ihmh_home_hpxmls = list((repo_root / "test_hpxmls" / "ihmh_homes").glob("*.xml"))
+SKIP_FILENAMES = {
+    "house18.xml",
+    "house32.xml",
+    "house37.xml",
+    "house83.xml",
+    "house84.xml",
+    "house54.xml",
+    "house60.xml",
+}
 
 
 @pytest.mark.parametrize("filename", ira_rebate_hpxmls, ids=lambda x: x.stem)
 def test_hpxml_utility_bill_read(filename):
     hpxml = HpxmlDoc(filename)
     bills, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
-    assert "electricity" in bills
+    assert any("electricity" in fuel_type.value for fuel_type in bills)
 
     for fuel_type, df in bills.items():
         assert not pd.isna(df).any().any()
@@ -37,7 +46,7 @@ def test_hpxml_utility_bill_read_missing_start_end_date(filename):
 
         # Load the bills
         bills_by_fuel_type, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
-        assert "electricity" in bills_by_fuel_type
+        assert any("electricity" in fuel_type.value for fuel_type in bills_by_fuel_type)
 
         # Ensure the dates got filled in
         for fuel_type, bills in bills_by_fuel_type.items():
@@ -47,14 +56,15 @@ def test_hpxml_utility_bill_read_missing_start_end_date(filename):
 @pytest.mark.parametrize("filename", ira_rebate_hpxmls, ids=lambda x: x.stem)
 def test_weather_retrieval(results_dir, filename):
     hpxml = HpxmlDoc(filename)
-    lat, lon = ud.get_lat_lon_from_hpxml(hpxml)
+    lat, lon = hpxml.get_lat_lon()
     bills_by_fuel_type, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
     for fuel_type, bills in bills_by_fuel_type.items():
         bills_temps = ud.join_bills_weather(bills, lat, lon)
         fig = plt.figure(figsize=(8, 6))
         plt.scatter(bills_temps["avg_temp"], bills_temps["daily_consumption"])
         fig.savefig(
-            results_dir / "weather_normalization" / f"{filename.stem}_{fuel_type}.png", dpi=200
+            results_dir / "weather_normalization" / f"{filename.stem}_{fuel_type.value}.png",
+            dpi=200,
         )
         plt.close(fig)
         assert not pd.isna(bills_temps["avg_temp"]).any()
@@ -72,15 +82,17 @@ def test_weather_retrieval(results_dir, filename):
     "filename", ira_rebate_hpxmls + real_home_hpxmls + ihmh_home_hpxmls, ids=lambda x: x.stem
 )
 def test_curve_fit(results_dir, filename):
+    # Files that do not meet the utility bill criteria are skipped for now. They will be included in the tests again once simplified calibration is added.
+    if filename.name in SKIP_FILENAMES:
+        pytest.skip(f"Skipping test for {filename.name}")
+
     hpxml = HpxmlDoc(filename)
-    lat, lon = ud.get_lat_lon_from_hpxml(hpxml)
-    bills_by_fuel_type, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
-    for fuel_type, bills in bills_by_fuel_type.items():
-        if bills.shape[0] < 10:
-            # Rudimentary check for delivered fuels.
-            continue
-        bills_temps = ud.join_bills_weather(bills, lat, lon)
-        model = reg.fit_model(bills_temps, bpi2400=False)
+    inv_model = InverseModel(hpxml)
+    successful_fits = 0  # Track number of successful fits
+
+    for fuel_type, bills in inv_model.bills_by_fuel_type.items():
+        model = inv_model.get_model(fuel_type)
+        bills_temps = inv_model.bills_weather_by_fuel_type_in_btu[fuel_type]
         temps_range = np.linspace(bills_temps["avg_temp"].min(), bills_temps["avg_temp"].max(), 500)
         daily_consumption_pred = model(temps_range)
         cvrmse = model.calc_cvrmse(bills_temps)
@@ -89,7 +101,7 @@ def test_curve_fit(results_dir, filename):
         plt.plot(
             temps_range,
             daily_consumption_pred,
-            label=f"{model.MODEL_NAME}, CVRMSE = {cvrmse:.1%}\n{model.parameters}",
+            label=f"{model.MODEL_NAME}, CVRMSE = {cvrmse:.1%}\n{[float(format(value, '.2f')) for value in model.parameters]}",
         )
         plt.scatter(
             bills_temps["avg_temp"],
@@ -97,10 +109,13 @@ def test_curve_fit(results_dir, filename):
             label="data",
             color="darkgreen",
         )
-        plt.title(f"{fuel_type} [{bill_units[fuel_type]}]")
+        plt.title(f"{filename.stem} {fuel_type.value}")
+        plt.xlabel("Avg Daily Temperature [degF]")
+        plt.ylabel("Daily Consumption [BTU]")
         plt.legend()
         fig.savefig(
-            results_dir / "weather_normalization" / f"{filename.stem}_{fuel_type}_fit.png", dpi=200
+            results_dir / "weather_normalization" / f"{filename.stem}_{fuel_type.value}_fit.png",
+            dpi=200,
         )
         plt.close(fig)
         # TODO: reinstate this check, but for now some are coming in with larger CVRMSE
@@ -108,6 +123,24 @@ def test_curve_fit(results_dir, filename):
 
         # Save CVRMSE result per test
         individual_result = {f"{filename.stem}_{fuel_type}": cvrmse}
-        json_path = results_dir / "weather_normalization" / f"{filename.stem}_{fuel_type}.json"
+        json_path = (
+            results_dir / "weather_normalization" / f"{filename.stem}_{fuel_type.value}.json"
+        )
         with open(json_path, "w") as f:
             json.dump(individual_result, f, indent=2)
+
+        successful_fits += 1
+
+    assert successful_fits > 0, (
+        f"No successful regression fits for {filename.stem}_{fuel_type.value}"
+    )
+
+
+def test_normalize_consumption_to_epw():
+    filename = repo_root / "test_hpxmls" / "real_homes" / "house21.xml"
+    hpxml = HpxmlDoc(filename)
+    inv_model = InverseModel(hpxml)
+
+    for fuel_type in inv_model.bills_by_fuel_type:
+        epw_annual = inv_model.predict_epw_annual(fuel_type)
+        assert not pd.isna(epw_annual).any()
