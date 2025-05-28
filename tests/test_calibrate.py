@@ -19,6 +19,7 @@ def test_data():
     # To implement a teardown phase:
     # yield data
     # put any teardown code here if needed
+    # See test_cli.py for a teardown example
 
 
 def test_calibrate_normalizes_bills_to_weather(test_data) -> None:
@@ -61,15 +62,3 @@ def test_compare_results(test_data):
     assert len(comparison) == 2  # Should have two fuel types in the comparison
     assert comparison["electricity"]["Absolute Error"]["baseload"] == 1918.2
     assert comparison["natural gas"]["Bias Error"]["heating"] == -125.3
-    # for fuel_type, comparison in results_comparison.items():
-    #     print(fuel_type)
-    #     print(comparison["model_results"].keys())
-    #     print(
-    #         comparison["model_results"].get(
-    #             "(136, 165)", "The dates you entered do not correspond with bill dates"
-    #         )
-    #     )
-    #     print(comparison["model_results"]["(136, 165)"].keys())
-    # print(comparison["model_results"]["(158, 187)"])
-    # assert False is True
-    # this bogus assert creates a test failure so the print statements can be seen for debugging
