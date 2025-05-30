@@ -39,7 +39,7 @@ def check_bpi2400_utility_bill_validity(
     heating_fuels, cooling_fuels = hpxml.get_fuel_types(building_id)
     epw_data, epw_metadata = hpxml.get_epw_data(building_id)
     # epw_data['temp_air']  # deg C
-    lat, lon = get_lat_lon_from_hpxml(hpxml)
+    lat, lon = hpxml.get_lat_lon()
 
     criteria_config_path = Path(__file__).resolve().parent.parent / "config.yaml"
     criteria_config = load_config(criteria_config_path)

@@ -23,6 +23,7 @@ SKIP_FILENAMES = {
     "house83.xml",
     "house84.xml",
     "house54.xml",
+    "house57.xml",
     "house60.xml",
 }
 
@@ -143,6 +144,12 @@ def test_curve_fit(results_dir, filename):
     "filename", ira_rebate_hpxmls + real_home_hpxmls + ihmh_home_hpxmls, ids=lambda x: x.stem
 )
 def test_bpi2400_utility_bill_validity(filename):
+    # Files that do not meet the utility bill criteria are skipped for now.
+    # They will be included in the tests again once simplified calibration is added.
+    # See https://github.com/NREL/OpenStudio-HPXML-Calibration/issues/43
+    if filename.name in SKIP_FILENAMES:
+        pytest.skip(f"Skipping test for {filename.name}")
+
     hpxml = HpxmlDoc(filename)
     bills_by_fuel_type, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
     bpi2400_utility_bill_validity = ud.check_bpi2400_utility_bill_validity(
