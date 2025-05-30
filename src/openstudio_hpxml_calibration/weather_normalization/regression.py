@@ -237,10 +237,10 @@ class FiveParameter(UtilityBillRegressionModel):
             return np.sum((self.func(x, *params) - y) ** 2)
 
         # Constrain the heating and cooling balance temps to differ by more than 5
-        constraints = {
-            "type": "ineq",
-            "fun": lambda params: params[4] - params[3] - 5,
-        }
+        # constraints = {
+        #     "type": "ineq",
+        #     "fun": lambda params: params[4] - params[3] - 5,
+        # }
 
         bounds = list(zip(self.BOUNDS.lb, self.BOUNDS.ub))
         result = minimize(
@@ -248,7 +248,7 @@ class FiveParameter(UtilityBillRegressionModel):
             self.INITIAL_GUESSES,
             method="trust-constr",  # trust-constr supports both bounds and constraints
             bounds=bounds,
-            constraints=constraints,
+            # constraints=constraints,
             options={
                 "verbose": 1,
                 "maxiter": 20000,
