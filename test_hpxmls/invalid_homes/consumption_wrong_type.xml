@@ -639,9 +639,9 @@
         <UtilityID/>
         <ConsumptionType>
           <Water>
-            <WaterType>indoor and outdoor water</FuelType>
+            <WaterType>indoor and outdoor water</WaterType>
             <UnitofMeasure>gal</UnitofMeasure>
-          </Energy>
+          </Water>
         </ConsumptionType>
         <ConsumptionDetail>
           <Consumption>1416</Consumption>
