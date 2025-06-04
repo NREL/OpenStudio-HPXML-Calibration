@@ -5,11 +5,11 @@ from pathlib import Path
 
 import requests
 from cyclopts import App
+from loguru import logger
 from tqdm import tqdm
 
 from openstudio_hpxml_calibration.utils import OS_HPXML_PATH, calculate_sha256, get_cache_dir
 
-from .calibrate import Calibrate
 from .enums import Format, Granularity
 
 app = App(
@@ -69,6 +69,8 @@ def run_sim(
     if output_dir is not None:
         output_dir = ["--output-dir", output_dir]
         run_simulation_command.extend(output_dir)
+
+    logger.debug(f"Running command: {' '.join(run_simulation_command)}")
     subprocess.run(
         run_simulation_command,
         capture_output=True,
@@ -93,6 +95,7 @@ def modify_xml(workflow_file: Path) -> None:
         "--measures_only",
     ]
 
+    logger.debug(f"Running command: {' '.join(modify_xml_command)}")
     subprocess.run(
         modify_xml_command,
         capture_output=True,
@@ -102,6 +105,7 @@ def modify_xml(workflow_file: Path) -> None:
 
 @app.command
 def download_weather() -> None:
+    # TODO: move the code for this to a separate module
     """Download TMY3 weather files from NREL
 
     Parameters
@@ -140,22 +144,6 @@ def download_weather() -> None:
         for filename in tqdm(zf.namelist(), desc="Extracting epws"):
             if filename.endswith(".epw") and not (weather_dir / filename).exists():
                 zf.extract(filename, path=weather_dir)
-
-
-@app.command
-def calibrate(hpxml_filepath: str, osw_filepath: str) -> None:
-    """Calibrate an HPXML model to utility data
-
-    Parameters
-    ----------
-    hpxml_filepath: str
-        Path to the HPXML file to calibrate
-    osw_filepath: str
-        Path to the OpenStudio Workflow file
-    """
-    calibrate = Calibrate(hpxml_filepath, osw_filepath)
-    calibrate.run_simulation()
-    calibrate.calibrate(calibrate.osw_file)
 
 
 if __name__ == "__main__":
