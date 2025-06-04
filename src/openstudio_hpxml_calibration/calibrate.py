@@ -98,6 +98,9 @@ class Calibrate:
                     number=(model_output[fuel_type].get("baseload", 0) + consumption), ndigits=3
                 )
 
+        # TODO: Use bill date parts of this code to handle calibration by bill-period
+        # Most of it can be scrapped. Adapt bill dates to the above style.
+
         # results = json.loads(json_results_path.read_text())
         # # if "Time" in results:
         # #     daily_results = results
@@ -108,7 +111,7 @@ class Calibrate:
         #     for bill in bill_dates:
         #         # bill is a tuple of start_day_of_year and end_day_of_year of utility bill
         #         model_output[fuel_type.value][f"{bill}"] = {}
-        #         for end_use, consumption_list in results["End Use"].items():
+        #         for end_use, consumption_list in daily_results["End Use"].items():
         #             if "Heating" in end_use:
         #                 # if end_use.lower().startswith(fuel_type.value):
         #                 if "heating_energy" in model_output[fuel_type.value][f"{bill}"]:
@@ -246,10 +249,10 @@ class Calibrate:
             "{
                 <fuel_type>: {
                     "Bias Error": {
-                        <load_type>: <percentage error>
+                        <load_type - heating/cooling/baseline>: <percentage error>
                     },
                     "Absolute Error": {
-                        <load_type>: <error in mbtu or kWh>
+                        <load_type - heating/cooling/baseline>: <error in mbtu or kWh>
                     }
                 },
                 <fuel_type>: {...}
@@ -278,7 +281,8 @@ class Calibrate:
                 for load_type in disagg_results:
                     if model_fuel_type == "electricity":
                         absolute_error_criteria = 500  # measured in kWh
-                        # convert from mbtu to kWh
+                        # All results from simulation and normalized bills are in mbtu.
+                        # convert electric loads from mbtu to kWh for bpi2400
                         annual_normalized_bill_consumption[model_fuel_type][load_type] = (
                             convert_units(
                                 annual_normalized_bill_consumption[model_fuel_type][load_type],
@@ -309,6 +313,8 @@ class Calibrate:
                         ),
                         1,
                     )
+                    # Warn if either error exceeds the criteria
+                    # TODO: Instead of warning, adjust the modification and simulate again
                     if (
                         abs(comparison_results[model_fuel_type]["Bias Error"][load_type])
                         > bias_error_criteria
@@ -325,32 +331,3 @@ class Calibrate:
                         )
 
         return comparison_results
-
-    # def run_simulation(self):
-    #     run_simulation_command = [
-    #         "openstudio",
-    #         str(OS_HPXML_PATH / "workflow" / "run_simulation.rb"),
-    #         "--xml",
-    #         self.original_hpxml.file_path,
-    #     ]
-
-    #     subprocess.run(
-    #         run_simulation_command,
-    #         capture_output=True,
-    #         check=True,
-    #     )
-
-    # def calibrate(self, workflow_file):
-    # modify_xml_command = [
-    #     "openstudio",
-    #     "run",
-    #     "--workflow",
-    #     str(workflow_file),
-    #     "--measures_only",
-    # ]
-
-    # subprocess.run(
-    #     modify_xml_command,
-    #     capture_output=True,
-    #     check=True,
-    # )
