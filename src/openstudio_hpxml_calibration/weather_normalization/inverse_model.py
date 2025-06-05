@@ -37,7 +37,7 @@ class InverseModel:
             self.regression_models[fuel_type] = model
             return model
 
-    def predict_epw_annual(self, fuel_type: FuelType) -> pd.Series:
+    def predict_epw_daily(self, fuel_type: FuelType) -> pd.Series:
         """
         Predict the annual energy consumption for a given fuel type using the regression model.
 
@@ -50,4 +50,4 @@ class InverseModel:
         epw, _ = self.hpxml.get_epw_data(coerce_year=2007)
         epw_daily_avg_temp = epw["temp_air"].groupby(pd.Grouper(freq="D")).mean() * 1.8 + 32
         daily_predicted_fuel_use = model.predict_disaggregated(epw_daily_avg_temp.to_numpy())
-        return daily_predicted_fuel_use.sum()
+        return daily_predicted_fuel_use
