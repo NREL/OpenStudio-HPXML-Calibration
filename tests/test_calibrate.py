@@ -67,3 +67,14 @@ def test_compare_results(test_data):
     assert len(comparison) == 2  # Should have two fuel types in the comparison for this building
     assert comparison["electricity"]["Absolute Error"]["baseload"] == 1918.2
     assert comparison["natural gas"]["Bias Error"]["heating"] == -125.3
+
+
+def test_add_bills(test_data):
+    cal = Calibrate(original_hpxml_filepath=test_data["sample_xml_file"])
+    assert cal.hpxml.xpath("h:Consumption[1]")[0] is not None
+    with pytest.raises(ValueError, match="No matching Consumption/BuildingID/@idref"):
+        cal = Calibrate(original_hpxml_filepath=test_data["model_without_bills"])
+    cal = Calibrate(
+        original_hpxml_filepath=test_data["model_without_bills"],
+        csv_bills_filepath=test_data["sample_bill_csv_path"],
+    )
