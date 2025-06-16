@@ -443,7 +443,7 @@ class Calibrate:
 
         pop = toolbox.population(n=population_size)
         hall_of_fame = tools.HallOfFame(1)
-        stats = tools.Statistics(lambda ind: ind.fitness.values[0])
+        stats = tools.Statistics(lambda ind: ind.fitness.values[0])  # noqa: PD011
         stats.register("min", min)
         stats.register("avg", lambda x: sum(x) / len(x))
 
