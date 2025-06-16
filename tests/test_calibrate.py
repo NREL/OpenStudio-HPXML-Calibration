@@ -79,7 +79,7 @@ def test_search_algorithm(test_data):
     # Prepare a serializable version
     result_data = {
         "individual": list(best_individual),
-        "fitness": list(best_individual.fitness.values)
+        "fitness": list(best_individual.fitness.values),
     }
 
     # Define the output file path

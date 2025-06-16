@@ -341,7 +341,7 @@ class Calibrate:
         # Define the objective function
         def evaluate(individual):
             # Map individual values to model inputs
-            plug_load_pct_change, = individual  # TODO: map more inputs
+            (plug_load_pct_change,) = individual  # TODO: map more inputs
             temp_output_dir = Path(tempfile.mkdtemp(prefix="calib_test_"))
             mod_hpxml_path = temp_output_dir / "modified.xml"
             arguments = {
@@ -373,12 +373,16 @@ class Calibrate:
             )
 
             # Run the simulation
-            app([
-                "run-sim",
-                str(mod_hpxml_path),
-                "--output-dir", str(temp_output_dir),
-                "--output-format", "json"
-            ])
+            app(
+                [
+                    "run-sim",
+                    str(mod_hpxml_path),
+                    "--output-dir",
+                    str(temp_output_dir),
+                    "--output-format",
+                    "json",
+                ]
+            )
 
             output_file = temp_output_dir / "run" / "results_annual.json"
             simulation_results = self.get_model_results(json_results_path=output_file)
@@ -392,47 +396,44 @@ class Calibrate:
 
             return tuple(bias_errors)
 
-            # Clean up temporary files            
+            # Clean up temporary files
             # shutil.rmtree(temp_output_dir, ignore_errors=True)
 
         def create_measure_input_file(arguments: dict, output_file_path: str):
             # Fixed structure with dynamic arguments
             data = {
-                "run_directory": str(Path(arguments['save_file_path']).parent),
-                "measure_paths": [
-                    "C:\\Github\\OpenStudio-HPXML-Calibration\\src\\measures"
-                ],
-                "steps": [
-                    {
-                        "measure_dir_name": "ModifyXML",
-                        "arguments": arguments
-                    }
-                ]
+                "run_directory": str(Path(arguments["save_file_path"]).parent),
+                "measure_paths": ["C:\\Github\\OpenStudio-HPXML-Calibration\\src\\measures"],
+                "steps": [{"measure_dir_name": "ModifyXML", "arguments": arguments}],
             }
 
             # Ensure output directory exists
             Path(output_file_path).parent.mkdir(parents=True, exist_ok=True)
 
             # Write the JSON file
-            with open(output_file_path, 'w', encoding='utf-8') as f:
+            with open(output_file_path, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2)
 
         # Stop early if solution is within threshold
         def stopping_criteria(logbook):
-            for gen in logbook:
-                if any(abs(b) <= 5 for b in gen['min']):
-                    return True
-            return False
+            return any(any(abs(b) <= 5 for b in gen["min"]) for gen in logbook)
 
         # Set DEAP components
         creator.create("FitnessMin", base.Fitness, weights=(-1.0,) * 5)
         creator.create("Individual", list, fitness=creator.FitnessMin)
 
         toolbox = base.Toolbox()
-        toolbox.register("attr_plug_load_pct_change", random.choice, [round(x * 0.01, 2) for x in range(-10, 11)])
+        toolbox.register(
+            "attr_plug_load_pct_change", random.choice, [round(x * 0.01, 2) for x in range(-10, 11)]
+        )
         # TODO: add more inputs
-        toolbox.register("individual", tools.initCycle, creator.Individual,
-                         (toolbox.attr_plug_load_pct_change,), n=1)
+        toolbox.register(
+            "individual",
+            tools.initCycle,
+            creator.Individual,
+            (toolbox.attr_plug_load_pct_change,),
+            n=1,
+        )
         toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
         toolbox.register("evaluate", evaluate)
@@ -447,8 +448,14 @@ class Calibrate:
         stats.register("avg", lambda x: sum(x) / len(x))
 
         pop, logbook = algorithms.eaSimple(
-            pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=generations,
-            stats=stats, halloffame=hall_of_fame, verbose=True
+            pop,
+            toolbox,
+            cxpb=0.5,
+            mutpb=0.2,
+            ngen=generations,
+            stats=stats,
+            halloffame=hall_of_fame,
+            verbose=True,
         )
 
         best_individual = hall_of_fame[0]
