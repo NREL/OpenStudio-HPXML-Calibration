@@ -1,18 +1,16 @@
 import json
+import random
+import tempfile
 from pathlib import Path
 
 import pandas as pd
+from deap import algorithms, base, creator, tools
 from loguru import logger
 
+from openstudio_hpxml_calibration import app
 from openstudio_hpxml_calibration.hpxml import FuelType, HpxmlDoc
 from openstudio_hpxml_calibration.units import convert_units
 from openstudio_hpxml_calibration.weather_normalization.inverse_model import InverseModel
-from openstudio_hpxml_calibration import app
-
-from deap import base, creator, tools, algorithms
-import random
-import tempfile
-import json
 
 
 class Calibrate:

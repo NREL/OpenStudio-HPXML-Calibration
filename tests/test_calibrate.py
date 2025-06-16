@@ -1,10 +1,10 @@
 import json
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 import pandas as pd
 import pytest
 from loguru import logger
-import matplotlib.pyplot as plt
 
 from openstudio_hpxml_calibration.calibrate import Calibrate
 
