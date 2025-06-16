@@ -7,11 +7,18 @@ from loguru import logger
 from openstudio_hpxml_calibration.hpxml import FuelType, HpxmlDoc
 from openstudio_hpxml_calibration.units import convert_units
 from openstudio_hpxml_calibration.weather_normalization.inverse_model import InverseModel
+from openstudio_hpxml_calibration import app
+
+from deap import base, creator, tools, algorithms
+import random
+import tempfile
+import json
 
 
 class Calibrate:
     def __init__(self, original_hpxml_filepath: Path):
-        self.hpxml = HpxmlDoc(Path(original_hpxml_filepath).resolve())
+        self.hpxml_filepath = Path(original_hpxml_filepath).resolve()
+        self.hpxml = HpxmlDoc(self.hpxml_filepath)
         self.inv_model = InverseModel(self.hpxml)
 
     def get_normalized_consumption_per_bill(self) -> dict[FuelType, pd.DataFrame]:
@@ -331,3 +338,121 @@ class Calibrate:
                         )
 
         return comparison_results
+
+    def run_ga_search(self, population_size=5, generations=30):
+        # Define the objective function
+        def evaluate(individual):
+            # Map individual values to model inputs
+            plug_load_pct_change, = individual  # TODO: map more inputs
+            temp_output_dir = Path(tempfile.mkdtemp(prefix="calib_test_"))
+            mod_hpxml_path = temp_output_dir / "modified.xml"
+            arguments = {
+                "xml_file_path": str(self.hpxml_filepath),
+                "save_file_path": str(mod_hpxml_path),
+                # "heating_setpoint_offset": -2,
+                # "cooling_setpoint_offset": -2,
+                # "air_leakage_pct_change": 0.15,
+                # "heating_efficiency_pct_change": 0.05,
+                # "cooling_efficiency_pct_change": -0.05,
+                "plug_load_pct_change": plug_load_pct_change,
+                # "roof_r_value_pct_change": 0.05,
+                # "ceiling_r_value_pct_change": 0.05,
+                # "above_ground_walls_r_value_pct_change": 0.05,
+                # "below_ground_walls_r_value_pct_change": 0.05,
+                # "slab_r_value_pct_change": 0.05,
+                # "floor_r_value_pct_change": 0.05
+            }
+
+            temp_osw = Path(temp_output_dir / "modify_hpxml.osw")
+            create_measure_input_file(arguments, temp_osw)
+
+            # Modify the HPXML file
+            app(
+                [
+                    "modify-xml",
+                    str(temp_osw),
+                ]
+            )
+
+            # Run the simulation
+            app([
+                "run-sim",
+                str(mod_hpxml_path),
+                "--output-dir", str(temp_output_dir),
+                "--output-format", "json"
+            ])
+
+            output_file = temp_output_dir / "run" / "results_annual.json"
+            simulation_results = self.get_model_results(json_results_path=output_file)
+            normalized_consumption = self.get_normalized_consumption_per_bill()
+            comparison = self.compare_results(normalized_consumption, simulation_results)
+
+            bias_errors = []
+            for fuel_type in comparison:
+                for load_type, bias_error in comparison[fuel_type]["Bias Error"].items():
+                    bias_errors.append(abs(bias_error))
+
+            return tuple(bias_errors)
+
+            # Clean up temporary files            
+            # shutil.rmtree(temp_output_dir, ignore_errors=True)
+
+        def create_measure_input_file(arguments: dict, output_file_path: str):
+            # Fixed structure with dynamic arguments
+            data = {
+                "run_directory": str(Path(arguments['save_file_path']).parent),
+                "measure_paths": [
+                    "C:\\Github\\OpenStudio-HPXML-Calibration\\src\\measures"
+                ],
+                "steps": [
+                    {
+                        "measure_dir_name": "ModifyXML",
+                        "arguments": arguments
+                    }
+                ]
+            }
+
+            # Ensure output directory exists
+            Path(output_file_path).parent.mkdir(parents=True, exist_ok=True)
+
+            # Write the JSON file
+            with open(output_file_path, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=2)
+
+        # Stop early if solution is within threshold
+        def stopping_criteria(logbook):
+            for gen in logbook:
+                if any(abs(b) <= 5 for b in gen['min']):
+                    return True
+            return False
+
+        # Set DEAP components
+        creator.create("FitnessMin", base.Fitness, weights=(-1.0,) * 5)
+        creator.create("Individual", list, fitness=creator.FitnessMin)
+
+        toolbox = base.Toolbox()
+        toolbox.register("attr_plug_load_pct_change", random.choice, [round(x * 0.01, 2) for x in range(-10, 11)])
+        # TODO: add more inputs
+        toolbox.register("individual", tools.initCycle, creator.Individual,
+                         (toolbox.attr_plug_load_pct_change,), n=1)
+        toolbox.register("population", tools.initRepeat, list, toolbox.individual)
+
+        toolbox.register("evaluate", evaluate)
+        toolbox.register("mate", tools.cxBlend, alpha=0.5)
+        toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=0.1, indpb=0.2)
+        toolbox.register("select", tools.selTournament, tournsize=3)
+
+        pop = toolbox.population(n=population_size)
+        hall_of_fame = tools.HallOfFame(1)
+        stats = tools.Statistics(lambda ind: ind.fitness.values[0])
+        stats.register("min", min)
+        stats.register("avg", lambda x: sum(x) / len(x))
+
+        pop, logbook = algorithms.eaSimple(
+            pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=generations,
+            stats=stats, halloffame=hall_of_fame, verbose=True
+        )
+
+        best_individual = hall_of_fame[0]
+
+        return best_individual, pop, logbook
