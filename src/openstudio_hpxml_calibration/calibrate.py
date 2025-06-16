@@ -5,13 +5,19 @@ import pandas as pd
 from loguru import logger
 
 from openstudio_hpxml_calibration.hpxml import FuelType, HpxmlDoc
+from openstudio_hpxml_calibration.modify_hpxml import set_consumption_on_hpxml
 from openstudio_hpxml_calibration.units import convert_units
 from openstudio_hpxml_calibration.weather_normalization.inverse_model import InverseModel
 
 
 class Calibrate:
-    def __init__(self, original_hpxml_filepath: Path):
+    def __init__(self, original_hpxml_filepath: Path, csv_bills_filepath: Path | None = None):
         self.hpxml = HpxmlDoc(Path(original_hpxml_filepath).resolve())
+
+        if csv_bills_filepath:
+            logger.info(f"Adding utility data from {csv_bills_filepath} to hpxml")
+            set_consumption_on_hpxml(self.hpxml, csv_bills_filepath)
+
         self.inv_model = InverseModel(self.hpxml)
 
     def get_normalized_consumption_per_bill(self) -> dict[FuelType, pd.DataFrame]:
