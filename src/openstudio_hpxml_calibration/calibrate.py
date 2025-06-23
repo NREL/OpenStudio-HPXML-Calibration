@@ -16,7 +16,7 @@ class Calibrate:
 
         if csv_bills_filepath:
             logger.info(f"Adding utility data from {csv_bills_filepath} to hpxml")
-            set_consumption_on_hpxml(self.hpxml, csv_bills_filepath)
+            self.hpxml = set_consumption_on_hpxml(self.hpxml, csv_bills_filepath)
 
         self.inv_model = InverseModel(self.hpxml)
 
