@@ -52,5 +52,7 @@ def set_consumption_on_hpxml(hpxml_object: HpxmlDoc, csv_bills_filepath: Path) -
         unit_of_measure._setText(unit)
 
         consumption_section.ConsumptionDetails.append(new_obj)
+        objectify.deannotate(consumption_section, cleanup_namespaces=True)
 
-    return hpxml_object.root.append(consumption_section)
+    hpxml_object.root.append(consumption_section)
+    return hpxml_object
