@@ -40,6 +40,7 @@ def run_sim(
     output_format: Format | None = None,
     output_dir: str | None = None,
     granularity: Granularity | None = None,
+    debug: bool = False,
 ) -> None:
     """Simulate an HPXML file using the OpenStudio-HPXML workflow
 
@@ -69,6 +70,15 @@ def run_sim(
     if output_dir is not None:
         output_dir = ["--output-dir", output_dir]
         run_simulation_command.extend(output_dir)
+    if debug:
+        # the run_simulation.rb script sets skip-validation to false by default.
+        # By not including it here, we perform the validation.
+        # We also add the --debug flag to enable debug mode for run_simulation.rb.
+        debug_flags = ["--debug"]
+    else:
+        # Our default is to skip validation, for faster simulation runs.
+        debug_flags = ["--skip-validation"]
+    run_simulation_command.extend(debug_flags)
 
     logger.debug(f"Running command: {' '.join(run_simulation_command)}")
     subprocess.run(
