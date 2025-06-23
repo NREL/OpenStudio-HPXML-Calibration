@@ -13,15 +13,10 @@ def set_consumption_on_hpxml(hpxml_object: HpxmlDoc, csv_bills_filepath: Path) -
     bills = pd.read_csv(csv_bills_filepath)
 
     # Set up xml objects to hold the bill data
-    consumption = objectify.E.Consumption
-    consumption_details = objectify.E.ConsumptionDetails
-    consumption_section = consumption(consumption_details())
-    # Remove the xml meta tags since we already have an xml object we're appending to
-    objectify.deannotate(consumption_section, cleanup_namespaces=True)
-
-    # Copy the BuildingID into the Consumption section
-    objectify.SubElement(
-        consumption_section, "BuildingID", idref=hpxml_object.get_first_building_id()
+    consumption_section = objectify.E.Consumption(
+        objectify.E.BuildingID(idref=hpxml_object.get_first_building_id()),
+        objectify.E.CustomerID(),
+        objectify.E.ConsumptionDetails,
     )
 
     # separate bill data by fuel type, then remove fuel type info
@@ -57,6 +52,5 @@ def set_consumption_on_hpxml(hpxml_object: HpxmlDoc, csv_bills_filepath: Path) -
         unit_of_measure._setText(unit)
 
         consumption_section.ConsumptionDetails.append(new_obj)
-        objectify.deannotate(consumption_section, cleanup_namespaces=True)
 
     return hpxml_object.root.append(consumption_section)
