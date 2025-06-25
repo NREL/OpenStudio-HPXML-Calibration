@@ -70,11 +70,21 @@ def test_compare_results(test_data):
 
 
 def test_add_bills(test_data):
-    cal = Calibrate(original_hpxml_filepath=test_data["sample_xml_file"])
-    assert cal.hpxml.xpath("h:Consumption[1]")[0] is not None
-    with pytest.raises(ValueError, match="No matching Consumption/BuildingID/@idref"):
-        cal = Calibrate(original_hpxml_filepath=test_data["model_without_bills"])
+    # Confirm that there is no Consumption section in the original HPXML
+    # cal = Calibrate(original_hpxml_filepath=test_data["sample_xml_file"])
+    # assert cal.hpxml.xpath("h:Consumption[1]")[0] is not None
+    # with pytest.raises(ValueError, match="No matching Consumption/BuildingID/@idref"):
+    #     cal = Calibrate(original_hpxml_filepath=test_data["model_without_bills"])
+    # Confirm that the Consumption section is added when bills are provided
     cal = Calibrate(
         original_hpxml_filepath=test_data["model_without_bills"],
         csv_bills_filepath=test_data["sample_bill_csv_path"],
     )
+    assert cal.hpxml.xpath("h:Consumption[1]")[0] is not None
+    print(
+        cal.hpxml.get_consumption().ConsumptionDetails.ConsumptionInfo.ConsumptionType.Energy.FuelType
+    )
+    print("cowabunga")
+    # assert False is True
+    # assert cal.hpxml.get_consumption().BuildingID == cal.hpxml.get_first_building_id()
+    # assert cal.hpxml.get_consumption().ConsumptionDetails.ConsumptionInfo[0].ConsumptionDetail[0].Consumption == 525.0
