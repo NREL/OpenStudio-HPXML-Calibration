@@ -21,11 +21,17 @@ def set_consumption_on_hpxml(hpxml_object: HpxmlDoc, csv_bills_filepath: Path) -
     bills = pd.read_csv(csv_bills_filepath)
 
     # Set up xml objects to hold the bill data
-    consumption_section = E.Consumption(
-        E.BuildingID(idref=hpxml_object.get_first_building_id()),
-        E.CustomerID(),
-        E.ConsumptionDetails(),
+    # consumption_section = E.Consumption(
+    #     E.BuildingID(idref=hpxml_object.get_first_building_id()),
+    #     E.CustomerID(),
+    #     E.ConsumptionDetails(),
+    # )
+    consumption_section = objectify.SubElement(hpxml_object.root, "Consumption", nsmap=NSMAP)
+    objectify.SubElement(
+        consumption_section, "BuildingID", idref=hpxml_object.get_first_building_id()
     )
+    objectify.SubElement(consumption_section, "CustomerID")
+    consumption_details = objectify.SubElement(consumption_section, "ConsumptionDetails")
 
     # separate bill data by fuel type, then remove fuel type info
     dfs_by_fuel = {}
@@ -59,7 +65,7 @@ def set_consumption_on_hpxml(hpxml_object: HpxmlDoc, csv_bills_filepath: Path) -
                 logger.error(f"unknown fuel type: {fuel}!")
         unit_of_measure._setText(unit)
 
-    consumption_section.append(new_obj)
+        consumption_details.append(new_obj)
 
     hpxml_object.root.append(consumption_section)
     return hpxml_object
