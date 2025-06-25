@@ -21,17 +21,12 @@ def set_consumption_on_hpxml(hpxml_object: HpxmlDoc, csv_bills_filepath: Path) -
     bills = pd.read_csv(csv_bills_filepath)
 
     # Set up xml objects to hold the bill data
-    # consumption_section = E.Consumption(
-    #     E.BuildingID(idref=hpxml_object.get_first_building_id()),
-    #     E.CustomerID(),
-    #     E.ConsumptionDetails(),
-    # )
-    consumption_section = objectify.SubElement(hpxml_object.root, "Consumption", nsmap=NSMAP)
-    objectify.SubElement(
-        consumption_section, "BuildingID", idref=hpxml_object.get_first_building_id()
+    consumption_details = E.ConsumptionDetails()
+    consumption_section = E.Consumption(
+        E.BuildingID(idref=hpxml_object.get_first_building_id()),
+        E.CustomerID(),
+        consumption_details,
     )
-    objectify.SubElement(consumption_section, "CustomerID")
-    consumption_details = objectify.SubElement(consumption_section, "ConsumptionDetails")
 
     # separate bill data by fuel type, then remove fuel type info
     dfs_by_fuel = {}
@@ -47,24 +42,18 @@ def set_consumption_on_hpxml(hpxml_object: HpxmlDoc, csv_bills_filepath: Path) -
             row_name="ConsumptionDetail",
             index=False,
             xml_declaration=False,
+            namespaces=NSMAP,
         )
         new_obj = objectify.fromstring(xml_str)
-        consumption_type = objectify.SubElement(new_obj, "ConsumptionType")
-        energy = objectify.SubElement(consumption_type, "Energy")
-        fuel_type = objectify.SubElement(energy, "FuelType")
-        fuel_type._setText(fuel)
-        unit_of_measure = objectify.SubElement(energy, "UnitofMeasure")
-        match fuel:
-            case "electricity":
-                unit = "kWh"
-            case "fuel oil":
-                unit = "gal"
-            case "natural gas":
-                unit = "therms"
-            case _:
-                logger.error(f"unknown fuel type: {fuel}!")
-        unit_of_measure._setText(unit)
 
+        unit = {"electricity": "kWh", "fuel oil": "gal", "natural gas": "therms"}.get(fuel)
+
+        if unit is None:
+            logger.error(f"Unsupported fuel type: {fuel}")
+
+        consumption_type = E.ConsumptionType(E.Energy(E.FuelType(fuel), E.UnitofMeasure(unit)))
+        new_obj.insert(0, consumption_type)
+        new_obj.insert(0, E.UtilityID())
         consumption_details.append(new_obj)
 
     hpxml_object.root.append(consumption_section)
