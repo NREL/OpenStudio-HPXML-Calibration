@@ -3,8 +3,16 @@ from pathlib import Path
 import pandas as pd
 from loguru import logger
 from lxml import objectify
+from lxml.builder import ElementMaker
 
 from openstudio_hpxml_calibration.hpxml import HpxmlDoc
+
+# Define HPXML namespace
+NS = "http://hpxmlonline.com/2023/09"
+NSMAP = {None: NS}
+
+# Define the element maker with namespace
+E = ElementMaker(namespace=NS, nsmap=NSMAP)
 
 
 def set_consumption_on_hpxml(hpxml_object: HpxmlDoc, csv_bills_filepath: Path) -> HpxmlDoc:
@@ -13,10 +21,10 @@ def set_consumption_on_hpxml(hpxml_object: HpxmlDoc, csv_bills_filepath: Path) -
     bills = pd.read_csv(csv_bills_filepath)
 
     # Set up xml objects to hold the bill data
-    consumption_section = objectify.E.Consumption(
-        objectify.E.BuildingID(idref=hpxml_object.get_first_building_id()),
-        objectify.E.CustomerID(),
-        objectify.E.ConsumptionDetails,
+    consumption_section = E.Consumption(
+        E.BuildingID(idref=hpxml_object.get_first_building_id()),
+        E.CustomerID(),
+        E.ConsumptionDetails(),
     )
 
     # separate bill data by fuel type, then remove fuel type info
@@ -51,8 +59,7 @@ def set_consumption_on_hpxml(hpxml_object: HpxmlDoc, csv_bills_filepath: Path) -
                 logger.error(f"unknown fuel type: {fuel}!")
         unit_of_measure._setText(unit)
 
-        consumption_section.ConsumptionDetails.append(new_obj)
-        objectify.deannotate(consumption_section, cleanup_namespaces=True)
+    consumption_section.append(new_obj)
 
     hpxml_object.root.append(consumption_section)
     return hpxml_object
