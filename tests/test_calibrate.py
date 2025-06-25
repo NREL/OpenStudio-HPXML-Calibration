@@ -70,21 +70,33 @@ def test_compare_results(test_data):
 
 
 def test_add_bills(test_data):
-    # Confirm that there is no Consumption section in the original HPXML
-    # cal = Calibrate(original_hpxml_filepath=test_data["sample_xml_file"])
-    # assert cal.hpxml.xpath("h:Consumption[1]")[0] is not None
-    # with pytest.raises(ValueError, match="No matching Consumption/BuildingID/@idref"):
-    #     cal = Calibrate(original_hpxml_filepath=test_data["model_without_bills"])
+    # Confirm that an error is raised if no consumption data is in the hpxml object
+    with pytest.raises(ValueError, match="No matching Consumption/BuildingID/@idref"):
+        cal = Calibrate(original_hpxml_filepath=test_data["model_without_bills"])
     # Confirm that the Consumption section is added when bills are provided
     cal = Calibrate(
         original_hpxml_filepath=test_data["model_without_bills"],
         csv_bills_filepath=test_data["sample_bill_csv_path"],
     )
     assert cal.hpxml.xpath("h:Consumption[1]")[0] is not None
-    print(
-        cal.hpxml.get_consumption().ConsumptionDetails.ConsumptionInfo.ConsumptionType.Energy.FuelType
+    for consumption_info in cal.hpxml.get_consumption().ConsumptionDetails.ConsumptionInfo:
+        assert consumption_info.ConsumptionType.Energy.FuelType in ("electricity", "fuel oil")
+    # Confirm that we wrote the building_id correctly
+    assert (
+        cal.hpxml.get_consumption().BuildingID.attrib["idref"] == cal.hpxml.get_first_building_id()
     )
-    print("cowabunga")
-    # assert False is True
-    # assert cal.hpxml.get_consumption().BuildingID == cal.hpxml.get_first_building_id()
-    # assert cal.hpxml.get_consumption().ConsumptionDetails.ConsumptionInfo[0].ConsumptionDetail[0].Consumption == 525.0
+    # Spot-check that the Consumption xml element matches the csv utility data
+    assert (
+        cal.hpxml.get_consumption()
+        .ConsumptionDetails.ConsumptionInfo[0]
+        .ConsumptionDetail[2]
+        .Consumption
+        == 1200
+    )
+    assert (
+        cal.hpxml.get_consumption()
+        .ConsumptionDetails.ConsumptionInfo[1]
+        .ConsumptionDetail[2]
+        .Consumption
+        == 14
+    )
