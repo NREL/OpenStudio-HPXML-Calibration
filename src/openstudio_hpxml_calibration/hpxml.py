@@ -153,6 +153,21 @@ class HpxmlDoc:
                 0
             ]
 
+    def get_consumption(self, building_id: str | None = None) -> objectify.ObjectifiedElement:
+        """Get the Consumption element for a building
+
+        :param building_id: The id of the Building to retrieve, gets first one if missing
+        :type building_id: str | None, optional
+        :return: Consumption element
+        :rtype: objectify.ObjectifiedElement
+        """
+        if building_id is None:
+            building_id = self.get_first_building_id()
+        # building = self.get_building(building_id)
+        return self.xpath(
+            "h:Consumption[h:BuildingID/@idref=$building_id]", building_id=building_id
+        )[0]
+
     @functools.cache
     def get_epw_path(self, building_id: str | None = None) -> Path:
         """Get the filesystem path to the EPW file.
