@@ -6,7 +6,7 @@ A package to automatically calibrate an OS-HPXML model to provided utilities bil
 
 - Clone the repository: `git clone https://github.com/NREL/OpenStudio-HPXML-Calibration.git`
 - Move into the repository: `cd OpenStudio-HPXML-Calibration`
-- Install [OpenStudio 3.9.0](https://github.com/NREL/OpenStudio/releases)
+- Install [OpenStudio 3.9.0](https://github.com/NREL/OpenStudio/releases/tag/v3.9.0)
 
 - [Uv](https://docs.astral.sh/uv/) is used to manage the project & dependencies (and may also be used to [manage Python](https://docs.astral.sh/uv/guides/install-python/) if you want). After cloning, ensure you have
 [uv installed](https://docs.astral.sh/uv/getting-started/installation/), then run `uv sync` to install the package and all development dependencies.
