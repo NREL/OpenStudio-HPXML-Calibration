@@ -34,9 +34,11 @@ SCALARS = {
     ("wh", "kbtu"): 0.003412141633127942,
     ("kbtu", "btu"): 1000.0,
     ("kbtu", "mbtu"): 0.001,
+    ("gal_fuel_oil", "btu"): 139 * 1000.0,
     ("gal_fuel_oil", "kbtu"): 139,
     ("gal_fuel_oil", "mbtu"): 139 / 1000.0,
     ("gal_fuel_oil", "j"): 139 * 1000.0 * 1055.05585262,
+    ("gal_propane", "btu"): 91.6 * 1000.0,
     ("gal_propane", "kbtu"): 91.6,
     ("gal_propane", "mbtu"): 91.6 / 1000.0,
     ("gal_propane", "j"): 91.6 * 1000.0 * 1055.05585262,
@@ -197,6 +199,7 @@ def convert_hpxml_energy_units(
             EnergyUnitType.BTU,
             EnergyUnitType.KBTU,
             EnergyUnitType.MBTU,
+            EnergyUnitType.GAL,
         )
     }
     hpxml_fuel_type_mapping.update({EnergyUnitType.THERMS: "therm"})
@@ -205,7 +208,7 @@ def convert_hpxml_energy_units(
     try:
         return convert_units(x, from_val, to_val)
     except ValueError as ex:
-        if fuel_type == (FuelType.PROPANE, FuelType.FUEL_OIL):
+        if fuel_type in (FuelType.PROPANE, FuelType.FUEL_OIL):
             gal_energy_val = f"gal_{'_'.join(fuel_type.value.split())}"
             if from_ == EnergyUnitType.GAL:
                 from_val = gal_energy_val
