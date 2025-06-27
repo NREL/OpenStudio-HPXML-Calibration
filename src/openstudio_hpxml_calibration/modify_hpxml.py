@@ -37,12 +37,16 @@ def set_consumption_on_hpxml(hpxml_object: HpxmlDoc, csv_bills_filepath: Path) -
     dfs_by_fuel = {}
     for f_type in bills["FuelType"].unique():
         fuel_data = bills.loc[bills["FuelType"] == f_type]
-        dfs_by_fuel[f_type] = fuel_data.drop(["UnitofMeasure", "FuelType"], axis=1)
+        dfs_by_fuel[f_type] = fuel_data.drop(["FuelType"], axis=1)
 
     # Turn the dfs of bills into xml objects that match hpxml schema
     for fuel, consumption_df in dfs_by_fuel.items():
+        # Grab the unit of measure from the first row, then drop it from the dataframe because it
+        # doesn't get added to every consumption section in the xml object.
+        unit = consumption_df["UnitofMeasure"].iloc[0]
+        narrower_consumption_df = consumption_df.drop(["UnitofMeasure"], axis=1)
         logger.debug(f"{fuel=}")
-        xml_str = consumption_df.to_xml(
+        xml_str = narrower_consumption_df.to_xml(
             root_name="ConsumptionInfo",
             row_name="ConsumptionDetail",
             index=False,
@@ -50,8 +54,6 @@ def set_consumption_on_hpxml(hpxml_object: HpxmlDoc, csv_bills_filepath: Path) -
             namespaces=NSMAP,
         )
         new_obj = objectify.fromstring(xml_str)
-
-        unit = {"electricity": "kWh", "fuel oil": "gal", "natural gas": "therms"}.get(fuel)
 
         if unit is None:
             logger.error(f"Unsupported fuel type: {fuel}")
