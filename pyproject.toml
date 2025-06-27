@@ -22,7 +22,8 @@ dependencies = [
     "setuptools>=75.8.0",
     "sqlalchemy>=2.0.38",
     "tqdm>=4.67.1",
-    "deap>=1.4.3"
+    "deap>=1.4.3",
+    "pathos>=0.3.4"
 ]
 
 [dependency-groups]

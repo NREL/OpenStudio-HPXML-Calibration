@@ -6,6 +6,7 @@ from pathlib import Path
 import pandas as pd
 from deap import algorithms, base, creator, tools
 from loguru import logger
+from pathos.multiprocessing import ProcessingPool as Pool
 
 from openstudio_hpxml_calibration import app
 from openstudio_hpxml_calibration.hpxml import FuelType, HpxmlDoc
@@ -341,14 +342,16 @@ class Calibrate:
         # Define the objective function
         def evaluate(individual):
             # Map individual values to model inputs
-            (plug_load_pct_change,) = individual  # TODO: map more inputs
+            (plug_load_pct_change, heating_setpoint_offset, cooling_setpoint_offset) = (
+                individual  # TODO: map more inputs
+            )
             temp_output_dir = Path(tempfile.mkdtemp(prefix="calib_test_"))
             mod_hpxml_path = temp_output_dir / "modified.xml"
             arguments = {
                 "xml_file_path": str(self.hpxml_filepath),
                 "save_file_path": str(mod_hpxml_path),
-                # "heating_setpoint_offset": -2,
-                # "cooling_setpoint_offset": -2,
+                "heating_setpoint_offset": heating_setpoint_offset,
+                "cooling_setpoint_offset": cooling_setpoint_offset,
                 # "air_leakage_pct_change": 0.15,
                 # "heating_efficiency_pct_change": 0.05,
                 # "cooling_efficiency_pct_change": -0.05,
@@ -426,12 +429,18 @@ class Calibrate:
         toolbox.register(
             "attr_plug_load_pct_change", random.choice, [round(x * 0.01, 2) for x in range(-10, 11)]
         )
+        toolbox.register("attr_heating_setpoint_offset", random.choice, [-3, -2, -1, 0, 1, 2, 3])
+        toolbox.register("attr_cooling_setpoint_offset", random.choice, [-3, -2, -1, 0, 1, 2, 3])
         # TODO: add more inputs
         toolbox.register(
             "individual",
             tools.initCycle,
             creator.Individual,
-            (toolbox.attr_plug_load_pct_change,),
+            (
+                toolbox.attr_plug_load_pct_change,
+                toolbox.attr_heating_setpoint_offset,
+                toolbox.attr_cooling_setpoint_offset,
+            ),
             n=1,
         )
         toolbox.register("population", tools.initRepeat, list, toolbox.individual)
@@ -447,16 +456,18 @@ class Calibrate:
         stats.register("min", min)
         stats.register("avg", lambda x: sum(x) / len(x))
 
-        pop, logbook = algorithms.eaSimple(
-            pop,
-            toolbox,
-            cxpb=0.5,
-            mutpb=0.2,
-            ngen=generations,
-            stats=stats,
-            halloffame=hall_of_fame,
-            verbose=True,
-        )
+        with Pool() as pool:
+            toolbox.register("map", pool.map)
+            pop, logbook = algorithms.eaSimple(
+                pop,
+                toolbox,
+                cxpb=0.5,
+                mutpb=0.2,
+                ngen=generations,
+                stats=stats,
+                halloffame=hall_of_fame,
+                verbose=True,
+            )
 
         best_individual = hall_of_fame[0]
 
