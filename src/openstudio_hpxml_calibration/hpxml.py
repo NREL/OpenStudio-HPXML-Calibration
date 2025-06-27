@@ -162,8 +162,7 @@ class HpxmlDoc:
         :rtype: objectify.ObjectifiedElement
         """
         if building_id is None:
-            building_id = self.get_first_building_id()
-        # building = self.get_building(building_id)
+            return self.xpath("h:Consumption[1]")[0]
         return self.xpath(
             "h:Consumption[h:BuildingID/@idref=$building_id]", building_id=building_id
         )[0]
