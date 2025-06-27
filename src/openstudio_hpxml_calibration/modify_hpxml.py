@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 from loguru import logger
-from lxml import etree, objectify
+from lxml import objectify
 from lxml.builder import ElementMaker
 
 from openstudio_hpxml_calibration.hpxml import HpxmlDoc
@@ -64,7 +64,4 @@ def set_consumption_on_hpxml(hpxml_object: HpxmlDoc, csv_bills_filepath: Path) -
         consumption_details.append(new_obj)
 
     hpxml_object.root.append(consumption_section)
-    et = etree.ElementTree(hpxml_object.root)
-    et.write("model_with_consumption.xml", pretty_print=True)
-
     return hpxml_object
