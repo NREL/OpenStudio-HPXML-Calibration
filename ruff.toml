@@ -75,6 +75,9 @@ ignore = [
 
 [lint.per-file-ignores]
 "tests/*" = ["S101", "S607", "S603"] # assert statements are allowed in tests, and paths are safe
-"*_playground.py" = ["N803"] # allow non-lowercase variable in function name
+"*_playground.py" = [
+    "N803", # allow non-lowercase variable in function name
+    "PLC0415", # imports aren't at the top of the file in a marimo notebook
+    ]
 
 # [lint.pylint]
