@@ -151,7 +151,7 @@ wheels = [
 
 [[package]]
 name = "cyclopts"
-version = "3.19.0"
+version = "3.21.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
@@ -159,9 +159,9 @@ dependencies = [
     { name = "rich" },
     { name = "rich-rst" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/dc/52/21e319ca0fcd95096e1d34039f4b385ef271c2bc2276cabc5cf41dc32809/cyclopts-3.19.0.tar.gz", hash = "sha256:0825c5dbca16c85ebbcaca8ab0952e9a2b62bacf25c704ab8cdb2ce229d46163", size = 73150, upload-time = "2025-06-12T00:18:59.526Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/1a/3b/55e618ab1e795bcb8919ac9d144991ad46593a41526f1cc67b32e955dfbd/cyclopts-3.21.0.tar.gz", hash = "sha256:9792a2e25aad3211feb8b7ac968566a7660dad4936cd03576a3698fe15dfddaf", size = 74434, upload-time = "2025-06-27T02:29:06.914Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/82/1d/da668d2c98ac97b811042de24906a32a806606d03bb1eaaf6be51bd6def4/cyclopts-3.19.0-py3-none-any.whl", hash = "sha256:776a5747945bbafd23e007d3813b2bc4e6483adfe9f12f5684e941a726851ee4", size = 83086, upload-time = "2025-06-12T00:18:58.287Z" },
+    { url = "https://files.pythonhosted.org/packages/cf/20/4cdf27bc838534027400bfc294eae076407ca3a25548afb6b3f76c563c0d/cyclopts-3.21.0-py3-none-any.whl", hash = "sha256:0be9cc8dee760da0c256391b81dff3c2c6ab8bafbac6f6170e544528b2419f97", size = 84490, upload-time = "2025-06-27T02:29:05.568Z" },
 ]
 
 [[package]]
@@ -537,7 +537,7 @@ wheels = [
 
 [[package]]
 name = "marimo"
-version = "0.14.6"
+version = "0.14.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -557,9 +557,9 @@ dependencies = [
     { name = "uvicorn" },
     { name = "websockets" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a8/41/8b4a32f7d6c0c1be046011870a843c81d18b7ef2a2f8791eb8aa2829f8bd/marimo-0.14.6.tar.gz", hash = "sha256:e4484af13924cd2c60811fd59d643e686fc78f5bbdae615876efac5bd9df94f8", size = 29111510, upload-time = "2025-06-21T22:34:11.439Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/df/06/bcda71830e4a77f4226820ab63637b78a1d343a31a5197a26e831c806aee/marimo-0.14.8.tar.gz", hash = "sha256:05ff02baf0516484b565c1573cc22589d211e6a05f01df59fc95ae3ed9fff9c6", size = 29132795, upload-time = "2025-06-26T17:24:29.04Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/02/26/9a8b012fc9e2ccf6c26a72cbd2de45a2077b98d2910d60ad9d25e84c5916/marimo-0.14.6-py3-none-any.whl", hash = "sha256:e1061458fa1ff387e80b674f251cac729d07260036726e0693f915710e79b115", size = 29585644, upload-time = "2025-06-21T22:34:15.391Z" },
+    { url = "https://files.pythonhosted.org/packages/16/23/f930e2976ad8b30c8cff418b2613117d878da5b9d3ffae1c83c0d6c3add8/marimo-0.14.8-py3-none-any.whl", hash = "sha256:c2cab2ac3b6bf92262a272e41a8eb81087c3e454931b5e74c07d82445f45473e", size = 29609039, upload-time = "2025-06-26T17:24:23.949Z" },
 ]
 
 [[package]]
