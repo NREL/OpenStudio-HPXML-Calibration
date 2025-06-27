@@ -79,11 +79,23 @@ def test_add_bills(test_data):
         csv_bills_filepath=test_data["sample_bill_csv_path"],
     )
     assert cal.hpxml.xpath("h:Consumption[1]")[0] is not None
-    for consumption_info in cal.hpxml.get_consumption().ConsumptionDetails.ConsumptionInfo:
-        assert consumption_info.ConsumptionType.Energy.FuelType in ("electricity", "fuel oil")
     # Confirm that we wrote the building_id correctly
     assert (
         cal.hpxml.get_consumption().BuildingID.attrib["idref"] == cal.hpxml.get_first_building_id()
+    )
+    # Confirm that we got the right fuel types from the incoming csv file
+    raw_bills = pd.read_csv(test_data["sample_bill_csv_path"])
+    assert (
+        cal.hpxml.get_consumption()
+        .ConsumptionDetails.ConsumptionInfo[0]
+        .ConsumptionType.Energy.FuelType
+        == raw_bills["FuelType"].unique()[0]
+    )
+    assert (
+        cal.hpxml.get_consumption()
+        .ConsumptionDetails.ConsumptionInfo[1]
+        .ConsumptionType.Energy.FuelType
+        == raw_bills["FuelType"].unique()[1]
     )
     # Spot-check that the Consumption xml element matches the csv utility data
     assert (
