@@ -1,6 +1,8 @@
 import json
+import math
 import random
 import tempfile
+import time
 from pathlib import Path
 
 import pandas as pd
@@ -12,6 +14,12 @@ from openstudio_hpxml_calibration import app
 from openstudio_hpxml_calibration.hpxml import FuelType, HpxmlDoc
 from openstudio_hpxml_calibration.units import convert_units
 from openstudio_hpxml_calibration.weather_normalization.inverse_model import InverseModel
+
+# Ensure the creator is only created once
+if "FitnessMin" not in creator.__dict__:
+    creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
+if "Individual" not in creator.__dict__:
+    creator.create("Individual", list, fitness=creator.FitnessMin)
 
 
 class Calibrate:
@@ -338,13 +346,23 @@ class Calibrate:
 
         return comparison_results
 
-    def run_ga_search(self, population_size=5, generations=30):
-        # Define the objective function
+    def run_ga_search(self, population_size=50, generations=100):
         def evaluate(individual):
-            # Map individual values to model inputs
-            (plug_load_pct_change, heating_setpoint_offset, cooling_setpoint_offset) = (
-                individual  # TODO: map more inputs
-            )
+            start = time.time()
+            (
+                plug_load_pct_change,
+                heating_setpoint_offset,
+                cooling_setpoint_offset,
+                air_leakage_pct_change,
+                heating_efficiency_pct_change,
+                cooling_efficiency_pct_change,
+                roof_r_value_pct_change,
+                ceiling_r_value_pct_change,
+                above_ground_walls_r_value_pct_change,
+                below_ground_walls_r_value_pct_change,
+                slab_r_value_pct_change,
+                floor_r_value_pct_change,
+            ) = individual
             temp_output_dir = Path(tempfile.mkdtemp(prefix="calib_test_"))
             mod_hpxml_path = temp_output_dir / "modified.xml"
             arguments = {
@@ -352,30 +370,22 @@ class Calibrate:
                 "save_file_path": str(mod_hpxml_path),
                 "heating_setpoint_offset": heating_setpoint_offset,
                 "cooling_setpoint_offset": cooling_setpoint_offset,
-                # "air_leakage_pct_change": 0.15,
-                # "heating_efficiency_pct_change": 0.05,
-                # "cooling_efficiency_pct_change": -0.05,
                 "plug_load_pct_change": plug_load_pct_change,
-                # "roof_r_value_pct_change": 0.05,
-                # "ceiling_r_value_pct_change": 0.05,
-                # "above_ground_walls_r_value_pct_change": 0.05,
-                # "below_ground_walls_r_value_pct_change": 0.05,
-                # "slab_r_value_pct_change": 0.05,
-                # "floor_r_value_pct_change": 0.05
+                "air_leakage_pct_change": air_leakage_pct_change,
+                "heating_efficiency_pct_change": heating_efficiency_pct_change,
+                "cooling_efficiency_pct_change": cooling_efficiency_pct_change,
+                "roof_r_value_pct_change": roof_r_value_pct_change,
+                "ceiling_r_value_pct_change": ceiling_r_value_pct_change,
+                "above_ground_walls_r_value_pct_change": above_ground_walls_r_value_pct_change,
+                "below_ground_walls_r_value_pct_change": below_ground_walls_r_value_pct_change,
+                "slab_r_value_pct_change": slab_r_value_pct_change,
+                "floor_r_value_pct_change": floor_r_value_pct_change,
             }
 
             temp_osw = Path(temp_output_dir / "modify_hpxml.osw")
             create_measure_input_file(arguments, temp_osw)
 
-            # Modify the HPXML file
-            app(
-                [
-                    "modify-xml",
-                    str(temp_osw),
-                ]
-            )
-
-            # Run the simulation
+            app(["modify-xml", str(temp_osw)])
             app(
                 [
                     "run-sim",
@@ -392,46 +402,39 @@ class Calibrate:
             normalized_consumption = self.get_normalized_consumption_per_bill()
             comparison = self.compare_results(normalized_consumption, simulation_results)
 
-            bias_errors = []
-            for fuel_type in comparison:
-                for load_type, bias_error in comparison[fuel_type]["Bias Error"].items():
-                    bias_errors.append(abs(bias_error))
-
-            return tuple(bias_errors)
-
-            # Clean up temporary files
-            # shutil.rmtree(temp_output_dir, ignore_errors=True)
+            bias_errors = [
+                abs(bias_error)
+                for ft in comparison
+                for bias_error in comparison[ft]["Bias Error"].values()
+            ]
+            total_bias = math.sqrt(sum(b**2 for b in bias_errors) / len(bias_errors))
+            print(f"Evaluation took {time.time() - start:.2f} seconds")
+            return (total_bias,)
 
         def create_measure_input_file(arguments: dict, output_file_path: str):
-            # Fixed structure with dynamic arguments
             data = {
                 "run_directory": str(Path(arguments["save_file_path"]).parent),
                 "measure_paths": ["C:\\Github\\OpenStudio-HPXML-Calibration\\src\\measures"],
                 "steps": [{"measure_dir_name": "ModifyXML", "arguments": arguments}],
             }
-
-            # Ensure output directory exists
             Path(output_file_path).parent.mkdir(parents=True, exist_ok=True)
-
-            # Write the JSON file
             with open(output_file_path, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2)
 
-        # Stop early if solution is within threshold
-        def stopping_criteria(logbook):
-            return any(any(abs(b) <= 5 for b in gen["min"]) for gen in logbook)
-
-        # Set DEAP components
-        creator.create("FitnessMin", base.Fitness, weights=(-1.0,) * 5)
-        creator.create("Individual", list, fitness=creator.FitnessMin)
-
         toolbox = base.Toolbox()
-        toolbox.register(
-            "attr_plug_load_pct_change", random.choice, [round(x * 0.01, 2) for x in range(-10, 11)]
-        )
+        pct_choices = [round(x * 0.01, 2) for x in range(-10, 11)]
+        toolbox.register("attr_plug_load_pct_change", random.choice, pct_choices)
         toolbox.register("attr_heating_setpoint_offset", random.choice, [-3, -2, -1, 0, 1, 2, 3])
         toolbox.register("attr_cooling_setpoint_offset", random.choice, [-3, -2, -1, 0, 1, 2, 3])
-        # TODO: add more inputs
+        toolbox.register("attr_air_leakage_pct_change", random.choice, pct_choices)
+        toolbox.register("attr_heating_efficiency_pct_change", random.choice, pct_choices)
+        toolbox.register("attr_cooling_efficiency_pct_change", random.choice, pct_choices)
+        toolbox.register("attr_roof_r_value_pct_change", random.choice, pct_choices)
+        toolbox.register("attr_ceiling_r_value_pct_change", random.choice, pct_choices)
+        toolbox.register("attr_above_ground_walls_r_value_pct_change", random.choice, pct_choices)
+        toolbox.register("attr_below_ground_walls_r_value_pct_change", random.choice, pct_choices)
+        toolbox.register("attr_slab_r_value_pct_change", random.choice, pct_choices)
+        toolbox.register("attr_floor_r_value_pct_change", random.choice, pct_choices)
         toolbox.register(
             "individual",
             tools.initCycle,
@@ -440,24 +443,40 @@ class Calibrate:
                 toolbox.attr_plug_load_pct_change,
                 toolbox.attr_heating_setpoint_offset,
                 toolbox.attr_cooling_setpoint_offset,
+                toolbox.attr_air_leakage_pct_change,
+                toolbox.attr_heating_efficiency_pct_change,
+                toolbox.attr_cooling_efficiency_pct_change,
+                toolbox.attr_roof_r_value_pct_change,
+                toolbox.attr_ceiling_r_value_pct_change,
+                toolbox.attr_above_ground_walls_r_value_pct_change,
+                toolbox.attr_below_ground_walls_r_value_pct_change,
+                toolbox.attr_slab_r_value_pct_change,
+                toolbox.attr_floor_r_value_pct_change,
             ),
             n=1,
         )
         toolbox.register("population", tools.initRepeat, list, toolbox.individual)
-
         toolbox.register("evaluate", evaluate)
-        toolbox.register("mate", tools.cxBlend, alpha=0.5)
-        toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=0.1, indpb=0.2)
-        toolbox.register("select", tools.selTournament, tournsize=3)
+        toolbox.register("mate", tools.cxUniform, indpb=0.5)
 
-        pop = toolbox.population(n=population_size)
-        hall_of_fame = tools.HallOfFame(1)
-        stats = tools.Statistics(lambda ind: ind.fitness.values[0])  # noqa: PD011
-        stats.register("min", min)
-        stats.register("avg", lambda x: sum(x) / len(x))
+        def discrete_mutation(individual):
+            for i in range(len(individual)):
+                if random.random() < 0.2:
+                    individual[i] = random.choice(
+                        [-3, -2, -1, 0, 1, 2, 3] if i in [1, 2] else pct_choices
+                    )
+            return (individual,)
+
+        toolbox.register("mutate", discrete_mutation)
+        toolbox.register("select", tools.selTournament, tournsize=3)
 
         with Pool() as pool:
             toolbox.register("map", pool.map)
+            pop = toolbox.population(n=population_size)
+            hall_of_fame = tools.HallOfFame(1)
+            stats = tools.Statistics(lambda ind: ind.fitness.values[0])  # noqa: PD011
+            stats.register("min", min)
+            stats.register("avg", lambda x: sum(x) / len(x))
             pop, logbook = algorithms.eaSimple(
                 pop,
                 toolbox,
@@ -470,5 +489,4 @@ class Calibrate:
             )
 
         best_individual = hall_of_fame[0]
-
         return best_individual, pop, logbook
