@@ -67,3 +67,48 @@ def test_compare_results(test_data):
     assert len(comparison) == 2  # Should have two fuel types in the comparison for this building
     assert comparison["electricity"]["Absolute Error"]["baseload"] == 1918.2
     assert comparison["natural gas"]["Bias Error"]["heating"] == -125.3
+
+
+def test_add_bills(test_data):
+    # Confirm that an error is raised if no consumption data is in the hpxml object
+    with pytest.raises(ValueError, match="No matching Consumption/BuildingID/@idref"):
+        cal = Calibrate(original_hpxml_filepath=test_data["model_without_bills"])
+    # Confirm that the Consumption section is added when bills are provided
+    cal = Calibrate(
+        original_hpxml_filepath=test_data["model_without_bills"],
+        csv_bills_filepath=test_data["sample_bill_csv_path"],
+    )
+    assert cal.hpxml.xpath("h:Consumption[1]")[0] is not None
+    # Confirm that we wrote the building_id correctly
+    assert (
+        cal.hpxml.get_consumption().BuildingID.attrib["idref"] == cal.hpxml.get_first_building_id()
+    )
+    # Confirm that we got the right fuel types from the incoming csv file
+    raw_bills = pd.read_csv(test_data["sample_bill_csv_path"])
+    assert (
+        cal.hpxml.get_consumption()
+        .ConsumptionDetails.ConsumptionInfo[0]
+        .ConsumptionType.Energy.FuelType
+        == raw_bills["FuelType"].unique()[0]
+    )
+    assert (
+        cal.hpxml.get_consumption()
+        .ConsumptionDetails.ConsumptionInfo[1]
+        .ConsumptionType.Energy.FuelType
+        == raw_bills["FuelType"].unique()[1]
+    )
+    # Spot-check that the Consumption xml element matches the csv utility data
+    assert (
+        cal.hpxml.get_consumption()
+        .ConsumptionDetails.ConsumptionInfo[0]
+        .ConsumptionDetail[2]
+        .Consumption
+        == 1200
+    )
+    assert (
+        cal.hpxml.get_consumption()
+        .ConsumptionDetails.ConsumptionInfo[1]
+        .ConsumptionDetail[2]
+        .Consumption
+        == 14
+    )

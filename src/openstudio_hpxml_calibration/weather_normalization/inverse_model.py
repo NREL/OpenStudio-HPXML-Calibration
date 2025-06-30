@@ -23,7 +23,10 @@ class InverseModel:
             bills_weather = ud.join_bills_weather(bills, *self.lat_lon)
             for col in ["consumption", "daily_consumption"]:
                 bills_weather[col] = convert_hpxml_energy_units(
-                    bills_weather[col], self.bill_units[fuel_type], EnergyUnitType.BTU
+                    bills_weather[col],
+                    self.bill_units[fuel_type],
+                    EnergyUnitType.BTU,
+                    fuel_type,
                 )
             self.bills_weather_by_fuel_type_in_btu[fuel_type] = bills_weather
 
