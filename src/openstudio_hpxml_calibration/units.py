@@ -26,6 +26,13 @@ SCALARS = {
     ("kbtu", "kwh"): 293.0710701722222 / 1000.0,
     ("mbtu", "therm"): 10.0,
     ("mbtu", "wh"): 293071.0701722222,
+    # ccf conversions sourced from EIA FAQ: https://www.eia.gov/tools/faqs/faq.php?id=45&t=8
+    ("ccf", "btu"): 103800,
+    ("ccf", "kbtu"): 103.8,
+    ("ccf", "mbtu"): 0.1038,
+    ("ccf", "therm"): 1.038,
+    ("kcf", "btu"): 103800.0 * 10,
+    ("mcf", "btu"): 103800.0 * 100,
     ("therm", "btu"): 100000.0,
     ("therm", "kbtu"): 100.0,
     ("therm", "kwh"): 29.307107017222222,
@@ -34,9 +41,19 @@ SCALARS = {
     ("wh", "kbtu"): 0.003412141633127942,
     ("kbtu", "btu"): 1000.0,
     ("kbtu", "mbtu"): 0.001,
+    ("gal_fuel_oil", "btu"): 139 * 1000.0,
     ("gal_fuel_oil", "kbtu"): 139,
     ("gal_fuel_oil", "mbtu"): 139 / 1000.0,
     ("gal_fuel_oil", "j"): 139 * 1000.0 * 1055.05585262,
+    # additional fuel oil conversions from:
+    # https://www.epa.gov/system/files/documents/2022-10/Default%20Heat%20Content%20Ratios%20for%20Help%20and%20User%20Guide%20(1).pdf
+    # https://www.eia.gov/energyexplained/units-and-calculators/british-thermal-units.php
+    # https://www.engineeringtoolbox.com/energy-content-d_868.html
+    ("gal_fuel_oil_1", "btu"): 135 * 1000.0,
+    ("gal_fuel_oil_2", "btu"): 138.5 * 1000.0,
+    ("gal_fuel_oil_4", "btu"): 146 * 1000.0,
+    ("gal_fuel_oil_5/6", "btu"): 150 * 1000.0,
+    ("gal_propane", "btu"): 91.6 * 1000.0,
     ("gal_propane", "kbtu"): 91.6,
     ("gal_propane", "mbtu"): 91.6 / 1000.0,
     ("gal_propane", "j"): 91.6 * 1000.0 * 1055.05585262,
@@ -197,6 +214,10 @@ def convert_hpxml_energy_units(
             EnergyUnitType.BTU,
             EnergyUnitType.KBTU,
             EnergyUnitType.MBTU,
+            EnergyUnitType.CCF,
+            EnergyUnitType.KCF,
+            EnergyUnitType.MCF,
+            EnergyUnitType.GAL,
         )
     }
     hpxml_fuel_type_mapping.update({EnergyUnitType.THERMS: "therm"})
@@ -205,7 +226,14 @@ def convert_hpxml_energy_units(
     try:
         return convert_units(x, from_val, to_val)
     except ValueError as ex:
-        if fuel_type == (FuelType.PROPANE, FuelType.FUEL_OIL):
+        if fuel_type in (
+            FuelType.PROPANE,
+            FuelType.FUEL_OIL,
+            FuelType.FUEL_OIL_1,
+            FuelType.FUEL_OIL_2,
+            FuelType.FUEL_OIL_4,
+            FuelType.FUEL_OIL_5_6,
+        ):
             gal_energy_val = f"gal_{'_'.join(fuel_type.value.split())}"
             if from_ == EnergyUnitType.GAL:
                 from_val = gal_energy_val
