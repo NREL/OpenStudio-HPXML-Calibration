@@ -2,7 +2,6 @@ import json
 import math
 import random
 import tempfile
-import time
 from pathlib import Path
 
 import pandas as pd
@@ -348,7 +347,6 @@ class Calibrate:
 
     def run_ga_search(self, population_size=50, generations=100):
         def evaluate(individual):
-            start = time.time()
             (
                 plug_load_pct_change,
                 heating_setpoint_offset,
@@ -408,7 +406,7 @@ class Calibrate:
                 for bias_error in comparison[ft]["Bias Error"].values()
             ]
             total_bias = math.sqrt(sum(b**2 for b in bias_errors) / len(bias_errors))
-            print(f"Evaluation took {time.time() - start:.2f} seconds")
+
             return (total_bias,)
 
         def create_measure_input_file(arguments: dict, output_file_path: str):
@@ -422,10 +420,12 @@ class Calibrate:
                 json.dump(data, f, indent=2)
 
         toolbox = base.Toolbox()
-        pct_choices = [round(x * 0.01, 2) for x in range(-10, 11)]
+        pct_choices = [round(x * 0.01, 1) for x in range(-90, 91)]
+        heating_setpoint_choices = [-9, -7, -5, -3, -1, 0, 1, 3, 5, 7, 9]
+        cooling_setpoint_choices = [-9, -7, -5, -2, -1, 0, 1, 3, 5, 7, 9]
         toolbox.register("attr_plug_load_pct_change", random.choice, pct_choices)
-        toolbox.register("attr_heating_setpoint_offset", random.choice, [-3, -2, -1, 0, 1, 2, 3])
-        toolbox.register("attr_cooling_setpoint_offset", random.choice, [-3, -2, -1, 0, 1, 2, 3])
+        toolbox.register("attr_heating_setpoint_offset", random.choice, heating_setpoint_choices)
+        toolbox.register("attr_cooling_setpoint_offset", random.choice, cooling_setpoint_choices)
         toolbox.register("attr_air_leakage_pct_change", random.choice, pct_choices)
         toolbox.register("attr_heating_efficiency_pct_change", random.choice, pct_choices)
         toolbox.register("attr_cooling_efficiency_pct_change", random.choice, pct_choices)
@@ -461,10 +461,13 @@ class Calibrate:
 
         def discrete_mutation(individual):
             for i in range(len(individual)):
-                if random.random() < 0.2:
-                    individual[i] = random.choice(
-                        [-3, -2, -1, 0, 1, 2, 3] if i in [1, 2] else pct_choices
-                    )
+                if random.random() < 0.05:
+                    if i == 1:  # heating_setpoint_offset
+                        individual[i] = random.choice(heating_setpoint_choices)
+                    elif i == 2:  # cooling_setpoint_offset
+                        individual[i] = random.choice(cooling_setpoint_choices)
+                    else:
+                        individual[i] = random.choice(pct_choices)
             return (individual,)
 
         toolbox.register("mutate", discrete_mutation)
@@ -477,16 +480,42 @@ class Calibrate:
             stats = tools.Statistics(lambda ind: ind.fitness.values[0])  # noqa: PD011
             stats.register("min", min)
             stats.register("avg", lambda x: sum(x) / len(x))
-            pop, logbook = algorithms.eaSimple(
-                pop,
-                toolbox,
-                cxpb=0.5,
-                mutpb=0.2,
-                ngen=generations,
-                stats=stats,
-                halloffame=hall_of_fame,
-                verbose=True,
-            )
+
+            # Initial evaluation
+            invalid_ind = [ind for ind in pop if not ind.fitness.valid]
+            fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
+            for ind, fit in zip(invalid_ind, fitnesses):
+                ind.fitness.values = fit
+
+            hall_of_fame.update(pop)
+            logbook = tools.Logbook()
+            logbook.header = ["gen", "nevals", "min", "avg"]
+            record = stats.compile(pop)
+            logbook.record(gen=0, nevals=len(invalid_ind), **record)
+            print(logbook.stream)
+
+            for gen in range(1, generations + 1):
+                # Elitism: Copy the best individuals
+                elite = list(hall_of_fame.items)
+
+                # Generate offspring
+                offspring = algorithms.varAnd(pop, toolbox, cxpb=0.7, mutpb=0.05)
+
+                # Evaluate offspring
+                invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+                fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
+                for ind, fit in zip(invalid_ind, fitnesses):
+                    ind.fitness.values = fit
+
+                # Select next generation (excluding elites), then add elites
+                pop = toolbox.select(offspring, population_size - len(elite))
+                pop.extend(elite)
+
+                # Update Hall of Fame and stats
+                hall_of_fame.update(pop)
+                record = stats.compile(pop)
+                logbook.record(gen=gen, nevals=len(invalid_ind), **record)
+                print(logbook.stream)
 
         best_individual = hall_of_fame[0]
         return best_individual, pop, logbook
