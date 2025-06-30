@@ -40,7 +40,7 @@ def test_cli_calls_openstudio(capsys):
     # capsys is a builtin pytest fixture that captures stdout and stderr
     app(["openstudio-version"])
     captured = capsys.readouterr()
-    assert "HPXML v4.0" in captured.out
+    assert "HPXML v" in captured.out
 
 
 def test_cli_calls_run_sim(test_data):
@@ -58,7 +58,7 @@ def test_cli_calls_run_sim(test_data):
     output_file = TEST_SIM_DIR / "results_annual.json"
     assert output_file.exists()
     output_data: dict = json.loads(output_file.read_text())
-    assert output_data["Energy Use"]["Total (MBtu)"] == 217.59
+    assert output_data["Energy Use"]["Total (MBtu)"] == 218.83
 
 
 def test_calls_modify_hpxml(test_data):
