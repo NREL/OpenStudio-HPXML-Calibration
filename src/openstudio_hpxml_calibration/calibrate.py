@@ -12,6 +12,7 @@ from pathos.multiprocessing import ProcessingPool as Pool
 
 from openstudio_hpxml_calibration import app
 from openstudio_hpxml_calibration.hpxml import FuelType, HpxmlDoc
+from openstudio_hpxml_calibration.modify_hpxml import set_consumption_on_hpxml
 from openstudio_hpxml_calibration.units import convert_units
 from openstudio_hpxml_calibration.weather_normalization.inverse_model import InverseModel
 
@@ -23,9 +24,14 @@ if "Individual" not in creator.__dict__:
 
 
 class Calibrate:
-    def __init__(self, original_hpxml_filepath: Path):
+    def __init__(self, original_hpxml_filepath: Path, csv_bills_filepath: Path | None = None):
         self.hpxml_filepath = Path(original_hpxml_filepath).resolve()
-        self.hpxml = HpxmlDoc(self.hpxml_filepath)
+        self.hpxml = HpxmlDoc(Path(original_hpxml_filepath).resolve())
+
+        if csv_bills_filepath:
+            logger.info(f"Adding utility data from {csv_bills_filepath} to hpxml")
+            self.hpxml = set_consumption_on_hpxml(self.hpxml, csv_bills_filepath)
+
         self.inv_model = InverseModel(self.hpxml)
 
     def get_normalized_consumption_per_bill(self) -> dict[FuelType, pd.DataFrame]:

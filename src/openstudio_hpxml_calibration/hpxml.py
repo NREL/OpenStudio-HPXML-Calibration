@@ -80,7 +80,7 @@ class HpxmlDoc:
         :type filename: os.PathLike
         :param validate_schema: Validate against the HPXML schema, defaults to True
         :type validate_schema: bool, optional
-        :param validate_schematron: Validate against EPvalidator.xml schematron, defaults to True
+        :param validate_schematron: Validate against EPvalidator schematron, defaults to True
         :type validate_schematron: bool, optional
         """
         self.file_path = Path(filename).resolve()
@@ -102,7 +102,7 @@ class HpxmlDoc:
                 / "HPXMLtoOpenStudio"
                 / "resources"
                 / "hpxml_schematron"
-                / "EPvalidator.xml"
+                / "EPvalidator.sch"
             )
             schematron_doc = etree.parse(str(hpxml_schematron_filename))
             schematron = isoschematron.Schematron(schematron_doc)
@@ -155,6 +155,20 @@ class HpxmlDoc:
             return self.xpath("h:Building[h:BuildingID/@id=$building_id]", building_id=building_id)[
                 0
             ]
+
+    def get_consumption(self, building_id: str | None = None) -> objectify.ObjectifiedElement:
+        """Get the Consumption element for a building
+
+        :param building_id: The id of the Building to retrieve, gets first one if missing
+        :type building_id: str | None, optional
+        :return: Consumption element
+        :rtype: objectify.ObjectifiedElement
+        """
+        if building_id is None:
+            return self.xpath("h:Consumption[1]")[0]
+        return self.xpath(
+            "h:Consumption[h:BuildingID/@idref=$building_id]", building_id=building_id
+        )[0]
 
     @functools.cache
     def get_epw_path(self, building_id: str | None = None) -> Path:
