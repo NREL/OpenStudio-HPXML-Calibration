@@ -173,7 +173,7 @@ def test_bpi2400_utility_bill_validity(filename):
     bpi2400_utility_bill_validity = ud.check_bpi2400_utility_bill_validity(
         hpxml, bills_by_fuel_type
     )
-    assert bpi2400_utility_bill_validity   
+    assert bpi2400_utility_bill_validity
 
 
 def test_normalize_consumption_to_epw():
