@@ -5,6 +5,7 @@ from pathlib import Path
 
 import requests
 from cyclopts import App
+from loguru import logger
 from tqdm import tqdm
 
 from openstudio_hpxml_calibration.utils import OS_HPXML_PATH, calculate_sha256, get_cache_dir
@@ -51,7 +52,7 @@ def run_sim(
     output_dir: str
         Output directory to save simulation results dir. Default is HPXML file dir.
     granularity: str
-        Granularity of simulation results. Default is annual.
+        Granularity of simulation results. Annual results returned if not provided.
     """
     run_simulation_command = [
         "openstudio",
@@ -68,6 +69,8 @@ def run_sim(
     if output_dir is not None:
         output_dir = ["--output-dir", output_dir]
         run_simulation_command.extend(output_dir)
+
+    logger.debug(f"Running command: {' '.join(run_simulation_command)}")
     subprocess.run(
         run_simulation_command,
         capture_output=True,
@@ -92,6 +95,7 @@ def modify_xml(workflow_file: Path) -> None:
         "--measures_only",
     ]
 
+    logger.debug(f"Running command: {' '.join(modify_xml_command)}")
     subprocess.run(
         modify_xml_command,
         capture_output=True,
@@ -101,6 +105,7 @@ def modify_xml(workflow_file: Path) -> None:
 
 @app.command
 def download_weather() -> None:
+    # TODO: move the code for this to a separate module
     """Download TMY3 weather files from NREL
 
     Parameters
@@ -132,8 +137,9 @@ def download_weather() -> None:
                     pbar.update(len(chunk))
 
     # Extract weather files
-    print(weather_zip_filepath)
+    print(f"zip saved to: {weather_zip_filepath}")
     weather_dir = OS_HPXML_PATH / "weather"
+    print(f"Extracting weather files to {weather_dir}")
     with zipfile.ZipFile(weather_zip_filepath, "r") as zf:
         for filename in tqdm(zf.namelist(), desc="Extracting epws"):
             if filename.endswith(".epw") and not (weather_dir / filename).exists():

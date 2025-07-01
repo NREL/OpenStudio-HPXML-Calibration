@@ -9,6 +9,7 @@ from matplotlib import pyplot as plt
 
 import openstudio_hpxml_calibration.weather_normalization.utility_data as ud
 from openstudio_hpxml_calibration.hpxml import HpxmlDoc
+from openstudio_hpxml_calibration.units import convert_units
 from openstudio_hpxml_calibration.weather_normalization.inverse_model import InverseModel
 
 repo_root = pathlib.Path(__file__).resolve().parent.parent
@@ -98,15 +99,32 @@ def test_curve_fit(results_dir, filename):
         model = inv_model.get_model(fuel_type)
         bills_temps = inv_model.bills_weather_by_fuel_type_in_btu[fuel_type]
         temps_range = np.linspace(bills_temps["avg_temp"].min(), bills_temps["avg_temp"].max(), 500)
+        fig = plt.figure(figsize=(8, 6))
         daily_consumption_pred = model(temps_range)
         cvrmse = model.calc_cvrmse(bills_temps)
-
-        fig = plt.figure(figsize=(8, 6))
-        plt.plot(
-            temps_range,
-            daily_consumption_pred,
-            label=f"{model.MODEL_NAME}, CVRMSE = {cvrmse:.1%}\n{[float(format(value, '.2f')) for value in model.parameters]}",
-        )
+        num_params = len(model.parameters)
+        if num_params == 5:
+            plt.plot(
+                temps_range,
+                daily_consumption_pred,
+                label=(
+                    f"{model.MODEL_NAME}, CVRMSE = {cvrmse:.1%}\n Model parameters:\n"
+                    f"1) Baseload value: {model.parameters[0]:.3f}\n"
+                    f"2) Slopes: {model.parameters[1]:.3f}, {model.parameters[2]:.3f}\n"
+                    f"3) Inflection points: {model.parameters[-2]:.1f}, {model.parameters[-1]:.1f}"
+                ),
+            )
+        elif num_params == 3:
+            plt.plot(
+                temps_range,
+                daily_consumption_pred,
+                label=(
+                    f"{model.MODEL_NAME}, CVRMSE = {cvrmse:.1%}\n Model parameters:\n"
+                    f"1) Baseload value: {model.parameters[0]:.3f}\n"
+                    f"2) Slope: {model.parameters[1]:.3f}\n"
+                    f"3) Inflection point: {model.parameters[-1]:.1f}"
+                ),
+            )
         plt.scatter(
             bills_temps["avg_temp"],
             bills_temps["daily_consumption"],
@@ -163,6 +181,9 @@ def test_normalize_consumption_to_epw():
     hpxml = HpxmlDoc(filename)
     inv_model = InverseModel(hpxml)
 
-    for fuel_type in inv_model.bills_by_fuel_type:
-        epw_annual = inv_model.predict_epw_annual(fuel_type)
+    for fuel_type, bills in inv_model.bills_by_fuel_type.items():
+        epw_daily = convert_units(inv_model.predict_epw_daily(fuel_type), "BTU", "kBTU")
+        print(f"EPW Daily {fuel_type.value} (kbtu):\n", epw_daily)
+        epw_annual = epw_daily.sum()
+        print(f"EPW Annual {fuel_type.value} (kbtu):\n", epw_annual)
         assert not pd.isna(epw_annual).any()
