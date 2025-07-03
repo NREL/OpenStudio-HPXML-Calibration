@@ -627,10 +627,12 @@ class Calibrate:
             # Save best individual bias/abs errors
             best_comp = best_ind.comparison
             for end_use, metrics in best_comp.items():
-                for fuel_type, bias in metrics["Bias Error"].items():
+                for fuel_type, bias_error in metrics["Bias Error"].items():
                     key = f"{end_use}_{fuel_type}"
-                    best_bias_series.setdefault(key, []).append(bias)
-                    best_abs_series.setdefault(key, []).append(abs(bias))
+                    best_bias_series.setdefault(key, []).append(bias_error)
+                for fuel_type, abs_error in metrics["Absolute Error"].items():
+                    key = f"{end_use}_{fuel_type}"
+                    best_abs_series.setdefault(key, []).append(abs_error)
 
             # Log generation 0
             record = stats.compile(pop)
@@ -670,10 +672,12 @@ class Calibrate:
                 # Save hall of fame bias/abs errors
                 best_comp = best_ind.comparison
                 for end_use, metrics in best_comp.items():
-                    for fuel_type, bias in metrics["Bias Error"].items():
+                    for fuel_type, bias_error in metrics["Bias Error"].items():
                         key = f"{end_use}_{fuel_type}"
-                        best_bias_series.setdefault(key, []).append(bias)
-                        best_abs_series.setdefault(key, []).append(abs(bias))
+                        best_bias_series.setdefault(key, []).append(bias_error)
+                    for fuel_type, abs_error in metrics["Absolute Error"].items():
+                        key = f"{end_use}_{fuel_type}"
+                        best_abs_series.setdefault(key, []).append(abs_error)
 
                 record = stats.compile(pop)
                 record.update(
