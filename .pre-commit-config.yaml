@@ -32,7 +32,7 @@ repos:
     rev: v0.12.1
     hooks:
       # Run the linter
-      - id: ruff
+      - id: ruff-check
       #  unsafe fixes: https://docs.astral.sh/ruff/linter/#fixes
         args: [--fix, --exit-non-zero-on-fix, --output-format=full, --unsafe-fixes]
       # Run the formatter
