@@ -1,5 +1,5 @@
+import copy
 import json
-import math
 import random
 import shutil
 import tempfile
@@ -352,7 +352,7 @@ class Calibrate:
 
         return comparison_results
 
-    def run_ga_search(self, population_size=70, generations=150):
+    def run_ga_search(self, population_size=100, generations=100):
         all_temp_dirs = set()
         best_dirs_by_gen = []
 
@@ -410,14 +410,14 @@ class Calibrate:
             normalized_consumption = self.get_normalized_consumption_per_bill()
             comparison = self.compare_results(normalized_consumption, simulation_results)
 
-            bias_errors = [
-                abs(bias_error)
-                for ft in comparison
-                for bias_error in comparison[ft]["Bias Error"].values()
-            ]
-            total_bias = math.sqrt(sum(b**2 for b in bias_errors) / len(bias_errors))
+            errors = []
+            for end_use, metrics in comparison.items():
+                for fuel_type, bias in metrics["Bias Error"].items():
+                    penalty = max(0, abs(bias) - 5)  # Bias within 5% still penalized
+                    errors.append(penalty**2)  # quadratic penalty
+            total_score = sum(errors)
 
-            return (total_bias,), comparison, temp_output_dir
+            return (total_score,), comparison, temp_output_dir
 
         def create_measure_input_file(arguments: dict, output_file_path: str):
             data = {
@@ -428,6 +428,9 @@ class Calibrate:
             Path(output_file_path).parent.mkdir(parents=True, exist_ok=True)
             with open(output_file_path, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2)
+
+        def diversity(pop):
+            return len({tuple(ind) for ind in pop}) / len(pop)
 
         toolbox = base.Toolbox()
         plug_load_pct_choices = [
@@ -453,8 +456,6 @@ class Calibrate:
             1,
             5,
             10,
-            15,
-            20,
         ]
         air_leakage_pct_choices = [
             -0.9,
@@ -479,8 +480,6 @@ class Calibrate:
             1,
             5,
             10,
-            15,
-            20,
         ]
         hvac_eff_pct_choices = [round(x * 0.01, 1) for x in range(-90, 91)]
         r_value_pct_choices = [
@@ -506,8 +505,6 @@ class Calibrate:
             1,
             5,
             10,
-            15,
-            20,
         ]
         heating_setpoint_choices = [-9, -7, -5, -3, -1, 0, 1, 3, 5, 7, 9]
         cooling_setpoint_choices = [-9, -7, -5, -2, -1, 0, 1, 3, 5, 7, 9]
@@ -529,7 +526,7 @@ class Calibrate:
         toolbox.register("attr_floor_r_value_pct_change", random.choice, r_value_pct_choices)
         toolbox.register(
             "individual",
-            tools.initCycle,
+            tools.initRepeat,
             creator.Individual,
             (
                 toolbox.attr_plug_load_pct_change,
@@ -545,11 +542,31 @@ class Calibrate:
                 toolbox.attr_slab_r_value_pct_change,
                 toolbox.attr_floor_r_value_pct_change,
             ),
-            n=1,
+            n=12,
         )
+
+        def generate_random_individual():
+            return creator.Individual(
+                [
+                    random.choice(plug_load_pct_choices),
+                    random.choice(heating_setpoint_choices),
+                    random.choice(cooling_setpoint_choices),
+                    random.choice(air_leakage_pct_choices),
+                    random.choice(hvac_eff_pct_choices),
+                    random.choice(hvac_eff_pct_choices),
+                    random.choice(r_value_pct_choices),
+                    random.choice(r_value_pct_choices),
+                    random.choice(r_value_pct_choices),
+                    random.choice(r_value_pct_choices),
+                    random.choice(r_value_pct_choices),
+                    random.choice(r_value_pct_choices),
+                ]
+            )
+
+        toolbox.register("individual", generate_random_individual)
         toolbox.register("population", tools.initRepeat, list, toolbox.individual)
         toolbox.register("evaluate", evaluate)
-        toolbox.register("mate", tools.cxUniform, indpb=0.5)
+        toolbox.register("mate", tools.cxUniform, indpb=0.4)
 
         # Define parameter-to-choices mapping for mutation
         param_choices_map = {
@@ -568,13 +585,17 @@ class Calibrate:
         }
 
         def discrete_mutation(individual):
-            for i in range(len(individual)):
-                if random.random() < 0.05:
-                    individual[i] = random.choice(param_choices_map[i])
+            num_mutations = random.randint(3, 6)  # at least 3-6 gene mutation
+            mutation_indices = random.sample(range(len(individual)), num_mutations)
+            for i in mutation_indices:
+                current_val = individual[i]
+                choices = [val for val in param_choices_map[i] if val != current_val]
+                if choices:
+                    individual[i] = random.choice(choices)
             return (individual,)
 
         toolbox.register("mutate", discrete_mutation)
-        toolbox.register("select", tools.selTournament, tournsize=3)
+        toolbox.register("select", tools.selTournament, tournsize=2)
 
         with Pool() as pool:
             toolbox.register("map", pool.map)
@@ -585,7 +606,7 @@ class Calibrate:
             stats.register("avg", lambda x: sum(x) / len(x))
 
             logbook = tools.Logbook()
-            logbook.header = ["gen", "nevals", "min", "avg"]
+            logbook.header = ["gen", "nevals", "min", "avg", "diversity"]
 
             best_bias_series = {}
             best_abs_series = {}
@@ -604,7 +625,7 @@ class Calibrate:
             best_dirs_by_gen.append(getattr(best_ind, "temp_output_dir", None))
 
             # Save best individual bias/abs errors
-            best_comp = hall_of_fame[0].comparison
+            best_comp = best_ind.comparison
             for end_use, metrics in best_comp.items():
                 for fuel_type, bias in metrics["Bias Error"].items():
                     key = f"{end_use}_{fuel_type}"
@@ -615,15 +636,18 @@ class Calibrate:
             record = stats.compile(pop)
             record.update({f"bias_error_{k}": v[-1] for k, v in best_bias_series.items()})
             record.update({f"abs_error_{k}": v[-1] for k, v in best_abs_series.items()})
+            record["best_individual"] = list(best_ind)
+            record["diversity"] = diversity(pop)
+            record["best_individual_filepath"] = str(best_ind.temp_output_dir)
             logbook.record(gen=0, nevals=len(invalid_ind), **record)
             print(logbook.stream)
 
             for gen in range(1, generations + 1):
                 # Elitism: Copy the best individuals
-                elite = list(hall_of_fame.items)
+                elite = [copy.deepcopy(ind) for ind in tools.selBest(pop, k=1)]
 
                 # Generate offspring
-                offspring = algorithms.varAnd(pop, toolbox, cxpb=0.7, mutpb=0.05)
+                offspring = algorithms.varAnd(pop, toolbox, cxpb=0.4, mutpb=0.2)
 
                 # Evaluate offspring
                 invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
@@ -644,7 +668,7 @@ class Calibrate:
                 best_dirs_by_gen.append(getattr(best_ind, "temp_output_dir", None))
 
                 # Save hall of fame bias/abs errors
-                best_comp = hall_of_fame[0].comparison
+                best_comp = best_ind.comparison
                 for end_use, metrics in best_comp.items():
                     for fuel_type, bias in metrics["Bias Error"].items():
                         key = f"{end_use}_{fuel_type}"
@@ -656,6 +680,9 @@ class Calibrate:
                     {f"bias_error_{k}": best_bias_series[k][-1] for k in best_bias_series}
                 )
                 record.update({f"abs_error_{k}": best_abs_series[k][-1] for k in best_abs_series})
+                record["best_individual"] = list(best_ind)
+                record["diversity"] = diversity(pop)
+                record["best_individual_filepath"] = str(best_ind.temp_output_dir)
                 logbook.record(gen=gen, nevals=len(invalid_ind), **record)
                 print(logbook.stream)
 
