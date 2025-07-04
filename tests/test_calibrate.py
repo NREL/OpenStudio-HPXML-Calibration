@@ -4,6 +4,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 from loguru import logger
+from lxml import etree
 
 from openstudio_hpxml_calibration.calibrate import Calibrate
 
@@ -119,5 +120,9 @@ def test_add_bills(test_data):
 
 @pytest.mark.parametrize("filename", invalid_hpxmls, ids=lambda x: x.stem)
 def test_hpxml_invalid(filename):
-    with pytest.raises(ValueError):  # noqa: PT011
-        Calibrate(filename)
+    if filename.stem in ("invalid_hpxml_xsd", "invalid_oshpxml_sch"):
+        with pytest.raises(etree.DocumentInvalid):
+            Calibrate(filename)
+    else:
+        with pytest.raises(ValueError):  # noqa: PT011
+            Calibrate(filename)
