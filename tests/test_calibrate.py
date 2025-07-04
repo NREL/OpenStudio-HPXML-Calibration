@@ -74,7 +74,7 @@ def test_compare_results(test_data):
 
 def test_add_bills(test_data):
     # Confirm that an error is raised if no consumption data is in the hpxml object
-    with pytest.raises(IndexError, match="list index out of range"):
+    with pytest.raises(ValueError, match="No Consumption section found"):
         cal = Calibrate(original_hpxml_filepath=test_data["model_without_bills"])
     # Confirm that the Consumption section is added when bills are provided
     cal = Calibrate(
