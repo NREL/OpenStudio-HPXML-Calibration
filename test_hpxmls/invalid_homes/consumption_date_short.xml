@@ -696,12 +696,7 @@
         <ConsumptionDetail>
           <Consumption>1804</Consumption>
           <StartDateTime>2008-07-11T00:00:00</StartDateTime>
-          <EndDateTime>2008-08-09T00:00:00</EndDateTime>
-        </ConsumptionDetail>
-        <ConsumptionDetail>
-          <Consumption>1769</Consumption>
-          <StartDateTime>2008-08-09T00:00:00</StartDateTime>
-          <EndDateTime>2008-09-09T00:00:00</EndDateTime>
+          <EndDateTime>2008-08-01T00:00:00</EndDateTime>
         </ConsumptionDetail>
       </ConsumptionInfo>
       <ConsumptionInfo>
