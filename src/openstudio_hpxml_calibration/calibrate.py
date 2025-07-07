@@ -1,4 +1,5 @@
 import json
+from datetime import datetime as dt
 from pathlib import Path
 
 import pandas as pd
@@ -17,6 +18,8 @@ class Calibrate:
         if csv_bills_filepath:
             logger.info(f"Adding utility data from {csv_bills_filepath} to hpxml")
             self.hpxml = set_consumption_on_hpxml(self.hpxml, csv_bills_filepath)
+
+        self.hpxml_data_error_checking()
 
         self.inv_model = InverseModel(self.hpxml)
 
@@ -337,3 +340,254 @@ class Calibrate:
                         )
 
         return comparison_results
+
+    def hpxml_data_error_checking(self) -> None:
+        """Check for common HPXML errors
+
+        :raises ValueError: If an error is found
+        """
+        now = dt.now()
+        building = self.hpxml.get_building()
+        try:
+            consumption = self.hpxml.get_consumption()
+        except IndexError:
+            raise ValueError("No Consumption section found in HPXML file.")
+
+        # Check that the building doesn't have PV
+        try:
+            building.BuildingDetails.Systems.Photovoltaics
+            raise ValueError("PV is not supported with automated calibration at this time.")
+        except AttributeError:
+            pass
+
+        # Check that consumption types are appropriate (not mixing Energy and Water)
+        for fuel in consumption.ConsumptionDetails.ConsumptionInfo:
+            try:
+                if fuel.ConsumptionType.Energy.FuelType in FuelType._value2member_map_:
+                    continue
+            except AttributeError:
+                raise ValueError(
+                    "ConsumptionType.Energy.FuelType is missing or not recognized in Consumption. "
+                    "We only calibrate energy consumption, not water."
+                )
+
+        # Check that build ID matches consumption BuildingID
+        if not consumption.BuildingID.attrib["idref"] == building.BuildingID.attrib["id"]:
+            raise ValueError(
+                f"Consumption BuildingID idref '{consumption.BuildingID.attrib['idref']}' does "
+                f"not match Building ID '{building.BuildingID.attrib['id']}'"
+            )
+
+        # Check consumption energy units are appropriate for the fuel type
+        for fuel in consumption.ConsumptionDetails.ConsumptionInfo:
+            match fuel.ConsumptionType.Energy.FuelType:
+                case FuelType.ELECTRICITY.value:
+                    if fuel.ConsumptionType.Energy.UnitofMeasure not in ("kWh", "MWh"):
+                        raise ValueError(
+                            "Electricity consumption unit must be 'kWh' or 'MWh', "
+                            f"got '{fuel.ConsumptionType.Energy.UnitofMeasure}'"
+                        )
+                case FuelType.NATURAL_GAS.value:
+                    if fuel.ConsumptionType.Energy.UnitofMeasure not in (
+                        "therms",
+                        "Btu",
+                        "kBtu",
+                        "MBtu",
+                        "ccf",
+                        "kcf",
+                        "Mcf",
+                    ):
+                        raise ValueError(
+                            "Natural gas consumption unit must be 'therm' or 'CCF', "
+                            f"got '{fuel.ConsumptionType.Energy.UnitofMeasure}'"
+                        )
+                case FuelType.FUEL_OIL.value:
+                    if fuel.ConsumptionType.Energy.UnitofMeasure not in (
+                        "gal",
+                        "Btu",
+                        "kBtu",
+                        "MBtu",
+                    ):
+                        raise ValueError(
+                            f"Fuel oil consumption unit must be 'gal', 'Btu', 'kBtu', or 'MBtu', "
+                            f"got '{fuel.ConsumptionType.Energy.UnitofMeasure}'"
+                        )
+                case FuelType.PROPANE.value:
+                    if fuel.ConsumptionType.Energy.UnitofMeasure not in (
+                        "gal",
+                        "Btu",
+                        "kBtu",
+                        "MBtu",
+                    ):
+                        raise ValueError(
+                            f"Propane consumption unit must be 'gal', 'Btu', 'kBtu', or 'MBtu', "
+                            f"got '{fuel.ConsumptionType.Energy.UnitofMeasure}'"
+                        )
+                case _:
+                    raise ValueError(
+                        f"Unsupported fuel type '{fuel.ConsumptionType.Energy.FuelType}' with "
+                        f"unit '{fuel.ConsumptionType.Energy.UnitofMeasure}'"
+                    )
+
+        # Check that consumption dates have no gaps nor are overlapping
+        for fuel in consumption.ConsumptionDetails.ConsumptionInfo:
+            details = fuel.ConsumptionDetail
+            for i, detail in enumerate(details):
+                # Check that start and end dates are present
+                try:
+                    start_date = dt.strptime(str(detail.StartDateTime), "%Y-%m-%dT%H:%M:%S")
+                except AttributeError:
+                    raise ValueError(
+                        f"Consumption detail {i} for {fuel.ConsumptionType.Energy.FuelType} is missing StartDateTime."
+                    )
+                try:
+                    end_date = dt.strptime(str(detail.EndDateTime), "%Y-%m-%dT%H:%M:%S")
+                except AttributeError:
+                    raise ValueError(
+                        f"Consumption detail {i} for {fuel.ConsumptionType.Energy.FuelType} is missing EndDateTime."
+                    )
+                # Compare with previous detail if not the first
+                if i > 0:
+                    prev_detail = details[i - 1]
+                    if detail.StartDateTime < prev_detail.EndDateTime:
+                        raise ValueError(
+                            f"Consumption details for {fuel.ConsumptionType.Energy.FuelType} overlap: "
+                            f"{prev_detail.StartDateTime} - {prev_detail.EndDateTime} overlaps with "
+                            f"{detail.StartDateTime} - {detail.EndDateTime}"
+                        )
+                    if detail.StartDateTime > prev_detail.EndDateTime:
+                        raise ValueError(
+                            f"Gap in consumption data for {fuel.ConsumptionType.Energy.FuelType}: "
+                            f"Period between {prev_detail.EndDateTime} and {detail.StartDateTime} is not covered.\n"
+                            "Are the bill periods consecutive?"
+                        )
+
+        # Check that consumption values are above zero
+        for fuel in consumption.ConsumptionDetails.ConsumptionInfo:
+            for detail in fuel.ConsumptionDetail:
+                if detail.Consumption <= 0:
+                    raise ValueError(
+                        f"Consumption value for {fuel.ConsumptionType.Energy.FuelType} cannot be "
+                        f"zero or negative for bill-period: {detail.StartDateTime}"
+                    )
+
+        # Check if consumption is estimated
+        for fuel in consumption.ConsumptionDetails.ConsumptionInfo:
+            for detail in fuel.ConsumptionDetail:
+                try:
+                    reading_type = str(detail.ReadingType)
+                    if reading_type.lower() == "estimate":
+                        # TODO: bump to simplified calibration instead of raising an error
+                        raise ValueError(
+                            f"Estimated consumption value for {fuel.ConsumptionType.Energy.FuelType} cannot be greater than zero for bill-period: {detail.StartDateTime}"
+                        )
+                except AttributeError:
+                    # If there is no ReadingType, assume it's not estimated
+                    pass
+
+        # Check that there is only one consumption section per fuel type
+        fuel_types = set()
+        for fuel in consumption.ConsumptionDetails.ConsumptionInfo:
+            fuel_type = fuel.ConsumptionType.Energy.FuelType
+            if fuel_type in fuel_types:
+                raise ValueError(
+                    f"Multiple Consumption sections found for fuel type '{fuel_type}'. "
+                    "Only one section per fuel type is allowed."
+                )
+            fuel_types.add(fuel_type)
+
+        # Check that electricity consumption is present
+        if FuelType.ELECTRICITY.value not in fuel_types:
+            raise ValueError(
+                "Electricity consumption is required for calibration. "
+                "Please provide electricity consumption data in the HPXML file."
+            )
+
+        # Check that the consumed fuel matches the equipment fuel type
+        try:
+            heating_fuel_type = (
+                building.BuildingDetails.Systems.HVAC.HVACPlant.HeatingSystem.HeatingSystemFuel
+            )
+        except AttributeError:
+            raise ValueError(
+                "Heating system fuel type is missing in the HPXML file. "
+                "Please provide the heating system fuel type in the HPXML file."
+            )
+        try:
+            water_heating_fuel_type = (
+                building.BuildingDetails.Systems.WaterHeating.WaterHeatingSystem.FuelType
+            )
+        except AttributeError:
+            raise ValueError(
+                "Water heating system fuel type is missing in the HPXML file. "
+                "Please provide the water heating system fuel type in the HPXML file."
+            )
+        try:
+            clothes_dryer_fuel_type = building.BuildingDetails.Appliances.ClothesDryer.FuelType
+        except AttributeError:
+            raise ValueError(
+                "Clothes dryer fuel type is missing in the HPXML file. "
+                "Please provide the clothes dryer fuel type in the HPXML file."
+            )
+        if heating_fuel_type not in fuel_types:
+            raise ValueError(
+                f"Heating equipment fuel type {heating_fuel_type} does not match any consumption "
+                f"fuel type. Consumption fuel types: {fuel_types}."
+            )
+        if water_heating_fuel_type not in fuel_types:
+            raise ValueError(
+                f"Heating equipment fuel type {water_heating_fuel_type} does not match any consumption "
+                f"fuel type. Consumption fuel types: {fuel_types}."
+            )
+        if clothes_dryer_fuel_type not in fuel_types:
+            raise ValueError(
+                f"Heating equipment fuel type {clothes_dryer_fuel_type} does not match any consumption "
+                f"fuel type. Consumption fuel types: {fuel_types}."
+            )
+
+        # Check that electricity has at least 10 bill periods per year
+        for fuel in consumption.ConsumptionDetails.ConsumptionInfo:
+            if fuel.ConsumptionType.Energy.FuelType == FuelType.ELECTRICITY.value:
+                num_elec_bills = len(fuel.ConsumptionDetail)
+                if num_elec_bills < 10:
+                    raise ValueError(
+                        f"Electricity consumption must have at least 10 bill periods, found {num_elec_bills}."
+                    )
+
+        # Check that the consumption dates are within the past 5 years
+        for fuel in consumption.ConsumptionDetails.ConsumptionInfo:
+            # Check that there are at least 330 days of consumption data
+            if (
+                dt.strptime(str(fuel.ConsumptionDetail[-1].EndDateTime), "%Y-%m-%dT%H:%M:%S")
+                - dt.strptime(str(fuel.ConsumptionDetail[0].StartDateTime), "%Y-%m-%dT%H:%M:%S")
+            ).days < 330:
+                raise ValueError(
+                    f"Consumption dates for {fuel.ConsumptionType.Energy.FuelType} must cover at least 330 days."
+                )
+            for idx, detail in enumerate(fuel.ConsumptionDetail):
+                # Check that StartDateTime and EndDateTime are present
+                start_date = dt.strptime(str(detail.StartDateTime), "%Y-%m-%dT%H:%M:%S")
+                end_date = dt.strptime(str(detail.EndDateTime), "%Y-%m-%dT%H:%M:%S")
+
+                # Check that dates are within the past 5 years
+                if start_date > now or end_date > now:
+                    raise ValueError(
+                        f"Consumption dates {start_date} - {end_date} cannot be in the future."
+                    )
+                if (now - start_date).days > 5 * 365 or (now - end_date).days > 5 * 365:
+                    raise ValueError(
+                        f"Consumption dates {start_date} - {end_date} must be within the past 5 years."
+                    )
+
+                # Check that electricity bill periods are between 20 & 45 days
+                longest_bill_period = 45  # days
+                shortest_bill_period = 20  # days
+                if fuel.ConsumptionType.Energy.FuelType == FuelType.ELECTRICITY.value:
+                    if (end_date - start_date).days > longest_bill_period:
+                        raise ValueError(
+                            f"Electricity consumption bill period {start_date} - {end_date} cannot be longer than {longest_bill_period} days."
+                        )
+                    if (end_date - start_date).days < shortest_bill_period:
+                        raise ValueError(
+                            f"Electricity consumption bill period {start_date} - {end_date} cannot be shorter than {shortest_bill_period} days."
+                        )
