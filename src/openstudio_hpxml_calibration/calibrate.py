@@ -579,7 +579,7 @@ class Calibrate:
                         f"Consumption dates {start_date} - {end_date} must be within the past 25 years."
                     )
 
-                # Check that electricity bill periods are not longer than 45 days
+                # Check that electricity bill periods are between 20 & 45 days
                 longest_bill_period = 45  # days
                 shortest_bill_period = 20  # days
                 if fuel.ConsumptionType.Energy.FuelType == FuelType.ELECTRICITY.value:
