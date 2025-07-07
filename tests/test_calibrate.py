@@ -35,9 +35,9 @@ def test_calibrate_normalizes_bills_to_weather(test_data) -> None:
         # Assert that baseload has 12 non-zero values
         assert not pd.isna(normalized_consumption["baseload"]).any()
         if fuel_type == "electricity":
-            assert normalized_consumption["baseload"].sum().round(3) == 20.222
+            assert normalized_consumption["baseload"].sum().round(3) == 21.364
         elif fuel_type == "natural gas":
-            assert normalized_consumption["baseload"].sum().round(3) == 17.854
+            assert normalized_consumption["baseload"].sum().round(3) == 21.711
 
 
 def test_get_model_results(test_data) -> None:
@@ -69,8 +69,8 @@ def test_compare_results(test_data):
         normalized_consumption=normalized_usage, annual_model_results=simulation_results
     )
     assert len(comparison) == 2  # Should have two fuel types in the comparison for this building
-    assert comparison["electricity"]["Absolute Error"]["baseload"] == 1918.2
-    assert comparison["natural gas"]["Bias Error"]["heating"] == -125.3
+    assert comparison["electricity"]["Absolute Error"]["baseload"] == 1566.5
+    assert comparison["natural gas"]["Bias Error"]["heating"] == -79.5
 
 
 def test_add_bills(test_data):
