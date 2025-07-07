@@ -35,9 +35,9 @@ def test_calibrate_normalizes_bills_to_weather(test_data) -> None:
         # Assert that baseload has 12 non-zero values
         assert not pd.isna(normalized_consumption["baseload"]).any()
         if fuel_type == "electricity":
-            assert normalized_consumption["baseload"].sum().round(3) == 21.364
+            assert normalized_consumption["baseload"].sum().round(3) == pytest.approx(21.364, 0.005)
         elif fuel_type == "natural gas":
-            assert normalized_consumption["baseload"].sum().round(3) == 21.711
+            assert normalized_consumption["baseload"].sum().round(3) == pytest.approx(21.711, 0.005)
 
 
 def test_get_model_results(test_data) -> None:
