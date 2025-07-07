@@ -528,20 +528,13 @@ class Calibrate:
             )
 
         # Check that electricity has at least 10 bill periods per year
-        electricity_fuel = next(
-            (
-                f
-                for f in consumption.ConsumptionDetails.ConsumptionInfo
-                if f.ConsumptionType.Energy.FuelType == FuelType.ELECTRICITY.value
-            ),
-            None,
-        )
-        if electricity_fuel is not None:
-            num_bills = len(electricity_fuel.ConsumptionDetail)
-            if num_bills < 10:
-                raise ValueError(
-                    f"Electricity consumption must have at least 10 bill periods, found {num_bills}."
-                )
+        for fuel in consumption.ConsumptionDetails.ConsumptionInfo:
+            if fuel.ConsumptionType.Energy.FuelType == FuelType.ELECTRICITY.value:
+                num_elec_bills = len(fuel.ConsumptionDetail)
+                if num_elec_bills < 10:
+                    raise ValueError(
+                        f"Electricity consumption must have at least 10 bill periods, found {num_elec_bills}."
+                    )
 
         # Check that the consumption dates are within the past 5 years
         for fuel in consumption.ConsumptionDetails.ConsumptionInfo:
