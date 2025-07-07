@@ -504,13 +504,31 @@ class Calibrate:
             )
 
         # Check that the consumed fuel matches the equipment fuel type
-        heating_fuel_type = (
-            building.BuildingDetails.Systems.HVAC.HVACPlant.HeatingSystem.HeatingSystemFuel
-        )
-        water_heating_fuel_type = (
-            building.BuildingDetails.Systems.WaterHeating.WaterHeatingSystem.FuelType
-        )
-        clothes_dryer_fuel_type = building.BuildingDetails.Appliances.ClothesDryer.FuelType
+        try:
+            heating_fuel_type = (
+                building.BuildingDetails.Systems.HVAC.HVACPlant.HeatingSystem.HeatingSystemFuel
+            )
+        except AttributeError:
+            raise ValueError(
+                "Heating system fuel type is missing in the HPXML file. "
+                "Please provide the heating system fuel type in the HPXML file."
+            )
+        try:
+            water_heating_fuel_type = (
+                building.BuildingDetails.Systems.WaterHeating.WaterHeatingSystem.FuelType
+            )
+        except AttributeError:
+            raise ValueError(
+                "Water heating system fuel type is missing in the HPXML file. "
+                "Please provide the water heating system fuel type in the HPXML file."
+            )
+        try:
+            clothes_dryer_fuel_type = building.BuildingDetails.Appliances.ClothesDryer.FuelType
+        except AttributeError:
+            raise ValueError(
+                "Clothes dryer fuel type is missing in the HPXML file. "
+                "Please provide the clothes dryer fuel type in the HPXML file."
+            )
         if heating_fuel_type not in fuel_types:
             raise ValueError(
                 f"Heating equipment fuel type {heating_fuel_type} does not match any consumption "
