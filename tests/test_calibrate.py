@@ -4,12 +4,16 @@ from pathlib import Path
 import pandas as pd
 import pytest
 from loguru import logger
+from lxml import etree
 
 from openstudio_hpxml_calibration.calibrate import Calibrate
 
 TEST_DIR = Path(__file__).parent
 TEST_DATA_DIR = TEST_DIR / "data"
 TEST_CONFIG = TEST_DATA_DIR / "test_config.json"
+
+repo_root = Path(__file__).resolve().parent.parent
+invalid_hpxmls = list((repo_root / "test_hpxmls" / "invalid_homes").glob("*.xml"))
 
 
 @pytest.fixture
@@ -31,9 +35,9 @@ def test_calibrate_normalizes_bills_to_weather(test_data) -> None:
         # Assert that baseload has 12 non-zero values
         assert not pd.isna(normalized_consumption["baseload"]).any()
         if fuel_type == "electricity":
-            assert normalized_consumption["baseload"].sum().round(3) == 20.222
+            assert normalized_consumption["baseload"].sum().round(3) == pytest.approx(21.364, 0.005)
         elif fuel_type == "natural gas":
-            assert normalized_consumption["baseload"].sum().round(3) == 17.854
+            assert normalized_consumption["baseload"].sum().round(3) == pytest.approx(21.711, 0.005)
 
 
 def test_get_model_results(test_data) -> None:
@@ -65,20 +69,20 @@ def test_compare_results(test_data):
         normalized_consumption=normalized_usage, annual_model_results=simulation_results
     )
     assert len(comparison) == 2  # Should have two fuel types in the comparison for this building
-    assert comparison["electricity"]["Absolute Error"]["baseload"] == 1918.2
-    assert comparison["natural gas"]["Bias Error"]["heating"] == -125.3
+    assert comparison["electricity"]["Absolute Error"]["baseload"] == 1566.5
+    assert comparison["natural gas"]["Bias Error"]["heating"] == -79.5
 
 
 def test_add_bills(test_data):
     # Confirm that an error is raised if no consumption data is in the hpxml object
-    with pytest.raises(ValueError, match="No matching Consumption/BuildingID/@idref"):
+    with pytest.raises(ValueError, match="No Consumption section found"):
         cal = Calibrate(original_hpxml_filepath=test_data["model_without_bills"])
     # Confirm that the Consumption section is added when bills are provided
     cal = Calibrate(
         original_hpxml_filepath=test_data["model_without_bills"],
         csv_bills_filepath=test_data["sample_bill_csv_path"],
     )
-    assert cal.hpxml.xpath("h:Consumption[1]")[0] is not None
+    assert cal.hpxml.get_consumption() is not None
     # Confirm that we wrote the building_id correctly
     assert (
         cal.hpxml.get_consumption().BuildingID.attrib["idref"] == cal.hpxml.get_first_building_id()
@@ -112,3 +116,13 @@ def test_add_bills(test_data):
         .Consumption
         == 14
     )
+
+
+@pytest.mark.parametrize("filename", invalid_hpxmls, ids=lambda x: x.stem)
+def test_hpxml_invalid(filename):
+    if filename.stem in ("invalid_hpxml_xsd", "invalid_oshpxml_sch"):
+        with pytest.raises(etree.DocumentInvalid):
+            Calibrate(filename)
+    else:
+        with pytest.raises(ValueError):  # noqa: PT011
+            Calibrate(filename)

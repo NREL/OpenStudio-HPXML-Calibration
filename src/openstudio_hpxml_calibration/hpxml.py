@@ -185,7 +185,7 @@ class HpxmlDoc:
                 building.BuildingDetails.ClimateandRiskZones.WeatherStation.extension.EPWFilePath
             )
         except AttributeError:
-            zipcode = str(building.Site.Address.ZipCode)
+            zipcode = str(building.Site.Address.ZipCode).zfill(5)
             zipcode_lookup_filename = (
                 OS_HPXML_PATH / "HPXMLtoOpenStudio/resources/data/zipcode_weather_stations.csv"
             )
