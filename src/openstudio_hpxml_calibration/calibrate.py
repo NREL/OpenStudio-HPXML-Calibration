@@ -576,7 +576,7 @@ class Calibrate:
                     )
                 if (now - start_date).days > 5 * 365 or (now - end_date).days > 5 * 365:
                     raise ValueError(
-                        f"Consumption dates {start_date} - {end_date} must be within the past 25 years."
+                        f"Consumption dates {start_date} - {end_date} must be within the past 5 years."
                     )
 
                 # Check that electricity bill periods are between 20 & 45 days
