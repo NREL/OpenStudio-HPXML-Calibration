@@ -352,7 +352,7 @@ class Calibrate:
 
         return comparison_results
 
-    def run_ga_search(self, population_size=100, generations=100):
+    def run_ga_search(self, population_size=70, generations=100):
         all_temp_dirs = set()
         best_dirs_by_gen = []
 
@@ -410,12 +410,41 @@ class Calibrate:
             normalized_consumption = self.get_normalized_consumption_per_bill()
             comparison = self.compare_results(normalized_consumption, simulation_results)
 
-            errors = []
-            for end_use, metrics in comparison.items():
-                for fuel_type, bias in metrics["Bias Error"].items():
-                    penalty = max(0, abs(bias) - 5)  # Bias within 5% still penalized
-                    errors.append(penalty**2)  # quadratic penalty
-            total_score = sum(errors)
+            bias_error_penalties = []
+            abs_error_penalties = []
+            for fuel_type, metrics in comparison.items():
+                for end_use, bias_error in metrics["Bias Error"].items():
+                    bias_error_above_bpi_threshold = (
+                        abs(bias_error) - 5
+                    )  # subtract bpi2400 bias error criteria, 5%
+                    bias_error_penalty = max(0, bias_error_above_bpi_threshold) ** 2
+                    if fuel_type == "electricity" and end_use == "heating":
+                        bias_error_penalty = (
+                            0  # don't penalize electricity heating bias error temporarily
+                        )
+                    bias_error_penalties.append(bias_error_penalty)
+
+                for end_use, abs_error in metrics["Absolute Error"].items():
+                    observed = simulation_results[fuel_type][end_use]
+                    if fuel_type == "electricity":
+                        abs_error_above_bpi_threshold = (
+                            abs(abs_error) - 500
+                        )  # subtract bpi2400 absolute error criteria, 500 kWh
+                    elif fuel_type == "natural gas":
+                        abs_error_above_bpi_threshold = (
+                            abs(abs_error) - 5
+                        )  # subtract bpi2400 absolute error criteria, 5 MBtu
+                    normalized_abs_error = (
+                        abs_error_above_bpi_threshold / (observed + 1e-6) * 100
+                    )  # normalize the absolute error
+                    abs_error_penalty = max(0, normalized_abs_error) ** 2
+                    if fuel_type == "electricity" and end_use == "heating":
+                        abs_error_penalty = (
+                            0  # don't penalize electricity heating bias error temporarily
+                        )
+                    abs_error_penalties.append(abs_error_penalty)
+
+            total_score = sum(bias_error_penalties) + sum(abs_error_penalties)
 
             return (total_score,), comparison, temp_output_dir
 
@@ -477,11 +506,8 @@ class Calibrate:
             0.7,
             0.8,
             0.9,
-            1,
-            5,
-            10,
         ]
-        hvac_eff_pct_choices = [round(x * 0.01, 1) for x in range(-90, 91)]
+        hvac_eff_pct_choices = [round(x * 0.01, 1) for x in range(-90, 151)]
         r_value_pct_choices = [
             -0.9,
             -0.8,
@@ -584,9 +610,42 @@ class Calibrate:
             11: r_value_pct_choices,
         }
 
-        def discrete_mutation(individual):
-            num_mutations = random.randint(3, 6)  # at least 3-6 gene mutation
-            mutation_indices = random.sample(range(len(individual)), num_mutations)
+        worst_end_uses_by_gen = []
+
+        end_use_param_map = {
+            "electricity_heating": [1, 4, 6, 7, 8],
+            "electricity_cooling": [2, 5, 6, 7, 8],
+            "electricity_baseload": [0],
+            "natural_gas_heating": [1, 4, 6, 7, 8],
+            "natural_gas_baseload": [0],
+        }
+
+        def get_worst_bias_end_use(comparison):
+            max_bias = -float("inf")
+            worst_end_use_key = None
+            for fuel_type, metrics in comparison.items():
+                for end_use, bias in metrics["Bias Error"].items():
+                    abs_bias = abs(bias)
+                    key = f"{fuel_type}_{end_use}"
+                    if abs_bias > max_bias:
+                        max_bias = abs_bias
+                        worst_end_use_key = key
+            return worst_end_use_key
+
+        def adaptive_mutation(individual):
+            mutation_indices = set()
+
+            if worst_end_uses_by_gen:
+                worst_end_use = worst_end_uses_by_gen[-1]
+                impacted_indices = end_use_param_map.get(worst_end_use, [])
+                if impacted_indices:
+                    mutation_indices.update(
+                        random.sample(impacted_indices, min(len(impacted_indices), 2))
+                    )
+
+            while len(mutation_indices) < random.randint(3, 6):
+                mutation_indices.add(random.randint(0, len(individual) - 1))
+
             for i in mutation_indices:
                 current_val = individual[i]
                 choices = [val for val in param_choices_map[i] if val != current_val]
@@ -594,7 +653,7 @@ class Calibrate:
                     individual[i] = random.choice(choices)
             return (individual,)
 
-        toolbox.register("mutate", discrete_mutation)
+        toolbox.register("mutate", adaptive_mutation)
         toolbox.register("select", tools.selTournament, tournsize=2)
 
         with Pool() as pool:
@@ -649,7 +708,7 @@ class Calibrate:
                 elite = [copy.deepcopy(ind) for ind in tools.selBest(pop, k=1)]
 
                 # Generate offspring
-                offspring = algorithms.varAnd(pop, toolbox, cxpb=0.4, mutpb=0.2)
+                offspring = algorithms.varAnd(pop, toolbox, cxpb=0.4, mutpb=0.4)
 
                 # Evaluate offspring
                 invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
@@ -661,6 +720,10 @@ class Calibrate:
                     all_temp_dirs.add(temp_dir)
 
                 # Select next generation (excluding elites), then add elites
+                if invalid_ind:
+                    worst_key = get_worst_bias_end_use(invalid_ind[0].comparison)
+                    worst_end_uses_by_gen.append(worst_key)
+
                 pop = toolbox.select(offspring, population_size - len(elite))
                 pop.extend(elite)
 
