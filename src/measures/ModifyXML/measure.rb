@@ -136,10 +136,10 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       Expressed as a decimal, -1.0 - 1.0.')
     args << arg
 
-    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('asdf', false)
-    arg.setDisplayName('Slab R-Value percent change')
-    arg.setDescription('Percentage to change the foundation slab R-value.
-      Positive value increases R-Value, negative value decreases R-value.
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('lighting_load_pct_change', false)
+    arg.setDisplayName('Lighting load percent change')
+    arg.setDescription('Percentage to change the lighting load.
+      Positive value increases lighting load, negative value decreases lighting load.
       Expressed as a decimal, -1.0 - 1.0.')
     args << arg
 
@@ -188,6 +188,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     modify_below_ground_wall_r_values(hpxml_bldg, runner, args)
     modify_slab_r_values(hpxml_bldg, runner, args)
     modify_water_heater_efficiency(hpxml_bldg, runner, args)
+    modify_lighting_loads(hpxml_bldg, runner, args)
 
     # Save new file
     XMLHelper.write_file(hpxml.to_doc(), args[:save_file_path])
@@ -534,6 +535,20 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
         # puts "New UEF: #{water_heating_system.uniform_energy_factor}"
       end
     end
+  end
+
+  def modify_lighting_loads(hpxml_bldg, runner, args)
+    if not args[:lighting_load_pct_change]
+      runner.registerInfo('No modifier for lighting loads provided. Not modifying lighting loads.')
+      return
+    end
+    multiplier = 1 + args[:lighting_load_pct_change]
+    if hpxml_bldg.lighting.interior_usage_multiplier.nil?
+      hpxml_bldg.lighting.interior_usage_multiplier = 1.0
+    end
+    new_multiplier = hpxml_bldg.lighting.interior_usage_multiplier * multiplier
+    hpxml_bldg.lighting.interior_usage_multiplier = new_multiplier.round(2)
+    puts "New lighting load multiplier: #{hpxml_bldg.lighting.interior_usage_multiplier}"
   end
 end
 
