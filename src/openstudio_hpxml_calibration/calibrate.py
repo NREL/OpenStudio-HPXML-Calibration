@@ -6,6 +6,7 @@ import tempfile
 from pathlib import Path
 
 import pandas as pd
+import yaml
 from deap import algorithms, base, creator, tools
 from loguru import logger
 from pathos.multiprocessing import ProcessingPool as Pool
@@ -23,10 +24,49 @@ if "Individual" not in creator.__dict__:
     creator.create("Individual", list, fitness=creator.FitnessMin)
 
 
+def load_config(config_filename="ga_config.yaml", default={}):
+    config_path = Path(__file__).parent / config_filename
+    if not config_path.exists():
+        raise FileNotFoundError(f"Config file not found: {config_path}")
+    with open(config_path) as f:
+        config = yaml.safe_load(f)
+    return merge_with_defaults(config, default)
+
+
+def merge_with_defaults(user_config, default_config):
+    """Merge default values into user's config"""
+    if not isinstance(user_config, dict):
+        return user_config
+    merged = default_config.copy()
+    for key, val in user_config.items():
+        if key in merged and isinstance(merged[key], dict):
+            merged[key] = merge_with_defaults(val, merged[key])
+        else:
+            merged[key] = val
+    return merged
+
+
 class Calibrate:
     def __init__(self, original_hpxml_filepath: Path, csv_bills_filepath: Path | None = None):
+        default_ga_config = {
+            "genetic_algorithm": {
+                "population_size": 70,
+                "generations": 100,
+                "crossover_probability": 0.4,
+                "mutation_probability": 0.4,
+            },
+            "value_choices": {
+                "plug_load_pct_choices": [round(x * 0.1, 1) for x in range(-9, 11)] + [5, 10],
+                "air_leakage_pct_choices": [round(x * 0.1, 1) for x in range(-9, 10)],
+                "hvac_eff_pct_choices": [round(x * 0.01, 2) for x in range(-90, 151)],
+                "r_value_pct_choices": [round(x * 0.1, 1) for x in range(-9, 10)] + [1, 5, 10],
+                "heating_setpoint_choices": [-9, -7, -5, -3, -1, 0, 1, 3, 5, 7, 9],
+                "cooling_setpoint_choices": [-9, -7, -5, -2, -1, 0, 1, 3, 5, 7, 9],
+            },
+        }
         self.hpxml_filepath = Path(original_hpxml_filepath).resolve()
         self.hpxml = HpxmlDoc(Path(original_hpxml_filepath).resolve())
+        self.ga_config = load_config(config_filename="ga_config.yaml", default=default_ga_config)
 
         if csv_bills_filepath:
             logger.info(f"Adding utility data from {csv_bills_filepath} to hpxml")
@@ -352,9 +392,20 @@ class Calibrate:
 
         return comparison_results
 
-    def run_ga_search(self, population_size=2, generations=2):
+    def run_ga_search(self, population_size=None, generations=None, cxpb=None, mutpb=None):
         all_temp_dirs = set()
         best_dirs_by_gen = []
+        cfg = self.ga_config
+        population_size = cfg["genetic_algorithm"]["population_size"]
+        generations = cfg["genetic_algorithm"]["generations"]
+        cxpb = cfg["genetic_algorithm"]["crossover_probability"]
+        mutpb = cfg["genetic_algorithm"]["mutation_probability"]
+        plug_load_pct_choices = cfg["value_choices"]["plug_load_pct_choices"]
+        air_leakage_pct_choices = cfg["value_choices"]["air_leakage_pct_choices"]
+        hvac_eff_pct_choices = cfg["value_choices"]["hvac_eff_pct_choices"]
+        r_value_pct_choices = cfg["value_choices"]["r_value_pct_choices"]
+        heating_setpoint_choices = cfg["value_choices"]["heating_setpoint_choices"]
+        cooling_setpoint_choices = cfg["value_choices"]["cooling_setpoint_choices"]
 
         def evaluate(individual):
             (
@@ -417,10 +468,10 @@ class Calibrate:
                         abs(bias_error) - 5
                     )  # subtract bpi2400 bias error criteria, 5%
                     bias_error_penalty = max(0, bias_error_above_bpi_threshold) ** 2
-                    if fuel_type == "electricity" and end_use == "heating":
-                        bias_error_penalty = (
-                            0  # don't penalize electricity heating bias error temporarily
-                        )
+                    # if fuel_type == "electricity" and end_use == "heating":
+                    #     bias_error_penalty = (
+                    #         0  # don't penalize electricity heating bias error temporarily
+                    #     )
                     # if absolute error is within the bpi2400 criteria, don't penalize
                     if (
                         fuel_type == "electricity" and metrics["Absolute Error"][end_use] <= 500
@@ -447,78 +498,6 @@ class Calibrate:
             return len({tuple(ind) for ind in pop}) / len(pop)
 
         toolbox = base.Toolbox()
-        plug_load_pct_choices = [
-            -0.9,
-            -0.8,
-            -0.7,
-            -0.6,
-            -0.5,
-            -0.4,
-            -0.3,
-            -0.2,
-            -0.1,
-            0,
-            0.1,
-            0.2,
-            0.3,
-            0.4,
-            0.5,
-            0.6,
-            0.7,
-            0.8,
-            0.9,
-            1,
-            5,
-            10,
-        ]
-        air_leakage_pct_choices = [
-            -0.9,
-            -0.8,
-            -0.7,
-            -0.6,
-            -0.5,
-            -0.4,
-            -0.3,
-            -0.2,
-            -0.1,
-            0,
-            0.1,
-            0.2,
-            0.3,
-            0.4,
-            0.5,
-            0.6,
-            0.7,
-            0.8,
-            0.9,
-        ]
-        hvac_eff_pct_choices = [round(x * 0.01, 1) for x in range(-90, 151)]
-        r_value_pct_choices = [
-            -0.9,
-            -0.8,
-            -0.7,
-            -0.6,
-            -0.5,
-            -0.4,
-            -0.3,
-            -0.2,
-            -0.1,
-            0,
-            0.1,
-            0.2,
-            0.3,
-            0.4,
-            0.5,
-            0.6,
-            0.7,
-            0.8,
-            0.9,
-            1,
-            5,
-            10,
-        ]
-        heating_setpoint_choices = [-9, -7, -5, -3, -1, 0, 1, 3, 5, 7, 9]
-        cooling_setpoint_choices = [-9, -7, -5, -2, -1, 0, 1, 3, 5, 7, 9]
         toolbox.register("attr_plug_load_pct_change", random.choice, plug_load_pct_choices)
         toolbox.register("attr_heating_setpoint_offset", random.choice, heating_setpoint_choices)
         toolbox.register("attr_cooling_setpoint_offset", random.choice, cooling_setpoint_choices)
@@ -577,7 +556,7 @@ class Calibrate:
         toolbox.register("individual", generate_random_individual)
         toolbox.register("population", tools.initRepeat, list, toolbox.individual)
         toolbox.register("evaluate", evaluate)
-        toolbox.register("mate", tools.cxUniform, indpb=0.4)
+        toolbox.register("mate", tools.cxUniform, indpb=cxpb)
 
         # Define parameter-to-choices mapping for mutation
         param_choices_map = {
@@ -693,7 +672,7 @@ class Calibrate:
                 elite = [copy.deepcopy(ind) for ind in tools.selBest(pop, k=1)]
 
                 # Generate offspring
-                offspring = algorithms.varAnd(pop, toolbox, cxpb=0.4, mutpb=0.4)
+                offspring = algorithms.varAnd(pop, toolbox, cxpb=cxpb, mutpb=mutpb)
 
                 # Evaluate offspring
                 invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
