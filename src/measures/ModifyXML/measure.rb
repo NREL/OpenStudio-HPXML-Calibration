@@ -129,6 +129,27 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       Expressed as a decimal, -1 - 1.')
     args << arg
 
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('water_heater_efficiency_pct_change', false)
+    arg.setDisplayName('Water heater efficiency percent change')
+    arg.setDescription('Percentage to change the Energy Factor or Unified Energy Factor.
+      Positive value increases efficiency (EF/UEF), negative value decreases efficiency (EF/UEF).
+      Expressed as a decimal, -1.0 - 1.0.')
+    args << arg
+
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('asdf', false)
+    arg.setDisplayName('Slab R-Value percent change')
+    arg.setDescription('Percentage to change the foundation slab R-value.
+      Positive value increases R-Value, negative value decreases R-value.
+      Expressed as a decimal, -1.0 - 1.0.')
+    args << arg
+
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('jkl;', false)
+    arg.setDisplayName('Slab R-Value percent change')
+    arg.setDescription('Percentage to change the foundation slab R-value.
+      Positive value increases R-Value, negative value decreases R-value.
+      Expressed as a decimal, -1.0 - 1.0.')
+    args << arg
+
     return args
   end
 
@@ -166,6 +187,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     modify_above_ground_wall_r_values(hpxml_bldg, runner, args)
     modify_below_ground_wall_r_values(hpxml_bldg, runner, args)
     modify_slab_r_values(hpxml_bldg, runner, args)
+    modify_water_heater_efficiency(hpxml_bldg, runner, args)
 
     # Save new file
     XMLHelper.write_file(hpxml.to_doc(), args[:save_file_path])
@@ -490,6 +512,26 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
         new_r_value = slab.gap_insulation_r_value * multiplier
         slab.gap_insulation_r_value = new_r_value.round(1)
         # puts "New #{slab.id} R-value: #{slab.gap_insulation_r_value}"
+      end
+    end
+  end
+
+  def modify_water_heater_efficiency(hpxml_bldg, runner, args)
+    if not args[:water_heater_efficiency_pct_change]
+      runner.registerInfo('No modifier for water heater efficiency provided. Not modifying water heater efficiency.')
+      return
+    end
+    multiplier = 1 + args[:water_heater_efficiency_pct_change]
+    hpxml_bldg.water_heating_systems.each do |water_heating_system|
+      if water_heating_system.energy_factor
+        new_ef = water_heating_system.energy_factor * multiplier
+        water_heating_system.energy_factor = new_ef.round(2)
+        # puts "New EF: #{water_heating_system.energy_factor}"
+      end
+      if water_heating_system.uniform_energy_factor
+        new_uef = water_heating_system.uniform_energy_factor * multiplier
+        water_heating_system.uniform_energy_factor = new_uef.round(2)
+        # puts "New UEF: #{water_heating_system.uniform_energy_factor}"
       end
     end
   end

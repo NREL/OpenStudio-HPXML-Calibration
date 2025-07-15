@@ -373,6 +373,37 @@ class ModifyXMLTest < Minitest::Test
     end
   end
 
+  def test_change_water_heater_efficiency
+    files_to_test = [
+      'base-dhw-tank-gas-uef.xml',
+      'base-appliances-modified.xml',
+    ]
+
+    files_to_test.each do |file|
+      # create hash of argument values.
+      args_hash = {}
+      args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', file)
+      args_hash['save_file_path'] = @tmp_hpxml_path
+      args_hash['water_heater_efficiency_pct_change'] = -0.05
+
+      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
+      hpxml_bldg = _test_measure(args_hash)
+
+      # Test cooling systems
+      original_bldg.water_heating_systems.each do |water_heating_system|
+        new_water_heating_system = hpxml_bldg.water_heating_systems.find{ |dhw| dhw.id == water_heating_system.id }
+        if water_heating_system.energy_factor
+          expected_efficiency = (water_heating_system.energy_factor * ( 1 + args_hash['water_heater_efficiency_pct_change'])).round(2)
+          assert_equal(expected_efficiency, new_water_heating_system.energy_factor)
+        end
+        if water_heating_system.uniform_energy_factor
+          expected_efficiency = (water_heating_system.uniform_energy_factor * ( 1 + args_hash['water_heater_efficiency_pct_change'])).round(2)
+          assert_equal(expected_efficiency, new_water_heating_system.uniform_energy_factor)
+        end
+      end
+    end
+  end
+
   def _test_measure(args_hash)
     # create an instance of the measure
     measure = ModifyXML.new
