@@ -352,7 +352,7 @@ class Calibrate:
 
         return comparison_results
 
-    def run_ga_search(self, population_size=70, generations=100):
+    def run_ga_search(self, population_size=2, generations=2):
         all_temp_dirs = set()
         best_dirs_by_gen = []
 
@@ -411,7 +411,6 @@ class Calibrate:
             comparison = self.compare_results(normalized_consumption, simulation_results)
 
             bias_error_penalties = []
-            abs_error_penalties = []
             for fuel_type, metrics in comparison.items():
                 for end_use, bias_error in metrics["Bias Error"].items():
                     bias_error_above_bpi_threshold = (
@@ -422,29 +421,15 @@ class Calibrate:
                         bias_error_penalty = (
                             0  # don't penalize electricity heating bias error temporarily
                         )
+                    # if absolute error is within the bpi2400 criteria, don't penalize
+                    if (
+                        fuel_type == "electricity" and metrics["Absolute Error"][end_use] <= 500
+                    ) or (fuel_type == "natural gas" and metrics["Absolute Error"][end_use] <= 5):
+                        bias_error_penalty = 0
+
                     bias_error_penalties.append(bias_error_penalty)
 
-                for end_use, abs_error in metrics["Absolute Error"].items():
-                    observed = simulation_results[fuel_type][end_use]
-                    if fuel_type == "electricity":
-                        abs_error_above_bpi_threshold = (
-                            abs(abs_error) - 500
-                        )  # subtract bpi2400 absolute error criteria, 500 kWh
-                    elif fuel_type == "natural gas":
-                        abs_error_above_bpi_threshold = (
-                            abs(abs_error) - 5
-                        )  # subtract bpi2400 absolute error criteria, 5 MBtu
-                    normalized_abs_error = (
-                        abs_error_above_bpi_threshold / (observed + 1e-6) * 100
-                    )  # normalize the absolute error
-                    abs_error_penalty = max(0, normalized_abs_error) ** 2
-                    if fuel_type == "electricity" and end_use == "heating":
-                        abs_error_penalty = (
-                            0  # don't penalize electricity heating bias error temporarily
-                        )
-                    abs_error_penalties.append(abs_error_penalty)
-
-            total_score = sum(bias_error_penalties) + sum(abs_error_penalties)
+            total_score = sum(bias_error_penalties)
 
             return (total_score,), comparison, temp_output_dir
 
