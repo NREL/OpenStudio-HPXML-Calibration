@@ -157,6 +157,13 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       Expressed as a decimal, -1.0 - 1.0.')
     args << arg
 
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('window_shgc_pct_change', false)
+    arg.setDisplayName('Window SHGC percent change')
+    arg.setDescription('Percentage to change the window SHGC.
+      Positive value increases SHGC, negative value decreases SHGC.
+      Expressed as a decimal, -1.0 - 1.0.')
+    args << arg
+
     return args
   end
 
@@ -198,6 +205,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     modify_water_heater_usage_multiplier(hpxml_bldg, runner, args)
     modify_lighting_loads(hpxml_bldg, runner, args)
     modify_window_u_factor(hpxml_bldg, runner, args)
+    modify_window_shgc(hpxml_bldg, runner, args)
 
     # Save new file
     XMLHelper.write_file(hpxml.to_doc(), args[:save_file_path])
@@ -584,7 +592,22 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       if window.ufactor
         new_uf = window.ufactor * multiplier
         window.ufactor = new_uf.round(2)
-        puts "New U-Factor: #{window.ufactor}"
+        # puts "New U-Factor: #{window.ufactor}"
+      end
+    end
+  end
+
+  def modify_window_shgc(hpxml_bldg, runner, args)
+    if not args[:window_shgc_pct_change]
+      runner.registerInfo('No modifier for window SHGC provided. Not modifying window SHGC.')
+      return
+    end
+    multiplier = 1 + args[:window_shgc_pct_change]
+    hpxml_bldg.windows.each do |window|
+      if window.shgc
+        new_shgc = window.shgc * multiplier
+        window.shgc = new_shgc.round(2)
+        puts "New SHGC: #{window.shgc}"
       end
     end
   end

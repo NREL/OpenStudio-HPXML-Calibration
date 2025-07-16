@@ -437,7 +437,7 @@ class ModifyXMLTest < Minitest::Test
     end
   end
 
-  def test_window_ufactor
+  def test_window_ufactor_and_shgc
     files_to_test = [
       'base.xml',
       'base-appliances-modified.xml',
@@ -449,6 +449,7 @@ class ModifyXMLTest < Minitest::Test
       args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', file)
       args_hash['save_file_path'] = @tmp_hpxml_path
       args_hash['window_u_factor_pct_change'] = -0.05
+      args_hash['window_shgc_pct_change'] = -0.05
 
       original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
       hpxml_bldg = _test_measure(args_hash)
@@ -459,6 +460,10 @@ class ModifyXMLTest < Minitest::Test
         if window.ufactor
           expected_efficiency = (window.ufactor * ( 1 + args_hash['window_u_factor_pct_change'])).round(2)
           assert_equal(expected_efficiency, new_window.ufactor)
+        end
+        if window.shgc
+          expected_efficiency = (window.shgc * ( 1 + args_hash['window_shgc_pct_change'])).round(2)
+          assert_equal(expected_efficiency, new_window.shgc)
         end
       end
     end
