@@ -94,6 +94,14 @@ class Calibrate:
 
         for end_use, consumption in results["End Use"].items():
             fuel_type = end_use.split(":")[0].lower().strip()
+            # ignore electricity usage for heating (fans/pumps) when electricity is not the primary heat source
+            if (
+                fuel_type == "electricity"
+                and "Heating" in end_use
+                and self.hpxml.get_building().BuildingDetails.Systems.HVAC.HVACPlant.HeatingSystem.HeatingSystemFuel
+                != FuelType.ELECTRICITY.value
+            ):
+                continue
             if "Heating" in end_use:
                 model_output[fuel_type]["heating"] = round(
                     number=(model_output[fuel_type].get("heating", 0) + consumption), ndigits=3
