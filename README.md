@@ -30,3 +30,7 @@ There's a Dev Container configuration in this repo which installs all the necess
 ## Testing
 
 Can be run with `uv run pytest` from the repo root. (If you need to restrict the number of concurrent workers, you can use e.g. `uv run pytest -n <NUM>`.)
+
+## License
+
+This project is available under a BSD-3-like license, which is a free, open-source, and permissive license. For more information, check out the [license file](https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/LICENSE.md).
