@@ -464,19 +464,20 @@ class Calibrate:
             bias_error_penalties = []
             for fuel_type, metrics in comparison.items():
                 for end_use, bias_error in metrics["Bias Error"].items():
-                    bias_error_above_bpi_threshold = (
-                        abs(bias_error) - 5
-                    )  # subtract bpi2400 bias error criteria, 5%
-                    bias_error_penalty = max(0, bias_error_above_bpi_threshold) ** 2
-                    # if fuel_type == "electricity" and end_use == "heating":
-                    #     bias_error_penalty = (
-                    #         0  # don't penalize electricity heating bias error temporarily
-                    #     )
+                    bias_error_penalty = max(0, abs(bias_error)) ** 2
+                    if fuel_type == "electricity" and end_use == "heating":
+                        bias_error_penalty = (
+                            0  # don't penalize electricity heating bias error temporarily
+                        )
                     # if absolute error is within the bpi2400 criteria, don't penalize
                     if (
-                        fuel_type == "electricity" and metrics["Absolute Error"][end_use] <= 500
-                    ) or (fuel_type == "natural gas" and metrics["Absolute Error"][end_use] <= 5):
-                        bias_error_penalty = 0
+                        fuel_type == "electricity"
+                        and abs(metrics["Absolute Error"][end_use]) <= 500
+                    ) or (
+                        fuel_type == "natural gas" and abs(metrics["Absolute Error"][end_use]) <= 5
+                    ):
+                        penalty_relaxation_factor = 0.2
+                        bias_error_penalty *= penalty_relaxation_factor
 
                     bias_error_penalties.append(bias_error_penalty)
 
