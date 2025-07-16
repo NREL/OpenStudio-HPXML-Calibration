@@ -136,6 +136,13 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       Expressed as a decimal, -1.0 - 1.0.')
     args << arg
 
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('water_heater_usage_pct_change', false)
+    arg.setDisplayName('Water heater usage percent change')
+    arg.setDescription('Percentage to change the water heater usage multiplier.
+      Positive value increases usage, negative value decreases usage.
+      Expressed as a decimal, -1.0 - 1.0.')
+    args << arg
+
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('lighting_load_pct_change', false)
     arg.setDisplayName('Lighting load percent change')
     arg.setDescription('Percentage to change the lighting load.
@@ -188,6 +195,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     modify_below_ground_wall_r_values(hpxml_bldg, runner, args)
     modify_slab_r_values(hpxml_bldg, runner, args)
     modify_water_heater_efficiency(hpxml_bldg, runner, args)
+    modify_water_heater_usage_multiplier(hpxml_bldg, runner, args)
     modify_lighting_loads(hpxml_bldg, runner, args)
 
     # Save new file
@@ -537,6 +545,20 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     end
   end
 
+  def modify_water_heater_usage_multiplier(hpxml_bldg, runner, args)
+    if not args[:water_heater_usage_pct_change]
+      runner.registerInfo('No modifier for water heater usage provided. Not modifying water heater usage.')
+      return
+    end
+    multiplier = 1 + args[:water_heater_usage_pct_change]
+    if hpxml_bldg.water_heating.water_fixtures_usage_multiplier.nil?
+      hpxml_bldg.water_heating.water_fixtures_usage_multiplier = 1.0
+    end
+    new_multiplier = hpxml_bldg.water_heating.water_fixtures_usage_multiplier * multiplier
+    hpxml_bldg.water_heating.water_fixtures_usage_multiplier = new_multiplier.round(2)
+    # puts "New water heating usage multiplier: #{hpxml_bldg.water_heating.water_fixtures_usage_multiplier}"
+  end
+
   def modify_lighting_loads(hpxml_bldg, runner, args)
     if not args[:lighting_load_pct_change]
       runner.registerInfo('No modifier for lighting loads provided. Not modifying lighting loads.')
@@ -548,7 +570,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     end
     new_multiplier = hpxml_bldg.lighting.interior_usage_multiplier * multiplier
     hpxml_bldg.lighting.interior_usage_multiplier = new_multiplier.round(2)
-    puts "New lighting load multiplier: #{hpxml_bldg.lighting.interior_usage_multiplier}"
+    # puts "New lighting load multiplier: #{hpxml_bldg.lighting.interior_usage_multiplier}"
   end
 end
 
