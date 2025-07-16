@@ -607,7 +607,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       if window.shgc
         new_shgc = window.shgc * multiplier
         window.shgc = new_shgc.round(2)
-        puts "New SHGC: #{window.shgc}"
+        # puts "New SHGC: #{window.shgc}"
       end
     end
   end
