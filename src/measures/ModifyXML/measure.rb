@@ -150,10 +150,10 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       Expressed as a decimal, -1.0 - 1.0.')
     args << arg
 
-    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('jkl;', false)
-    arg.setDisplayName('Slab R-Value percent change')
-    arg.setDescription('Percentage to change the foundation slab R-value.
-      Positive value increases R-Value, negative value decreases R-value.
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('window_u_factor_pct_change', false)
+    arg.setDisplayName('Window U-factor percent change')
+    arg.setDescription('Percentage to change the window U-factor.
+      Positive value increases U-factor, negative value decreases U-factor.
       Expressed as a decimal, -1.0 - 1.0.')
     args << arg
 
@@ -197,6 +197,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     modify_water_heater_efficiency(hpxml_bldg, runner, args)
     modify_water_heater_usage_multiplier(hpxml_bldg, runner, args)
     modify_lighting_loads(hpxml_bldg, runner, args)
+    modify_window_u_factor(hpxml_bldg, runner, args)
 
     # Save new file
     XMLHelper.write_file(hpxml.to_doc(), args[:save_file_path])
@@ -571,6 +572,21 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     new_multiplier = hpxml_bldg.lighting.interior_usage_multiplier * multiplier
     hpxml_bldg.lighting.interior_usage_multiplier = new_multiplier.round(2)
     # puts "New lighting load multiplier: #{hpxml_bldg.lighting.interior_usage_multiplier}"
+  end
+
+  def modify_window_u_factor(hpxml_bldg, runner, args)
+    if not args[:window_u_factor_pct_change]
+      runner.registerInfo('No modifier for window U-factor provided. Not modifying window U-factor.')
+      return
+    end
+    multiplier = 1 + args[:window_u_factor_pct_change]
+    hpxml_bldg.windows.each do |window|
+      if window.ufactor
+        new_uf = window.ufactor * multiplier
+        window.ufactor = new_uf.round(2)
+        puts "New U-Factor: #{window.ufactor}"
+      end
+    end
   end
 end
 

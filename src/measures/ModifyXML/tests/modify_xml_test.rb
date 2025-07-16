@@ -373,7 +373,7 @@ class ModifyXMLTest < Minitest::Test
     end
   end
 
-  def test_change_water_heater_efficiency
+  def test_water_heater_efficiency_and_usage
     files_to_test = [
       'base-dhw-tank-gas-uef.xml',
       'base-appliances-modified.xml',
@@ -434,6 +434,33 @@ class ModifyXMLTest < Minitest::Test
       end
       expected_usage_multiplier = (original_bldg.lighting.interior_usage_multiplier * ( 1 + args_hash['lighting_load_pct_change'])).round(2)
       assert_equal(expected_usage_multiplier, new_lighting_multiplier)
+    end
+  end
+
+  def test_window_ufactor
+    files_to_test = [
+      'base.xml',
+      'base-appliances-modified.xml',
+    ]
+
+    files_to_test.each do |file|
+      # create hash of argument values.
+      args_hash = {}
+      args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', file)
+      args_hash['save_file_path'] = @tmp_hpxml_path
+      args_hash['window_u_factor_pct_change'] = -0.05
+
+      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
+      hpxml_bldg = _test_measure(args_hash)
+
+      # Test water heating systems
+      original_bldg.windows.each do |window|
+        new_window = hpxml_bldg.windows.find{ |wd| wd.id == window.id }
+        if window.ufactor
+          expected_efficiency = (window.ufactor * ( 1 + args_hash['window_u_factor_pct_change'])).round(2)
+          assert_equal(expected_efficiency, new_window.ufactor)
+        end
+      end
     end
   end
 
