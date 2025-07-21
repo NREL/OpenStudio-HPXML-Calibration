@@ -164,6 +164,13 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       Expressed as a decimal, -1.0 - 1.0.')
     args << arg
 
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('appliance_usage_pct_change', false)
+    arg.setDisplayName('Appliance usage percent change')
+    arg.setDescription('Percentage to change usage_multiplier of all appliances.
+      Positive value increases usage_multiplier, negative value decreases usage_multiplier.
+      Expressed as a decimal, -1.0 - 1.0.')
+    args << arg
+
     return args
   end
 
@@ -206,6 +213,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     modify_lighting_loads(hpxml_bldg, runner, args)
     modify_window_u_factor(hpxml_bldg, runner, args)
     modify_window_shgc(hpxml_bldg, runner, args)
+    modify_appliance_usage(hpxml_bldg, runner, args)
 
     # Save new file
     XMLHelper.write_file(hpxml.to_doc(), args[:save_file_path])
@@ -610,6 +618,84 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
         # puts "New SHGC: #{window.shgc}"
       end
     end
+  end
+
+  def modify_appliance_usage(hpxml_bldg, runner, args)
+    if not args[:appliance_usage_pct_change]
+      runner.registerInfo('No modifier for appliace usage provided. Not modifying appliance usage.')
+      return
+    end
+    multiplier = 1 + args[:appliance_usage_pct_change]
+    # Fridge
+    hpxml_bldg.refrigerators.each do |refrigerator|
+      if refrigerator.usage_multiplier.nil?
+        refrigerator.usage_multiplier = 1.0
+      end
+      if refrigerator.usage_multiplier
+        new_frig_usage_multiplier = refrigerator.usage_multiplier * multiplier
+        refrigerator.usage_multiplier = new_frig_usage_multiplier.round(2)
+        puts "New fridge usage multiplier: #{refrigerator.usage_multiplier}"
+      end
+    end
+    # Clothes washer
+    hpxml_bldg.clothes_washers.each do |clothes_washer|
+      if clothes_washer.usage_multiplier.nil?
+        clothes_washer.usage_multiplier = 1.0
+      end
+      if clothes_washer.usage_multiplier
+        new_cw_usage_multiplier = clothes_washer.usage_multiplier * multiplier
+        clothes_washer.usage_multiplier = new_cw_usage_multiplier.round(2)
+        puts "New clothes washer usage multiplier: #{clothes_washer.usage_multiplier}"
+      end
+    end
+    # Clothes Dryer
+    hpxml_bldg.clothes_dryers.each do |clothes_dryer|
+      if clothes_dryer.usage_multiplier.nil?
+        clothes_dryer.usage_multiplier = 1.0
+      end
+      if clothes_dryer.usage_multiplier
+        new_cd_usage_multiplier = clothes_dryer.usage_multiplier * multiplier
+        clothes_dryer.usage_multiplier = new_cd_usage_multiplier.round(2)
+        puts "New clothes dryer usage multiplier: #{clothes_dryer.usage_multiplier}"
+      end
+    end
+    # Dishwasher
+    hpxml_bldg.dishwashers.each do |dishwasher|
+      if dishwasher.usage_multiplier.nil?
+        dishwasher.usage_multiplier = 1.0
+      end
+      if dishwasher.usage_multiplier
+        new_dw_usage_multiplier = dishwasher.usage_multiplier * multiplier
+        dishwasher.usage_multiplier = new_dw_usage_multiplier.round(2)
+        puts "New dishwasher usage multiplier: #{dishwasher.usage_multiplier}"
+      end
+    end
+    # Freezer
+    hpxml_bldg.freezers.each do |freezer|
+      if freezer.usage_multiplier.nil?
+        freezer.usage_multiplier = 1.0
+      end
+      if freezer.usage_multiplier
+        new_freezer_usage_multiplier = freezer.usage_multiplier * multiplier
+        freezer.usage_multiplier = new_freezer_usage_multiplier.round(2)
+        puts "New freezer usage multiplier: #{freezer.usage_multiplier}"
+      end
+    end
+    # Range
+    hpxml_bldg.cooking_ranges.each do |cooking_range|
+      if cooking_range.usage_multiplier.nil?
+        cooking_range.usage_multiplier = 1.0
+      end
+      if cooking_range.usage_multiplier
+        new_range_usage_multiplier = cooking_range.usage_multiplier * multiplier
+        cooking_range.usage_multiplier = new_range_usage_multiplier.round(2)
+        puts "New cooking_range usage multiplier: #{cooking_range.usage_multiplier}"
+      end
+    end
+
+    # new_multiplier = hpxml_bldg.lighting.interior_usage_multiplier * multiplier
+    # hpxml_bldg.lighting.interior_usage_multiplier = new_multiplier.round(2)
+    # puts "New appliance usage multiplier: #{hpxml_bldg.lighting.interior_usage_multiplier}"
   end
 end
 

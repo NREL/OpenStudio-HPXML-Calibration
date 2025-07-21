@@ -469,6 +469,74 @@ class ModifyXMLTest < Minitest::Test
     end
   end
 
+  def test_appliance_usage
+    files_to_test = [
+      'base.xml',
+      'base-appliances-modified.xml',
+    ]
+
+    files_to_test.each do |file|
+      # create hash of argument values.
+      args_hash = {}
+      args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', file)
+      args_hash['save_file_path'] = @tmp_hpxml_path
+      args_hash['appliance_usage_pct_change'] = 0.05
+
+      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
+      hpxml_bldg = _test_measure(args_hash)
+
+      # Test appliances
+      # Fridge
+      original_bldg.refrigerators.each do |refrigerator|
+        new_refrigerator = hpxml_bldg.refrigerators.find{ |fridge| fridge.id == refrigerator.id }
+        if refrigerator.usage_multiplier
+          expected_efficiency = (refrigerator.usage_multiplier * ( 1 + args_hash['appliance_usage_pct_change'])).round(2)
+          assert_equal(expected_efficiency, new_refrigerator.usage_multiplier)
+        end
+      end
+      # Clothes washer
+      original_bldg.clothes_washers.each do |clothes_washer|
+        new_washer = hpxml_bldg.clothes_washers.find{ |cw| cw.id == clothes_washer.id }
+        if clothes_washer.usage_multiplier
+          expected_efficiency = (clothes_washer.usage_multiplier * ( 1 + args_hash['appliance_usage_pct_change'])).round(2)
+          assert_equal(expected_efficiency, new_washer.usage_multiplier)
+        end
+      end
+      # Clothes dryer
+      original_bldg.clothes_dryers.each do |clothes_dryer|
+        new_dryer = hpxml_bldg.clothes_dryers.find{ |cd| cd.id == clothes_dryer.id }
+        if clothes_dryer.usage_multiplier
+          expected_efficiency = (clothes_dryer.usage_multiplier * ( 1 + args_hash['appliance_usage_pct_change'])).round(2)
+          assert_equal(expected_efficiency, new_dryer.usage_multiplier)
+        end
+      end
+      # Dishwasher
+      original_bldg.dishwashers.each do |dishwasher|
+        new_dishwasher = hpxml_bldg.dishwashers.find{ |dw| dw.id == dishwasher.id }
+        if dishwasher.usage_multiplier
+          expected_efficiency = (dishwasher.usage_multiplier * ( 1 + args_hash['appliance_usage_pct_change'])).round(2)
+          assert_equal(expected_efficiency, new_dishwasher.usage_multiplier)
+        end
+      end
+      # Freezer
+      original_bldg.freezers.each do |freezer|
+        new_freezer = hpxml_bldg.freezers.find{ |free| free.id == freezer.id }
+        if freezer.usage_multiplier
+          expected_efficiency = (freezer.usage_multiplier * ( 1 + args_hash['appliance_usage_pct_change'])).round(2)
+          assert_equal(expected_efficiency, new_freezer.usage_multiplier)
+        end
+      end
+      # Range
+      original_bldg.cooking_ranges.each do |cooking_range|
+        new_range = hpxml_bldg.cooking_ranges.find{ |range| range.id == cooking_range.id }
+        if cooking_range.usage_multiplier
+          expected_efficiency = (cooking_range.usage_multiplier * ( 1 + args_hash['appliance_usage_pct_change'])).round(2)
+          assert_equal(expected_efficiency, new_range.usage_multiplier)
+        end
+      end
+    end
+  end
+
   def _test_measure(args_hash)
     # create an instance of the measure
     measure = ModifyXML.new
