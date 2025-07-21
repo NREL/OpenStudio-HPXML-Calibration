@@ -1,6 +1,13 @@
-# OpenStudio-HPXML calibration
+# OpenStudio™ HPXML Calibration
 
-A package to automatically calibrate an OS-HPXML model to provided utilities bills
+A package to automatically calibrate an [OpenStudio-HPXML](https://github.com/NREL/OpenStudio-HPXML) residential building model against utilities bills.
+
+The implementation relies heavily on [BPI-2400-S-2015 v.2 Standard Practice for Standardized Qualification of Whole-House Energy Savings Predictions by Calibration to Energy Use](https://www.bpi.org/__cms/docs/20240523_BPI-2400-S-2015_Delta_Standard_v2.pdf).
+However, it is not currently a complete implementation of BPI-2400.
+
+## Usage
+
+TODO
 
 ## Developer installation & usage
 
@@ -32,3 +39,7 @@ There's a Dev Container configuration in this repo which installs all the necess
 Project tests can be run with `uv run pytest` from the repo root. (If you need to restrict the number of concurrent workers, you can use e.g. `uv run pytest -n <NUM>`.)
 
 Ruby Measure tests can be run with `openstudio src/measures/ModifyXML/tests/modify_xml_test.rb`
+
+## License
+
+This project is available under a BSD-3-like license, which is a free, open-source, and permissive license. For more information, check out the [license file](https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/LICENSE.md).
