@@ -177,7 +177,7 @@ class HpxmlDoc:
                 building.BuildingDetails.Systems.HVAC.HVACPlant.CoolingSystem.CoolingSystemFuel.text.strip()
             )
 
-        return list(heating_fuels), list(cooling_fuels)
+        return heating_fuels, cooling_fuels
 
     def get_consumption(self, building_id: str | None = None) -> objectify.ObjectifiedElement:
         """Get the Consumption element for a building
