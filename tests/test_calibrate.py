@@ -47,7 +47,6 @@ def test_get_model_results(test_data) -> None:
     )
     for fuel_type, disagg_results in simulation_results.items():
         if fuel_type == "electricity":
-            assert disagg_results["heating"] == 3.372
             assert disagg_results["cooling"] == 8.907
             assert disagg_results["baseload"] == 26.745
         elif fuel_type == "natural gas":
