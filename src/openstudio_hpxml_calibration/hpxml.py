@@ -167,15 +167,14 @@ class HpxmlDoc:
         heating_fuels = set()
         cooling_fuels = set()
         with suppress(AttributeError):
-            for heating_system in building.BuildingDetails.Systems.HVAC.HVACPlant:
-                heating_fuels.add(heating_system.HeatingSystemFuel.text.strip())
-                heating_fuels.add(heating_system.HeatPump.HeatPumpFuel.text.strip())
+            for hvac_system in building.BuildingDetails.Systems.HVAC.HVACPlant:
+                heating_fuels.add(hvac_system.HeatingSystemFuel.text.strip())
+                heating_fuels.add(hvac_system.HeatPump.HeatPumpFuel.text.strip())
                 heating_fuels.add(
-                    heating_system.HeatPump.BackupSystemFuel.text.strip()
+                    hvac_system.HeatPump.BackupSystemFuel.text.strip()
                 )  # TODO: Need to capture fuel used for integrated AC?
-            for cooling_system in building.BuildingDetails.Systems.HVAC.HVACPlant:
-                cooling_fuels.add(cooling_system.CoolingSystem.CoolingSystemFuel.text.strip())
-                cooling_fuels.add(cooling_system.HeatPump.HeatPumpFuel.text.strip())
+                cooling_fuels.add(hvac_system.CoolingSystem.CoolingSystemFuel.text.strip())
+                cooling_fuels.add(hvac_system.HeatPump.HeatPumpFuel.text.strip())
 
         return heating_fuels, cooling_fuels
 
