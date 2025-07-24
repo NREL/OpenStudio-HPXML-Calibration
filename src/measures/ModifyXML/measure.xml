@@ -3,8 +3,8 @@
   <schema_version>3.1</schema_version>
   <name>modify_xml</name>
   <uid>afd74b96-8b2c-4ebd-83be-0d3fdc35bf9a</uid>
-  <version_id>b5ef7d02-8bcb-44dc-a8d7-02071b934bc3</version_id>
-  <version_modified>2025-04-22T00:03:38Z</version_modified>
+  <version_id>5d696461-ebec-42e2-8039-c716c963baf8</version_id>
+  <version_modified>2025-07-24T16:09:32Z</version_modified>
   <xml_checksum>1B7C870F</xml_checksum>
   <class_name>ModifyXML</class_name>
   <display_name>ModifyXML</display_name>
@@ -50,7 +50,7 @@
       <display_name>Air leakage percent change</display_name>
       <description>Percentage to change the air leakage rate.
       Positive value increases air leakage, negative value decreases air leakage.
-      Expressed as a decimal, -1 - 1.</description>
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
@@ -60,7 +60,7 @@
       <display_name>Heating efficiency percent change</display_name>
       <description>Percentage to change the heating equipment efficiency.
       Positive value increases efficiency, negative value decreases efficiency.
-      Expressed as a decimal, -1 - 1.</description>
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
@@ -70,7 +70,7 @@
       <display_name>Cooling efficiency percent change</display_name>
       <description>Percentage to change the cooling equipment efficiency.
       Positive value increases efficiency, negative value decreases efficiency.
-      Expressed as a decimal, -1 - 1.</description>
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
@@ -80,7 +80,7 @@
       <display_name>Plug load percent change</display_name>
       <description>Percentage to change the plug load usage multiplier.
       Positive value increases load, negative value decreases load.
-      Expressed as a decimal, -1 - 1.</description>
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
@@ -90,7 +90,7 @@
       <display_name>Roof R-Value percent change</display_name>
       <description>Percentage to change the Roof R-value.
       Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a decimal, -1 - 1.</description>
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
@@ -100,7 +100,7 @@
       <display_name>Ceiling R-Value percent change</display_name>
       <description>Percentage to change the ceiling (attic floor) R-value.
       Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a decimal, -1 - 1.</description>
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
@@ -110,7 +110,7 @@
       <display_name>Floor R-Value percent change</display_name>
       <description>Percentage to change the floor R-value.
       Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a decimal, -1 - 1.</description>
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
@@ -120,7 +120,7 @@
       <display_name>Above-ground wall R-Value percent change</display_name>
       <description>Percentage to change the above-ground wall R-value.
       Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a decimal, -1 - 1.</description>
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
@@ -130,7 +130,7 @@
       <display_name>Below-ground wall R-Value percent change</display_name>
       <description>Percentage to change the below-ground wall R-value.
       Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a decimal, -1 - 1.</description>
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
@@ -140,7 +140,67 @@
       <display_name>Slab R-Value percent change</display_name>
       <description>Percentage to change the foundation slab R-value.
       Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a decimal, -1 - 1.</description>
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>water_heater_efficiency_pct_change</name>
+      <display_name>Water heater efficiency percent change</display_name>
+      <description>Percentage to change the Energy Factor or Unified Energy Factor.
+      Positive value increases efficiency (EF/UEF), negative value decreases efficiency (EF/UEF).
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>water_fixtures_usage_pct_change</name>
+      <display_name>Water fixtures usage percent change</display_name>
+      <description>Percentage to change the water fixtures usage multiplier.
+      Positive value increases usage, negative value decreases usage.
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>lighting_load_pct_change</name>
+      <display_name>Lighting load percent change</display_name>
+      <description>Percentage to change the lighting load.
+      Positive value increases lighting load, negative value decreases lighting load.
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>window_u_factor_pct_change</name>
+      <display_name>Window U-factor percent change</display_name>
+      <description>Percentage to change the window U-factor.
+      Positive value increases U-factor, negative value decreases U-factor.
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>window_shgc_pct_change</name>
+      <display_name>Window SHGC percent change</display_name>
+      <description>Percentage to change the window SHGC.
+      Positive value increases SHGC, negative value decreases SHGC.
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>appliance_usage_pct_change</name>
+      <display_name>Appliance usage percent change</display_name>
+      <description>Percentage to change usage_multiplier of all appliances.
+      Positive value increases usage_multiplier, negative value decreases usage_multiplier.
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
@@ -173,13 +233,13 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>7F1F54A4</checksum>
+      <checksum>60E3EAA3</checksum>
     </file>
     <file>
       <filename>modify_xml_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
-      <checksum>30882422</checksum>
+      <checksum>2AF5841A</checksum>
     </file>
   </files>
 </measure>

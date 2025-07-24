@@ -1,6 +1,7 @@
 import functools
 import os
 import re
+from contextlib import suppress
 from enum import Enum
 from pathlib import Path
 
@@ -156,6 +157,30 @@ class HpxmlDoc:
                 0
             ]
 
+    def get_fuel_types(self, building_id: str | None = None) -> tuple[set[str], set[str]]:
+        """Get fuel types providing heating or cooling
+
+        :param building_id: The id of the Building to retrieve, gets first one if missing
+        :type building_id: str
+        :return: sets of fuel types provide heating and cooling
+        :rtype: tuple[set[str], set[str]]
+        """
+
+        building = self.get_building(building_id)
+        heating_fuels = set()
+        cooling_fuels = set()
+        with suppress(AttributeError):
+            for hvac_system in building.BuildingDetails.Systems.HVAC.HVACPlant:
+                heating_fuels.add(hvac_system.HeatingSystemFuel.text.strip())
+                heating_fuels.add(hvac_system.HeatPump.HeatPumpFuel.text.strip())
+                heating_fuels.add(
+                    hvac_system.HeatPump.BackupSystemFuel.text.strip()
+                )  # TODO: Need to capture fuel used for integrated AC?
+                cooling_fuels.add(hvac_system.CoolingSystem.CoolingSystemFuel.text.strip())
+                cooling_fuels.add(hvac_system.HeatPump.HeatPumpFuel.text.strip())
+
+        return heating_fuels, cooling_fuels
+
     def get_consumption(self, building_id: str | None = None) -> objectify.ObjectifiedElement:
         """Get the Consumption element for a building
 
@@ -188,7 +213,7 @@ class HpxmlDoc:
                 building.BuildingDetails.ClimateandRiskZones.WeatherStation.extension.EPWFilePath
             )
         except AttributeError:
-            zipcode = str(building.Site.Address.ZipCode)
+            zipcode = str(building.Site.Address.ZipCode).zfill(5)
             zipcode_lookup_filename = (
                 OS_HPXML_PATH / "HPXMLtoOpenStudio/resources/data/zipcode_weather_stations.csv"
             )

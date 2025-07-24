@@ -35,7 +35,7 @@ class ModifyXMLTest < Minitest::Test
       args_hash['heating_setpoint_offset'] = -1.5
       args_hash['cooling_setpoint_offset'] = 2.5
 
-      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
+      original_bldg = _get_hpxml_building(args_hash)
       hpxml_bldg = _test_measure(args_hash)
 
       # Check for expected change
@@ -89,7 +89,7 @@ class ModifyXMLTest < Minitest::Test
       args_hash['save_file_path'] = @tmp_hpxml_path
       args_hash['air_leakage_pct_change'] = -0.1
 
-      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
+      original_bldg = _get_hpxml_building(args_hash)
       hpxml_bldg = _test_measure(args_hash)
 
       original_bldg.air_infiltration_measurements.each do |infiltration_measurement|
@@ -113,7 +113,7 @@ class ModifyXMLTest < Minitest::Test
     args_hash['save_file_path'] = @tmp_hpxml_path
     args_hash['heating_efficiency_pct_change'] = 0.05
 
-    original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
+    original_bldg = _get_hpxml_building(args_hash)
     hpxml_bldg = _test_measure(args_hash)
 
     # Test heating systems
@@ -160,7 +160,7 @@ class ModifyXMLTest < Minitest::Test
     args_hash['save_file_path'] = @tmp_hpxml_path
     args_hash['cooling_efficiency_pct_change'] = -0.05
 
-    original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
+    original_bldg = _get_hpxml_building(args_hash)
     hpxml_bldg = _test_measure(args_hash)
 
     # Test cooling systems
@@ -220,7 +220,7 @@ class ModifyXMLTest < Minitest::Test
       args_hash['save_file_path'] = @tmp_hpxml_path
       args_hash['plug_load_pct_change'] = 0.05
 
-      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
+      original_bldg = _get_hpxml_building(args_hash)
       hpxml_bldg = _test_measure(args_hash)
 
       original_bldg.plug_loads.each do |plug_load|
@@ -253,7 +253,7 @@ class ModifyXMLTest < Minitest::Test
       args_hash['above_ground_walls_r_value_pct_change'] = 0.05
       args_hash['floor_r_value_pct_change'] = 0.05
 
-      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
+      original_bldg = _get_hpxml_building(args_hash)
       hpxml_bldg = _test_measure(args_hash)
 
       # Test roof surfaces
@@ -314,7 +314,7 @@ class ModifyXMLTest < Minitest::Test
       args_hash['save_file_path'] = @tmp_hpxml_path
       args_hash['below_ground_walls_r_value_pct_change'] = 0.05
 
-      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
+      original_bldg = _get_hpxml_building(args_hash)
       hpxml_bldg = _test_measure(args_hash)
 
       original_bldg.foundation_walls.each do |foundation_wall|
@@ -348,7 +348,7 @@ class ModifyXMLTest < Minitest::Test
       args_hash['save_file_path'] = @tmp_hpxml_path
       args_hash['slab_r_value_pct_change'] = 0.05
 
-      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
+      original_bldg = _get_hpxml_building(args_hash)
       hpxml_bldg = _test_measure(args_hash)
 
       original_bldg.slabs.each do |slab|
@@ -368,6 +368,170 @@ class ModifyXMLTest < Minitest::Test
         if slab.gap_insulation_r_value && slab.is_thermal_boundary
           expected_r_value = (slab.gap_insulation_r_value * ( 1 + args_hash['slab_r_value_pct_change'])).round(1)
           assert_equal(expected_r_value, new_slab.gap_insulation_r_value)
+        end
+      end
+    end
+  end
+
+  def test_water_heater_efficiency_and_usage
+    files_to_test = [
+      'base-dhw-tank-gas-uef.xml',
+      'base-appliances-modified.xml',
+    ]
+
+    files_to_test.each do |file|
+      # create hash of argument values.
+      args_hash = {}
+      args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', file)
+      args_hash['save_file_path'] = @tmp_hpxml_path
+      args_hash['water_heater_efficiency_pct_change'] = -0.05
+      args_hash['water_fixtures_usage_pct_change'] = -0.05
+
+      original_bldg = _get_hpxml_building(args_hash)
+      hpxml_bldg = _test_measure(args_hash)
+
+      if original_bldg.water_heating.water_fixtures_usage_multiplier.nil?
+        original_bldg.water_heating.water_fixtures_usage_multiplier = 1.0
+      end
+      expected_usage_multiplier = (original_bldg.water_heating.water_fixtures_usage_multiplier * ( 1 + args_hash['water_fixtures_usage_pct_change'])).round(2)
+      assert_equal(expected_usage_multiplier, hpxml_bldg.water_heating.water_fixtures_usage_multiplier)
+
+      # Test water heating systems
+      original_bldg.water_heating_systems.each do |water_heating_system|
+        new_water_heating_system = hpxml_bldg.water_heating_systems.find{ |dhw| dhw.id == water_heating_system.id }
+        if water_heating_system.energy_factor
+          expected_efficiency = (water_heating_system.energy_factor * ( 1 + args_hash['water_heater_efficiency_pct_change'])).round(2)
+          assert_equal(expected_efficiency, new_water_heating_system.energy_factor)
+        end
+        if water_heating_system.uniform_energy_factor
+          expected_efficiency = (water_heating_system.uniform_energy_factor * ( 1 + args_hash['water_heater_efficiency_pct_change'])).round(2)
+          assert_equal(expected_efficiency, new_water_heating_system.uniform_energy_factor)
+        end
+      end
+    end
+  end
+
+  def test_lighting_load_change
+    files_to_test = [
+      'base.xml',
+      'base-misc-usage-multiplier.xml',
+    ]
+
+    # Run test on each sample file
+    files_to_test.each do |file|
+      # create hash of argument values.
+      args_hash = {}
+      args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', file)
+      args_hash['save_file_path'] = @tmp_hpxml_path
+      args_hash['lighting_load_pct_change'] = 0.05
+
+      original_bldg = _get_hpxml_building(args_hash)
+      hpxml_bldg = _test_measure(args_hash)
+
+      new_lighting_multiplier = hpxml_bldg.lighting.interior_usage_multiplier
+      if original_bldg.lighting.interior_usage_multiplier.nil?
+        original_bldg.lighting.interior_usage_multiplier = 1.0
+      end
+      expected_usage_multiplier = (original_bldg.lighting.interior_usage_multiplier * ( 1 + args_hash['lighting_load_pct_change'])).round(2)
+      assert_equal(expected_usage_multiplier, new_lighting_multiplier)
+    end
+  end
+
+  def test_window_ufactor_and_shgc
+    files_to_test = [
+      'base.xml',
+      'base-enclosure-windows-physical-properties.xml'
+    ]
+
+    files_to_test.each do |file|
+      # create hash of argument values.
+      args_hash = {}
+      args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', file)
+      args_hash['save_file_path'] = @tmp_hpxml_path
+      args_hash['window_u_factor_pct_change'] = -0.05
+      args_hash['window_shgc_pct_change'] = -0.05
+
+      original_bldg = _get_hpxml_building(args_hash)
+      hpxml_bldg = _test_measure(args_hash)
+
+      # Test water heating systems
+      original_bldg.windows.each do |window|
+        new_window = hpxml_bldg.windows.find{ |wd| wd.id == window.id }
+        if window.ufactor
+          expected_efficiency = (window.ufactor * ( 1 + args_hash['window_u_factor_pct_change'])).round(2)
+          assert_equal(expected_efficiency, new_window.ufactor)
+        end
+        if window.shgc
+          expected_efficiency = (window.shgc * ( 1 + args_hash['window_shgc_pct_change'])).round(2)
+          assert_equal(expected_efficiency, new_window.shgc)
+        end
+      end
+    end
+  end
+
+  def test_appliance_usage
+    files_to_test = [
+      'base.xml',
+      'base-appliances-modified.xml',
+    ]
+
+    files_to_test.each do |file|
+      # create hash of argument values.
+      args_hash = {}
+      args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', file)
+      args_hash['save_file_path'] = @tmp_hpxml_path
+      args_hash['appliance_usage_pct_change'] = 0.05
+
+      original_bldg = _get_hpxml_building(args_hash)
+      hpxml_bldg = _test_measure(args_hash)
+
+      # Test appliances
+      # Fridge
+      original_bldg.refrigerators.each do |refrigerator|
+        new_refrigerator = hpxml_bldg.refrigerators.find{ |fridge| fridge.id == refrigerator.id }
+        if refrigerator.usage_multiplier
+          expected_efficiency = (refrigerator.usage_multiplier * ( 1 + args_hash['appliance_usage_pct_change'])).round(2)
+          assert_equal(expected_efficiency, new_refrigerator.usage_multiplier)
+        end
+      end
+      # Clothes washer
+      original_bldg.clothes_washers.each do |clothes_washer|
+        new_washer = hpxml_bldg.clothes_washers.find{ |cw| cw.id == clothes_washer.id }
+        if clothes_washer.usage_multiplier
+          expected_efficiency = (clothes_washer.usage_multiplier * ( 1 + args_hash['appliance_usage_pct_change'])).round(2)
+          assert_equal(expected_efficiency, new_washer.usage_multiplier)
+        end
+      end
+      # Clothes dryer
+      original_bldg.clothes_dryers.each do |clothes_dryer|
+        new_dryer = hpxml_bldg.clothes_dryers.find{ |cd| cd.id == clothes_dryer.id }
+        if clothes_dryer.usage_multiplier
+          expected_efficiency = (clothes_dryer.usage_multiplier * ( 1 + args_hash['appliance_usage_pct_change'])).round(2)
+          assert_equal(expected_efficiency, new_dryer.usage_multiplier)
+        end
+      end
+      # Dishwasher
+      original_bldg.dishwashers.each do |dishwasher|
+        new_dishwasher = hpxml_bldg.dishwashers.find{ |dw| dw.id == dishwasher.id }
+        if dishwasher.usage_multiplier
+          expected_efficiency = (dishwasher.usage_multiplier * ( 1 + args_hash['appliance_usage_pct_change'])).round(2)
+          assert_equal(expected_efficiency, new_dishwasher.usage_multiplier)
+        end
+      end
+      # Freezer
+      original_bldg.freezers.each do |freezer|
+        new_freezer = hpxml_bldg.freezers.find{ |free| free.id == freezer.id }
+        if freezer.usage_multiplier
+          expected_efficiency = (freezer.usage_multiplier * ( 1 + args_hash['appliance_usage_pct_change'])).round(2)
+          assert_equal(expected_efficiency, new_freezer.usage_multiplier)
+        end
+      end
+      # Range
+      original_bldg.cooking_ranges.each do |cooking_range|
+        new_range = hpxml_bldg.cooking_ranges.find{ |range| range.id == cooking_range.id }
+        if cooking_range.usage_multiplier
+          expected_efficiency = (cooking_range.usage_multiplier * ( 1 + args_hash['appliance_usage_pct_change'])).round(2)
+          assert_equal(expected_efficiency, new_range.usage_multiplier)
         end
       end
     end
@@ -406,5 +570,18 @@ class ModifyXMLTest < Minitest::Test
     # return new HPXML building
     hpxml = HPXML.new(hpxml_path: args_hash['save_file_path'])
     return hpxml.buildings[0]
+  end
+
+  def _get_hpxml_building(args_hash)
+    hpxml = HPXML.new(hpxml_path: args_hash['xml_file_path'])
+    hpxml_bldg = hpxml.buildings[0]
+
+    # Apply OS-HPXML defaults to any un-populated fields
+    runner = OpenStudio::Measure::OSRunner.new(OpenStudio::WorkflowJSON.new)
+    epw_path = Location.get_epw_path(hpxml_bldg, args_hash['xml_file_path'])
+    weather = WeatherFile.new(epw_path: epw_path, runner: runner)
+    Defaults.apply(runner, hpxml, hpxml_bldg, weather)
+
+    return hpxml_bldg
   end
 end
