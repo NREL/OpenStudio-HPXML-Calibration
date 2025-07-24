@@ -63,112 +63,112 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     arg.setDisplayName('Air leakage percent change')
     arg.setDescription('Percentage to change the air leakage rate.
       Positive value increases air leakage, negative value decreases air leakage.
-      Expressed as a decimal, -1 - 1.')
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('heating_efficiency_pct_change', false)
     arg.setDisplayName('Heating efficiency percent change')
     arg.setDescription('Percentage to change the heating equipment efficiency.
       Positive value increases efficiency, negative value decreases efficiency.
-      Expressed as a decimal, -1 - 1.')
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('cooling_efficiency_pct_change', false)
     arg.setDisplayName('Cooling efficiency percent change')
     arg.setDescription('Percentage to change the cooling equipment efficiency.
       Positive value increases efficiency, negative value decreases efficiency.
-      Expressed as a decimal, -1 - 1.')
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('plug_load_pct_change', false)
     arg.setDisplayName('Plug load percent change')
     arg.setDescription('Percentage to change the plug load usage multiplier.
       Positive value increases load, negative value decreases load.
-      Expressed as a decimal, -1 - 1.')
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('roof_r_value_pct_change', false)
     arg.setDisplayName('Roof R-Value percent change')
     arg.setDescription('Percentage to change the Roof R-value.
       Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a decimal, -1 - 1.')
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('ceiling_r_value_pct_change', false)
     arg.setDisplayName('Ceiling R-Value percent change')
     arg.setDescription('Percentage to change the ceiling (attic floor) R-value.
       Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a decimal, -1 - 1.')
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('floor_r_value_pct_change', false)
     arg.setDisplayName('Floor R-Value percent change')
     arg.setDescription('Percentage to change the floor R-value.
       Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a decimal, -1 - 1.')
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('above_ground_walls_r_value_pct_change', false)
     arg.setDisplayName('Above-ground wall R-Value percent change')
     arg.setDescription('Percentage to change the above-ground wall R-value.
       Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a decimal, -1 - 1.')
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('below_ground_walls_r_value_pct_change', false)
     arg.setDisplayName('Below-ground wall R-Value percent change')
     arg.setDescription('Percentage to change the below-ground wall R-value.
       Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a decimal, -1 - 1.')
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('slab_r_value_pct_change', false)
     arg.setDisplayName('Slab R-Value percent change')
     arg.setDescription('Percentage to change the foundation slab R-value.
       Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a decimal, -1 - 1.')
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('water_heater_efficiency_pct_change', false)
     arg.setDisplayName('Water heater efficiency percent change')
     arg.setDescription('Percentage to change the Energy Factor or Unified Energy Factor.
       Positive value increases efficiency (EF/UEF), negative value decreases efficiency (EF/UEF).
-      Expressed as a decimal, -1.0 - 1.0.')
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('water_fixtures_usage_pct_change', false)
     arg.setDisplayName('Water fixtures usage percent change')
     arg.setDescription('Percentage to change the water fixtures usage multiplier.
       Positive value increases usage, negative value decreases usage.
-      Expressed as a decimal, -1.0 - 1.0.')
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('lighting_load_pct_change', false)
     arg.setDisplayName('Lighting load percent change')
     arg.setDescription('Percentage to change the lighting load.
       Positive value increases lighting load, negative value decreases lighting load.
-      Expressed as a decimal, -1.0 - 1.0.')
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('window_u_factor_pct_change', false)
     arg.setDisplayName('Window U-factor percent change')
     arg.setDescription('Percentage to change the window U-factor.
       Positive value increases U-factor, negative value decreases U-factor.
-      Expressed as a decimal, -1.0 - 1.0.')
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('window_shgc_pct_change', false)
     arg.setDisplayName('Window SHGC percent change')
     arg.setDescription('Percentage to change the window SHGC.
       Positive value increases SHGC, negative value decreases SHGC.
-      Expressed as a decimal, -1.0 - 1.0.')
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('appliance_usage_pct_change', false)
     arg.setDisplayName('Appliance usage percent change')
     arg.setDescription('Percentage to change usage_multiplier of all appliances.
       Positive value increases usage_multiplier, negative value decreases usage_multiplier.
-      Expressed as a decimal, -1.0 - 1.0.')
+      Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.')
     args << arg
 
     return args
