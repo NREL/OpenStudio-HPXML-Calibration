@@ -35,7 +35,7 @@ class ModifyXMLTest < Minitest::Test
       args_hash['heating_setpoint_offset'] = -1.5
       args_hash['cooling_setpoint_offset'] = 2.5
 
-      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
+      original_bldg = _get_hpxml_building(args_hash)
       hpxml_bldg = _test_measure(args_hash)
 
       # Check for expected change
@@ -89,7 +89,7 @@ class ModifyXMLTest < Minitest::Test
       args_hash['save_file_path'] = @tmp_hpxml_path
       args_hash['air_leakage_pct_change'] = -0.1
 
-      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
+      original_bldg = _get_hpxml_building(args_hash)
       hpxml_bldg = _test_measure(args_hash)
 
       original_bldg.air_infiltration_measurements.each do |infiltration_measurement|
@@ -113,7 +113,7 @@ class ModifyXMLTest < Minitest::Test
     args_hash['save_file_path'] = @tmp_hpxml_path
     args_hash['heating_efficiency_pct_change'] = 0.05
 
-    original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
+    original_bldg = _get_hpxml_building(args_hash)
     hpxml_bldg = _test_measure(args_hash)
 
     # Test heating systems
@@ -160,7 +160,7 @@ class ModifyXMLTest < Minitest::Test
     args_hash['save_file_path'] = @tmp_hpxml_path
     args_hash['cooling_efficiency_pct_change'] = -0.05
 
-    original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
+    original_bldg = _get_hpxml_building(args_hash)
     hpxml_bldg = _test_measure(args_hash)
 
     # Test cooling systems
@@ -220,7 +220,7 @@ class ModifyXMLTest < Minitest::Test
       args_hash['save_file_path'] = @tmp_hpxml_path
       args_hash['plug_load_pct_change'] = 0.05
 
-      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
+      original_bldg = _get_hpxml_building(args_hash)
       hpxml_bldg = _test_measure(args_hash)
 
       original_bldg.plug_loads.each do |plug_load|
@@ -253,7 +253,7 @@ class ModifyXMLTest < Minitest::Test
       args_hash['above_ground_walls_r_value_pct_change'] = 0.05
       args_hash['floor_r_value_pct_change'] = 0.05
 
-      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
+      original_bldg = _get_hpxml_building(args_hash)
       hpxml_bldg = _test_measure(args_hash)
 
       # Test roof surfaces
@@ -314,7 +314,7 @@ class ModifyXMLTest < Minitest::Test
       args_hash['save_file_path'] = @tmp_hpxml_path
       args_hash['below_ground_walls_r_value_pct_change'] = 0.05
 
-      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
+      original_bldg = _get_hpxml_building(args_hash)
       hpxml_bldg = _test_measure(args_hash)
 
       original_bldg.foundation_walls.each do |foundation_wall|
@@ -348,7 +348,7 @@ class ModifyXMLTest < Minitest::Test
       args_hash['save_file_path'] = @tmp_hpxml_path
       args_hash['slab_r_value_pct_change'] = 0.05
 
-      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
+      original_bldg = _get_hpxml_building(args_hash)
       hpxml_bldg = _test_measure(args_hash)
 
       original_bldg.slabs.each do |slab|
@@ -387,7 +387,7 @@ class ModifyXMLTest < Minitest::Test
       args_hash['water_heater_efficiency_pct_change'] = -0.05
       args_hash['water_fixtures_usage_pct_change'] = -0.05
 
-      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
+      original_bldg = _get_hpxml_building(args_hash)
       hpxml_bldg = _test_measure(args_hash)
 
       if original_bldg.water_heating.water_fixtures_usage_multiplier.nil?
@@ -425,7 +425,7 @@ class ModifyXMLTest < Minitest::Test
       args_hash['save_file_path'] = @tmp_hpxml_path
       args_hash['lighting_load_pct_change'] = 0.05
 
-      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
+      original_bldg = _get_hpxml_building(args_hash)
       hpxml_bldg = _test_measure(args_hash)
 
       new_lighting_multiplier = hpxml_bldg.lighting.interior_usage_multiplier
@@ -451,7 +451,7 @@ class ModifyXMLTest < Minitest::Test
       args_hash['window_u_factor_pct_change'] = -0.05
       args_hash['window_shgc_pct_change'] = -0.05
 
-      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
+      original_bldg = _get_hpxml_building(args_hash)
       hpxml_bldg = _test_measure(args_hash)
 
       # Test water heating systems
@@ -482,7 +482,7 @@ class ModifyXMLTest < Minitest::Test
       args_hash['save_file_path'] = @tmp_hpxml_path
       args_hash['appliance_usage_pct_change'] = 0.05
 
-      original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
+      original_bldg = _get_hpxml_building(args_hash)
       hpxml_bldg = _test_measure(args_hash)
 
       # Test appliances
@@ -570,5 +570,18 @@ class ModifyXMLTest < Minitest::Test
     # return new HPXML building
     hpxml = HPXML.new(hpxml_path: args_hash['save_file_path'])
     return hpxml.buildings[0]
+  end
+
+  def _get_hpxml_building(args_hash)
+    hpxml = HPXML.new(hpxml_path: args_hash['xml_file_path'])
+    hpxml_bldg = hpxml.buildings[0]
+
+    # Apply OS-HPXML defaults to any un-populated fields
+    runner = OpenStudio::Measure::OSRunner.new(OpenStudio::WorkflowJSON.new)
+    epw_path = Location.get_epw_path(hpxml_bldg, args_hash['xml_file_path'])
+    weather = WeatherFile.new(epw_path: epw_path, runner: runner)
+    Defaults.apply(runner, hpxml, hpxml_bldg, weather)
+
+    return hpxml_bldg
   end
 end

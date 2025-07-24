@@ -194,8 +194,11 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
 
     hpxml = HPXML.new(hpxml_path: xml_file)
     hpxml_bldg = hpxml.buildings[0] # FIXME: This requires that each XML file contain only a single building
+
     # Apply OS-HPXML defaults to any un-populated fields
-    Defaults.apply(runner, hpxml, hpxml_bldg, nil)
+    epw_path = Location.get_epw_path(hpxml_bldg, xml_file)
+    weather = WeatherFile.new(epw_path: epw_path, runner: runner)
+    Defaults.apply(runner, hpxml, hpxml_bldg, weather)
 
     # Modify XML fields
     modify_heating_setpoint(hpxml_bldg, runner, args)
