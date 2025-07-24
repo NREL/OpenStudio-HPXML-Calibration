@@ -173,9 +173,9 @@ class HpxmlDoc:
                 heating_fuels.add(
                     heating_system.HeatPump.BackupSystemFuel.text.strip()
                 )  # TODO: Need to capture fuel used for integrated AC?
-            cooling_fuels.add(
-                building.BuildingDetails.Systems.HVAC.HVACPlant.CoolingSystem.CoolingSystemFuel.text.strip()
-            )
+            for cooling_system in building.BuildingDetails.Systems.HVAC.HVACPlant:
+                cooling_fuels.add(cooling_system.CoolingSystem.CoolingSystemFuel.text.strip())
+                cooling_fuels.add(cooling_system.HeatPump.HeatPumpFuel.text.strip())
 
         return heating_fuels, cooling_fuels
 
