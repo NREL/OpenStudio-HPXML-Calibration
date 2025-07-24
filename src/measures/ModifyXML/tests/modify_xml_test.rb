@@ -385,7 +385,7 @@ class ModifyXMLTest < Minitest::Test
       args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', file)
       args_hash['save_file_path'] = @tmp_hpxml_path
       args_hash['water_heater_efficiency_pct_change'] = -0.05
-      args_hash['water_heater_usage_pct_change'] = -0.05
+      args_hash['water_fixtures_usage_pct_change'] = -0.05
 
       original_bldg = HPXML.new(hpxml_path: args_hash['xml_file_path']).buildings[0]
       hpxml_bldg = _test_measure(args_hash)
@@ -393,7 +393,7 @@ class ModifyXMLTest < Minitest::Test
       if original_bldg.water_heating.water_fixtures_usage_multiplier.nil?
         original_bldg.water_heating.water_fixtures_usage_multiplier = 1.0
       end
-      expected_usage_multiplier = (original_bldg.water_heating.water_fixtures_usage_multiplier * ( 1 + args_hash['water_heater_usage_pct_change'])).round(2)
+      expected_usage_multiplier = (original_bldg.water_heating.water_fixtures_usage_multiplier * ( 1 + args_hash['water_fixtures_usage_pct_change'])).round(2)
       assert_equal(expected_usage_multiplier, hpxml_bldg.water_heating.water_fixtures_usage_multiplier)
 
       # Test water heating systems
