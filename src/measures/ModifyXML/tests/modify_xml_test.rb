@@ -440,7 +440,7 @@ class ModifyXMLTest < Minitest::Test
   def test_window_ufactor_and_shgc
     files_to_test = [
       'base.xml',
-      'base-appliances-modified.xml',
+      'base-enclosure-windows-physical-properties.xml'
     ]
 
     files_to_test.each do |file|

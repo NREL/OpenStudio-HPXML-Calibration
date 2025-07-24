@@ -194,6 +194,8 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
 
     hpxml = HPXML.new(hpxml_path: xml_file)
     hpxml_bldg = hpxml.buildings[0] # FIXME: This requires that each XML file contain only a single building
+    # Apply OS-HPXML defaults to any un-populated fields
+    Defaults.apply(runner, hpxml, hpxml_bldg, nil)
 
     # Modify XML fields
     modify_heating_setpoint(hpxml_bldg, runner, args)
@@ -634,6 +636,9 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       hpxml_bldg.freezers => 'freezer',
       hpxml_bldg.cooking_ranges => 'range'
     }.each do |appliances, appliance_name|
+      if appliances.empty?
+        runner.registerInfo("No #{appliance_name} found. Not modifying #{appliance_name}.")
+      end
       appliances.each do |appliance|
         if appliance.usage_multiplier.nil?
           appliance.usage_multiplier = 1.0
