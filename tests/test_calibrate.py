@@ -14,6 +14,7 @@ TEST_CONFIG = TEST_DATA_DIR / "test_config.json"
 
 repo_root = Path(__file__).resolve().parent.parent
 invalid_hpxmls = list((repo_root / "test_hpxmls" / "invalid_homes").glob("*.xml"))
+results_path = TEST_DIR / "run" / "results_annual.json"
 
 
 @pytest.fixture
@@ -42,9 +43,13 @@ def test_calibrate_normalizes_bills_to_weather(test_data) -> None:
 
 def test_get_model_results(test_data) -> None:
     cal = Calibrate(original_hpxml_filepath=test_data["sample_xml_file"])
-    simulation_results = cal.get_model_results(
-        json_results_path=Path(test_data["annual_json_results_path"])
-    )
+    if results_path.exists():
+        simulation_results = cal.get_model_results(json_results_path=results_path)
+    else:
+        raise SystemExit(
+            f"Results file {results_path} does not exist. Please run the simulation first by calling: "
+            "`uv run pytest tests/test_cli.py::test_cli_calls_run_sim`."
+        )
     for fuel_type, disagg_results in simulation_results.items():
         if fuel_type == "electricity":
             assert disagg_results["cooling"] == 8.907
@@ -61,9 +66,13 @@ def test_get_model_results(test_data) -> None:
 def test_compare_results(test_data):
     cal = Calibrate(original_hpxml_filepath=test_data["sample_xml_file"])
     normalized_usage = cal.get_normalized_consumption_per_bill()
-    simulation_results = cal.get_model_results(
-        json_results_path=Path(test_data["annual_json_results_path"])
-    )
+    if results_path.exists():
+        simulation_results = cal.get_model_results(json_results_path=results_path)
+    else:
+        raise SystemExit(
+            f"Results file {results_path} does not exist. Please run the simulation first by calling: "
+            "`uv run pytest tests/test_cli.py::test_cli_calls_run_sim`."
+        )
     comparison = cal.compare_results(
         normalized_consumption=normalized_usage, annual_model_results=simulation_results
     )
