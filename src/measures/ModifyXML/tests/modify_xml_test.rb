@@ -401,18 +401,28 @@ class ModifyXMLTest < Minitest::Test
       original_bldg.water_heating_systems.each do |water_heating_system|
         new_water_heating_system = hpxml_bldg.water_heating_systems.find{ |dhw| dhw.id == water_heating_system.id }
         if water_heating_system.energy_factor
-          if water_heating_system.water_heater_type == 'heat pump water heater'
+          if water_heating_system.water_heater_type == HPXML::WaterHeaterTypeHeatPump
             expected_efficiency = (water_heating_system.energy_factor * ( 1 + args_hash['water_heater_efficiency_pct_change'])).round(2)
+            if expected_efficiency <= 1.0
+              expected_efficiency = 1.01
+            elsif expected_efficiency > 5.0
+              expected_efficiency = 5.0
+            end
           else
-            expected_efficiency = [(water_heating_system.energy_factor * ( 1 + args_hash['water_heater_efficiency_pct_change'])).round(2), 1.0].min
+            expected_efficiency = [(water_heating_system.energy_factor * ( 1 + args_hash['water_heater_efficiency_pct_change'])).round(2), 0.999].min
           end
           assert_equal(expected_efficiency, new_water_heating_system.energy_factor)
         end
         if water_heating_system.uniform_energy_factor
-          if water_heating_system.water_heater_type == 'heat pump water heater'
+          if water_heating_system.water_heater_type == HPXML::WaterHeaterTypeHeatPump
             expected_efficiency = (water_heating_system.uniform_energy_factor * ( 1 + args_hash['water_heater_efficiency_pct_change'])).round(2)
+            if expected_efficiency <= 1.0
+              expected_efficiency = 1.01
+            elsif expected_efficiency > 5.0
+              expected_efficiency = 5.0
+            end
           else
-            expected_efficiency = [(water_heating_system.uniform_energy_factor * ( 1 + args_hash['water_heater_efficiency_pct_change'])).round(2), 1.0].min
+            expected_efficiency = [(water_heating_system.uniform_energy_factor * ( 1 + args_hash['water_heater_efficiency_pct_change'])).round(2), 0.999].min
           end
           assert_equal(expected_efficiency, new_water_heating_system.uniform_energy_factor)
         end

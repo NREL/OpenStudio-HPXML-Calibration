@@ -555,25 +555,37 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     multiplier = 1 + args[:water_heater_efficiency_pct_change]
     hpxml_bldg.water_heating_systems.each do |water_heating_system|
       if water_heating_system.energy_factor
-        if water_heating_system.water_heater_type == 'heat pump water heater'
-          water_heating_system.energy_factor * multiplier
+        if water_heating_system.water_heater_type == HPXML::WaterHeaterTypeHeatPump
+          new_ef = water_heating_system.energy_factor * multiplier
+          # Apply HPXML bounds https://openstudio-hpxml.readthedocs.io/en/latest/workflow_inputs.html#heat-pump
+          if new_ef <= 1.0
+            new_ef = 1.01
+          elsif new_ef > 5.0
+            new_ef = 5.0
+          end
         else
-          new_ef = [water_heating_system.energy_factor * multiplier, 1.0].min
+          new_ef = [water_heating_system.energy_factor * multiplier, 0.999].min
         end
         if new_ef != water_heating_system.energy_factor
-          water_heating_system.recovery_efficiency = nil if water_heating_system.recovery_efficiency
+          water_heating_system.recovery_efficiency = nil
         end
         water_heating_system.energy_factor = new_ef.round(2)
         # puts "New EF: #{water_heating_system.energy_factor}"
       end
       if water_heating_system.uniform_energy_factor
-        if water_heating_system.water_heater_type == 'heat pump water heater'
+        if water_heating_system.water_heater_type == HPXML::WaterHeaterTypeHeatPump
           new_uef = water_heating_system.uniform_energy_factor * multiplier
+          # Apply HPXML bounds https://openstudio-hpxml.readthedocs.io/en/latest/workflow_inputs.html#heat-pump
+          if new_uef <= 1.0
+            new_uef = 1.01
+          elsif new_uef > 5.0
+            new_uef = 5.0
+          end
         else
-          new_uef = [water_heating_system.uniform_energy_factor * multiplier, 1.0].min
+          new_uef = [water_heating_system.uniform_energy_factor * multiplier, 0.999].min
         end
         if new_uef != water_heating_system.uniform_energy_factor
-          water_heating_system.recovery_efficiency = nil if water_heating_system.recovery_efficiency
+          water_heating_system.recovery_efficiency = nil
         end
         water_heating_system.uniform_energy_factor = new_uef.round(2)
         # puts "New UEF: #{water_heating_system.uniform_energy_factor}"
