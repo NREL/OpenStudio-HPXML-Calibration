@@ -678,6 +678,9 @@ class Calibrate:
         cfg = self.ga_config
         population_size = cfg["genetic_algorithm"]["population_size"]
         generations = cfg["genetic_algorithm"]["generations"]
+        bias_error_threshold = cfg["genetic_algorithm"]["bias_error_threshold"]
+        abs_error_elec_threshold = cfg["genetic_algorithm"]["abs_error_elec_threshold"]
+        abs_error_ng_threshold = cfg["genetic_algorithm"]["abs_error_ng_threshold"]
         cxpb = cfg["genetic_algorithm"]["crossover_probability"]
         mutpb = cfg["genetic_algorithm"]["mutation_probability"]
         plug_load_pct_choices = cfg["value_choices"]["plug_load_pct_choices"]
@@ -797,7 +800,7 @@ class Calibrate:
         def create_measure_input_file(arguments: dict, output_file_path: str):
             data = {
                 "run_directory": str(Path(arguments["save_file_path"]).parent),
-                "measure_paths": ["C:\\Github\\OpenStudio-HPXML-Calibration\\src\\measures"],
+                "measure_paths": [str(Path(__file__).resolve().parent.parent / "measures")],
                 "steps": [{"measure_dir_name": "ModifyXML", "arguments": arguments}],
             }
             Path(output_file_path).parent.mkdir(parents=True, exist_ok=True)
@@ -1066,6 +1069,27 @@ class Calibrate:
                 record["best_individual_filepath"] = str(best_ind.temp_output_dir)
                 logbook.record(gen=gen, nevals=len(invalid_ind), **record)
                 print(logbook.stream)
+
+                # Early termination conditions
+                def meets_termination_criteria(comparison):
+                    for fuel_type, metrics in comparison.items():
+                        for end_use, bias in metrics["Bias Error"].items():
+                            if abs(bias) > bias_error_threshold:
+                                return False
+                        for end_use, abs_err in metrics["Absolute Error"].items():
+                            if (
+                                fuel_type == "electricity"
+                                and abs(abs_err) > abs_error_elec_threshold
+                            ):
+                                return False
+                            if fuel_type == "natural gas" and abs(abs_err) > abs_error_ng_threshold:
+                                return False
+                    return True
+
+                if meets_termination_criteria(best_comp):
+                    print(f"Early stopping: termination criteria met at generation {gen}")
+                    record["terminated_early"] = True
+                    break
 
         best_individual = hall_of_fame[0]
 

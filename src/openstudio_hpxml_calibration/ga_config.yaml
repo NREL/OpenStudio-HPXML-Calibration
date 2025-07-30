@@ -3,6 +3,9 @@ genetic_algorithm:
   generations: 100
   mutation_probability: 0.4
   crossover_probability: 0.4
+  bias_error_threshold: 10  # Bias error threshold in percent for all end uses
+  abs_error_elec_threshold: 500  # Absolute error threshold for electricity in kWh
+  abs_error_ng_threshold: 5  # Absolute error threshold for natural gas in MBtu
 
 value_choices:
   plug_load_pct_choices: [-0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 5, 10]
@@ -14,9 +17,9 @@ value_choices:
   below_ground_walls_r_value_pct_choices: [-0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 5, 10]
   slab_r_value_pct_choices: [-0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 5, 10]
   floor_r_value_pct_choices: [-0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 5, 10]
-  heating_setpoint_choices: [-9, -7, -5, -3, -1, 0, 1, 3, 5, 7, 9]
-  cooling_setpoint_choices: [-9, -7, -5, -2, -1, 0, 1, 3, 5, 7, 9]
-  water_heater_efficiency_pct_choices: [-0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7]
+  heating_setpoint_choices: [-5, -3, -1, 0, 1, 3, 5]
+  cooling_setpoint_choices: [-5, -3, -1, 0, 1, 3, 5]
+  water_heater_efficiency_pct_choices: [-0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5]
   water_fixtures_usage_pct_choices: [-0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 5, 10]
   window_u_factor_pct_choices: [-0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
   window_shgc_pct_choices: [-0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
