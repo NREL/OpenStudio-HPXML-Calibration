@@ -3,8 +3,8 @@
   <schema_version>3.1</schema_version>
   <name>modify_xml</name>
   <uid>afd74b96-8b2c-4ebd-83be-0d3fdc35bf9a</uid>
-  <version_id>5d696461-ebec-42e2-8039-c716c963baf8</version_id>
-  <version_modified>2025-07-24T16:09:32Z</version_modified>
+  <version_id>4f30eb9c-a8ac-44d9-a84e-35c2554b5c34</version_id>
+  <version_modified>2025-07-30T22:48:36Z</version_modified>
   <xml_checksum>1B7C870F</xml_checksum>
   <class_name>ModifyXML</class_name>
   <display_name>ModifyXML</display_name>
@@ -233,13 +233,13 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>60E3EAA3</checksum>
+      <checksum>DDCC2EB1</checksum>
     </file>
     <file>
       <filename>modify_xml_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
-      <checksum>2AF5841A</checksum>
+      <checksum>B61631E7</checksum>
     </file>
   </files>
 </measure>
