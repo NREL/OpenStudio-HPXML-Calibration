@@ -41,6 +41,7 @@ def test_cli_calls_openstudio(capsys):
     assert "HPXML v" in captured.out
 
 
+@pytest.mark.order(1)
 def test_cli_calls_run_sim(test_data):
     app(
         [
