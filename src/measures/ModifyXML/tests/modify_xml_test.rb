@@ -377,6 +377,7 @@ class ModifyXMLTest < Minitest::Test
     files_to_test = [
       'base-dhw-tank-gas-uef.xml',
       'base-appliances-modified.xml',
+      'base-dhw-tank-heat-pump-uef.xml',
     ]
 
     files_to_test.each do |file|
@@ -400,11 +401,19 @@ class ModifyXMLTest < Minitest::Test
       original_bldg.water_heating_systems.each do |water_heating_system|
         new_water_heating_system = hpxml_bldg.water_heating_systems.find{ |dhw| dhw.id == water_heating_system.id }
         if water_heating_system.energy_factor
-          expected_efficiency = (water_heating_system.energy_factor * ( 1 + args_hash['water_heater_efficiency_pct_change'])).round(2)
+          if water_heating_system.water_heater_type == 'heat pump water heater'
+            expected_efficiency = (water_heating_system.energy_factor * ( 1 + args_hash['water_heater_efficiency_pct_change'])).round(2)
+          else
+            expected_efficiency = [(water_heating_system.energy_factor * ( 1 + args_hash['water_heater_efficiency_pct_change'])).round(2), 1.0].min
+          end
           assert_equal(expected_efficiency, new_water_heating_system.energy_factor)
         end
         if water_heating_system.uniform_energy_factor
-          expected_efficiency = (water_heating_system.uniform_energy_factor * ( 1 + args_hash['water_heater_efficiency_pct_change'])).round(2)
+          if water_heating_system.water_heater_type == 'heat pump water heater'
+            expected_efficiency = (water_heating_system.uniform_energy_factor * ( 1 + args_hash['water_heater_efficiency_pct_change'])).round(2)
+          else
+            expected_efficiency = [(water_heating_system.uniform_energy_factor * ( 1 + args_hash['water_heater_efficiency_pct_change'])).round(2), 1.0].min
+          end
           assert_equal(expected_efficiency, new_water_heating_system.uniform_energy_factor)
         end
       end
