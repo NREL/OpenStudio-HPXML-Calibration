@@ -555,12 +555,18 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     multiplier = 1 + args[:water_heater_efficiency_pct_change]
     hpxml_bldg.water_heating_systems.each do |water_heating_system|
       if water_heating_system.energy_factor
-        new_ef = water_heating_system.energy_factor * multiplier
+        new_ef = [water_heating_system.energy_factor * multiplier, 1.0].min
+        if new_ef != water_heating_system.energy_factor
+          water_heating_system.recovery_efficiency = nil
+        end
         water_heating_system.energy_factor = new_ef.round(2)
         # puts "New EF: #{water_heating_system.energy_factor}"
       end
       if water_heating_system.uniform_energy_factor
-        new_uef = water_heating_system.uniform_energy_factor * multiplier
+        new_uef = [water_heating_system.uniform_energy_factor * multiplier, 1.0].min
+        if new_uef != water_heating_system.uniform_energy_factor
+          water_heating_system.recovery_efficiency = nil
+        end
         water_heating_system.uniform_energy_factor = new_uef.round(2)
         # puts "New UEF: #{water_heating_system.uniform_energy_factor}"
       end
