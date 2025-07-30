@@ -25,5 +25,6 @@ wheels/
 
 # test dirs
 src/measures/ModifyXML/tests/run
+tests/modifications
 tests/run
 tests/results/
