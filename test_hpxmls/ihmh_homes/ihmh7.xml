@@ -1321,6 +1321,25 @@
             <WaterFixturesMonthlyScheduleMultipliers>1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0</WaterFixturesMonthlyScheduleMultipliers>
           </extension>
         </WaterHeating>
+        <Photovoltaics>
+          <PVSystem>
+            <SystemIdentifier id='PVSystem'/>
+            <ArrayAzimuth>180</ArrayAzimuth>
+            <ArrayTilt>25.0</ArrayTilt>
+            <MaxPowerOutput>2000.0</MaxPowerOutput>
+            <AttachedToInverter idref='Inverter'/>
+          </PVSystem>
+          <PVSystem>
+            <SystemIdentifier id='PVSystem2'/>
+            <ArrayAzimuth>270</ArrayAzimuth>
+            <ArrayTilt>25.0</ArrayTilt>
+            <MaxPowerOutput>2400.0</MaxPowerOutput>
+            <AttachedToInverter idref='Inverter'/>
+          </PVSystem>
+          <Inverter>
+            <SystemIdentifier id='Inverter'/>
+          </Inverter>
+        </Photovoltaics>
       </Systems>
       <Appliances>
         <ClothesWasher>
@@ -1530,6 +1549,75 @@
     <BuildingID idref='BEoptBuilding'/>
     <CustomerID/>
     <ConsumptionDetails>
+      <ConsumptionInfo>
+        <UtilityID/>
+        <ConsumptionType>
+          <Energy>
+            <FuelType>electricity</FuelType>
+            <UnitofMeasure>kWh</UnitofMeasure>
+          </Energy>
+        </ConsumptionType>
+        <ConsumptionDetail>
+          <Consumption>0</Consumption>
+          <StartDateTime>2024-07-01T00:00:00</StartDateTime>
+          <EndDateTime>2024-08-01T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>0</Consumption>
+          <StartDateTime>2024-08-01T00:00:00</StartDateTime>
+          <EndDateTime>2024-09-01T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>0</Consumption>
+          <StartDateTime>2024-09-01T00:00:00</StartDateTime>
+          <EndDateTime>2024-10-01T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>0</Consumption>
+          <StartDateTime>2024-10-01T00:00:00</StartDateTime>
+          <EndDateTime>2024-11-01T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>0</Consumption>
+          <StartDateTime>2024-11-01T00:00:00</StartDateTime>
+          <EndDateTime>2024-12-01T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>0</Consumption>
+          <StartDateTime>2024-12-01T00:00:00</StartDateTime>
+          <EndDateTime>2025-01-01T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>0</Consumption>
+          <StartDateTime>2025-01-01T00:00:00</StartDateTime>
+          <EndDateTime>2025-02-01T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>21</Consumption>
+          <StartDateTime>2025-02-01T00:00:00</StartDateTime>
+          <EndDateTime>2025-03-01T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>56</Consumption>
+          <StartDateTime>2025-03-01T00:00:00</StartDateTime>
+          <EndDateTime>2025-04-01T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>0</Consumption>
+          <StartDateTime>2025-04-01T00:00:00</StartDateTime>
+          <EndDateTime>2025-05-01T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>0</Consumption>
+          <StartDateTime>2025-05-01T00:00:00</StartDateTime>
+          <EndDateTime>2025-06-01T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>0</Consumption>
+          <StartDateTime>2025-06-01T00:00:00</StartDateTime>
+          <EndDateTime>2025-07-01T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+      </ConsumptionInfo>
       <ConsumptionInfo>
         <UtilityID/>
         <ConsumptionType>
