@@ -206,10 +206,11 @@ class ModifyXMLTest < Minitest::Test
     end
   end
 
-  def test_plug_load_change
+  def test_misc_load_change
     files_to_test = [
       'base.xml',
       'base-misc-usage-multiplier.xml',
+      'base-misc-loads-large-uncommon.xml'
     ]
 
     # Run test on each sample file
@@ -218,18 +219,40 @@ class ModifyXMLTest < Minitest::Test
       args_hash = {}
       args_hash['xml_file_path'] = File.join(@oshpxml_root_path, 'workflow', 'sample_files', file)
       args_hash['save_file_path'] = @tmp_hpxml_path
-      args_hash['plug_load_pct_change'] = 0.05
+      args_hash['misc_load_pct_change'] = 0.05
 
       original_bldg = _get_hpxml_building(args_hash)
       hpxml_bldg = _test_measure(args_hash)
 
       original_bldg.plug_loads.each do |plug_load|
         new_plug_load = hpxml_bldg.plug_loads.find{ |pl| pl.id == plug_load.id }
-        if plug_load.usage_multiplier.nil?
-          plug_load.usage_multiplier = 1.0
-        end
-        expected_usage_multiplier = (plug_load.usage_multiplier * ( 1 + args_hash['plug_load_pct_change'])).round(2)
+        plug_load.usage_multiplier ||= 1.0
+        expected_usage_multiplier = (plug_load.usage_multiplier * ( 1 + args_hash['misc_load_pct_change'])).round(2)
         assert_equal(expected_usage_multiplier, new_plug_load.usage_multiplier)
+      end
+      original_bldg.fuel_loads.each do |fuel_load|
+        new_fuel_load = hpxml_bldg.fuel_loads.find{ |fl| fl.id == fuel_load.id }
+        fuel_load.usage_multiplier ||= 1.0
+        expected_usage_multiplier = (fuel_load.usage_multiplier * ( 1 + args_hash['misc_load_pct_change'])).round(2)
+        assert_equal(expected_usage_multiplier, new_fuel_load.usage_multiplier)
+      end
+      original_bldg.pools.each do |pool|
+        new_pool = hpxml_bldg.pools.find{ |pol| pol.id == pool.id }
+        pool.pump_usage_multiplier ||= 1.0
+        pool.heater_usage_multiplier ||= 1.0
+        expected_pump_usage_multiplier = (pool.pump_usage_multiplier * ( 1 + args_hash['misc_load_pct_change'])).round(2)
+        assert_equal(expected_pump_usage_multiplier, new_pool.pump_usage_multiplier)
+        expected_heater_usage_multiplier = (pool.heater_usage_multiplier * ( 1 + args_hash['misc_load_pct_change'])).round(2)
+        assert_equal(expected_heater_usage_multiplier, new_pool.heater_usage_multiplier)
+      end
+      original_bldg.permanent_spas.each do |permanent_spa|
+        new_pool = hpxml_bldg.permanent_spas.find{ |spa| spa.id == permanent_spa.id }
+        permanent_spa.pump_usage_multiplier ||= 1.0
+        permanent_spa.heater_usage_multiplier ||= 1.0
+        expected_pump_usage_multiplier = (permanent_spa.pump_usage_multiplier * ( 1 + args_hash['misc_load_pct_change'])).round(2)
+        assert_equal(expected_pump_usage_multiplier, new_pool.pump_usage_multiplier)
+        expected_heater_usage_multiplier = (permanent_spa.heater_usage_multiplier * ( 1 + args_hash['misc_load_pct_change'])).round(2)
+        assert_equal(expected_heater_usage_multiplier, new_pool.heater_usage_multiplier)
       end
     end
   end
@@ -391,9 +414,7 @@ class ModifyXMLTest < Minitest::Test
       original_bldg = _get_hpxml_building(args_hash)
       hpxml_bldg = _test_measure(args_hash)
 
-      if original_bldg.water_heating.water_fixtures_usage_multiplier.nil?
-        original_bldg.water_heating.water_fixtures_usage_multiplier = 1.0
-      end
+      original_bldg.water_heating.water_fixtures_usage_multiplier ||= 1.0
       expected_usage_multiplier = (original_bldg.water_heating.water_fixtures_usage_multiplier * ( 1 + args_hash['water_fixtures_usage_pct_change'])).round(2)
       assert_equal(expected_usage_multiplier, hpxml_bldg.water_heating.water_fixtures_usage_multiplier)
 
@@ -438,9 +459,7 @@ class ModifyXMLTest < Minitest::Test
       hpxml_bldg = _test_measure(args_hash)
 
       new_lighting_multiplier = hpxml_bldg.lighting.interior_usage_multiplier
-      if original_bldg.lighting.interior_usage_multiplier.nil?
-        original_bldg.lighting.interior_usage_multiplier = 1.0
-      end
+      original_bldg.lighting.interior_usage_multiplier ||= 1.0
       expected_usage_multiplier = (original_bldg.lighting.interior_usage_multiplier * ( 1 + args_hash['lighting_load_pct_change'])).round(2)
       assert_equal(expected_usage_multiplier, new_lighting_multiplier)
     end
