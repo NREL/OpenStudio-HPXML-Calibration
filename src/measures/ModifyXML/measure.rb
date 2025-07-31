@@ -80,9 +80,9 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.')
     args << arg
 
-    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('plug_load_pct_change', false)
-    arg.setDisplayName('Plug load percent change')
-    arg.setDescription('Percentage to change the plug load usage multiplier.
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('misc_load_pct_change', false)
+    arg.setDisplayName('Miscellaneous load percent change')
+    arg.setDescription('Percentage to change the various miscellaneous load usage multipliers.
       Positive value increases load, negative value decreases load.
       Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.')
     args << arg
@@ -206,7 +206,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     modify_air_leakage(hpxml_bldg, runner, args)
     modify_heating_efficiency(hpxml_bldg, runner, args)
     modify_cooling_efficiency(hpxml_bldg, runner, args)
-    modify_plug_loads(hpxml_bldg, runner, args)
+    modify_misc_loads(hpxml_bldg, runner, args)
     modify_roof_r_values(hpxml_bldg, runner, args)
     modify_ceiling_r_values(hpxml_bldg, runner, args)
     modify_floor_r_values(hpxml_bldg, runner, args)
@@ -401,19 +401,46 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     end
   end
 
-  def modify_plug_loads(hpxml_bldg, runner, args)
-    if not args[:plug_load_pct_change]
-      runner.registerInfo('No modifier for plug loads provided. Not modifying plug loads.')
+  def modify_misc_loads(hpxml_bldg, runner, args)
+    if not args[:misc_load_pct_change]
+      runner.registerInfo('No modifier for misc loads provided. Not modifying misc loads.')
       return
     end
-    multiplier = 1 + args[:plug_load_pct_change]
+    multiplier = 1 + args[:misc_load_pct_change]
     hpxml_bldg.plug_loads.each do |plug_load|
-      if plug_load.usage_multiplier.nil?
-        plug_load.usage_multiplier = 1.0
-      end
+      plug_load.usage_multiplier ||= 1.0
       new_multiplier = plug_load.usage_multiplier * multiplier
       plug_load.usage_multiplier = new_multiplier.round(2)
       # puts "New plug load multiplier: #{plug_load.usage_multiplier}"
+    end
+    # FuelLoads Pools PermanentSpas
+    hpxml_bldg.fuel_loads.each do |fuel_load|
+      fuel_load.usage_multiplier ||= 1.0
+      new_multiplier = fuel_load.usage_multiplier * multiplier
+      fuel_load.usage_multiplier = new_multiplier.round(2)
+      # puts "New fuel load multiplier: #{fuel_load.usage_multiplier}"
+    end
+    hpxml_bldg.pools.each do |pool|
+      next if pool.type == 'none'
+      pool.pump_usage_multiplier ||= 1.0
+      pool.heater_usage_multiplier ||= 1.0
+      new_pump_multiplier = pool.pump_usage_multiplier * multiplier
+      new_heater_multiplier = pool.heater_usage_multiplier * multiplier
+      pool.pump_usage_multiplier = new_pump_multiplier.round(2)
+      pool.heater_usage_multiplier = new_heater_multiplier.round(2)
+      # puts "New pool pump usage multiplier: #{pool.pump_usage_multiplier}"
+      # puts "New pool heater usage multiplier: #{pool.heater_usage_multiplier}"
+    end
+    hpxml_bldg.permanent_spas.each do |permanent_spa|
+      next if permanent_spa.type == 'none'
+      permanent_spa.pump_usage_multiplier ||= 1.0
+      permanent_spa.heater_usage_multiplier ||= 1.0
+      new_pump_multiplier = permanent_spa.pump_usage_multiplier * multiplier
+      new_heater_multiplier = permanent_spa.heater_usage_multiplier * multiplier
+      permanent_spa.pump_usage_multiplier = new_pump_multiplier.round(2)
+      permanent_spa.heater_usage_multiplier = new_heater_multiplier.round(2)
+      # puts "New permanent_spa pump usage multiplier: #{permanent_spa.pump_usage_multiplier}"
+      # puts "New permanent_spa heater usage multiplier: #{permanent_spa.heater_usage_multiplier}"
     end
   end
 
@@ -589,9 +616,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       return
     end
     multiplier = 1 + args[:water_fixtures_usage_pct_change]
-    if hpxml_bldg.water_heating.water_fixtures_usage_multiplier.nil?
-      hpxml_bldg.water_heating.water_fixtures_usage_multiplier = 1.0
-    end
+    hpxml_bldg.water_heating.water_fixtures_usage_multiplier ||= 1.0
     new_multiplier = hpxml_bldg.water_heating.water_fixtures_usage_multiplier * multiplier
     hpxml_bldg.water_heating.water_fixtures_usage_multiplier = new_multiplier.round(2)
     # puts "New water fixture usage multiplier: #{hpxml_bldg.water_heating.water_fixtures_usage_multiplier}"
@@ -603,9 +628,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
       return
     end
     multiplier = 1 + args[:lighting_load_pct_change]
-    if hpxml_bldg.lighting.interior_usage_multiplier.nil?
-      hpxml_bldg.lighting.interior_usage_multiplier = 1.0
-    end
+    hpxml_bldg.lighting.interior_usage_multiplier ||= 1.0
     new_multiplier = hpxml_bldg.lighting.interior_usage_multiplier * multiplier
     hpxml_bldg.lighting.interior_usage_multiplier = new_multiplier.round(2)
     # puts "New lighting load multiplier: #{hpxml_bldg.lighting.interior_usage_multiplier}"
@@ -659,9 +682,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
         runner.registerInfo("No #{appliance_name} found. Not modifying #{appliance_name}.")
       end
       appliances.each do |appliance|
-        if appliance.usage_multiplier.nil?
-          appliance.usage_multiplier = 1.0
-        end
+        appliance.usage_multiplier ||= 1.0
         new_appliance_usage_multiplier = appliance.usage_multiplier * multiplier
         appliance.usage_multiplier = new_appliance_usage_multiplier.round(2)
         # puts "New #{appliance_name} usage multiplier: #{appliance.usage_multiplier}"
