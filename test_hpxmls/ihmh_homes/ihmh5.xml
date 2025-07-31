@@ -2477,6 +2477,11 @@
           <StartDateTime>2025-06-01T00:00:00</StartDateTime>
           <EndDateTime>2025-07-01T00:00:00</EndDateTime>
         </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>971</Consumption>
+          <StartDateTime>2025-07-01T00:00:00</StartDateTime>
+          <EndDateTime>2025-08-01T00:00:00</EndDateTime>
+        </ConsumptionDetail>
       </ConsumptionInfo>
       <ConsumptionInfo>
         <UtilityID/>
