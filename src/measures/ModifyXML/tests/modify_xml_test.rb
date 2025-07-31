@@ -471,7 +471,7 @@ class ModifyXMLTest < Minitest::Test
           assert_equal(expected_efficiency, new_window.ufactor)
         end
         if window.shgc
-          expected_efficiency = (window.shgc * ( 1 + args_hash['window_shgc_pct_change'])).round(2)
+          expected_efficiency = [(window.shgc * ( 1 + args_hash['window_shgc_pct_change'])).round(2), 0.99].min
           assert_equal(expected_efficiency, new_window.shgc)
         end
       end
