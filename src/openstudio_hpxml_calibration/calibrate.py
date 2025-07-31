@@ -777,11 +777,7 @@ class Calibrate:
             for fuel_type, metrics in comparison.items():
                 for end_use, bias_error in metrics["Bias Error"].items():
                     bias_error_penalty = max(0, abs(bias_error)) ** 2
-                    if fuel_type == "electricity" and end_use == "heating":
-                        bias_error_penalty = (
-                            0  # don't penalize electricity heating bias error temporarily
-                        )
-                    # if absolute error is within the bpi2400 criteria, don't penalize
+                    # if absolute error is within the bpi2400 criteria, relax the penalty
                     if (
                         fuel_type == "electricity"
                         and abs(metrics["Absolute Error"][end_use]) <= 500
@@ -930,11 +926,11 @@ class Calibrate:
         worst_end_uses_by_gen = []
 
         end_use_param_map = {
-            "electricity_heating": [1, 4, 6, 7, 8, 10, 14, 15],
-            "electricity_cooling": [2, 5, 6, 7, 8, 10, 14, 15],
+            "electricity_heating": [1, 3, 4, 6, 7, 8, 10, 14, 15],
+            "electricity_cooling": [2, 3, 5, 6, 7, 8, 10, 14, 15],
             "electricity_baseload": [0, 16, 17],
-            "natural_gas_heating": [1, 4, 6, 7, 8, 10, 14, 15],
-            "natural_gas_baseload": [0, 12, 13, 16],
+            "natural_gas_heating": [1, 3, 4, 6, 7, 8, 10, 14, 15],
+            "natural_gas_baseload": [12, 13],
         }
 
         def get_worst_bias_end_use(comparison):
