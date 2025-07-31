@@ -206,3 +206,36 @@ def join_bills_weather(bills_orig: pd.DataFrame, lat: float, lon: float, **kw) -
             bill_avg_temps.append(bill_temps.mean())
     bills["avg_temp"] = bill_avg_temps
     return bills
+
+
+def calc_degree_days(daily_dbs, base_temp_f, is_heating):
+    """Calculate degree days from daily temperature data.
+    Adapted from methods in https://github.com/NREL/OpenStudio-HPXML/blob/master/HPXMLtoOpenStudio/resources/weather.rb"""
+    base_temp_c = convert_units(base_temp_f, "F", "C")
+
+    deg_days = []
+    if is_heating:
+        for x in daily_dbs:
+            if x < base_temp_c:
+                deg_days.append(base_temp_c - x)
+    else:
+        for x in daily_dbs:
+            if x > base_temp_c:
+                deg_days.append(x - base_temp_c)
+
+    if len(deg_days) == 0:
+        return 0.0
+
+    deg_days_sum = sum(deg_days)
+    return convert_units(deg_days_sum, "deltac", "deltaf")
+
+
+def calc_heat_cool_degree_days(dailydbs: pd.Series) -> dict:
+    """Calculate heating and cooling degree days from daily temperature data.
+    Adapted from methods in https://github.com/NREL/OpenStudio-HPXML/blob/master/HPXMLtoOpenStudio/resources/weather.rb"""
+    degree_days = {}
+    degree_days["HDD65F"] = calc_degree_days(dailydbs, 65, True)
+    degree_days["HDD50F"] = calc_degree_days(dailydbs, 50, True)
+    degree_days["CDD65F"] = calc_degree_days(dailydbs, 65, False)
+    degree_days["CDD50F"] = calc_degree_days(dailydbs, 50, False)
+    return degree_days
