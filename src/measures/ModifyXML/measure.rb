@@ -657,7 +657,7 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     multiplier = 1 + args[:window_shgc_pct_change]
     hpxml_bldg.windows.each do |window|
       if window.shgc
-        new_shgc = window.shgc * multiplier
+        new_shgc = [window.shgc * multiplier, 0.99].min
         window.shgc = new_shgc.round(2)
         # puts "New SHGC: #{window.shgc}"
       end
