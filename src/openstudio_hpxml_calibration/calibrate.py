@@ -680,7 +680,7 @@ class Calibrate:
         generations = cfg["genetic_algorithm"]["generations"]
         bias_error_threshold = cfg["genetic_algorithm"]["bias_error_threshold"]
         abs_error_elec_threshold = cfg["genetic_algorithm"]["abs_error_elec_threshold"]
-        abs_error_ng_threshold = cfg["genetic_algorithm"]["abs_error_ng_threshold"]
+        abs_error_fuel_threshold = cfg["genetic_algorithm"]["abs_error_fuel_threshold"]
         cxpb = cfg["genetic_algorithm"]["crossover_probability"]
         mutpb = cfg["genetic_algorithm"]["mutation_probability"]
         plug_load_pct_choices = cfg["value_choices"]["plug_load_pct_choices"]
@@ -780,9 +780,10 @@ class Calibrate:
                     # if absolute error is within the bpi2400 criteria, relax the penalty
                     if (
                         fuel_type == "electricity"
-                        and abs(metrics["Absolute Error"][end_use]) <= 500
+                        and abs(metrics["Absolute Error"][end_use]) <= abs_error_elec_threshold
                     ) or (
-                        fuel_type == "natural gas" and abs(metrics["Absolute Error"][end_use]) <= 5
+                        fuel_type != "electricity"
+                        and abs(metrics["Absolute Error"][end_use]) <= abs_error_fuel_threshold
                     ):
                         penalty_relaxation_factor = 0.2
                         bias_error_penalty *= penalty_relaxation_factor
@@ -1078,7 +1079,10 @@ class Calibrate:
                                 and abs(abs_err) > abs_error_elec_threshold
                             ):
                                 return False
-                            if fuel_type == "natural gas" and abs(abs_err) > abs_error_ng_threshold:
+                            if (
+                                fuel_type != "electricity"
+                                and abs(abs_err) > abs_error_fuel_threshold
+                            ):
                                 return False
                     return True
 

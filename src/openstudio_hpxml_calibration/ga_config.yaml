@@ -5,7 +5,7 @@ genetic_algorithm:
   crossover_probability: 0.4
   bias_error_threshold: 10  # Bias error threshold in percent for all end uses
   abs_error_elec_threshold: 500  # Absolute error threshold for electricity in kWh
-  abs_error_ng_threshold: 5  # Absolute error threshold for natural gas in MBtu
+  abs_error_fuel_threshold: 5  # Absolute error threshold for fossil fuels in MBtu
 
 value_choices:
   plug_load_pct_choices: [-0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 5, 10]
