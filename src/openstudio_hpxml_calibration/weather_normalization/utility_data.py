@@ -1,5 +1,6 @@
 import datetime as dt
 import warnings
+from collections import namedtuple
 from pathlib import Path
 
 import eeweather
@@ -208,7 +209,15 @@ def join_bills_weather(bills_orig: pd.DataFrame, lat: float, lon: float, **kw) -
     return bills
 
 
-def calc_degree_days(daily_dbs, base_temp_f, is_heating):
+def calc_daily_dbs(hpxml: HpxmlDoc) -> namedtuple:
+    DailyTemps = namedtuple("DailyTemps", ["c", "f"])
+    epw, _ = hpxml.get_epw_data(coerce_year=2007)
+    epw_daily_avg_temp_c = epw["temp_air"].groupby(pd.Grouper(freq="D")).mean()
+    epw_daily_avg_temp_f = convert_units(epw_daily_avg_temp_c, "c", "f")
+    return DailyTemps(c=epw_daily_avg_temp_c, f=epw_daily_avg_temp_f)
+
+
+def calc_degree_days(daily_dbs: pd.Series, base_temp_f: float, is_heating: bool) -> float:
     """Calculate degree days from daily temperature data.
     Adapted from methods in https://github.com/NREL/OpenStudio-HPXML/blob/master/HPXMLtoOpenStudio/resources/weather.rb"""
     base_temp_c = convert_units(base_temp_f, "F", "C")
