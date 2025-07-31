@@ -22,8 +22,6 @@ def test_data():
 
     # Teardown phase
     # To debug, comment the appropriate line here and review the test output
-    rmtree(TEST_SIM_DIR, ignore_errors=True)
-    rmtree(TEST_MODIFY_DIR, ignore_errors=True)
     rmtree(TEST_DATA_DIR / "generated_files", ignore_errors=True)
     rmtree(TEST_DATA_DIR / "reports", ignore_errors=True)
     (TEST_DATA_DIR / "out.osw").unlink(missing_ok=True)
@@ -43,6 +41,7 @@ def test_cli_calls_openstudio(capsys):
     assert "HPXML v" in captured.out
 
 
+@pytest.mark.order(1)
 def test_cli_calls_run_sim(test_data):
     app(
         [

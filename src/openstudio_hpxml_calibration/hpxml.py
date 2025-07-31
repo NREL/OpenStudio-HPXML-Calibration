@@ -154,43 +154,29 @@ class HpxmlDoc:
                 0
             ]
 
-    def get_fuel_types(self, building_id: str | None = None) -> tuple[list[str], list[str]]:
+    def get_fuel_types(self, building_id: str | None = None) -> tuple[set[str], set[str]]:
         """Get fuel types providing heating or cooling
 
         :param building_id: The id of the Building to retrieve, gets first one if missing
         :type building_id: str
-        :return: lists of fuel types provide heating and cooling
-        :rtype: tuple[list[str], list[str]]
+        :return: sets of fuel types provide heating and cooling
+        :rtype: tuple[set[str], set[str]]
         """
-        fuel_provides_heating = set()
-        fuel_provides_cooling = set()
 
         building = self.get_building(building_id)
-        heating_fuels = []
-        heatpump_fuels = []
-        cooling_fuels = []
+        heating_fuels = set()
+        cooling_fuels = set()
         with suppress(AttributeError):
-            heating_fuels.append(
-                building.BuildingDetails.Systems.HVAC.HVACPlant.HeatingSystem.HeatingSystemFuel.text
-            )  # TODO: Can it handle a case where there are multiple heating systems?
-            heatpump_fuels.append(
-                building.BuildingDetails.Systems.HVAC.HVACPlant.HeatPump.HeatPumpFuel.text
-            )
-            heatpump_fuels.append(
-                building.BuildingDetails.Systems.HVAC.HVACPlant.HeatPump.BackupSystemFuel.text
-            )  # TODO: Need to capture fuel used for integrated AC?
-            cooling_fuels.append(
-                building.BuildingDetails.Systems.HVAC.HVACPlant.CoolingSystem.CoolingSystemFuel.text
-            )
+            for hvac_system in building.BuildingDetails.Systems.HVAC.HVACPlant:
+                heating_fuels.add(hvac_system.HeatingSystemFuel.text.strip())
+                heating_fuels.add(hvac_system.HeatPump.HeatPumpFuel.text.strip())
+                heating_fuels.add(
+                    hvac_system.HeatPump.BackupSystemFuel.text.strip()
+                )  # TODO: Need to capture fuel used for integrated AC?
+                cooling_fuels.add(hvac_system.CoolingSystem.CoolingSystemFuel.text.strip())
+                cooling_fuels.add(hvac_system.HeatPump.HeatPumpFuel.text.strip())
 
-        for heating_fuel in heating_fuels:
-            fuel_provides_heating.add(heating_fuel.strip())
-        for heatpump_fuel in heatpump_fuels:
-            fuel_provides_heating.add(heatpump_fuel.strip())
-        for cooling_fuel in cooling_fuels:
-            fuel_provides_cooling.add(cooling_fuel.strip())
-
-        return list(fuel_provides_heating), list(fuel_provides_cooling)
+        return heating_fuels, cooling_fuels
 
     def get_consumption(self, building_id: str | None = None) -> objectify.ObjectifiedElement:
         """Get the Consumption element for a building
