@@ -57,7 +57,7 @@ class Calibrate:
                 "mutation_probability": 0.4,
             },
             "value_choices": {
-                "plug_load_pct_choices": [round(x * 0.1, 1) for x in range(-9, 11)] + [5, 10],
+                "misc_load_pct_choices": [round(x * 0.1, 1) for x in range(-9, 11)] + [5, 10],
                 "air_leakage_pct_choices": [round(x * 0.1, 1) for x in range(-9, 10)],
                 "hvac_eff_pct_choices": [round(x * 0.01, 2) for x in range(-90, 151)],
                 "roof_r_value_pct_choices": [round(x * 0.1, 1) for x in range(-9, 10)] + [1, 5, 10],
@@ -683,7 +683,7 @@ class Calibrate:
         abs_error_fuel_threshold = cfg["genetic_algorithm"]["abs_error_fuel_threshold"]
         cxpb = cfg["genetic_algorithm"]["crossover_probability"]
         mutpb = cfg["genetic_algorithm"]["mutation_probability"]
-        plug_load_pct_choices = cfg["value_choices"]["plug_load_pct_choices"]
+        misc_load_pct_choices = cfg["value_choices"]["misc_load_pct_choices"]
         air_leakage_pct_choices = cfg["value_choices"]["air_leakage_pct_choices"]
         hvac_eff_pct_choices = cfg["value_choices"]["hvac_eff_pct_choices"]
         roof_r_value_pct_choices = cfg["value_choices"]["roof_r_value_pct_choices"]
@@ -709,7 +709,7 @@ class Calibrate:
 
         def evaluate(individual):
             (
-                plug_load_pct_change,
+                misc_load_pct_change,
                 heating_setpoint_offset,
                 cooling_setpoint_offset,
                 air_leakage_pct_change,
@@ -735,7 +735,7 @@ class Calibrate:
                 "save_file_path": str(mod_hpxml_path),
                 "heating_setpoint_offset": heating_setpoint_offset,
                 "cooling_setpoint_offset": cooling_setpoint_offset,
-                "plug_load_pct_change": plug_load_pct_change,
+                "misc_load_pct_change": misc_load_pct_change,
                 "air_leakage_pct_change": air_leakage_pct_change,
                 "heating_efficiency_pct_change": heating_efficiency_pct_change,
                 "cooling_efficiency_pct_change": cooling_efficiency_pct_change,
@@ -808,7 +808,7 @@ class Calibrate:
             return len({tuple(ind) for ind in pop}) / len(pop)
 
         toolbox = base.Toolbox()
-        toolbox.register("attr_plug_load_pct_change", random.choice, plug_load_pct_choices)
+        toolbox.register("attr_misc_load_pct_change", random.choice, misc_load_pct_choices)
         toolbox.register("attr_heating_setpoint_offset", random.choice, heating_setpoint_choices)
         toolbox.register("attr_cooling_setpoint_offset", random.choice, cooling_setpoint_choices)
         toolbox.register("attr_air_leakage_pct_change", random.choice, air_leakage_pct_choices)
@@ -851,7 +851,7 @@ class Calibrate:
             tools.initRepeat,
             creator.Individual,
             (
-                toolbox.attr_plug_load_pct_change,
+                toolbox.attr_misc_load_pct_change,
                 toolbox.attr_heating_setpoint_offset,
                 toolbox.attr_cooling_setpoint_offset,
                 toolbox.attr_air_leakage_pct_change,
@@ -876,7 +876,7 @@ class Calibrate:
         def generate_random_individual():
             return creator.Individual(
                 [
-                    random.choice(plug_load_pct_choices),
+                    random.choice(misc_load_pct_choices),
                     random.choice(heating_setpoint_choices),
                     random.choice(cooling_setpoint_choices),
                     random.choice(air_leakage_pct_choices),
@@ -904,7 +904,7 @@ class Calibrate:
 
         # Define parameter-to-choices mapping for mutation
         param_choices_map = {
-            0: plug_load_pct_choices,
+            0: misc_load_pct_choices,
             1: heating_setpoint_choices,
             2: cooling_setpoint_choices,
             3: air_leakage_pct_choices,
