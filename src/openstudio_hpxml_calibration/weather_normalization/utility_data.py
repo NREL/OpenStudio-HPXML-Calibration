@@ -13,7 +13,7 @@ from openstudio_hpxml_calibration.hpxml import EnergyUnitType, FuelType, HpxmlDo
 from openstudio_hpxml_calibration.units import convert_units
 
 
-def load_config(config_path: str):
+def read_yaml_file(config_path: str):
     with open(config_path) as file:
         return yaml.safe_load(file)
 
@@ -43,7 +43,7 @@ def check_bpi2400_utility_bill_validity(
     lat, lon = hpxml.get_lat_lon()
 
     criteria_config_path = Path(__file__).resolve().parent.parent / "config.yaml"
-    criteria_config = load_config(criteria_config_path)
+    criteria_config = read_yaml_file(criteria_config_path)
     min_n_days = criteria_config.get("bpi2400_utility_bill_criteria", {}).get("min_n_days", 330)
 
     for fuel_type, bill_by_fuel in bills.items():
