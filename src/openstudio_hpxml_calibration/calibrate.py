@@ -1070,22 +1070,25 @@ class Calibrate:
 
                 # Early termination conditions
                 def meets_termination_criteria(comparison):
+                    all_bias_err_limit_met = True
+                    all_abs_err_limit_met = True
                     for fuel_type, metrics in comparison.items():
-                        for end_use, bias in metrics["Bias Error"].items():
-                            if abs(bias) > bias_error_threshold:
-                                return False
-                        for end_use, abs_err in metrics["Absolute Error"].items():
-                            if (
-                                fuel_type == "electricity"
-                                and abs(abs_err) > abs_error_elec_threshold
-                            ):
-                                return False
-                            if (
-                                fuel_type != "electricity"
-                                and abs(abs_err) > abs_error_fuel_threshold
-                            ):
-                                return False
-                    return True
+                        for end_use in metrics["Bias Error"]:
+                            bias_err = metrics["Bias Error"][end_use]
+                            abs_err = metrics["Absolute Error"][end_use]
+
+                            # Check bias error
+                            if abs(bias_err) > bias_error_threshold:
+                                all_bias_err_limit_met = False
+
+                            # Check absolute error
+                            if fuel_type == "electricity":
+                                if abs(abs_err) > abs_error_elec_threshold:
+                                    all_abs_err_limit_met = False
+                            elif abs(abs_err) > abs_error_fuel_threshold:
+                                all_abs_err_limit_met = False
+
+                    return all_bias_err_limit_met or all_abs_err_limit_met
 
                 if meets_termination_criteria(best_comp):
                     print(f"Early stopping: termination criteria met at generation {gen}")
