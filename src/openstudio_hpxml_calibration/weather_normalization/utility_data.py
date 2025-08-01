@@ -209,7 +209,18 @@ def join_bills_weather(bills_orig: pd.DataFrame, lat: float, lon: float, **kw) -
     return bills
 
 
-def calc_daily_dbs(hpxml: HpxmlDoc) -> namedtuple:
+def calc_daily_dbs(hpxml: HpxmlDoc) -> namedtuple[pd.Series, pd.Series]:
+    """
+    Calculates daily average dry bulb temperatures from EPW weather data in both Celsius and Fahrenheit.
+
+    Args:
+        hpxml (HpxmlDoc): An HPXML document object containing weather data.
+
+    Returns:
+        DailyTemps: A namedtuple with two fields:
+            - c (pd.Series): Daily average dry bulb temperatures in Celsius.
+            - f (pd.Series): Daily average dry bulb temperatures in Fahrenheit.
+    """
     DailyTemps = namedtuple("DailyTemps", ["c", "f"])
     epw, _ = hpxml.get_epw_data(coerce_year=2007)
     epw_daily_avg_temp_c = epw["temp_air"].groupby(pd.Grouper(freq="D")).mean()
