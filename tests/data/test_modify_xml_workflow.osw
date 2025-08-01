@@ -14,7 +14,7 @@
         "air_leakage_pct_change": 0.15,
         "heating_efficiency_pct_change": 0.05,
         "cooling_efficiency_pct_change": -0.05,
-        "plug_load_pct_change":0.05,
+        "misc_load_pct_change":0.05,
         "roof_r_value_pct_change": 0.05,
         "ceiling_r_value_pct_change": 0.05,
         "above_ground_walls_r_value_pct_change": 0.05,

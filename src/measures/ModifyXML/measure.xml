@@ -76,9 +76,9 @@
       <model_dependent>false</model_dependent>
     </argument>
     <argument>
-      <name>plug_load_pct_change</name>
-      <display_name>Plug load percent change</display_name>
-      <description>Percentage to change the plug load usage multiplier.
+      <name>misc_load_pct_change</name>
+      <display_name>Misc load percent change</display_name>
+      <description>Percentage to change the misc load usage multiplier.
       Positive value increases load, negative value decreases load.
       Expressed as a decimal. Examples: -0.90 == 10x reduction, and 10 == 10x increase.</description>
       <type>Double</type>
