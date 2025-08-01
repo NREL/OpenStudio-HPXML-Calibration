@@ -209,7 +209,7 @@ def join_bills_weather(bills_orig: pd.DataFrame, lat: float, lon: float, **kw) -
     return bills
 
 
-def calc_daily_dbs(hpxml: HpxmlDoc) -> namedtuple[pd.Series, pd.Series]:
+def calc_daily_dbs(hpxml: HpxmlDoc) -> namedtuple:
     """
     Calculates daily average dry bulb temperatures from EPW weather data in both Celsius and Fahrenheit.
 
