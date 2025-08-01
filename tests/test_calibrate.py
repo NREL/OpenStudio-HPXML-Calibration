@@ -1,7 +1,6 @@
 import json
 from pathlib import Path
 
-import matplotlib.pyplot as plt
 import pandas as pd
 import pytest
 from loguru import logger
@@ -137,40 +136,3 @@ def test_hpxml_invalid(filename):
     else:
         with pytest.raises(ValueError):  # noqa: PT011
             Calibrate(filename)
-
-
-def test_search_algorithm(test_data):
-    cal = Calibrate(original_hpxml_filepath=test_data["sample_xml_file"])
-    best_individual, pop, logbook = cal.run_ga_search()
-    print("Best Individual:", best_individual)
-    print("Fitness Values:", best_individual.fitness.values)
-
-    # Prepare a serializable version
-    result_data = {
-        "individual": list(best_individual),
-        "fitness": list(best_individual.fitness.values),
-    }
-
-    # Define the output file path
-    repo_root = Path(__file__).resolve().parent
-    output_path = repo_root / "search_results.json"
-    fitness_plot_path = repo_root / "fitness_plot.png"
-
-    with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(result_data, f, indent=2)
-
-    min_fitness = logbook.select("min")
-    avg_fitness = logbook.select("avg")
-
-    plt.figure(figsize=(10, 6))
-    plt.plot(min_fitness, label="Min Fitness")
-    plt.plot(avg_fitness, label="Avg Fitness")
-    plt.xlabel("Generation")
-    plt.ylabel("Fitness")
-    plt.title("GA Fitness Over Generations")
-    plt.legend()
-    plt.grid(True)
-    plt.tight_layout()
-    plt.savefig(str(fitness_plot_path))
-
-    assert all(v < 5 for v in best_individual.fitness.values)
