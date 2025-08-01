@@ -10,6 +10,12 @@ from openstudio_hpxml_calibration.modify_hpxml import set_consumption_on_hpxml
 from openstudio_hpxml_calibration.units import convert_units
 from openstudio_hpxml_calibration.weather_normalization.inverse_model import InverseModel
 
+# from openstudio_hpxml_calibration.weather_normalization.utility_data import (
+#     calc_daily_dbs,
+#     calc_heat_cool_degree_days,
+#     get_bills_from_hpxml,
+# )
+
 
 class Calibrate:
     def __init__(self, original_hpxml_filepath: Path, csv_bills_filepath: Path | None = None):
@@ -21,7 +27,15 @@ class Calibrate:
 
         self.hpxml_data_error_checking()
 
-        self.inv_model = InverseModel(self.hpxml)
+        calibration_type = self.get_calibration_type()
+        if calibration_type == "simple":
+            logger.info("Using simplified calibration method")
+            self.simplified_calibration()
+        elif calibration_type == "detailed":
+            logger.info("Using detailed calibration method")
+            self.inv_model = InverseModel(self.hpxml)
+        else:
+            raise ValueError(f"Unknown calibration type: {calibration_type}")
 
     def get_normalized_consumption_per_bill(self) -> dict[FuelType, pd.DataFrame]:
         """
@@ -348,6 +362,24 @@ class Calibrate:
                         )
 
         return comparison_results
+
+    def get_calibration_type(self) -> str:
+        """
+        Determine the calibration type based on the HPXML file.
+
+        Returns:
+            str: "simple" for simplified calibration, "detailed" for detailed calibration.
+        """
+        # Check if the HPXML file has consumption data
+        try:
+            consumption = self.hpxml.get_consumption()
+            if len(consumption.ConsumptionDetails.ConsumptionInfo) > 0:
+                return "detailed"
+        except IndexError:
+            pass
+
+        # If no consumption data, use simplified calibration
+        return "simple"
 
     def hpxml_data_error_checking(self) -> None:
         """Check for common HPXML errors
