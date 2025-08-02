@@ -1108,7 +1108,6 @@ class Calibrate:
 
         # Cleanup
         for temp_dir in all_temp_dirs:
-            if temp_dir not in best_dirs_by_gen and temp_dir.exists():
-                shutil.rmtree(temp_dir, ignore_errors=True)
+            shutil.rmtree(temp_dir, ignore_errors=True)
 
         return best_individual, pop, logbook, best_bias_series, best_abs_series
