@@ -779,12 +779,11 @@ class Calibrate:
                 for end_use, bias_error in metrics["Bias Error"].items():
                     bias_error_penalty = max(0, abs(bias_error)) ** 2
                     # if absolute error is within the bpi2400 criteria, relax the penalty
-                    if (
-                        fuel_type == "electricity"
-                        and abs(metrics["Absolute Error"][end_use]) <= abs_error_elec_threshold
-                    ) or (
-                        fuel_type != "electricity"
-                        and abs(metrics["Absolute Error"][end_use]) <= abs_error_fuel_threshold
+                    if abs_error_within_threshold(
+                        fuel_type,
+                        abs(metrics["Absolute Error"][end_use]),
+                        abs_error_elec_threshold,
+                        abs_error_fuel_threshold,
                     ):
                         penalty_relaxation_factor = 0.2
                         bias_error_penalty *= penalty_relaxation_factor
@@ -794,6 +793,14 @@ class Calibrate:
             total_score = sum(bias_error_penalties)
 
             return (total_score,), comparison, temp_output_dir
+
+        def abs_error_within_threshold(
+            fuel_type: str, abs_error: float, elec_threshold: float, fuel_threshold: float
+        ) -> bool:
+            if fuel_type == "electricity":
+                return abs(abs_error) <= elec_threshold
+            else:
+                return abs(abs_error) <= fuel_threshold
 
         def create_measure_input_file(arguments: dict, output_file_path: str):
             data = {
@@ -1082,10 +1089,12 @@ class Calibrate:
                                 all_bias_err_limit_met = False
 
                             # Check absolute error
-                            if fuel_type == "electricity":
-                                if abs(abs_err) > abs_error_elec_threshold:
-                                    all_abs_err_limit_met = False
-                            elif abs(abs_err) > abs_error_fuel_threshold:
+                            if not abs_error_within_threshold(
+                                fuel_type,
+                                abs_err,
+                                abs_error_elec_threshold,
+                                abs_error_fuel_threshold,
+                            ):
                                 all_abs_err_limit_met = False
 
                     return all_bias_err_limit_met or all_abs_err_limit_met
