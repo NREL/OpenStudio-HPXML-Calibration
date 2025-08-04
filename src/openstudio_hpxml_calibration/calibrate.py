@@ -25,11 +25,10 @@ if "Individual" not in creator.__dict__:
     creator.create("Individual", list, fitness=creator.FitnessMin)
 
 
-def load_config(config_filename="ga_config.yaml", default={}):
-    config_path = Path(__file__).parent / config_filename
-    if not config_path.exists():
-        raise FileNotFoundError(f"Config file not found: {config_path}")
-    with open(config_path) as f:
+def load_config(config_filepath, default={}):
+    if not Path(config_filepath).exists():
+        raise FileNotFoundError(f"Config file not found: {config_filepath}")
+    with open(Path(config_filepath)) as f:
         config = yaml.safe_load(f)
     return merge_with_defaults(config, default)
 
@@ -52,7 +51,7 @@ class Calibrate:
         self,
         original_hpxml_filepath: Path,
         csv_bills_filepath: Path | None = None,
-        config_file: str | None = None,
+        config_filepath: str | None = None,
     ):
         default_ga_config = {
             "genetic_algorithm": {
@@ -91,7 +90,7 @@ class Calibrate:
         }
         self.hpxml_filepath = Path(original_hpxml_filepath).resolve()
         self.hpxml = HpxmlDoc(Path(original_hpxml_filepath).resolve())
-        self.ga_config = load_config(config_filename=config_file, default=default_ga_config)
+        self.ga_config = load_config(config_filepath, default=default_ga_config)
 
         if csv_bills_filepath:
             logger.info(f"Adding utility data from {csv_bills_filepath} to hpxml")

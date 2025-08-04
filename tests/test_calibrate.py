@@ -146,8 +146,8 @@ def test_calibrate_runs_successfully():
             "test_hpxmls/ihmh_homes/ihmh8.xml",
             "--output-dir",
             "tests/ga_search_results/ihmh8_test",
-            "--config-file",
-            "ga_config.yaml",
+            "--config-filepath",
+            "src/openstudio_hpxml_calibration/ga_config.yaml",
         ]
     )
     output_file = TEST_DIR / "ga_search_results/ihmh8_test/logbook.json"

@@ -162,7 +162,7 @@ def download_weather() -> None:
 @app.command
 def calibrate(
     hpxml_filepath: str,
-    config_file: str | None = None,
+    config_filepath: str | None = None,
     output_dir: str | None = None,
 ) -> None:
     """
@@ -172,7 +172,7 @@ def calibrate(
     ----------
     hpxml_filepath: str
         Path to the HPXML file
-    config_file: str
+    config_filepath: str
         Optional path to calibration config file
     output_dir: str
         Optional output directory to save results
@@ -181,7 +181,7 @@ def calibrate(
     from openstudio_hpxml_calibration.calibrate import Calibrate
 
     filename = Path(hpxml_filepath).stem
-    cal = Calibrate(original_hpxml_filepath=hpxml_filepath, config_file=config_file)
+    cal = Calibrate(original_hpxml_filepath=hpxml_filepath, config_filepath=config_filepath)
 
     start = time.time()
     best_individual, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search()
