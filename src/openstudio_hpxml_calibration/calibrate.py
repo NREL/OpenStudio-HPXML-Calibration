@@ -5,15 +5,11 @@ from pathlib import Path
 import pandas as pd
 from loguru import logger
 
+import openstudio_hpxml_calibration.weather_normalization.utility_data as ud
 from openstudio_hpxml_calibration.hpxml import FuelType, HpxmlDoc
 from openstudio_hpxml_calibration.modify_hpxml import set_consumption_on_hpxml
 from openstudio_hpxml_calibration.units import convert_units
 from openstudio_hpxml_calibration.weather_normalization.inverse_model import InverseModel
-from openstudio_hpxml_calibration.weather_normalization.utility_data import (
-    calc_daily_dbs,
-    calc_heat_cool_degree_days,
-    get_bills_from_hpxml,
-)
 
 
 class Calibrate:
@@ -388,15 +384,30 @@ class Calibrate:
         # Default to using detailed calibration
         return "detailed"
 
-    def simplified_calibration(self) -> dict:
-        dry_bulb_temps_f = calc_daily_dbs(self.hpxml).f
-        bills_by_fuel_type, _, _ = get_bills_from_hpxml(self.hpxml)
-        bill_degree_days = {}
+    def calculate_annual_degree_days(self) -> dict[str, float]:
+        """Calculate annual heating and cooling degree days from TMY data and actual weather data.
+
+        Returns:
+            dict: A dictionary containing annual heating and cooling degree days for TMY weather data.
+            dict: A dictionary containing annual heating and cooling degree days for actual weather data.
+        """
+        tmy_dry_bulb_temps_f = ud.calc_daily_dbs(self.hpxml).f
+        bills_by_fuel_type, _, _ = ud.get_bills_from_hpxml(self.hpxml)
+        lat, lon = self.hpxml.get_lat_lon()
+        bill_tmy_degree_days = {}
+        annual_amy_dd = {}
 
         # Use day-of-year because TMY data contains multiple years
-        temp_index_doy = dry_bulb_temps_f.index.dayofyear
+        tmy_temp_index_doy = tmy_dry_bulb_temps_f.index.dayofyear
 
         for fuel_type, bills in bills_by_fuel_type.items():
+            # Get degree days of actual weather during bill periods
+            _, actual_temp_f = ud.join_bills_weather(bills, lat, lon)
+            daily_actual_temps = actual_temp_f.resample("D").mean()
+            actual_degree_days = ud.calc_heat_cool_degree_days(daily_actual_temps)
+            annual_amy_dd[fuel_type.name.lower()] = actual_degree_days
+
+            # Get degree days of TMY weather
             bill_results = []
             for _, row in bills.iterrows():
                 start_doy = row["start_day_of_year"]
@@ -404,19 +415,29 @@ class Calibrate:
 
                 # Handle bills that wrap around the end of the year
                 if start_doy <= end_doy:
-                    mask = (temp_index_doy >= start_doy) & (temp_index_doy <= end_doy)
+                    mask = (tmy_temp_index_doy >= start_doy) & (tmy_temp_index_doy <= end_doy)
                 else:
-                    mask = (temp_index_doy >= start_doy) | (temp_index_doy <= end_doy)
+                    mask = (tmy_temp_index_doy >= start_doy) | (tmy_temp_index_doy <= end_doy)
 
                 # Select the dry bulb temperatures for the bill period
-                bill_dry_bulbs = dry_bulb_temps_f[mask]
-                degree_days = calc_heat_cool_degree_days(bill_dry_bulbs)
+                bill_dry_bulbs_tmy = tmy_dry_bulb_temps_f[mask]
+                tmy_degree_days = ud.calc_heat_cool_degree_days(bill_dry_bulbs_tmy)
                 bill_results.append(
-                    {"start_date": row["start_date"], "end_date": row["end_date"], **degree_days}
+                    {
+                        "start_date": row["start_date"],
+                        "end_date": row["end_date"],
+                        **tmy_degree_days,
+                    }
                 )
-            bill_degree_days[fuel_type.name.lower()] = bill_results
+            bill_tmy_degree_days[fuel_type.name.lower()] = bill_results
 
-        return bill_degree_days
+        annual_tmy_dd = {}
+        for fuel, bill_list in bill_tmy_degree_days.items():
+            hdd_total = sum(bill.get("HDD65F", 0) for bill in bill_list)
+            cdd_total = sum(bill.get("CDD65F", 0) for bill in bill_list)
+            annual_tmy_dd[fuel] = {"HDD65F": hdd_total, "CDD65F": cdd_total}
+
+        return annual_tmy_dd, annual_amy_dd
 
     def hpxml_data_error_checking(self) -> None:
         """Check for common HPXML errors
