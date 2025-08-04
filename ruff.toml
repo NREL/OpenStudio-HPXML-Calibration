@@ -78,6 +78,7 @@ ignore = [
     "N803", # allow non-lowercase variable in function name
     "PLC0415", # imports aren't at the top of the file in a marimo notebook
     ]
+"__init__.py" = ["PLC0415"]
 "test_calibrate.py" = ["PD011"] # allow fitness.values
 
 # [lint.pylint]

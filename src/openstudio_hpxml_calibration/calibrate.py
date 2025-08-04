@@ -48,7 +48,12 @@ def merge_with_defaults(user_config, default_config):
 
 
 class Calibrate:
-    def __init__(self, original_hpxml_filepath: Path, csv_bills_filepath: Path | None = None):
+    def __init__(
+        self,
+        original_hpxml_filepath: Path,
+        csv_bills_filepath: Path | None = None,
+        config_file: str | None = None,
+    ):
         default_ga_config = {
             "genetic_algorithm": {
                 "population_size": 70,
@@ -86,7 +91,7 @@ class Calibrate:
         }
         self.hpxml_filepath = Path(original_hpxml_filepath).resolve()
         self.hpxml = HpxmlDoc(Path(original_hpxml_filepath).resolve())
-        self.ga_config = load_config(config_filename="ga_config.yaml", default=default_ga_config)
+        self.ga_config = load_config(config_filename=config_file, default=default_ga_config)
 
         if csv_bills_filepath:
             logger.info(f"Adding utility data from {csv_bills_filepath} to hpxml")
@@ -1021,7 +1026,6 @@ class Calibrate:
             record.update({f"abs_error_{k}": v[-1] for k, v in best_abs_series.items()})
             record["best_individual"] = list(best_ind)
             record["diversity"] = diversity(pop)
-            record["best_individual_filepath"] = str(best_ind.temp_output_dir)
             logbook.record(gen=0, nevals=len(invalid_ind), **record)
             print(logbook.stream)
 
@@ -1071,7 +1075,6 @@ class Calibrate:
                 record.update({f"abs_error_{k}": best_abs_series[k][-1] for k in best_abs_series})
                 record["best_individual"] = list(best_ind)
                 record["diversity"] = diversity(pop)
-                record["best_individual_filepath"] = str(best_ind.temp_output_dir)
                 logbook.record(gen=gen, nevals=len(invalid_ind), **record)
                 print(logbook.stream)
 

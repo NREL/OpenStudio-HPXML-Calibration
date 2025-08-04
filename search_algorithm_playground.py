@@ -27,9 +27,6 @@ def main(filepath):
     with open(logbook_path, "w", encoding="utf-8") as f:
         json.dump(log_data, f, indent=2)
 
-    with open(str(output_filepath / "logbook.json")) as f:
-        logbook = json.load(f)
-
     # Extract penalties per generation
     min_penalty = [entry["min"] for entry in logbook]
     avg_penalty = [entry["avg"] for entry in logbook]

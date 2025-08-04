@@ -1,8 +1,11 @@
+import json
 import subprocess
+import time
 import zipfile
 from importlib.metadata import version
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 import requests
 from cyclopts import App
 from loguru import logger
@@ -154,6 +157,132 @@ def download_weather() -> None:
         for filename in tqdm(zf.namelist(), desc="Extracting epws"):
             if filename.endswith(".epw") and not (weather_dir / filename).exists():
                 zf.extract(filename, path=weather_dir)
+
+
+@app.command
+def calibrate(
+    hpxml_filepath: str,
+    config_file: str | None = None,
+    output_dir: str | None = None,
+) -> None:
+    """
+    Run calibration using a genetic algorithm on an HPXML file.
+
+    Parameters
+    ----------
+    hpxml_filepath: str
+        Path to the HPXML file
+    config_file: str
+        Optional path to calibration config file
+    output_dir: str
+        Optional output directory to save results
+    """
+
+    from openstudio_hpxml_calibration.calibrate import Calibrate
+
+    filename = Path(hpxml_filepath).stem
+    cal = Calibrate(original_hpxml_filepath=hpxml_filepath, config_file=config_file)
+
+    start = time.time()
+    best_individual, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search()
+    logger.info(f"Calibration took {time.time() - start:.2f} seconds")
+
+    # Output directory
+    if output_dir is None:
+        output_filepath = (
+            Path(__file__).resolve().parent.parent / "tests" / "ga_search_results" / filename
+        )
+    else:
+        output_filepath = Path(output_dir)
+    output_filepath.mkdir(parents=True, exist_ok=True)
+
+    # Save logbook
+    logbook_path = output_filepath / "logbook.json"
+    with open(logbook_path, "w", encoding="utf-8") as f:
+        json.dump(logbook, f, indent=2)
+
+    # Min and avg penalties
+    min_penalty = [entry["min"] for entry in logbook]
+    avg_penalty = [entry["avg"] for entry in logbook]
+
+    # Plot Min Penalty
+    plt.figure(figsize=(10, 6))
+    plt.plot(min_penalty, label="Min Penalty")
+    plt.xlabel("Generation")
+    plt.ylabel("Penalty")
+    plt.title("Min Penalty Over Generations")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig(str(output_filepath / "min_penalty_plot.png"))
+
+    # Plot Avg Penalty
+    plt.figure(figsize=(10, 6))
+    plt.plot(avg_penalty, label="Avg Penalty")
+    plt.xlabel("Generation")
+    plt.ylabel("Penalty")
+    plt.title("Avg Penalty Over Generations")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig(str(output_filepath / "avg_penalty_plot.png"))
+
+    # Bias error series
+    best_bias_series = {}
+    for entry in logbook:
+        for key, value in entry.items():
+            if key.startswith("bias_error_"):
+                best_bias_series.setdefault(key, []).append(value)
+
+    plt.figure(figsize=(12, 6))
+    for key, values in best_bias_series.items():
+        label = key.replace("bias_error_", "")
+        plt.plot(values, label=label)
+    plt.xlabel("Generation")
+    plt.ylabel("Bias Error (%)")
+    plt.title("Per-End-Use Bias Error Over Generations")
+    plt.legend(loc="best", fontsize="small")
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig(str(output_filepath / "bias_error_plot.png"), bbox_inches="tight")
+
+    # Absolute error series
+    best_abs_series = {}
+    for entry in logbook:
+        for key, value in entry.items():
+            if key.startswith("abs_error_"):
+                best_abs_series.setdefault(key, []).append(value)
+
+    electric_keys = [k for k in best_abs_series if "electricity" in k]
+    gas_keys = [k for k in best_abs_series if "natural gas" in k]
+
+    fig, ax1 = plt.subplots(figsize=(12, 6))
+    ax2 = ax1.twinx()
+    colors = plt.cm.tab20.colors
+
+    for i, key in enumerate(electric_keys):
+        ax1.plot(
+            best_abs_series[key],
+            label=key.replace("abs_error_", "") + " (kWh)",
+            color=colors[i % len(colors)],
+        )
+    for i, key in enumerate(gas_keys):
+        ax2.plot(
+            best_abs_series[key],
+            label=key.replace("abs_error_", "") + " (MBtu)",
+            color=colors[(i + len(electric_keys)) % len(colors)],
+        )
+
+    ax1.set_xlabel("Generation")
+    ax1.set_ylabel("Electricity Abs Error (kWh)", color="blue")
+    ax2.set_ylabel("Gas Abs Error (MBtu)", color="red")
+    plt.title("Per-End-Use Absolute Errors Over Generations")
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines1 + lines2, labels1 + labels2, loc="best", fontsize="small")
+    ax1.grid(True)
+    plt.tight_layout()
+    plt.savefig(str(output_filepath / "absolute_error_plot.png"), bbox_inches="tight")
 
 
 if __name__ == "__main__":
