@@ -251,7 +251,7 @@ def calc_heat_cool_degree_days(dailydbs: pd.Series) -> dict:
     Adapted from methods in https://github.com/NREL/OpenStudio-HPXML/blob/master/HPXMLtoOpenStudio/resources/weather.rb"""
     degree_days = {}
     degree_days["HDD65F"] = calc_degree_days(dailydbs, 65, True)
-    degree_days["HDD50F"] = calc_degree_days(dailydbs, 50, True)
+    # degree_days["HDD50F"] = calc_degree_days(dailydbs, 50, True)
     degree_days["CDD65F"] = calc_degree_days(dailydbs, 65, False)
-    degree_days["CDD50F"] = calc_degree_days(dailydbs, 50, False)
+    # degree_days["CDD50F"] = calc_degree_days(dailydbs, 50, False)
     return degree_days
