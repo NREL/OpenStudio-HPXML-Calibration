@@ -9,12 +9,11 @@ from openstudio_hpxml_calibration.hpxml import FuelType, HpxmlDoc
 from openstudio_hpxml_calibration.modify_hpxml import set_consumption_on_hpxml
 from openstudio_hpxml_calibration.units import convert_units
 from openstudio_hpxml_calibration.weather_normalization.inverse_model import InverseModel
-
-# from openstudio_hpxml_calibration.weather_normalization.utility_data import (
-#     calc_daily_dbs,
-#     calc_heat_cool_degree_days,
-#     get_bills_from_hpxml,
-# )
+from openstudio_hpxml_calibration.weather_normalization.utility_data import (
+    calc_daily_dbs,
+    calc_heat_cool_degree_days,
+    get_bills_from_hpxml,
+)
 
 
 class Calibrate:
@@ -35,7 +34,7 @@ class Calibrate:
             logger.info("Using detailed calibration method")
             self.inv_model = InverseModel(self.hpxml)
         else:
-            raise ValueError(f"Unknown calibration type: {calibration_type}")
+            raise ValueError(f"Unknown calibration type: {calibration_type}. How did you get here?")
 
     def get_normalized_consumption_per_bill(self) -> dict[FuelType, pd.DataFrame]:
         """
@@ -370,16 +369,54 @@ class Calibrate:
         Returns:
             str: "simple" for simplified calibration, "detailed" for detailed calibration.
         """
-        # Check if the HPXML file has consumption data
-        try:
-            consumption = self.hpxml.get_consumption()
-            if len(consumption.ConsumptionDetails.ConsumptionInfo) > 0:
-                return "detailed"
-        except IndexError:
-            pass
+        # Check if the HPXML file has between 2 & 10 consumption data entries for delivered fuels.
+        consumption = self.hpxml.get_consumption()
+        for fuel_consumption in consumption.ConsumptionDetails.ConsumptionInfo:
+            if (
+                fuel_consumption.ConsumptionType.Energy.FuelType
+                in (
+                    FuelType.FUEL_OIL.value,
+                    FuelType.PROPANE.value,
+                    FuelType.WOOD.value,
+                    FuelType.WOOD_PELLETS.value,
+                )
+                and 2 <= len(fuel_consumption) <= 10
+            ):
+                # If there is electricity consumption, use detailed calibration
+                return "simple"
 
-        # If no consumption data, use simplified calibration
-        return "simple"
+        # Default to using detailed calibration
+        return "detailed"
+
+    def simplified_calibration(self) -> dict:
+        dry_bulb_temps_f = calc_daily_dbs(self.hpxml).f
+        bills_by_fuel_type, _, _ = get_bills_from_hpxml(self.hpxml)
+        bill_degree_days = {}
+
+        # Use day-of-year because TMY data contains multiple years
+        temp_index_doy = dry_bulb_temps_f.index.dayofyear
+
+        for fuel_type, bills in bills_by_fuel_type.items():
+            bill_results = []
+            for _, row in bills.iterrows():
+                start_doy = row["start_day_of_year"]
+                end_doy = row["end_day_of_year"]
+
+                # Handle bills that wrap around the end of the year
+                if start_doy <= end_doy:
+                    mask = (temp_index_doy >= start_doy) & (temp_index_doy <= end_doy)
+                else:
+                    mask = (temp_index_doy >= start_doy) | (temp_index_doy <= end_doy)
+
+                # Select the dry bulb temperatures for the bill period
+                bill_dry_bulbs = dry_bulb_temps_f[mask]
+                degree_days = calc_heat_cool_degree_days(bill_dry_bulbs)
+                bill_results.append(
+                    {"start_date": row["start_date"], "end_date": row["end_date"], **degree_days}
+                )
+            bill_degree_days[fuel_type.name.lower()] = bill_results
+
+        return bill_degree_days
 
     def hpxml_data_error_checking(self) -> None:
         """Check for common HPXML errors
