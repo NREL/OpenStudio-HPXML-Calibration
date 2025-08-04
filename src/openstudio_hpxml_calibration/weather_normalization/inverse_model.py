@@ -20,7 +20,7 @@ class InverseModel:
         self.lat_lon = hpxml.get_lat_lon()
         self.regression_models: dict[FuelType, UtilityBillRegressionModel] = {}
         for fuel_type, bills in self.bills_by_fuel_type.items():
-            bills_weather = ud.join_bills_weather(bills, *self.lat_lon)
+            bills_weather, _ = ud.join_bills_weather(bills, *self.lat_lon)
             for col in ["consumption", "daily_consumption"]:
                 bills_weather[col] = convert_hpxml_energy_units(
                     bills_weather[col],

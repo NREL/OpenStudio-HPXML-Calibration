@@ -62,7 +62,7 @@ def test_weather_retrieval(results_dir, filename):
     lat, lon = hpxml.get_lat_lon()
     bills_by_fuel_type, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
     for fuel_type, bills in bills_by_fuel_type.items():
-        bills_temps = ud.join_bills_weather(bills, lat, lon)
+        bills_temps, _ = ud.join_bills_weather(bills, lat, lon)
         fig = plt.figure(figsize=(8, 6))
         plt.scatter(bills_temps["avg_temp"], bills_temps["daily_consumption"])
         fig.savefig(

@@ -288,7 +288,7 @@ class Bpi2400ModelFitError(Exception):
 def fit_model(bills_temps: pd.DataFrame, bpi2400=True) -> UtilityBillRegressionModel:
     """Fit a regression model to the utility bills
 
-    The ``bills_data`` dataframe should be in the format returned by the
+    The ``bills_temps`` dataframe should be in the format returned by the
     ``utility_data.join_bills_weather`` function. At a minimum this should
     include the columns "daily_consumption" and "avg_temp" in degF. The index is
     ignored.

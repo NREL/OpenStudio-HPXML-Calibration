@@ -47,7 +47,7 @@ def check_bpi2400_utility_bill_validity(
     min_n_days = criteria_config.get("bpi2400_utility_bill_criteria", {}).get("min_n_days", 330)
 
     for fuel_type, bill_by_fuel in bills.items():
-        bills_temps = join_bills_weather(bill_by_fuel, lat, lon)
+        bills_temps, _ = join_bills_weather(bill_by_fuel, lat, lon)
         total_n_days = sum(bills_temps["n_days"])
         if total_n_days >= min_n_days:
             continue
@@ -206,7 +206,7 @@ def join_bills_weather(bills_orig: pd.DataFrame, lat: float, lon: float, **kw) -
         else:
             bill_avg_temps.append(bill_temps.mean())
     bills["avg_temp"] = bill_avg_temps
-    return bills
+    return bills, tempF
 
 
 def calc_daily_dbs(hpxml: HpxmlDoc) -> namedtuple:
