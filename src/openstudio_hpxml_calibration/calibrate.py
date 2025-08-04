@@ -1,5 +1,6 @@
 import json
 from datetime import datetime as dt
+from datetime import timedelta
 from pathlib import Path
 
 import pandas as pd
@@ -395,7 +396,7 @@ class Calibrate:
         bills_by_fuel_type, _, _ = ud.get_bills_from_hpxml(self.hpxml)
         lat, lon = self.hpxml.get_lat_lon()
         bill_tmy_degree_days = {}
-        annual_amy_dd = {}
+        total_period_amy_dd = {}
 
         # Use day-of-year because TMY data contains multiple years
         tmy_temp_index_doy = tmy_dry_bulb_temps_f.index.dayofyear
@@ -405,7 +406,7 @@ class Calibrate:
             _, actual_temp_f = ud.join_bills_weather(bills, lat, lon)
             daily_actual_temps = actual_temp_f.resample("D").mean()
             actual_degree_days = ud.calc_heat_cool_degree_days(daily_actual_temps)
-            annual_amy_dd[fuel_type.name.lower()] = actual_degree_days
+            total_period_amy_dd[fuel_type.name.lower()] = actual_degree_days
 
             # Get degree days of TMY weather
             bill_results = []
@@ -431,13 +432,19 @@ class Calibrate:
                 )
             bill_tmy_degree_days[fuel_type.name.lower()] = bill_results
 
-        annual_tmy_dd = {}
+        total_period_tmy_dd = {}
         for fuel, bill_list in bill_tmy_degree_days.items():
             hdd_total = sum(bill.get("HDD65F", 0) for bill in bill_list)
             cdd_total = sum(bill.get("CDD65F", 0) for bill in bill_list)
-            annual_tmy_dd[fuel] = {"HDD65F": hdd_total, "CDD65F": cdd_total}
+            total_period_tmy_dd[fuel] = {"HDD65F": hdd_total, "CDD65F": cdd_total}
 
-        return annual_tmy_dd, annual_amy_dd
+        return total_period_tmy_dd, total_period_amy_dd
+
+    def simplified_annual_usage(self, annual_results_json: Path):
+        self.get_model_results(annual_results_json)
+        total_period_tmy_dd, total_period_amy_dd = self.calculate_annual_degree_days()
+        for fuel in total_period_tmy_dd:
+            print(fuel)
 
     def hpxml_data_error_checking(self) -> None:
         """Check for common HPXML errors
@@ -547,13 +554,15 @@ class Calibrate:
                 # Compare with previous detail if not the first
                 if i > 0:
                     prev_detail = details[i - 1]
-                    if detail.StartDateTime < prev_detail.EndDateTime:
+                    prev_end = dt.strptime(str(prev_detail.EndDateTime), "%Y-%m-%dT%H:%M:%S")
+                    curr_start = dt.strptime(str(detail.StartDateTime), "%Y-%m-%dT%H:%M:%S")
+                    if curr_start < prev_end:
                         raise ValueError(
                             f"Consumption details for {fuel.ConsumptionType.Energy.FuelType} overlap: "
                             f"{prev_detail.StartDateTime} - {prev_detail.EndDateTime} overlaps with "
                             f"{detail.StartDateTime} - {detail.EndDateTime}"
                         )
-                    if detail.StartDateTime > prev_detail.EndDateTime:
+                    if (curr_start - prev_end) > timedelta(minutes=1):
                         raise ValueError(
                             f"Gap in consumption data for {fuel.ConsumptionType.Energy.FuelType}: "
                             f"Period between {prev_detail.EndDateTime} and {detail.StartDateTime} is not covered.\n"
@@ -606,6 +615,11 @@ class Calibrate:
             heating_fuel_type = (
                 building.BuildingDetails.Systems.HVAC.HVACPlant.HeatingSystem.HeatingSystemFuel
             )
+            if heating_fuel_type not in fuel_types:
+                raise ValueError(
+                    f"Heating equipment fuel type {heating_fuel_type} does not match any consumption "
+                    f"fuel type. Consumption fuel types: {fuel_types}."
+                )
         except AttributeError:
             raise ValueError(
                 "Heating system fuel type is missing in the HPXML file. "
@@ -615,6 +629,11 @@ class Calibrate:
             water_heating_fuel_type = (
                 building.BuildingDetails.Systems.WaterHeating.WaterHeatingSystem.FuelType
             )
+            if water_heating_fuel_type not in fuel_types:
+                raise ValueError(
+                    f"Heating equipment fuel type {water_heating_fuel_type} does not match any consumption "
+                    f"fuel type. Consumption fuel types: {fuel_types}."
+                )
         except AttributeError:
             raise ValueError(
                 "Water heating system fuel type is missing in the HPXML file. "
@@ -622,26 +641,18 @@ class Calibrate:
             )
         try:
             clothes_dryer_fuel_type = building.BuildingDetails.Appliances.ClothesDryer.FuelType
+            if clothes_dryer_fuel_type not in fuel_types:
+                raise ValueError(
+                    f"Heating equipment fuel type {clothes_dryer_fuel_type} does not match any consumption "
+                    f"fuel type. Consumption fuel types: {fuel_types}."
+                )
         except AttributeError:
-            raise ValueError(
-                "Clothes dryer fuel type is missing in the HPXML file. "
-                "Please provide the clothes dryer fuel type in the HPXML file."
-            )
-        if heating_fuel_type not in fuel_types:
-            raise ValueError(
-                f"Heating equipment fuel type {heating_fuel_type} does not match any consumption "
-                f"fuel type. Consumption fuel types: {fuel_types}."
-            )
-        if water_heating_fuel_type not in fuel_types:
-            raise ValueError(
-                f"Heating equipment fuel type {water_heating_fuel_type} does not match any consumption "
-                f"fuel type. Consumption fuel types: {fuel_types}."
-            )
-        if clothes_dryer_fuel_type not in fuel_types:
-            raise ValueError(
-                f"Heating equipment fuel type {clothes_dryer_fuel_type} does not match any consumption "
-                f"fuel type. Consumption fuel types: {fuel_types}."
-            )
+            # Only raise an error if ClothesDryer exists but FuelType does not
+            if hasattr(building.BuildingDetails.Appliances, "ClothesDryer"):
+                raise ValueError(
+                    "Clothes dryer fuel type is missing in the HPXML file. "
+                    "Please provide the clothes dryer fuel type in the HPXML file."
+                )
 
         # Check that electricity has at least 10 bill periods per year
         for fuel in consumption.ConsumptionDetails.ConsumptionInfo:
