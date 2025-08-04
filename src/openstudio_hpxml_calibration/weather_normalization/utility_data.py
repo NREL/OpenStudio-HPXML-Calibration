@@ -231,23 +231,19 @@ def calc_daily_dbs(hpxml: HpxmlDoc) -> namedtuple:
 def calc_degree_days(daily_dbs: pd.Series, base_temp_f: float, is_heating: bool) -> float:
     """Calculate degree days from daily temperature data.
     Adapted from methods in https://github.com/NREL/OpenStudio-HPXML/blob/master/HPXMLtoOpenStudio/resources/weather.rb"""
-    base_temp_c = convert_units(base_temp_f, "F", "C")
 
     deg_days = []
-    if is_heating:
-        for x in daily_dbs:
-            if x < base_temp_c:
-                deg_days.append(base_temp_c - x)
-    else:
-        for x in daily_dbs:
-            if x > base_temp_c:
-                deg_days.append(x - base_temp_c)
+    for x in daily_dbs:
+        if is_heating and x < base_temp_f:
+            deg_days.append(base_temp_f - x)
+        elif not is_heating and x > base_temp_f:
+            deg_days.append(x - base_temp_f)
 
     if len(deg_days) == 0:
         return 0.0
 
     deg_days_sum = sum(deg_days)
-    return convert_units(deg_days_sum, "deltac", "deltaf")
+    return deg_days_sum
 
 
 def calc_heat_cool_degree_days(dailydbs: pd.Series) -> dict:
