@@ -233,16 +233,16 @@ def calc_degree_days(daily_dbs: pd.Series, base_temp_f: float, is_heating: bool)
     Adapted from methods in https://github.com/NREL/OpenStudio-HPXML/blob/master/HPXMLtoOpenStudio/resources/weather.rb"""
 
     deg_days = []
-    for x in daily_dbs:
-        if is_heating and x < base_temp_f:
-            deg_days.append(base_temp_f - x)
-        elif not is_heating and x > base_temp_f:
-            deg_days.append(x - base_temp_f)
+    for temp in daily_dbs:
+        if is_heating and temp < base_temp_f:
+            deg_days.append(base_temp_f - temp)
+        elif not is_heating and temp > base_temp_f:
+            deg_days.append(temp - base_temp_f)
 
     if len(deg_days) == 0:
         return 0.0
 
-    deg_days_sum = sum(deg_days)
+    deg_days_sum = round(sum(deg_days), 2)
     return deg_days_sum
 
 
