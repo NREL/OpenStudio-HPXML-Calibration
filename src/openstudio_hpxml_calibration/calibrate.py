@@ -101,7 +101,7 @@ class Calibrate:
             logger.info(f"Adding utility data from {csv_bills_filepath} to hpxml")
             self.hpxml = set_consumption_on_hpxml(self.hpxml, csv_bills_filepath)
 
-        # self.hpxml_data_error_checking()
+        self.hpxml_data_error_checking()
 
         self.inv_model = InverseModel(self.hpxml)
 
@@ -683,6 +683,8 @@ class Calibrate:
                         )
 
     def run_ga_search(self, population_size=None, generations=None, cxpb=None, mutpb=None):
+        print(f"Running GA search algorithm for '{Path(self.hpxml_filepath).name}'...")
+
         all_temp_dirs = set()
         best_dirs_by_gen = []
         cfg = self.ga_config
@@ -994,6 +996,8 @@ class Calibrate:
         toolbox.register("mutate", adaptive_mutation)
         toolbox.register("select", tools.selTournament, tournsize=2)
 
+        terminated_early = False
+
         with Pool(maxtasksperchild=1) as pool:
             toolbox.register("map", pool.map)
             pop = toolbox.population(n=population_size)
@@ -1116,7 +1120,7 @@ class Calibrate:
 
                 if meets_termination_criteria(best_comp):
                     print(f"Early stopping: termination criteria met at generation {gen}")
-                    record["terminated_early"] = True
+                    terminated_early = True
                     break
 
         best_individual = hall_of_fame[0]
@@ -1126,5 +1130,15 @@ class Calibrate:
         for temp_dir in all_temp_dirs:
             if temp_dir and Path(temp_dir).exists():
                 shutil.rmtree(temp_dir, ignore_errors=True)
+
+        if terminated_early:
+            print(
+                "GA search has completed early: A solution satisfying error thresholds was found."
+            )
+        else:
+            print(
+                "GA search has completed. However, no solution was found that satisfies the bias error "
+                "and absolute error thresholds before reaching the maximum number of generations."
+            )
 
         return best_individual, pop, logbook, best_bias_series, best_abs_series

@@ -136,7 +136,6 @@ if __name__ == "__main__":
     gen_values = []
 
     for test_hpxml_file in test_hpxml_files:
-        print(f"\nProcessing {test_hpxml_file}...")
         try:
             main(str(test_hpxml_file))
         except Exception as e:

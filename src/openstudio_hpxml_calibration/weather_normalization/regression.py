@@ -250,7 +250,7 @@ class FiveParameter(UtilityBillRegressionModel):
             bounds=bounds,
             # constraints=constraints,
             options={
-                "verbose": 1,
+                "verbose": 0,
                 "maxiter": 20000,
             },
         )
