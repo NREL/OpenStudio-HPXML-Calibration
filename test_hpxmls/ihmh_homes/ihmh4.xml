@@ -1413,6 +1413,35 @@
           <EndDateTime>2025-07-01T00:00:00</EndDateTime>
         </ConsumptionDetail>
       </ConsumptionInfo>
+      <ConsumptionInfo>
+        <UtilityID/>
+        <ConsumptionType>
+          <Energy>
+            <FuelType>fuel oil</FuelType>
+            <UnitofMeasure>gal</UnitofMeasure>
+          </Energy>
+        </ConsumptionType>
+        <ConsumptionDetail>
+          <Consumption>77.3</Consumption>
+          <StartDateTime>2024-01-08T00:00:00</StartDateTime>
+          <EndDateTime>2024-03-01T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>82.2</Consumption>
+          <StartDateTime>2024-03-01T00:00:00</StartDateTime>
+          <EndDateTime>2024-11-16T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>53.8</Consumption>
+          <StartDateTime>2024-11-16T00:00:00</StartDateTime>
+          <EndDateTime>2025-01-17T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+        <ConsumptionDetail>
+          <Consumption>117.8</Consumption>
+          <StartDateTime>2025-01-17T00:00:00</StartDateTime>
+          <EndDateTime>2025-04-23T00:00:00</EndDateTime>
+        </ConsumptionDetail>
+      </ConsumptionInfo>
     </ConsumptionDetails>
   </Consumption>
 </HPXML>
