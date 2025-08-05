@@ -92,6 +92,8 @@ class Calibrate:
         self.hpxml = HpxmlDoc(Path(original_hpxml_filepath).resolve())
         if config_filepath:
             self.ga_config = load_config(Path(config_filepath), default=default_ga_config)
+        else:
+            self.ga_config = default_ga_config
 
         if csv_bills_filepath:
             logger.info(f"Adding utility data from {csv_bills_filepath} to hpxml")
