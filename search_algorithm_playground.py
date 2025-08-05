@@ -1,4 +1,5 @@
 import json
+import statistics
 import time
 from pathlib import Path
 
@@ -9,7 +10,10 @@ from openstudio_hpxml_calibration.calibrate import Calibrate
 
 def main(filepath):
     filename = Path(filepath).stem
-    cal = Calibrate(original_hpxml_filepath=filepath)
+    cal = Calibrate(
+        original_hpxml_filepath=filepath,
+        config_filepath="src/openstudio_hpxml_calibration/ga_config.yaml",
+    )
     start = time.time()
     best_individual, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search()
     print(f"Evaluation took {time.time() - start:.2f} seconds")
@@ -121,14 +125,65 @@ def main(filepath):
 
 
 if __name__ == "__main__":
-    # test_hpxml_dir = Path("test_hpxmls/ihmh_homes")
-    # test_hpxml_files = test_hpxml_dir.glob("*.xml")
-    test_hpxml_dir = Path("test_hpxmls/real_homes")
-    test_hpxml_files = test_hpxml_dir.glob("house21.xml")
+    test_hpxml_files = []
+    ihmh_home_hpxml_dir = Path("test_hpxmls/ihmh_homes")
+    ihmh_hpxml_files = ihmh_home_hpxml_dir.glob("*.xml")
+    test_hpxml_files.extend(ihmh_hpxml_files)
+    real_home_hpxml_dir = Path("test_hpxmls/real_homes")
+    real_home_hpxml_files = real_home_hpxml_dir.glob("*.xml")
+    test_hpxml_files.extend(real_home_hpxml_files)
+
+    gen_values = []
 
     for test_hpxml_file in test_hpxml_files:
-        print(f"\nProcessing {test_hpxml_file}...")
         try:
             main(str(test_hpxml_file))
         except Exception as e:
             print(f"Failed on {test_hpxml_file.name}: {e}")
+            continue
+
+        # Derive expected logbook.json path
+        filename_stem = test_hpxml_file.stem
+        logbook_path = (
+            Path(__file__).resolve().parent
+            / "tests"
+            / "ga_search_results"
+            / filename_stem
+            / "logbook.json"
+        )
+
+        if not logbook_path.exists():
+            print(f"Logbook not found for {filename_stem}")
+            continue
+
+        try:
+            with open(logbook_path) as f:
+                logbook = json.load(f)
+                if isinstance(logbook, list) and logbook:
+                    final_gen = logbook[-1].get("gen")
+                    if final_gen is not None:
+                        gen_values.append(final_gen)
+                        print(f"Final gen for {filename_stem}: {final_gen}")
+                    else:
+                        print(f"No 'gen' key in final record of {filename_stem}")
+                else:
+                    print(f"Empty or invalid logbook for {filename_stem}")
+        except Exception as e:
+            print(f"Error reading logbook for {filename_stem}: {e}")
+
+    if gen_values:
+        avg_gen = statistics.mean(gen_values)
+        print(f"\nAverage generations to solution: {avg_gen:.2f}")
+
+        # Write the result to a text file
+        output_txt_path = (
+            Path(__file__).resolve().parent
+            / "tests"
+            / "ga_search_results"
+            / "average_ga_performace.txt"
+        )
+        output_txt_path.parent.mkdir(parents=True, exist_ok=True)  # Ensure directory exists
+        with open(output_txt_path, "w") as f:
+            f.write(f"Average generations to solution: {avg_gen:.2f}\n")
+    else:
+        print("\nNo generation data collected.")

@@ -4,6 +4,8 @@ import multiprocessing
 import random
 import shutil
 import tempfile
+import time
+import uuid
 from datetime import datetime as dt
 from pathlib import Path
 
@@ -684,6 +686,8 @@ class Calibrate:
     def run_ga_search(
         self, population_size=None, generations=None, cxpb=None, mutpb=None, num_proc=None
     ):
+        print(f"Running GA search algorithm for '{Path(self.hpxml_filepath).name}'...")
+
         all_temp_dirs = set()
         best_dirs_by_gen = []
         cfg = self.ga_config
@@ -719,90 +723,97 @@ class Calibrate:
         lighting_load_pct_choices = cfg["value_choices"]["lighting_load_pct_choices"]
 
         def evaluate(individual):
-            (
-                misc_load_pct_change,
-                heating_setpoint_offset,
-                cooling_setpoint_offset,
-                air_leakage_pct_change,
-                heating_efficiency_pct_change,
-                cooling_efficiency_pct_change,
-                roof_r_value_pct_change,
-                ceiling_r_value_pct_change,
-                above_ground_walls_r_value_pct_change,
-                below_ground_walls_r_value_pct_change,
-                slab_r_value_pct_change,
-                floor_r_value_pct_change,
-                water_heater_efficiency_pct_change,
-                water_fixtures_usage_pct_change,
-                window_u_factor_pct_change,
-                window_shgc_pct_change,
-                appliance_usage_pct_change,
-                lighting_load_pct_change,
-            ) = individual
-            temp_output_dir = Path(tempfile.mkdtemp(prefix="calib_test_"))
-            mod_hpxml_path = temp_output_dir / "modified.xml"
-            arguments = {
-                "xml_file_path": str(self.hpxml_filepath),
-                "save_file_path": str(mod_hpxml_path),
-                "heating_setpoint_offset": heating_setpoint_offset,
-                "cooling_setpoint_offset": cooling_setpoint_offset,
-                "misc_load_pct_change": misc_load_pct_change,
-                "air_leakage_pct_change": air_leakage_pct_change,
-                "heating_efficiency_pct_change": heating_efficiency_pct_change,
-                "cooling_efficiency_pct_change": cooling_efficiency_pct_change,
-                "roof_r_value_pct_change": roof_r_value_pct_change,
-                "ceiling_r_value_pct_change": ceiling_r_value_pct_change,
-                "above_ground_walls_r_value_pct_change": above_ground_walls_r_value_pct_change,
-                "below_ground_walls_r_value_pct_change": below_ground_walls_r_value_pct_change,
-                "slab_r_value_pct_change": slab_r_value_pct_change,
-                "floor_r_value_pct_change": floor_r_value_pct_change,
-                "water_heater_efficiency_pct_change": water_heater_efficiency_pct_change,
-                "water_fixtures_usage_pct_change": water_fixtures_usage_pct_change,
-                "window_u_factor_pct_change": window_u_factor_pct_change,
-                "window_shgc_pct_change": window_shgc_pct_change,
-                "appliance_usage_pct_change": appliance_usage_pct_change,
-                "lighting_load_pct_change": lighting_load_pct_change,
-            }
+            try:
+                (
+                    misc_load_pct_change,
+                    heating_setpoint_offset,
+                    cooling_setpoint_offset,
+                    air_leakage_pct_change,
+                    heating_efficiency_pct_change,
+                    cooling_efficiency_pct_change,
+                    roof_r_value_pct_change,
+                    ceiling_r_value_pct_change,
+                    above_ground_walls_r_value_pct_change,
+                    below_ground_walls_r_value_pct_change,
+                    slab_r_value_pct_change,
+                    floor_r_value_pct_change,
+                    water_heater_efficiency_pct_change,
+                    water_fixtures_usage_pct_change,
+                    window_u_factor_pct_change,
+                    window_shgc_pct_change,
+                    appliance_usage_pct_change,
+                    lighting_load_pct_change,
+                ) = individual
+                temp_output_dir = Path(
+                    tempfile.mkdtemp(prefix=f"calib_test_{uuid.uuid4().hex[:6]}_")
+                )
+                mod_hpxml_path = temp_output_dir / "modified.xml"
+                arguments = {
+                    "xml_file_path": str(self.hpxml_filepath),
+                    "save_file_path": str(mod_hpxml_path),
+                    "heating_setpoint_offset": heating_setpoint_offset,
+                    "cooling_setpoint_offset": cooling_setpoint_offset,
+                    "misc_load_pct_change": misc_load_pct_change,
+                    "air_leakage_pct_change": air_leakage_pct_change,
+                    "heating_efficiency_pct_change": heating_efficiency_pct_change,
+                    "cooling_efficiency_pct_change": cooling_efficiency_pct_change,
+                    "roof_r_value_pct_change": roof_r_value_pct_change,
+                    "ceiling_r_value_pct_change": ceiling_r_value_pct_change,
+                    "above_ground_walls_r_value_pct_change": above_ground_walls_r_value_pct_change,
+                    "below_ground_walls_r_value_pct_change": below_ground_walls_r_value_pct_change,
+                    "slab_r_value_pct_change": slab_r_value_pct_change,
+                    "floor_r_value_pct_change": floor_r_value_pct_change,
+                    "water_heater_efficiency_pct_change": water_heater_efficiency_pct_change,
+                    "water_fixtures_usage_pct_change": water_fixtures_usage_pct_change,
+                    "window_u_factor_pct_change": window_u_factor_pct_change,
+                    "window_shgc_pct_change": window_shgc_pct_change,
+                    "appliance_usage_pct_change": appliance_usage_pct_change,
+                    "lighting_load_pct_change": lighting_load_pct_change,
+                }
 
-            temp_osw = Path(temp_output_dir / "modify_hpxml.osw")
-            create_measure_input_file(arguments, temp_osw)
+                temp_osw = Path(temp_output_dir / "modify_hpxml.osw")
+                create_measure_input_file(arguments, temp_osw)
 
-            app(["modify-xml", str(temp_osw)])
-            app(
-                [
-                    "run-sim",
-                    str(mod_hpxml_path),
-                    "--output-dir",
-                    str(temp_output_dir),
-                    "--output-format",
-                    "json",
-                ]
-            )
+                app(["modify-xml", str(temp_osw)])
+                app(
+                    [
+                        "run-sim",
+                        str(mod_hpxml_path),
+                        "--output-dir",
+                        str(temp_output_dir),
+                        "--output-format",
+                        "json",
+                    ]
+                )
 
-            output_file = temp_output_dir / "run" / "results_annual.json"
-            simulation_results = self.get_model_results(json_results_path=output_file)
-            normalized_consumption = self.get_normalized_consumption_per_bill()
-            comparison = self.compare_results(normalized_consumption, simulation_results)
+                output_file = temp_output_dir / "run" / "results_annual.json"
+                simulation_results = self.get_model_results(json_results_path=output_file)
+                normalized_consumption = self.get_normalized_consumption_per_bill()
+                comparison = self.compare_results(normalized_consumption, simulation_results)
 
-            bias_error_penalties = []
-            for fuel_type, metrics in comparison.items():
-                for end_use, bias_error in metrics["Bias Error"].items():
-                    bias_error_penalty = max(0, abs(bias_error)) ** 2
-                    # if absolute error is within the bpi2400 criteria, relax the penalty
-                    if abs_error_within_threshold(
-                        fuel_type,
-                        abs(metrics["Absolute Error"][end_use]),
-                        abs_error_elec_threshold,
-                        abs_error_fuel_threshold,
-                    ):
-                        penalty_relaxation_factor = 0.2
-                        bias_error_penalty *= penalty_relaxation_factor
+                bias_error_penalties = []
+                for fuel_type, metrics in comparison.items():
+                    for end_use, bias_error in metrics["Bias Error"].items():
+                        bias_error_penalty = max(0, abs(bias_error)) ** 2
+                        # if absolute error is within the bpi2400 criteria, relax the penalty
+                        if abs_error_within_threshold(
+                            fuel_type,
+                            abs(metrics["Absolute Error"][end_use]),
+                            abs_error_elec_threshold,
+                            abs_error_fuel_threshold,
+                        ):
+                            penalty_relaxation_factor = 0.2
+                            bias_error_penalty *= penalty_relaxation_factor
 
-                    bias_error_penalties.append(bias_error_penalty)
+                        bias_error_penalties.append(bias_error_penalty)
 
-            total_score = sum(bias_error_penalties)
+                total_score = sum(bias_error_penalties)
 
-            return (total_score,), comparison, temp_output_dir
+                return (total_score,), comparison, temp_output_dir
+
+            except Exception as e:
+                logger.error(f"Error evaluating individual {individual}: {e}")
+                return (float("inf"),), {}, None
 
         def abs_error_within_threshold(
             fuel_type: str, abs_error: float, elec_threshold: float, fuel_threshold: float
@@ -988,10 +999,12 @@ class Calibrate:
         toolbox.register("mutate", adaptive_mutation)
         toolbox.register("select", tools.selTournament, tournsize=2)
 
+        terminated_early = False
+
         if num_proc is None:
             num_proc = multiprocessing.cpu_count() - 1
 
-        with Pool(num_proc) as pool:
+        with Pool(processes=num_proc, maxtasksperchild=1) as pool:
             toolbox.register("map", pool.map)
             pop = toolbox.population(n=population_size)
             hall_of_fame = tools.HallOfFame(1)
@@ -1012,7 +1025,8 @@ class Calibrate:
                 ind.fitness.values = fit
                 ind.comparison = comp
                 ind.temp_output_dir = temp_dir
-                all_temp_dirs.add(temp_dir)
+                if temp_dir is not None:
+                    all_temp_dirs.add(temp_dir)
 
             hall_of_fame.update(pop)
             best_ind = tools.selBest(pop, 1)[0]
@@ -1112,13 +1126,25 @@ class Calibrate:
 
                 if meets_termination_criteria(best_comp):
                     print(f"Early stopping: termination criteria met at generation {gen}")
-                    record["terminated_early"] = True
+                    terminated_early = True
                     break
 
         best_individual = hall_of_fame[0]
 
         # Cleanup
+        time.sleep(0.5)
         for temp_dir in all_temp_dirs:
-            shutil.rmtree(temp_dir, ignore_errors=True)
+            if temp_dir and Path(temp_dir).exists():
+                shutil.rmtree(temp_dir, ignore_errors=True)
+
+        if terminated_early:
+            print(
+                "GA search has completed early: A solution satisfying error thresholds was found."
+            )
+        else:
+            print(
+                "GA search has completed. However, no solution was found that satisfies the bias error "
+                "and absolute error thresholds before reaching the maximum number of generations."
+            )
 
         return best_individual, pop, logbook, best_bias_series, best_abs_series

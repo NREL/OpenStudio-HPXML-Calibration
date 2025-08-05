@@ -1,6 +1,6 @@
 genetic_algorithm:
   population_size: 70
-  generations: 100
+  generations: 50
   mutation_probability: 0.4
   crossover_probability: 0.4
   bias_error_threshold: 10  # Bias error threshold in percent for all end uses
