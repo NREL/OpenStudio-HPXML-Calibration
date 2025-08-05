@@ -3,6 +3,7 @@ import json
 import random
 import shutil
 import tempfile
+import time
 import uuid
 from datetime import datetime as dt
 from pathlib import Path
@@ -1014,7 +1015,8 @@ class Calibrate:
                 ind.fitness.values = fit
                 ind.comparison = comp
                 ind.temp_output_dir = temp_dir
-                all_temp_dirs.add(temp_dir)
+                if temp_dir is not None:
+                    all_temp_dirs.add(temp_dir)
 
             hall_of_fame.update(pop)
             best_ind = tools.selBest(pop, 1)[0]
@@ -1120,7 +1122,9 @@ class Calibrate:
         best_individual = hall_of_fame[0]
 
         # Cleanup
+        time.sleep(0.5)
         for temp_dir in all_temp_dirs:
-            shutil.rmtree(temp_dir, ignore_errors=True)
+            if temp_dir and Path(temp_dir).exists():
+                shutil.rmtree(temp_dir, ignore_errors=True)
 
         return best_individual, pop, logbook, best_bias_series, best_abs_series
