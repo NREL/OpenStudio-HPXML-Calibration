@@ -23,15 +23,22 @@ class Calibrate:
 
         self.hpxml_data_error_checking()
 
-        calibration_type = self.get_calibration_type()
-        if calibration_type == "simple":
-            logger.info("Using simplified calibration method")
-            self.simplified_calibration()
-        elif calibration_type == "detailed":
-            logger.info("Using detailed calibration method")
-            self.inv_model = InverseModel(self.hpxml)
-        else:
-            raise ValueError(f"Unknown calibration type: {calibration_type}. How did you get here?")
+        consumption = self.hpxml.get_consumption()
+        for fuel_consumption in consumption.ConsumptionDetails.ConsumptionInfo:
+            fuel_type = fuel_consumption.ConsumptionType.Energy.FuelType
+            if (
+                2 <= len(fuel_consumption) <= 10
+                and self.get_calibration_type(fuel_type) == "simple"
+            ):
+                logger.info("Using simplified calibration method")
+                self.calculate_annual_degree_days()
+            elif self.get_calibration_type(fuel_type) == "detailed":
+                logger.info("Using detailed calibration method")
+                self.inv_model = InverseModel(self.hpxml)
+            else:
+                raise ValueError(
+                    f"Unknown calibration type: {self.get_calibration_type(fuel_consumption.FuelType)}. How did you get here?"
+                )
 
     def get_normalized_consumption_per_bill(self) -> dict[FuelType, pd.DataFrame]:
         """
@@ -359,30 +366,23 @@ class Calibrate:
 
         return comparison_results
 
-    def get_calibration_type(self) -> str:
+    def get_calibration_type(self, fuel_type: str) -> str:
         """
         Determine the calibration type based on the HPXML file.
 
         Returns:
             str: "simple" for simplified calibration, "detailed" for detailed calibration.
         """
-        # Check if the HPXML file has between 2 & 10 consumption data entries for delivered fuels.
-        consumption = self.hpxml.get_consumption()
-        for fuel_consumption in consumption.ConsumptionDetails.ConsumptionInfo:
-            if (
-                fuel_consumption.ConsumptionType.Energy.FuelType
-                in (
-                    FuelType.FUEL_OIL.value,
-                    FuelType.PROPANE.value,
-                    FuelType.WOOD.value,
-                    FuelType.WOOD_PELLETS.value,
-                )
-                and 2 <= len(fuel_consumption) <= 10
-            ):
-                # If there is electricity consumption, use detailed calibration
-                return "simple"
+        if fuel_type in (
+            FuelType.FUEL_OIL.value,
+            FuelType.PROPANE.value,
+            FuelType.WOOD.value,
+            FuelType.WOOD_PELLETS.value,
+        ):
+            # If the fuel type is one of the delivered fuels, use simple calibration
+            return "simple"
 
-        # Default to using detailed calibration
+        # Otherwise use detailed calibration
         return "detailed"
 
     def calculate_annual_degree_days(self) -> dict[str, float]:
@@ -396,17 +396,27 @@ class Calibrate:
         bills_by_fuel_type, _, _ = ud.get_bills_from_hpxml(self.hpxml)
         lat, lon = self.hpxml.get_lat_lon()
         bill_tmy_degree_days = {}
-        total_period_amy_dd = {}
+        total_period_actual_dd = {}
 
         # Use day-of-year because TMY data contains multiple years
         tmy_temp_index_doy = tmy_dry_bulb_temps_f.index.dayofyear
 
         for fuel_type, bills in bills_by_fuel_type.items():
+            if fuel_type not in (
+                FuelType.FUEL_OIL,
+                FuelType.PROPANE,
+                FuelType.WOOD,
+                FuelType.WOOD_PELLETS,
+            ):
+                continue  # Skip fuels that are not delivered fuels
+            # format fuel type for dictionary keys
+            fuel_type_name = fuel_type.name.lower().replace("_", " ")
             # Get degree days of actual weather during bill periods
             _, actual_temp_f = ud.join_bills_weather(bills, lat, lon)
             daily_actual_temps = actual_temp_f.resample("D").mean()
             actual_degree_days = ud.calc_heat_cool_degree_days(daily_actual_temps)
-            total_period_amy_dd[fuel_type.name.lower()] = actual_degree_days
+            actual_degree_days = {k: round(v) for k, v in actual_degree_days.items()}
+            total_period_actual_dd[fuel_type_name] = actual_degree_days
 
             # Get degree days of TMY weather
             bill_results = []
@@ -430,21 +440,94 @@ class Calibrate:
                         **tmy_degree_days,
                     }
                 )
-            bill_tmy_degree_days[fuel_type.name.lower()] = bill_results
+            bill_tmy_degree_days[fuel_type_name] = bill_results
 
         total_period_tmy_dd = {}
         for fuel, bill_list in bill_tmy_degree_days.items():
-            hdd_total = sum(bill.get("HDD65F", 0) for bill in bill_list)
-            cdd_total = sum(bill.get("CDD65F", 0) for bill in bill_list)
+            hdd_total = round(sum(bill.get("HDD65F", 0) for bill in bill_list))
+            cdd_total = round(sum(bill.get("CDD65F", 0) for bill in bill_list))
             total_period_tmy_dd[fuel] = {"HDD65F": hdd_total, "CDD65F": cdd_total}
 
-        return total_period_tmy_dd, total_period_amy_dd
+        return total_period_tmy_dd, total_period_actual_dd
 
     def simplified_annual_usage(self, annual_results_json: Path):
-        self.get_model_results(annual_results_json)
-        total_period_tmy_dd, total_period_amy_dd = self.calculate_annual_degree_days()
+        model_results = self.get_model_results(annual_results_json)
+        total_period_tmy_dd, total_period_actual_dd = self.calculate_annual_degree_days()
+        consumption = self.hpxml.get_consumption()
+
         for fuel in total_period_tmy_dd:
-            print(fuel)
+            measured_consumption = 0.0
+            for fuel_consumption in consumption.ConsumptionDetails.ConsumptionInfo:
+                if fuel_consumption.ConsumptionType.Energy.FuelType == fuel:
+                    # Get the first and last bill dates
+                    first_bill_date = fuel_consumption.ConsumptionDetail[0].StartDateTime
+                    last_bill_date = fuel_consumption.ConsumptionDetail[-1].EndDateTime
+                    first_bill_date = dt.strptime(str(first_bill_date), "%Y-%m-%dT%H:%M:%S")
+                    last_bill_date = dt.strptime(str(last_bill_date), "%Y-%m-%dT%H:%M:%S")
+                    # Add a day to the last bill date to include the last day in the calculation
+                    num_days = (last_bill_date - first_bill_date + timedelta(days=1)).days
+                for delivery in fuel_consumption.ConsumptionDetail:
+                    measured_consumption += int(delivery.Consumption)
+            logger.debug(
+                f"Measured {fuel} consumption: {measured_consumption:,.0f} {fuel_consumption.ConsumptionType.Energy.UnitofMeasure}"
+            )
+            measured_consumption = convert_units(measured_consumption, "kBtu", "mBtu")
+
+            calibration_results = {}
+            # for load_type in ["heating", "cooling", "baseload"]:
+            modeled_baseload = model_results[fuel].get("baseload", 0)
+            modeled_heating = model_results[fuel].get("heating", 0)
+            modeled_cooling = model_results[fuel].get("cooling", 0)
+            total_modeled_usage = modeled_baseload + modeled_heating + modeled_cooling
+
+            baseload_fraction = modeled_baseload / total_modeled_usage
+            heating_fraction = modeled_heating / total_modeled_usage
+            cooling_fraction = modeled_cooling / total_modeled_usage
+
+            baseload = baseload_fraction * (num_days / 365)
+            heating = heating_fraction * (
+                total_period_actual_dd[fuel]["HDD65F"] / total_period_tmy_dd[fuel]["HDD65F"]
+            )
+            cooling = cooling_fraction * (
+                total_period_actual_dd[fuel]["CDD65F"] / total_period_tmy_dd[fuel]["CDD65F"]
+            )
+
+            annual_delivered_fuel_usage = measured_consumption / (baseload + heating + cooling)
+            logger.debug(f"annual_delivered_fuel_usage: {annual_delivered_fuel_usage:,.2f} mBtu")
+
+            normalized_annual_baseload = annual_delivered_fuel_usage * baseload_fraction
+            normalized_annual_heating = annual_delivered_fuel_usage * heating_fraction
+            normalized_annual_cooling = annual_delivered_fuel_usage * cooling_fraction
+
+            baseload_bias_error = (
+                ((normalized_annual_baseload - modeled_baseload) / normalized_annual_baseload) * 100
+                if normalized_annual_baseload
+                else 0
+            )
+            heating_bias_error = (
+                ((normalized_annual_heating - modeled_heating) / normalized_annual_heating) * 100
+                if normalized_annual_heating
+                else 0
+            )
+            cooling_bias_error = (
+                ((normalized_annual_cooling - modeled_cooling) / normalized_annual_cooling) * 100
+                if normalized_annual_cooling
+                else 0
+            )
+
+            baseload_absolute_error = abs(normalized_annual_baseload - modeled_baseload)
+            heating_absolute_error = abs(normalized_annual_heating - modeled_heating)
+            cooling_absolute_error = abs(normalized_annual_cooling - modeled_cooling)
+
+            calibration_results[fuel] = {
+                "Baseload bias error %": round(baseload_bias_error, 2),
+                "Heating bias error %": round(heating_bias_error, 2),
+                "Cooling bias error %": round(cooling_bias_error, 2),
+                "Baseload absolute error mBtu": round(baseload_absolute_error, 2),
+                "Heating absolute error mBtu": round(heating_absolute_error, 2),
+                "Cooling absolute error mBtu": round(cooling_absolute_error, 2),
+            }
+        return calibration_results
 
     def hpxml_data_error_checking(self) -> None:
         """Check for common HPXML errors
@@ -683,7 +766,7 @@ class Calibrate:
                     raise ValueError(
                         f"Consumption dates {start_date} - {end_date} cannot be in the future."
                     )
-                if (now - start_date).days > 5 * 365 or (now - end_date).days > 5 * 365:
+                if (now - start_date).days > 25 * 365 or (now - end_date).days > 25 * 365:
                     raise ValueError(
                         f"Consumption dates {start_date} - {end_date} must be within the past 5 years."
                     )
