@@ -66,35 +66,23 @@ class Calibrate:
                 "abs_error_fuel_threshold": 5,
             },
             "value_choices": {
-                "misc_load_multiplier_choices": [round(x * 0.1, 1) for x in range(-9, 11)]
-                + [5, 10],
-                "air_leakage_multiplier_choices": [round(x * 0.1, 1) for x in range(-5, 11)] + [2],
-                "hvac_eff_multiplier_choices": [round(x * 0.1, 2) for x in range(-2, 13)],
-                "roof_r_value_multiplier_choices": [round(x * 0.1, 2) for x in range(-2, 13)],
-                "ceiling_r_value_multiplier_choices": [round(x * 0.1, 2) for x in range(-2, 13)],
-                "above_ground_walls_r_value_multiplier_choices": [
-                    round(x * 0.1, 2) for x in range(-2, 13)
-                ],
-                "below_ground_walls_r_value_multiplier_choices": [
-                    round(x * 0.1, 2) for x in range(-2, 13)
-                ],
-                "slab_r_value_multiplier_choices": [round(x * 0.1, 2) for x in range(-2, 13)],
-                "floor_r_value_multiplier_choices": [round(x * 0.1, 2) for x in range(-2, 13)],
+                "misc_load_multiplier_choices": [*list(range(0.1, 1.2, 0.1)), 5, 10],
+                "air_leakage_multiplier_choices": [*list(range(0.5, 1.1, 0.1)), 2],
+                "hvac_eff_multiplier_choices": list(range(0.8, 1.3, 0.1)),
+                "roof_r_value_multiplier_choices": list(range(0.8, 1.3, 0.1)),
+                "ceiling_r_value_multiplier_choices": list(range(0.8, 1.3, 0.1)),
+                "above_ground_walls_r_value_multiplier_choices": list(range(0.8, 1.3, 0.1)),
+                "below_ground_walls_r_value_multiplier_choices": list(range(0.8, 1.3, 0.1)),
+                "slab_r_value_multiplier_choices": list(range(0.8, 1.3, 0.1)),
+                "floor_r_value_multiplier_choices": list(range(0.8, 1.3, 0.1)),
                 "heating_setpoint_choices": [-5, -3, -1, 0, 1, 3, 5],
                 "cooling_setpoint_choices": [-5, -3, -1, 0, 1, 3, 5],
-                "water_heater_efficiency_multiplier_choices": [
-                    round(x * 0.1, 2) for x in range(-2, 13)
-                ],
-                "water_fixtures_usage_multiplier_choices": [
-                    round(x * 0.1, 1) for x in range(-9, 11)
-                ]
-                + [5, 10],
-                "window_u_factor_multiplier_choices": [round(x * 0.1, 2) for x in range(-2, 13)],
-                "window_shgc_multiplier_choices": [round(x * 0.1, 2) for x in range(-2, 13)],
-                "appliance_usage_multiplier_choices": [round(x * 0.1, 1) for x in range(-9, 11)]
-                + [5, 10],
-                "lighting_load_multiplier_choices": [round(x * 0.1, 1) for x in range(-9, 11)]
-                + [5, 10],
+                "water_heater_efficiency_multiplier_choices": list(range(0.8, 1.3, 0.1)),
+                "water_fixtures_usage_multiplier_choices": [*list(range(0.1, 1.2, 0.1)), 5, 10],
+                "window_u_factor_multiplier_choices": list(range(0.8, 1.3, 0.1)),
+                "window_shgc_multiplier_choices": list(range(0.8, 1.3, 0.1)),
+                "appliance_usage_multiplier_choices": [*list(range(0.1, 1.2, 0.1)), 5, 10],
+                "lighting_load_multiplier_choices": [*list(range(0.1, 1.2, 0.1)), 5, 10],
             },
         }
         self.hpxml_filepath = Path(original_hpxml_filepath).resolve()
