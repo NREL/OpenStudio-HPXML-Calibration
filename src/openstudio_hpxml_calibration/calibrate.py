@@ -66,8 +66,8 @@ class Calibrate:
                 "abs_error_fuel_threshold": 5,
             },
             "value_choices": {
-                "misc_load_multiplier_choices": [*[round(x * 0.1, 1) for x in range(1, 12)], 5, 10],
-                "air_leakage_multiplier_choices": [*[round(x * 0.1, 1) for x in range(5, 11)], 2],
+                "misc_load_multiplier_choices": [*[round(x * 0.1, 1) for x in range(1, 21)], 5, 10],
+                "air_leakage_multiplier_choices": [round(x * 0.1, 1) for x in range(5, 21)],
                 "hvac_eff_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
                 "roof_r_value_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
                 "ceiling_r_value_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
@@ -85,19 +85,19 @@ class Calibrate:
                     round(x * 0.1, 1) for x in range(8, 13)
                 ],
                 "water_fixtures_usage_multiplier_choices": [
-                    *[round(x * 0.1, 1) for x in range(1, 12)],
+                    *[round(x * 0.1, 1) for x in range(1, 21)],
                     5,
                     10,
                 ],
                 "window_u_factor_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
                 "window_shgc_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
                 "appliance_usage_multiplier_choices": [
-                    *[round(x * 0.1, 1) for x in range(1, 12)],
+                    *[round(x * 0.1, 1) for x in range(1, 21)],
                     5,
                     10,
                 ],
                 "lighting_load_multiplier_choices": [
-                    *[round(x * 0.1, 1) for x in range(1, 12)],
+                    *[round(x * 0.1, 1) for x in range(1, 21)],
                     5,
                     10,
                 ],
