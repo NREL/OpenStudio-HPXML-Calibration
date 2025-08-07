@@ -49,126 +49,110 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('heating_setpoint_offset', false)
     arg.setDisplayName('Heating setpoint offset')
-    arg.setDescription('Degrees to change heating setpoint')
+    arg.setDescription('Degrees to change heating setpoint. Positive increases, negative decreases.')
     arg.setUnits('F')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('cooling_setpoint_offset', false)
     arg.setDisplayName('Cooling setpoint offset')
-    arg.setDescription('Degrees to change cooling setpoint')
+    arg.setDescription('Degrees to change cooling setpoint. Positive increases, negative decreases.')
     arg.setUnits('F')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('air_leakage_multiplier', false)
     arg.setDisplayName('Air leakage multiplier')
-    arg.setDescription('Percentage to change the air leakage rate.
-      Positive value increases air leakage, negative value decreases air leakage.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.')
+    arg.setDescription('Multiplier on the air leakage rate.
+      Value > 1 increases air leakage, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('heating_efficiency_multiplier', false)
     arg.setDisplayName('Heating efficiency multiplier')
-    arg.setDescription('Percentage to change the heating equipment efficiency.
-      Positive value increases efficiency, negative value decreases efficiency.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.')
+    arg.setDescription('Multiplier on heating equipment efficiency.
+      Value > 1 increases efficiency, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('cooling_efficiency_multiplier', false)
     arg.setDisplayName('Cooling efficiency multiplier')
-    arg.setDescription('Percentage to change the cooling equipment efficiency.
-      Positive value increases efficiency, negative value decreases efficiency.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.')
+    arg.setDescription('Multiplier on cooling equipment efficiency.
+      Value > 1 increases efficiency, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('misc_load_multiplier', false)
     arg.setDisplayName('Miscellaneous load multiplier')
-    arg.setDescription('Percentage to change the various miscellaneous load usage multipliers.
-      Positive value increases load, negative value decreases load.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.')
+    arg.setDescription('Multiplier on miscellaneous load usage.
+      Value > 1 increases load, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('roof_r_value_multiplier', false)
     arg.setDisplayName('Roof R-Value multiplier')
-    arg.setDescription('Percentage to change the Roof R-value.
-      Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.')
+    arg.setDescription('Multiplier on roof R-value.
+      Value > 1 increases R-value, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('ceiling_r_value_multiplier', false)
     arg.setDisplayName('Ceiling R-Value multiplier')
-    arg.setDescription('Percentage to change the ceiling (attic floor) R-value.
-      Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.')
+    arg.setDescription('Multiplier on ceiling (attic floor) R-value.
+      Value > 1 increases R-value, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('floor_r_value_multiplier', false)
     arg.setDisplayName('Floor R-Value multiplier')
-    arg.setDescription('Percentage to change the floor R-value.
-      Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.')
+    arg.setDescription('Multiplier on floor R-value.
+      Value > 1 increases R-value, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('above_ground_walls_r_value_multiplier', false)
     arg.setDisplayName('Above-ground wall R-Value multiplier')
-    arg.setDescription('Percentage to change the above-ground wall R-value.
-      Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.')
+    arg.setDescription('Multiplier on above-ground wall R-value.
+      Value > 1 increases R-value, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('below_ground_walls_r_value_multiplier', false)
     arg.setDisplayName('Below-ground wall R-Value multiplier')
-    arg.setDescription('Percentage to change the below-ground wall R-value.
-      Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.')
+    arg.setDescription('Multiplier on below-ground wall R-value.
+      Value > 1 increases R-value, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('slab_r_value_multiplier', false)
     arg.setDisplayName('Slab R-Value multiplier')
-    arg.setDescription('Percentage to change the foundation slab R-value.
-      Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.')
+    arg.setDescription('Multiplier on foundation slab R-value.
+      Value > 1 increases R-value, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('water_heater_efficiency_multiplier', false)
     arg.setDisplayName('Water heater efficiency multiplier')
-    arg.setDescription('Percentage to change the Energy Factor or Unified Energy Factor.
-      Positive value increases efficiency (EF/UEF), negative value decreases efficiency (EF/UEF).
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.')
+    arg.setDescription('Multiplier on water heater efficiency (EF/UEF).
+      Value > 1 increases efficiency, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('water_fixtures_usage_multiplier', false)
     arg.setDisplayName('Water fixtures usage multiplier')
-    arg.setDescription('Percentage to change the water fixtures usage multiplier.
-      Positive value increases usage, negative value decreases usage.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.')
+    arg.setDescription('Multiplier on water fixtures usage.
+      Value > 1 increases usage, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('lighting_load_multiplier', false)
     arg.setDisplayName('Lighting load multiplier')
-    arg.setDescription('Percentage to change the lighting load.
-      Positive value increases lighting load, negative value decreases lighting load.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.')
+    arg.setDescription('Multiplier on lighting load.
+      Value > 1 increases load, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('window_u_factor_multiplier', false)
     arg.setDisplayName('Window U-factor multiplier')
-    arg.setDescription('Percentage to change the window U-factor.
-      Positive value increases U-factor, negative value decreases U-factor.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.')
+    arg.setDescription('Multiplier on window U-factor.
+      Value > 1 increases U-factor, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('window_shgc_multiplier', false)
     arg.setDisplayName('Window SHGC multiplier')
-    arg.setDescription('Percentage to change the window SHGC.
-      Positive value increases SHGC, negative value decreases SHGC.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.')
+    arg.setDescription('Multiplier on window SHGC.
+      Value > 1 increases SHGC, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('appliance_usage_multiplier', false)
     arg.setDisplayName('Appliance usage multiplier')
-    arg.setDescription('Percentage to change usage_multiplier of all appliances.
-      Positive value increases usage_multiplier, negative value decreases usage_multiplier.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.')
+    arg.setDescription('Multiplier on usage_multiplier of all appliances.
+      Value > 1 increases usage, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
     return args
