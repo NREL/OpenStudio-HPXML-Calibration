@@ -164,6 +164,7 @@ def calibrate(
     hpxml_filepath: str,
     config_filepath: str | None = None,
     output_dir: str | None = None,
+    num_proc: int | None = None,
 ) -> None:
     """
     Run calibration using a genetic algorithm on an HPXML file.
@@ -176,6 +177,8 @@ def calibrate(
         Optional path to calibration config file
     output_dir: str
         Optional output directory to save results
+    num_proc: int
+        Optional number of processors for parallel simulations
     """
 
     from openstudio_hpxml_calibration.calibrate import Calibrate
@@ -184,7 +187,9 @@ def calibrate(
     cal = Calibrate(original_hpxml_filepath=hpxml_filepath, config_filepath=config_filepath)
 
     start = time.time()
-    best_individual, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search()
+    best_individual, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search(
+        num_proc=num_proc
+    )
     logger.info(f"Calibration took {time.time() - start:.2f} seconds")
 
     # Output directory

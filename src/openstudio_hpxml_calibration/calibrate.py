@@ -1,5 +1,6 @@
 import copy
 import json
+import multiprocessing
 import random
 import shutil
 import tempfile
@@ -682,7 +683,9 @@ class Calibrate:
                             f"Electricity consumption bill period {start_date} - {end_date} cannot be shorter than {shortest_bill_period} days."
                         )
 
-    def run_ga_search(self, population_size=None, generations=None, cxpb=None, mutpb=None):
+    def run_ga_search(
+        self, population_size=None, generations=None, cxpb=None, mutpb=None, num_proc=None
+    ):
         print(f"Running GA search algorithm for '{Path(self.hpxml_filepath).name}'...")
 
         all_temp_dirs = set()
@@ -998,7 +1001,10 @@ class Calibrate:
 
         terminated_early = False
 
-        with Pool(maxtasksperchild=1) as pool:
+        if num_proc is None:
+            num_proc = multiprocessing.cpu_count() - 1
+
+        with Pool(processes=num_proc, maxtasksperchild=1) as pool:
             toolbox.register("map", pool.map)
             pop = toolbox.population(n=population_size)
             hall_of_fame = tools.HallOfFame(1)
