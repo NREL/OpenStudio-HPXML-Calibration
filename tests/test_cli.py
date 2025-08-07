@@ -77,7 +77,7 @@ def test_calls_modify_hpxml(test_data):
     # Get the changed XML elements from the OSW file
     heating_offset = test_workflow["steps"][0]["arguments"]["heating_setpoint_offset"]
     # cooling_setpoint_offset = test_workflow["steps"][0]["arguments"]["cooling_setpoint_offset"]
-    # infiltration_offset = test_workflow["steps"][0]["arguments"]["air_leakage_pct_change"]
+    # infiltration_offset = test_workflow["steps"][0]["arguments"]["air_leakage_multiplier"]
 
     # Name of the original test xml file is the last part of the xml_file path
     test_file = Path(test_workflow["steps"][0]["arguments"]["xml_file_path"]).parts[-1]

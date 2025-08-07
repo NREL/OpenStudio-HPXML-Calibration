@@ -1,21 +1,117 @@
+import copy
 import json
+import multiprocessing
+import random
+import shutil
+import tempfile
+import time
+import uuid
 from datetime import datetime as dt
 from datetime import timedelta
 from pathlib import Path
 
 import pandas as pd
+import yaml
+from deap import algorithms, base, creator, tools
 from loguru import logger
+from pathos.multiprocessing import ProcessingPool as Pool
 
 import openstudio_hpxml_calibration.weather_normalization.utility_data as ud
+from openstudio_hpxml_calibration import app
 from openstudio_hpxml_calibration.hpxml import FuelType, HpxmlDoc
 from openstudio_hpxml_calibration.modify_hpxml import set_consumption_on_hpxml
 from openstudio_hpxml_calibration.units import convert_units
 from openstudio_hpxml_calibration.weather_normalization.inverse_model import InverseModel
 
+# Ensure the creator is only created once
+if "FitnessMin" not in creator.__dict__:
+    creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
+if "Individual" not in creator.__dict__:
+    creator.create("Individual", list, fitness=creator.FitnessMin)
+
+
+def load_config(config_filepath, default={}):
+    if not config_filepath.exists():
+        raise FileNotFoundError(f"Config file not found: {config_filepath}")
+    with open(config_filepath) as f:
+        config = yaml.safe_load(f)
+    return merge_with_defaults(config, default)
+
+
+def merge_with_defaults(user_config, default_config):
+    """Merge default values into user's config"""
+    if not isinstance(user_config, dict):
+        return user_config
+    merged = default_config.copy()
+    for key, val in user_config.items():
+        if key in merged and isinstance(merged[key], dict):
+            merged[key] = merge_with_defaults(val, merged[key])
+        else:
+            merged[key] = val
+    return merged
+
 
 class Calibrate:
-    def __init__(self, original_hpxml_filepath: Path, csv_bills_filepath: Path | None = None):
+    def __init__(
+        self,
+        original_hpxml_filepath: Path,
+        csv_bills_filepath: Path | None = None,
+        config_filepath: Path | None = None,
+    ):
+        default_ga_config = {
+            "genetic_algorithm": {
+                "population_size": 70,
+                "generations": 100,
+                "crossover_probability": 0.4,
+                "mutation_probability": 0.4,
+                "bias_error_threshold": 10,
+                "abs_error_elec_threshold": 500,
+                "abs_error_fuel_threshold": 5,
+            },
+            "value_choices": {
+                "misc_load_multiplier_choices": [*[round(x * 0.1, 1) for x in range(1, 21)], 5, 10],
+                "air_leakage_multiplier_choices": [round(x * 0.1, 1) for x in range(5, 21)],
+                "hvac_eff_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
+                "roof_r_value_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
+                "ceiling_r_value_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
+                "above_ground_walls_r_value_multiplier_choices": [
+                    round(x * 0.1, 1) for x in range(8, 13)
+                ],
+                "below_ground_walls_r_value_multiplier_choices": [
+                    round(x * 0.1, 1) for x in range(8, 13)
+                ],
+                "slab_r_value_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
+                "floor_r_value_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
+                "heating_setpoint_choices": [-5, -3, -1, 0, 1, 3, 5],
+                "cooling_setpoint_choices": [-5, -3, -1, 0, 1, 3, 5],
+                "water_heater_efficiency_multiplier_choices": [
+                    round(x * 0.1, 1) for x in range(8, 13)
+                ],
+                "water_fixtures_usage_multiplier_choices": [
+                    *[round(x * 0.1, 1) for x in range(1, 21)],
+                    5,
+                    10,
+                ],
+                "window_u_factor_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
+                "window_shgc_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
+                "appliance_usage_multiplier_choices": [
+                    *[round(x * 0.1, 1) for x in range(1, 21)],
+                    5,
+                    10,
+                ],
+                "lighting_load_multiplier_choices": [
+                    *[round(x * 0.1, 1) for x in range(1, 21)],
+                    5,
+                    10,
+                ],
+            },
+        }
+        self.hpxml_filepath = Path(original_hpxml_filepath).resolve()
         self.hpxml = HpxmlDoc(Path(original_hpxml_filepath).resolve())
+        if config_filepath:
+            self.ga_config = load_config(Path(config_filepath), default=default_ga_config)
+        else:
+            self.ga_config = default_ga_config
 
         if csv_bills_filepath:
             logger.info(f"Adding utility data from {csv_bills_filepath} to hpxml")
@@ -783,3 +879,495 @@ class Calibrate:
                         raise ValueError(
                             f"Electricity consumption bill period {start_date} - {end_date} cannot be shorter than {shortest_bill_period} days."
                         )
+
+    def run_ga_search(
+        self, population_size=None, generations=None, cxpb=None, mutpb=None, num_proc=None
+    ):
+        print(f"Running GA search algorithm for '{Path(self.hpxml_filepath).name}'...")
+
+        all_temp_dirs = set()
+        best_dirs_by_gen = []
+        cfg = self.ga_config
+        population_size = cfg["genetic_algorithm"]["population_size"]
+        generations = cfg["genetic_algorithm"]["generations"]
+        bias_error_threshold = cfg["genetic_algorithm"]["bias_error_threshold"]
+        abs_error_elec_threshold = cfg["genetic_algorithm"]["abs_error_elec_threshold"]
+        abs_error_fuel_threshold = cfg["genetic_algorithm"]["abs_error_fuel_threshold"]
+        cxpb = cfg["genetic_algorithm"]["crossover_probability"]
+        mutpb = cfg["genetic_algorithm"]["mutation_probability"]
+        misc_load_multiplier_choices = cfg["value_choices"]["misc_load_multiplier_choices"]
+        air_leakage_multiplier_choices = cfg["value_choices"]["air_leakage_multiplier_choices"]
+        hvac_eff_multiplier_choices = cfg["value_choices"]["hvac_eff_multiplier_choices"]
+        roof_r_value_multiplier_choices = cfg["value_choices"]["roof_r_value_multiplier_choices"]
+        ceiling_r_value_multiplier_choices = cfg["value_choices"][
+            "ceiling_r_value_multiplier_choices"
+        ]
+        above_ground_walls_r_value_multiplier_choices = cfg["value_choices"][
+            "above_ground_walls_r_value_multiplier_choices"
+        ]
+        below_ground_walls_r_value_multiplier_choices = cfg["value_choices"][
+            "below_ground_walls_r_value_multiplier_choices"
+        ]
+        slab_r_value_multiplier_choices = cfg["value_choices"]["slab_r_value_multiplier_choices"]
+        floor_r_value_multiplier_choices = cfg["value_choices"]["floor_r_value_multiplier_choices"]
+        heating_setpoint_choices = cfg["value_choices"]["heating_setpoint_choices"]
+        cooling_setpoint_choices = cfg["value_choices"]["cooling_setpoint_choices"]
+        water_heater_efficiency_multiplier_choices = cfg["value_choices"][
+            "water_heater_efficiency_multiplier_choices"
+        ]
+        water_fixtures_usage_multiplier_choices = cfg["value_choices"][
+            "water_fixtures_usage_multiplier_choices"
+        ]
+        window_u_factor_multiplier_choices = cfg["value_choices"][
+            "window_u_factor_multiplier_choices"
+        ]
+        window_shgc_multiplier_choices = cfg["value_choices"]["window_shgc_multiplier_choices"]
+        appliance_usage_multiplier_choices = cfg["value_choices"][
+            "appliance_usage_multiplier_choices"
+        ]
+        lighting_load_multiplier_choices = cfg["value_choices"]["lighting_load_multiplier_choices"]
+
+        def evaluate(individual):
+            try:
+                (
+                    misc_load_multiplier,
+                    heating_setpoint_offset,
+                    cooling_setpoint_offset,
+                    air_leakage_multiplier,
+                    heating_efficiency_multiplier,
+                    cooling_efficiency_multiplier,
+                    roof_r_value_multiplier,
+                    ceiling_r_value_multiplier,
+                    above_ground_walls_r_value_multiplier,
+                    below_ground_walls_r_value_multiplier,
+                    slab_r_value_multiplier,
+                    floor_r_value_multiplier,
+                    water_heater_efficiency_multiplier,
+                    water_fixtures_usage_multiplier,
+                    window_u_factor_multiplier,
+                    window_shgc_multiplier,
+                    appliance_usage_multiplier,
+                    lighting_load_multiplier,
+                ) = individual
+                temp_output_dir = Path(
+                    tempfile.mkdtemp(prefix=f"calib_test_{uuid.uuid4().hex[:6]}_")
+                )
+                mod_hpxml_path = temp_output_dir / "modified.xml"
+                arguments = {
+                    "xml_file_path": str(self.hpxml_filepath),
+                    "save_file_path": str(mod_hpxml_path),
+                    "heating_setpoint_offset": heating_setpoint_offset,
+                    "cooling_setpoint_offset": cooling_setpoint_offset,
+                    "misc_load_multiplier": misc_load_multiplier,
+                    "air_leakage_multiplier": air_leakage_multiplier,
+                    "heating_efficiency_multiplier": heating_efficiency_multiplier,
+                    "cooling_efficiency_multiplier": cooling_efficiency_multiplier,
+                    "roof_r_value_multiplier": roof_r_value_multiplier,
+                    "ceiling_r_value_multiplier": ceiling_r_value_multiplier,
+                    "above_ground_walls_r_value_multiplier": above_ground_walls_r_value_multiplier,
+                    "below_ground_walls_r_value_multiplier": below_ground_walls_r_value_multiplier,
+                    "slab_r_value_multiplier": slab_r_value_multiplier,
+                    "floor_r_value_multiplier": floor_r_value_multiplier,
+                    "water_heater_efficiency_multiplier": water_heater_efficiency_multiplier,
+                    "water_fixtures_usage_multiplier": water_fixtures_usage_multiplier,
+                    "window_u_factor_multiplier": window_u_factor_multiplier,
+                    "window_shgc_multiplier": window_shgc_multiplier,
+                    "appliance_usage_multiplier": appliance_usage_multiplier,
+                    "lighting_load_multiplier": lighting_load_multiplier,
+                }
+
+                temp_osw = Path(temp_output_dir / "modify_hpxml.osw")
+                create_measure_input_file(arguments, temp_osw)
+
+                app(["modify-xml", str(temp_osw)])
+                app(
+                    [
+                        "run-sim",
+                        str(mod_hpxml_path),
+                        "--output-dir",
+                        str(temp_output_dir),
+                        "--output-format",
+                        "json",
+                    ]
+                )
+
+                output_file = temp_output_dir / "run" / "results_annual.json"
+                simulation_results = self.get_model_results(json_results_path=output_file)
+                normalized_consumption = self.get_normalized_consumption_per_bill()
+                comparison = self.compare_results(normalized_consumption, simulation_results)
+
+                bias_error_penalties = []
+                for fuel_type, metrics in comparison.items():
+                    for end_use, bias_error in metrics["Bias Error"].items():
+                        bias_error_penalty = max(0, abs(bias_error)) ** 2
+                        # if absolute error is within the bpi2400 criteria, relax the penalty
+                        if abs_error_within_threshold(
+                            fuel_type,
+                            abs(metrics["Absolute Error"][end_use]),
+                            abs_error_elec_threshold,
+                            abs_error_fuel_threshold,
+                        ):
+                            penalty_relaxation_factor = 0.2
+                            bias_error_penalty *= penalty_relaxation_factor
+
+                        bias_error_penalties.append(bias_error_penalty)
+
+                total_score = sum(bias_error_penalties)
+
+                return (total_score,), comparison, temp_output_dir
+
+            except Exception as e:
+                logger.error(f"Error evaluating individual {individual}: {e}")
+                return (float("inf"),), {}, None
+
+        def abs_error_within_threshold(
+            fuel_type: str, abs_error: float, elec_threshold: float, fuel_threshold: float
+        ) -> bool:
+            if fuel_type == "electricity":
+                return abs(abs_error) <= elec_threshold
+            else:
+                return abs(abs_error) <= fuel_threshold
+
+        def create_measure_input_file(arguments: dict, output_file_path: str):
+            data = {
+                "run_directory": str(Path(arguments["save_file_path"]).parent),
+                "measure_paths": [str(Path(__file__).resolve().parent.parent / "measures")],
+                "steps": [{"measure_dir_name": "ModifyXML", "arguments": arguments}],
+            }
+            Path(output_file_path).parent.mkdir(parents=True, exist_ok=True)
+            with open(output_file_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2)
+
+        def diversity(pop):
+            return len({tuple(ind) for ind in pop}) / len(pop)
+
+        toolbox = base.Toolbox()
+        toolbox.register("attr_misc_load_multiplier", random.choice, misc_load_multiplier_choices)
+        toolbox.register("attr_heating_setpoint_offset", random.choice, heating_setpoint_choices)
+        toolbox.register("attr_cooling_setpoint_offset", random.choice, cooling_setpoint_choices)
+        toolbox.register(
+            "attr_air_leakage_multiplier", random.choice, air_leakage_multiplier_choices
+        )
+        toolbox.register(
+            "attr_heating_efficiency_multiplier", random.choice, hvac_eff_multiplier_choices
+        )
+        toolbox.register(
+            "attr_cooling_efficiency_multiplier", random.choice, hvac_eff_multiplier_choices
+        )
+        toolbox.register(
+            "attr_roof_r_value_multiplier", random.choice, roof_r_value_multiplier_choices
+        )
+        toolbox.register(
+            "attr_ceiling_r_value_multiplier", random.choice, ceiling_r_value_multiplier_choices
+        )
+        toolbox.register(
+            "attr_above_ground_walls_r_value_multiplier",
+            random.choice,
+            above_ground_walls_r_value_multiplier_choices,
+        )
+        toolbox.register(
+            "attr_below_ground_walls_r_value_multiplier",
+            random.choice,
+            below_ground_walls_r_value_multiplier_choices,
+        )
+        toolbox.register(
+            "attr_slab_r_value_multiplier", random.choice, slab_r_value_multiplier_choices
+        )
+        toolbox.register(
+            "attr_floor_r_value_multiplier", random.choice, floor_r_value_multiplier_choices
+        )
+        toolbox.register(
+            "attr_water_heater_efficiency_multiplier",
+            random.choice,
+            water_heater_efficiency_multiplier_choices,
+        )
+        toolbox.register(
+            "attr_water_fixtures_usage_multiplier",
+            random.choice,
+            water_fixtures_usage_multiplier_choices,
+        )
+        toolbox.register(
+            "attr_window_u_factor_multiplier", random.choice, window_u_factor_multiplier_choices
+        )
+        toolbox.register(
+            "attr_window_shgc_multiplier", random.choice, window_shgc_multiplier_choices
+        )
+        toolbox.register(
+            "attr_appliance_usage_multiplier", random.choice, appliance_usage_multiplier_choices
+        )
+        toolbox.register(
+            "attr_lighting_load_multiplier", random.choice, lighting_load_multiplier_choices
+        )
+        toolbox.register(
+            "individual",
+            tools.initRepeat,
+            creator.Individual,
+            (
+                toolbox.attr_misc_load_multiplier,
+                toolbox.attr_heating_setpoint_offset,
+                toolbox.attr_cooling_setpoint_offset,
+                toolbox.attr_air_leakage_multiplier,
+                toolbox.attr_heating_efficiency_multiplier,
+                toolbox.attr_cooling_efficiency_multiplier,
+                toolbox.attr_roof_r_value_multiplier,
+                toolbox.attr_ceiling_r_value_multiplier,
+                toolbox.attr_above_ground_walls_r_value_multiplier,
+                toolbox.attr_below_ground_walls_r_value_multiplier,
+                toolbox.attr_slab_r_value_multiplier,
+                toolbox.attr_floor_r_value_multiplier,
+                toolbox.attr_water_heater_efficiency_multiplier,
+                toolbox.attr_water_fixtures_usage_multiplier,
+                toolbox.attr_window_u_factor_multiplier,
+                toolbox.attr_window_shgc_multiplier,
+                toolbox.attr_appliance_usage_multiplier,
+                toolbox.attr_lighting_load_multiplier,
+            ),
+            n=18,
+        )
+
+        def generate_random_individual():
+            return creator.Individual(
+                [
+                    random.choice(misc_load_multiplier_choices),
+                    random.choice(heating_setpoint_choices),
+                    random.choice(cooling_setpoint_choices),
+                    random.choice(air_leakage_multiplier_choices),
+                    random.choice(hvac_eff_multiplier_choices),
+                    random.choice(hvac_eff_multiplier_choices),
+                    random.choice(roof_r_value_multiplier_choices),
+                    random.choice(ceiling_r_value_multiplier_choices),
+                    random.choice(above_ground_walls_r_value_multiplier_choices),
+                    random.choice(below_ground_walls_r_value_multiplier_choices),
+                    random.choice(slab_r_value_multiplier_choices),
+                    random.choice(floor_r_value_multiplier_choices),
+                    random.choice(water_heater_efficiency_multiplier_choices),
+                    random.choice(water_fixtures_usage_multiplier_choices),
+                    random.choice(window_u_factor_multiplier_choices),
+                    random.choice(window_shgc_multiplier_choices),
+                    random.choice(appliance_usage_multiplier_choices),
+                    random.choice(lighting_load_multiplier_choices),
+                ]
+            )
+
+        toolbox.register("individual", generate_random_individual)
+        toolbox.register("population", tools.initRepeat, list, toolbox.individual)
+        toolbox.register("evaluate", evaluate)
+        toolbox.register("mate", tools.cxUniform, indpb=cxpb)
+
+        # Define parameter-to-choices mapping for mutation
+        param_choices_map = {
+            0: misc_load_multiplier_choices,
+            1: heating_setpoint_choices,
+            2: cooling_setpoint_choices,
+            3: air_leakage_multiplier_choices,
+            4: hvac_eff_multiplier_choices,
+            5: hvac_eff_multiplier_choices,
+            6: roof_r_value_multiplier_choices,
+            7: ceiling_r_value_multiplier_choices,
+            8: above_ground_walls_r_value_multiplier_choices,
+            9: below_ground_walls_r_value_multiplier_choices,
+            10: slab_r_value_multiplier_choices,
+            11: floor_r_value_multiplier_choices,
+            12: water_heater_efficiency_multiplier_choices,
+            13: water_fixtures_usage_multiplier_choices,
+            14: window_u_factor_multiplier_choices,
+            15: window_shgc_multiplier_choices,
+            16: appliance_usage_multiplier_choices,
+            17: lighting_load_multiplier_choices,
+        }
+
+        worst_end_uses_by_gen = []
+
+        end_use_param_map = {
+            "electricity_heating": [1, 3, 4, 6, 7, 8, 10, 14, 15],
+            "electricity_cooling": [2, 3, 5, 6, 7, 8, 10, 14, 15],
+            "electricity_baseload": [0, 16, 17],
+            "natural_gas_heating": [1, 3, 4, 6, 7, 8, 10, 14, 15],
+            "natural_gas_baseload": [12, 13],
+        }
+
+        def get_worst_bias_end_use(comparison):
+            max_bias = -float("inf")
+            worst_end_use_key = None
+            for fuel_type, metrics in comparison.items():
+                for end_use, bias in metrics["Bias Error"].items():
+                    abs_bias = abs(bias)
+                    key = f"{fuel_type}_{end_use}"
+                    if abs_bias > max_bias:
+                        max_bias = abs_bias
+                        worst_end_use_key = key
+            return worst_end_use_key
+
+        def adaptive_mutation(individual):
+            mutation_indices = set()
+
+            if worst_end_uses_by_gen:
+                worst_end_use = worst_end_uses_by_gen[-1]
+                impacted_indices = end_use_param_map.get(worst_end_use, [])
+                if impacted_indices:
+                    mutation_indices.update(
+                        random.sample(impacted_indices, min(len(impacted_indices), 2))
+                    )
+
+            while len(mutation_indices) < random.randint(3, 6):
+                mutation_indices.add(random.randint(0, len(individual) - 1))
+
+            for i in mutation_indices:
+                current_val = individual[i]
+                choices = [val for val in param_choices_map[i] if val != current_val]
+                if choices:
+                    individual[i] = random.choice(choices)
+            return (individual,)
+
+        toolbox.register("mutate", adaptive_mutation)
+        toolbox.register("select", tools.selTournament, tournsize=2)
+
+        terminated_early = False
+
+        if num_proc is None:
+            num_proc = multiprocessing.cpu_count() - 1
+
+        with Pool(processes=num_proc, maxtasksperchild=1) as pool:
+            toolbox.register("map", pool.map)
+            pop = toolbox.population(n=population_size)
+            hall_of_fame = tools.HallOfFame(1)
+            stats = tools.Statistics(lambda ind: ind.fitness.values[0])  # noqa: PD011
+            stats.register("min", min)
+            stats.register("avg", lambda x: sum(x) / len(x))
+
+            logbook = tools.Logbook()
+            logbook.header = ["gen", "nevals", "min", "avg", "diversity"]
+
+            best_bias_series = {}
+            best_abs_series = {}
+
+            # Initial evaluation
+            invalid_ind = [ind for ind in pop if not ind.fitness.valid]
+            fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
+            for ind, (fit, comp, temp_dir) in zip(invalid_ind, fitnesses):
+                ind.fitness.values = fit
+                ind.comparison = comp
+                ind.temp_output_dir = temp_dir
+                if temp_dir is not None:
+                    all_temp_dirs.add(temp_dir)
+
+            hall_of_fame.update(pop)
+            best_ind = tools.selBest(pop, 1)[0]
+            best_dirs_by_gen.append(getattr(best_ind, "temp_output_dir", None))
+
+            # Save best individual bias/abs errors
+            best_comp = best_ind.comparison
+            for end_use, metrics in best_comp.items():
+                for fuel_type, bias_error in metrics["Bias Error"].items():
+                    key = f"{end_use}_{fuel_type}"
+                    best_bias_series.setdefault(key, []).append(bias_error)
+                for fuel_type, abs_error in metrics["Absolute Error"].items():
+                    key = f"{end_use}_{fuel_type}"
+                    best_abs_series.setdefault(key, []).append(abs_error)
+
+            # Log generation 0
+            record = stats.compile(pop)
+            record.update({f"bias_error_{k}": v[-1] for k, v in best_bias_series.items()})
+            record.update({f"abs_error_{k}": v[-1] for k, v in best_abs_series.items()})
+            record["best_individual"] = list(best_ind)
+            record["diversity"] = diversity(pop)
+            logbook.record(gen=0, nevals=len(invalid_ind), **record)
+            print(logbook.stream)
+
+            for gen in range(1, generations + 1):
+                # Elitism: Copy the best individuals
+                elite = [copy.deepcopy(ind) for ind in tools.selBest(pop, k=1)]
+
+                # Generate offspring
+                offspring = algorithms.varAnd(pop, toolbox, cxpb=cxpb, mutpb=mutpb)
+
+                # Evaluate offspring
+                invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+                fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
+                for ind, (fit, comp, temp_dir) in zip(invalid_ind, fitnesses):
+                    ind.fitness.values = fit
+                    ind.comparison = comp
+                    ind.temp_output_dir = temp_dir
+                    all_temp_dirs.add(temp_dir)
+
+                # Select next generation (excluding elites), then add elites
+                if invalid_ind:
+                    worst_key = get_worst_bias_end_use(invalid_ind[0].comparison)
+                    worst_end_uses_by_gen.append(worst_key)
+
+                pop = toolbox.select(offspring, population_size - len(elite))
+                pop.extend(elite)
+
+                # Update Hall of Fame and stats
+                hall_of_fame.update(pop)
+                best_ind = tools.selBest(pop, 1)[0]
+                best_dirs_by_gen.append(getattr(best_ind, "temp_output_dir", None))
+
+                # Save hall of fame bias/abs errors
+                best_comp = best_ind.comparison
+                for end_use, metrics in best_comp.items():
+                    for fuel_type, bias_error in metrics["Bias Error"].items():
+                        key = f"{end_use}_{fuel_type}"
+                        best_bias_series.setdefault(key, []).append(bias_error)
+                    for fuel_type, abs_error in metrics["Absolute Error"].items():
+                        key = f"{end_use}_{fuel_type}"
+                        best_abs_series.setdefault(key, []).append(abs_error)
+
+                record = stats.compile(pop)
+                record.update(
+                    {f"bias_error_{k}": best_bias_series[k][-1] for k in best_bias_series}
+                )
+                record.update({f"abs_error_{k}": best_abs_series[k][-1] for k in best_abs_series})
+                record["best_individual"] = list(best_ind)
+                record["diversity"] = diversity(pop)
+                logbook.record(gen=gen, nevals=len(invalid_ind), **record)
+                print(logbook.stream)
+
+                # Early termination conditions
+                def meets_termination_criteria(comparison):
+                    all_bias_err_limit_met = True
+                    all_abs_err_limit_met = True
+                    for fuel_type, metrics in comparison.items():
+                        for end_use in metrics["Bias Error"]:
+                            bias_err = metrics["Bias Error"][end_use]
+                            abs_err = metrics["Absolute Error"][end_use]
+
+                            # Check bias error
+                            if abs(bias_err) > bias_error_threshold:
+                                all_bias_err_limit_met = False
+
+                            # Check absolute error
+                            if not abs_error_within_threshold(
+                                fuel_type,
+                                abs_err,
+                                abs_error_elec_threshold,
+                                abs_error_fuel_threshold,
+                            ):
+                                all_abs_err_limit_met = False
+
+                    return all_bias_err_limit_met or all_abs_err_limit_met
+
+                if meets_termination_criteria(best_comp):
+                    print(f"Early stopping: termination criteria met at generation {gen}")
+                    terminated_early = True
+                    break
+
+        best_individual = hall_of_fame[0]
+
+        # Cleanup
+        time.sleep(0.5)
+        for temp_dir in all_temp_dirs:
+            if temp_dir and Path(temp_dir).exists():
+                shutil.rmtree(temp_dir, ignore_errors=True)
+
+        if terminated_early:
+            print(
+                "GA search has completed early: A solution satisfying error thresholds was found."
+            )
+        else:
+            print(
+                "GA search has completed. However, no solution was found that satisfies the bias error "
+                "and absolute error thresholds before reaching the maximum number of generations."
+            )
+
+        return best_individual, pop, logbook, best_bias_series, best_abs_series

@@ -6,6 +6,7 @@ import pytest
 from loguru import logger
 from lxml import etree
 
+from openstudio_hpxml_calibration import app
 from openstudio_hpxml_calibration.calibrate import Calibrate
 
 TEST_DIR = Path(__file__).parent
@@ -136,3 +137,18 @@ def test_hpxml_invalid(filename):
     else:
         with pytest.raises(ValueError):  # noqa: PT011
             Calibrate(filename)
+
+
+def test_calibrate_runs_successfully():
+    app(
+        [
+            "calibrate",
+            "test_hpxmls/ihmh_homes/ihmh8.xml",
+            "--output-dir",
+            "tests/ga_search_results/ihmh8_test",
+            "--config-filepath",
+            "src/openstudio_hpxml_calibration/ga_config.yaml",
+        ]
+    )
+    output_file = TEST_DIR / "ga_search_results/ihmh8_test/logbook.json"
+    assert output_file.exists()

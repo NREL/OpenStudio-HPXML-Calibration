@@ -110,6 +110,9 @@ class HpxmlDoc:
             schematron.assertValid(self.tree)
 
     def __getattr__(self, name: str):
+        # This prevents infinite recursion in contexts involving logging or multiprocessing
+        if name == "root":
+            raise AttributeError("Avoid recursive getattr call on root")
         return getattr(self.root, name)
 
     def xpath(
