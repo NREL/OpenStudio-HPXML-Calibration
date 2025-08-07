@@ -67,28 +67,41 @@ class Calibrate:
                 "abs_error_fuel_threshold": 5,
             },
             "value_choices": {
-                "misc_load_pct_choices": [round(x * 0.1, 1) for x in range(-9, 11)] + [5, 10],
-                "air_leakage_pct_choices": [round(x * 0.1, 1) for x in range(-5, 11)] + [2],
-                "hvac_eff_pct_choices": [round(x * 0.1, 2) for x in range(-2, 13)],
-                "roof_r_value_pct_choices": [round(x * 0.1, 2) for x in range(-2, 13)],
-                "ceiling_r_value_pct_choices": [round(x * 0.1, 2) for x in range(-2, 13)],
-                "above_ground_walls_r_value_pct_choices": [
-                    round(x * 0.1, 2) for x in range(-2, 13)
+                "misc_load_multiplier_choices": [*[round(x * 0.1, 1) for x in range(1, 21)], 5, 10],
+                "air_leakage_multiplier_choices": [round(x * 0.1, 1) for x in range(5, 21)],
+                "hvac_eff_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
+                "roof_r_value_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
+                "ceiling_r_value_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
+                "above_ground_walls_r_value_multiplier_choices": [
+                    round(x * 0.1, 1) for x in range(8, 13)
                 ],
-                "below_ground_walls_r_value_pct_choices": [
-                    round(x * 0.1, 2) for x in range(-2, 13)
+                "below_ground_walls_r_value_multiplier_choices": [
+                    round(x * 0.1, 1) for x in range(8, 13)
                 ],
-                "slab_r_value_pct_choices": [round(x * 0.1, 2) for x in range(-2, 13)],
-                "floor_r_value_pct_choices": [round(x * 0.1, 2) for x in range(-2, 13)],
+                "slab_r_value_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
+                "floor_r_value_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
                 "heating_setpoint_choices": [-5, -3, -1, 0, 1, 3, 5],
                 "cooling_setpoint_choices": [-5, -3, -1, 0, 1, 3, 5],
-                "water_heater_efficiency_pct_choices": [round(x * 0.1, 2) for x in range(-2, 13)],
-                "water_fixtures_usage_pct_choices": [round(x * 0.1, 1) for x in range(-9, 11)]
-                + [5, 10],
-                "window_u_factor_pct_choices": [round(x * 0.1, 2) for x in range(-2, 13)],
-                "window_shgc_pct_choices": [round(x * 0.1, 2) for x in range(-2, 13)],
-                "appliance_usage_pct_choices": [round(x * 0.1, 1) for x in range(-9, 11)] + [5, 10],
-                "lighting_load_pct_choices": [round(x * 0.1, 1) for x in range(-9, 11)] + [5, 10],
+                "water_heater_efficiency_multiplier_choices": [
+                    round(x * 0.1, 1) for x in range(8, 13)
+                ],
+                "water_fixtures_usage_multiplier_choices": [
+                    *[round(x * 0.1, 1) for x in range(1, 21)],
+                    5,
+                    10,
+                ],
+                "window_u_factor_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
+                "window_shgc_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
+                "appliance_usage_multiplier_choices": [
+                    *[round(x * 0.1, 1) for x in range(1, 21)],
+                    5,
+                    10,
+                ],
+                "lighting_load_multiplier_choices": [
+                    *[round(x * 0.1, 1) for x in range(1, 21)],
+                    5,
+                    10,
+                ],
             },
         }
         self.hpxml_filepath = Path(original_hpxml_filepath).resolve()
@@ -698,51 +711,59 @@ class Calibrate:
         abs_error_fuel_threshold = cfg["genetic_algorithm"]["abs_error_fuel_threshold"]
         cxpb = cfg["genetic_algorithm"]["crossover_probability"]
         mutpb = cfg["genetic_algorithm"]["mutation_probability"]
-        misc_load_pct_choices = cfg["value_choices"]["misc_load_pct_choices"]
-        air_leakage_pct_choices = cfg["value_choices"]["air_leakage_pct_choices"]
-        hvac_eff_pct_choices = cfg["value_choices"]["hvac_eff_pct_choices"]
-        roof_r_value_pct_choices = cfg["value_choices"]["roof_r_value_pct_choices"]
-        ceiling_r_value_pct_choices = cfg["value_choices"]["ceiling_r_value_pct_choices"]
-        above_ground_walls_r_value_pct_choices = cfg["value_choices"][
-            "above_ground_walls_r_value_pct_choices"
+        misc_load_multiplier_choices = cfg["value_choices"]["misc_load_multiplier_choices"]
+        air_leakage_multiplier_choices = cfg["value_choices"]["air_leakage_multiplier_choices"]
+        hvac_eff_multiplier_choices = cfg["value_choices"]["hvac_eff_multiplier_choices"]
+        roof_r_value_multiplier_choices = cfg["value_choices"]["roof_r_value_multiplier_choices"]
+        ceiling_r_value_multiplier_choices = cfg["value_choices"][
+            "ceiling_r_value_multiplier_choices"
         ]
-        below_ground_walls_r_value_pct_choices = cfg["value_choices"][
-            "below_ground_walls_r_value_pct_choices"
+        above_ground_walls_r_value_multiplier_choices = cfg["value_choices"][
+            "above_ground_walls_r_value_multiplier_choices"
         ]
-        slab_r_value_pct_choices = cfg["value_choices"]["slab_r_value_pct_choices"]
-        floor_r_value_pct_choices = cfg["value_choices"]["floor_r_value_pct_choices"]
+        below_ground_walls_r_value_multiplier_choices = cfg["value_choices"][
+            "below_ground_walls_r_value_multiplier_choices"
+        ]
+        slab_r_value_multiplier_choices = cfg["value_choices"]["slab_r_value_multiplier_choices"]
+        floor_r_value_multiplier_choices = cfg["value_choices"]["floor_r_value_multiplier_choices"]
         heating_setpoint_choices = cfg["value_choices"]["heating_setpoint_choices"]
         cooling_setpoint_choices = cfg["value_choices"]["cooling_setpoint_choices"]
-        water_heater_efficiency_pct_choices = cfg["value_choices"][
-            "water_heater_efficiency_pct_choices"
+        water_heater_efficiency_multiplier_choices = cfg["value_choices"][
+            "water_heater_efficiency_multiplier_choices"
         ]
-        water_fixtures_usage_pct_choices = cfg["value_choices"]["water_fixtures_usage_pct_choices"]
-        window_u_factor_pct_choices = cfg["value_choices"]["window_u_factor_pct_choices"]
-        window_shgc_pct_choices = cfg["value_choices"]["window_shgc_pct_choices"]
-        appliance_usage_pct_choices = cfg["value_choices"]["appliance_usage_pct_choices"]
-        lighting_load_pct_choices = cfg["value_choices"]["lighting_load_pct_choices"]
+        water_fixtures_usage_multiplier_choices = cfg["value_choices"][
+            "water_fixtures_usage_multiplier_choices"
+        ]
+        window_u_factor_multiplier_choices = cfg["value_choices"][
+            "window_u_factor_multiplier_choices"
+        ]
+        window_shgc_multiplier_choices = cfg["value_choices"]["window_shgc_multiplier_choices"]
+        appliance_usage_multiplier_choices = cfg["value_choices"][
+            "appliance_usage_multiplier_choices"
+        ]
+        lighting_load_multiplier_choices = cfg["value_choices"]["lighting_load_multiplier_choices"]
 
         def evaluate(individual):
             try:
                 (
-                    misc_load_pct_change,
+                    misc_load_multiplier,
                     heating_setpoint_offset,
                     cooling_setpoint_offset,
-                    air_leakage_pct_change,
-                    heating_efficiency_pct_change,
-                    cooling_efficiency_pct_change,
-                    roof_r_value_pct_change,
-                    ceiling_r_value_pct_change,
-                    above_ground_walls_r_value_pct_change,
-                    below_ground_walls_r_value_pct_change,
-                    slab_r_value_pct_change,
-                    floor_r_value_pct_change,
-                    water_heater_efficiency_pct_change,
-                    water_fixtures_usage_pct_change,
-                    window_u_factor_pct_change,
-                    window_shgc_pct_change,
-                    appliance_usage_pct_change,
-                    lighting_load_pct_change,
+                    air_leakage_multiplier,
+                    heating_efficiency_multiplier,
+                    cooling_efficiency_multiplier,
+                    roof_r_value_multiplier,
+                    ceiling_r_value_multiplier,
+                    above_ground_walls_r_value_multiplier,
+                    below_ground_walls_r_value_multiplier,
+                    slab_r_value_multiplier,
+                    floor_r_value_multiplier,
+                    water_heater_efficiency_multiplier,
+                    water_fixtures_usage_multiplier,
+                    window_u_factor_multiplier,
+                    window_shgc_multiplier,
+                    appliance_usage_multiplier,
+                    lighting_load_multiplier,
                 ) = individual
                 temp_output_dir = Path(
                     tempfile.mkdtemp(prefix=f"calib_test_{uuid.uuid4().hex[:6]}_")
@@ -753,22 +774,22 @@ class Calibrate:
                     "save_file_path": str(mod_hpxml_path),
                     "heating_setpoint_offset": heating_setpoint_offset,
                     "cooling_setpoint_offset": cooling_setpoint_offset,
-                    "misc_load_pct_change": misc_load_pct_change,
-                    "air_leakage_pct_change": air_leakage_pct_change,
-                    "heating_efficiency_pct_change": heating_efficiency_pct_change,
-                    "cooling_efficiency_pct_change": cooling_efficiency_pct_change,
-                    "roof_r_value_pct_change": roof_r_value_pct_change,
-                    "ceiling_r_value_pct_change": ceiling_r_value_pct_change,
-                    "above_ground_walls_r_value_pct_change": above_ground_walls_r_value_pct_change,
-                    "below_ground_walls_r_value_pct_change": below_ground_walls_r_value_pct_change,
-                    "slab_r_value_pct_change": slab_r_value_pct_change,
-                    "floor_r_value_pct_change": floor_r_value_pct_change,
-                    "water_heater_efficiency_pct_change": water_heater_efficiency_pct_change,
-                    "water_fixtures_usage_pct_change": water_fixtures_usage_pct_change,
-                    "window_u_factor_pct_change": window_u_factor_pct_change,
-                    "window_shgc_pct_change": window_shgc_pct_change,
-                    "appliance_usage_pct_change": appliance_usage_pct_change,
-                    "lighting_load_pct_change": lighting_load_pct_change,
+                    "misc_load_multiplier": misc_load_multiplier,
+                    "air_leakage_multiplier": air_leakage_multiplier,
+                    "heating_efficiency_multiplier": heating_efficiency_multiplier,
+                    "cooling_efficiency_multiplier": cooling_efficiency_multiplier,
+                    "roof_r_value_multiplier": roof_r_value_multiplier,
+                    "ceiling_r_value_multiplier": ceiling_r_value_multiplier,
+                    "above_ground_walls_r_value_multiplier": above_ground_walls_r_value_multiplier,
+                    "below_ground_walls_r_value_multiplier": below_ground_walls_r_value_multiplier,
+                    "slab_r_value_multiplier": slab_r_value_multiplier,
+                    "floor_r_value_multiplier": floor_r_value_multiplier,
+                    "water_heater_efficiency_multiplier": water_heater_efficiency_multiplier,
+                    "water_fixtures_usage_multiplier": water_fixtures_usage_multiplier,
+                    "window_u_factor_multiplier": window_u_factor_multiplier,
+                    "window_shgc_multiplier": window_shgc_multiplier,
+                    "appliance_usage_multiplier": appliance_usage_multiplier,
+                    "lighting_load_multiplier": lighting_load_multiplier,
                 }
 
                 temp_osw = Path(temp_output_dir / "modify_hpxml.osw")
@@ -837,67 +858,85 @@ class Calibrate:
             return len({tuple(ind) for ind in pop}) / len(pop)
 
         toolbox = base.Toolbox()
-        toolbox.register("attr_misc_load_pct_change", random.choice, misc_load_pct_choices)
+        toolbox.register("attr_misc_load_multiplier", random.choice, misc_load_multiplier_choices)
         toolbox.register("attr_heating_setpoint_offset", random.choice, heating_setpoint_choices)
         toolbox.register("attr_cooling_setpoint_offset", random.choice, cooling_setpoint_choices)
-        toolbox.register("attr_air_leakage_pct_change", random.choice, air_leakage_pct_choices)
-        toolbox.register("attr_heating_efficiency_pct_change", random.choice, hvac_eff_pct_choices)
-        toolbox.register("attr_cooling_efficiency_pct_change", random.choice, hvac_eff_pct_choices)
-        toolbox.register("attr_roof_r_value_pct_change", random.choice, roof_r_value_pct_choices)
         toolbox.register(
-            "attr_ceiling_r_value_pct_change", random.choice, ceiling_r_value_pct_choices
+            "attr_air_leakage_multiplier", random.choice, air_leakage_multiplier_choices
         )
         toolbox.register(
-            "attr_above_ground_walls_r_value_pct_change",
+            "attr_heating_efficiency_multiplier", random.choice, hvac_eff_multiplier_choices
+        )
+        toolbox.register(
+            "attr_cooling_efficiency_multiplier", random.choice, hvac_eff_multiplier_choices
+        )
+        toolbox.register(
+            "attr_roof_r_value_multiplier", random.choice, roof_r_value_multiplier_choices
+        )
+        toolbox.register(
+            "attr_ceiling_r_value_multiplier", random.choice, ceiling_r_value_multiplier_choices
+        )
+        toolbox.register(
+            "attr_above_ground_walls_r_value_multiplier",
             random.choice,
-            above_ground_walls_r_value_pct_choices,
+            above_ground_walls_r_value_multiplier_choices,
         )
         toolbox.register(
-            "attr_below_ground_walls_r_value_pct_change",
+            "attr_below_ground_walls_r_value_multiplier",
             random.choice,
-            below_ground_walls_r_value_pct_choices,
+            below_ground_walls_r_value_multiplier_choices,
         )
-        toolbox.register("attr_slab_r_value_pct_change", random.choice, slab_r_value_pct_choices)
-        toolbox.register("attr_floor_r_value_pct_change", random.choice, floor_r_value_pct_choices)
         toolbox.register(
-            "attr_water_heater_efficiency_pct_change",
+            "attr_slab_r_value_multiplier", random.choice, slab_r_value_multiplier_choices
+        )
+        toolbox.register(
+            "attr_floor_r_value_multiplier", random.choice, floor_r_value_multiplier_choices
+        )
+        toolbox.register(
+            "attr_water_heater_efficiency_multiplier",
             random.choice,
-            water_heater_efficiency_pct_choices,
+            water_heater_efficiency_multiplier_choices,
         )
         toolbox.register(
-            "attr_water_fixtures_usage_pct_change", random.choice, water_fixtures_usage_pct_choices
+            "attr_water_fixtures_usage_multiplier",
+            random.choice,
+            water_fixtures_usage_multiplier_choices,
         )
         toolbox.register(
-            "attr_window_u_factor_pct_change", random.choice, window_u_factor_pct_choices
+            "attr_window_u_factor_multiplier", random.choice, window_u_factor_multiplier_choices
         )
-        toolbox.register("attr_window_shgc_pct_change", random.choice, window_shgc_pct_choices)
         toolbox.register(
-            "attr_appliance_usage_pct_change", random.choice, appliance_usage_pct_choices
+            "attr_window_shgc_multiplier", random.choice, window_shgc_multiplier_choices
         )
-        toolbox.register("attr_lighting_load_pct_change", random.choice, lighting_load_pct_choices)
+        toolbox.register(
+            "attr_appliance_usage_multiplier", random.choice, appliance_usage_multiplier_choices
+        )
+        toolbox.register(
+            "attr_lighting_load_multiplier", random.choice, lighting_load_multiplier_choices
+        )
         toolbox.register(
             "individual",
             tools.initRepeat,
             creator.Individual,
             (
-                toolbox.attr_misc_load_pct_change,
+                toolbox.attr_misc_load_multiplier,
                 toolbox.attr_heating_setpoint_offset,
                 toolbox.attr_cooling_setpoint_offset,
-                toolbox.attr_air_leakage_pct_change,
-                toolbox.attr_heating_efficiency_pct_change,
-                toolbox.attr_cooling_efficiency_pct_change,
-                toolbox.attr_roof_r_value_pct_change,
-                toolbox.attr_ceiling_r_value_pct_change,
-                toolbox.attr_above_ground_walls_r_value_pct_change,
-                toolbox.attr_below_ground_walls_r_value_pct_change,
-                toolbox.attr_slab_r_value_pct_change,
-                toolbox.attr_floor_r_value_pct_change,
-                toolbox.attr_water_heater_efficiency_pct_change,
-                toolbox.attr_water_fixtures_usage_pct_change,
-                toolbox.attr_window_u_factor_pct_change,
-                toolbox.attr_window_shgc_pct_change,
-                toolbox.attr_appliance_usage_pct_change,
-                toolbox.attr_lighting_load_pct_change,
+                toolbox.attr_air_leakage_multiplier,
+                toolbox.attr_heating_efficiency_multiplier,
+                toolbox.attr_cooling_efficiency_multiplier,
+                toolbox.attr_roof_r_value_multiplier,
+                toolbox.attr_ceiling_r_value_multiplier,
+                toolbox.attr_above_ground_walls_r_value_multiplier,
+                toolbox.attr_below_ground_walls_r_value_multiplier,
+                toolbox.attr_slab_r_value_multiplier,
+                toolbox.attr_floor_r_value_multiplier,
+                toolbox.attr_water_heater_efficiency_multiplier,
+                toolbox.attr_water_fixtures_usage_multiplier,
+                toolbox.attr_window_u_factor_multiplier,
+                toolbox.attr_window_shgc_multiplier,
+                toolbox.attr_appliance_usage_multiplier,
+                toolbox.attr_lighting_load_multiplier,
             ),
             n=18,
         )
@@ -905,24 +944,24 @@ class Calibrate:
         def generate_random_individual():
             return creator.Individual(
                 [
-                    random.choice(misc_load_pct_choices),
+                    random.choice(misc_load_multiplier_choices),
                     random.choice(heating_setpoint_choices),
                     random.choice(cooling_setpoint_choices),
-                    random.choice(air_leakage_pct_choices),
-                    random.choice(hvac_eff_pct_choices),
-                    random.choice(hvac_eff_pct_choices),
-                    random.choice(roof_r_value_pct_choices),
-                    random.choice(ceiling_r_value_pct_choices),
-                    random.choice(above_ground_walls_r_value_pct_choices),
-                    random.choice(below_ground_walls_r_value_pct_choices),
-                    random.choice(slab_r_value_pct_choices),
-                    random.choice(floor_r_value_pct_choices),
-                    random.choice(water_heater_efficiency_pct_choices),
-                    random.choice(water_fixtures_usage_pct_choices),
-                    random.choice(window_u_factor_pct_choices),
-                    random.choice(window_shgc_pct_choices),
-                    random.choice(appliance_usage_pct_choices),
-                    random.choice(lighting_load_pct_choices),
+                    random.choice(air_leakage_multiplier_choices),
+                    random.choice(hvac_eff_multiplier_choices),
+                    random.choice(hvac_eff_multiplier_choices),
+                    random.choice(roof_r_value_multiplier_choices),
+                    random.choice(ceiling_r_value_multiplier_choices),
+                    random.choice(above_ground_walls_r_value_multiplier_choices),
+                    random.choice(below_ground_walls_r_value_multiplier_choices),
+                    random.choice(slab_r_value_multiplier_choices),
+                    random.choice(floor_r_value_multiplier_choices),
+                    random.choice(water_heater_efficiency_multiplier_choices),
+                    random.choice(water_fixtures_usage_multiplier_choices),
+                    random.choice(window_u_factor_multiplier_choices),
+                    random.choice(window_shgc_multiplier_choices),
+                    random.choice(appliance_usage_multiplier_choices),
+                    random.choice(lighting_load_multiplier_choices),
                 ]
             )
 
@@ -933,24 +972,24 @@ class Calibrate:
 
         # Define parameter-to-choices mapping for mutation
         param_choices_map = {
-            0: misc_load_pct_choices,
+            0: misc_load_multiplier_choices,
             1: heating_setpoint_choices,
             2: cooling_setpoint_choices,
-            3: air_leakage_pct_choices,
-            4: hvac_eff_pct_choices,
-            5: hvac_eff_pct_choices,
-            6: roof_r_value_pct_choices,
-            7: ceiling_r_value_pct_choices,
-            8: above_ground_walls_r_value_pct_choices,
-            9: below_ground_walls_r_value_pct_choices,
-            10: slab_r_value_pct_choices,
-            11: floor_r_value_pct_choices,
-            12: water_heater_efficiency_pct_choices,
-            13: water_fixtures_usage_pct_choices,
-            14: window_u_factor_pct_choices,
-            15: window_shgc_pct_choices,
-            16: appliance_usage_pct_choices,
-            17: lighting_load_pct_choices,
+            3: air_leakage_multiplier_choices,
+            4: hvac_eff_multiplier_choices,
+            5: hvac_eff_multiplier_choices,
+            6: roof_r_value_multiplier_choices,
+            7: ceiling_r_value_multiplier_choices,
+            8: above_ground_walls_r_value_multiplier_choices,
+            9: below_ground_walls_r_value_multiplier_choices,
+            10: slab_r_value_multiplier_choices,
+            11: floor_r_value_multiplier_choices,
+            12: water_heater_efficiency_multiplier_choices,
+            13: water_fixtures_usage_multiplier_choices,
+            14: window_u_factor_multiplier_choices,
+            15: window_shgc_multiplier_choices,
+            16: appliance_usage_multiplier_choices,
+            17: lighting_load_multiplier_choices,
         }
 
         worst_end_uses_by_gen = []
