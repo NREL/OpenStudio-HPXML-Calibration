@@ -10,7 +10,6 @@ from datetime import datetime as dt
 from pathlib import Path
 
 import pandas as pd
-import yaml
 from deap import algorithms, base, creator, tools
 from loguru import logger
 from pathos.multiprocessing import ProcessingPool as Pool
@@ -19,6 +18,7 @@ from openstudio_hpxml_calibration import app
 from openstudio_hpxml_calibration.hpxml import FuelType, HpxmlDoc
 from openstudio_hpxml_calibration.modify_hpxml import set_consumption_on_hpxml
 from openstudio_hpxml_calibration.units import convert_units
+from openstudio_hpxml_calibration.utils import _load_config
 from openstudio_hpxml_calibration.weather_normalization.inverse_model import InverseModel
 
 # Ensure the creator is only created once
@@ -28,27 +28,6 @@ if "Individual" not in creator.__dict__:
     creator.create("Individual", list, fitness=creator.FitnessMin)
 
 
-def load_config(config_filepath, default={}):
-    if not config_filepath.exists():
-        raise FileNotFoundError(f"Config file not found: {config_filepath}")
-    with open(config_filepath) as f:
-        config = yaml.safe_load(f)
-    return merge_with_defaults(config, default)
-
-
-def merge_with_defaults(user_config, default_config):
-    """Merge default values into user's config"""
-    if not isinstance(user_config, dict):
-        return user_config
-    merged = default_config.copy()
-    for key, val in user_config.items():
-        if key in merged and isinstance(merged[key], dict):
-            merged[key] = merge_with_defaults(val, merged[key])
-        else:
-            merged[key] = val
-    return merged
-
-
 class Calibrate:
     def __init__(
         self,
@@ -56,60 +35,9 @@ class Calibrate:
         csv_bills_filepath: Path | None = None,
         config_filepath: Path | None = None,
     ):
-        default_ga_config = {
-            "genetic_algorithm": {
-                "population_size": 70,
-                "generations": 100,
-                "crossover_probability": 0.4,
-                "mutation_probability": 0.4,
-                "bias_error_threshold": 10,
-                "abs_error_elec_threshold": 500,
-                "abs_error_fuel_threshold": 5,
-            },
-            "value_choices": {
-                "misc_load_multiplier_choices": [*[round(x * 0.1, 1) for x in range(1, 21)], 5, 10],
-                "air_leakage_multiplier_choices": [round(x * 0.1, 1) for x in range(5, 21)],
-                "hvac_eff_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
-                "roof_r_value_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
-                "ceiling_r_value_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
-                "above_ground_walls_r_value_multiplier_choices": [
-                    round(x * 0.1, 1) for x in range(8, 13)
-                ],
-                "below_ground_walls_r_value_multiplier_choices": [
-                    round(x * 0.1, 1) for x in range(8, 13)
-                ],
-                "slab_r_value_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
-                "floor_r_value_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
-                "heating_setpoint_choices": [-5, -3, -1, 0, 1, 3, 5],
-                "cooling_setpoint_choices": [-5, -3, -1, 0, 1, 3, 5],
-                "water_heater_efficiency_multiplier_choices": [
-                    round(x * 0.1, 1) for x in range(8, 13)
-                ],
-                "water_fixtures_usage_multiplier_choices": [
-                    *[round(x * 0.1, 1) for x in range(1, 21)],
-                    5,
-                    10,
-                ],
-                "window_u_factor_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
-                "window_shgc_multiplier_choices": [round(x * 0.1, 1) for x in range(8, 13)],
-                "appliance_usage_multiplier_choices": [
-                    *[round(x * 0.1, 1) for x in range(1, 21)],
-                    5,
-                    10,
-                ],
-                "lighting_load_multiplier_choices": [
-                    *[round(x * 0.1, 1) for x in range(1, 21)],
-                    5,
-                    10,
-                ],
-            },
-        }
         self.hpxml_filepath = Path(original_hpxml_filepath).resolve()
         self.hpxml = HpxmlDoc(Path(original_hpxml_filepath).resolve())
-        if config_filepath:
-            self.ga_config = load_config(Path(config_filepath), default=default_ga_config)
-        else:
-            self.ga_config = default_ga_config
+        self.ga_config = _load_config(config_filepath)
 
         if csv_bills_filepath:
             logger.info(f"Adding utility data from {csv_bills_filepath} to hpxml")
@@ -653,20 +581,20 @@ class Calibrate:
         for fuel in consumption.ConsumptionDetails.ConsumptionInfo:
             if fuel.ConsumptionType.Energy.FuelType == FuelType.ELECTRICITY.value:
                 num_elec_bills = len(fuel.ConsumptionDetail)
-                if num_elec_bills < 10:
+                if num_elec_bills < self.ga_config["min_num_electrical_bills"]:
                     raise ValueError(
-                        f"Electricity consumption must have at least 10 bill periods, found {num_elec_bills}."
+                        f"Electricity consumption must have at least {self.ga_config['min_num_electrical_bills']} bill periods, found {num_elec_bills}."
                     )
 
-        # Check that the consumption dates are within the past 5 years
         for fuel in consumption.ConsumptionDetails.ConsumptionInfo:
-            # Check that there are at least 330 days of consumption data
+            # Check that the consumption dates are within configured limits
+            # Check that there are sufficient days of data (set by ga_config)
             if (
                 dt.strptime(str(fuel.ConsumptionDetail[-1].EndDateTime), "%Y-%m-%dT%H:%M:%S")
                 - dt.strptime(str(fuel.ConsumptionDetail[0].StartDateTime), "%Y-%m-%dT%H:%M:%S")
-            ).days < 330:
+            ).days < self.ga_config["min_days_of_consumption_data"]:
                 raise ValueError(
-                    f"Consumption dates for {fuel.ConsumptionType.Energy.FuelType} must cover at least 330 days."
+                    f"Consumption dates for {fuel.ConsumptionType.Energy.FuelType} must cover at least {self.ga_config['min_days_of_consumption_data']} days."
                 )
             for idx, detail in enumerate(fuel.ConsumptionDetail):
                 # Check that StartDateTime and EndDateTime are present
@@ -678,14 +606,16 @@ class Calibrate:
                     raise ValueError(
                         f"Consumption dates {start_date} - {end_date} cannot be in the future."
                     )
-                if (now - start_date).days > 5 * 365 or (now - end_date).days > 5 * 365:
+                if (now - start_date).days > self.ga_config["max_years"] * 365 or (
+                    now - end_date
+                ).days > self.ga_config["max_years"] * 365:
                     raise ValueError(
                         f"Consumption dates {start_date} - {end_date} must be within the past 5 years."
                     )
 
-                # Check that electricity bill periods are between 20 & 45 days
-                longest_bill_period = 45  # days
-                shortest_bill_period = 20  # days
+                # Check that electricity bill periods are within the configured min/max days
+                longest_bill_period = self.ga_config["max_electrical_bill_days"]
+                shortest_bill_period = self.ga_config["min_electrical_bill_days"]
                 if fuel.ConsumptionType.Energy.FuelType == FuelType.ELECTRICITY.value:
                     if (end_date - start_date).days > longest_bill_period:
                         raise ValueError(
