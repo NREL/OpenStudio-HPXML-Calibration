@@ -3,7 +3,7 @@ genetic_algorithm:
   generations: 50
   mutation_probability: 0.4
   crossover_probability: 0.4
-  bias_error_threshold: 10  # Bias error threshold in percent for all end uses
+  bias_error_threshold: 5  # Bias error threshold in percent for all end uses
   abs_error_elec_threshold: 500  # Absolute error threshold for electricity in kWh
   abs_error_fuel_threshold: 5  # Absolute error threshold for fossil fuels in MBtu
 
