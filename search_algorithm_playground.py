@@ -12,7 +12,6 @@ def main(filepath):
     filename = Path(filepath).stem
     cal = Calibrate(
         original_hpxml_filepath=filepath,
-        config_filepath="src/openstudio_hpxml_calibration/ga_config.yaml",
     )
     start = time.time()
     best_individual, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search()

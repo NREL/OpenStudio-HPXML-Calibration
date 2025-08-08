@@ -1,5 +1,6 @@
 import copy
 import json
+import math
 import multiprocessing
 import random
 import shutil
@@ -336,17 +337,20 @@ class Calibrate:
                         )
 
                     # Calculate error levels
-                    comparison_results[model_fuel_type]["Bias Error"][load_type] = round(
-                        (
+                    if annual_normalized_bill_consumption[model_fuel_type][load_type] == 0:
+                        comparison_results[model_fuel_type]["Bias Error"][load_type] = float("nan")
+                    else:
+                        comparison_results[model_fuel_type]["Bias Error"][load_type] = round(
                             (
-                                annual_normalized_bill_consumption[model_fuel_type][load_type]
-                                - disagg_results[load_type]
+                                (
+                                    annual_normalized_bill_consumption[model_fuel_type][load_type]
+                                    - disagg_results[load_type]
+                                )
+                                / annual_normalized_bill_consumption[model_fuel_type][load_type]
                             )
-                            / annual_normalized_bill_consumption[model_fuel_type][load_type]
+                            * 100,
+                            1,
                         )
-                        * 100,
-                        1,
-                    )
                     comparison_results[model_fuel_type]["Absolute Error"][load_type] = round(
                         abs(
                             annual_normalized_bill_consumption[model_fuel_type][load_type]
@@ -742,23 +746,25 @@ class Calibrate:
                 normalized_consumption = self.get_normalized_consumption_per_bill()
                 comparison = self.compare_results(normalized_consumption, simulation_results)
 
-                bias_error_penalties = []
+                combined_error_penalties = []
                 for fuel_type, metrics in comparison.items():
                     for end_use, bias_error in metrics["Bias Error"].items():
-                        bias_error_penalty = max(0, abs(bias_error)) ** 2
-                        # if absolute error is within the bpi2400 criteria, relax the penalty
-                        if abs_error_within_threshold(
-                            fuel_type,
-                            abs(metrics["Absolute Error"][end_use]),
-                            abs_error_elec_threshold,
-                            abs_error_fuel_threshold,
-                        ):
-                            penalty_relaxation_factor = 0.2
-                            bias_error_penalty *= penalty_relaxation_factor
+                        if math.isnan(bias_error) or math.isnan(metrics["Absolute Error"][end_use]):
+                            continue  # Skip NaN values
 
-                        bias_error_penalties.append(bias_error_penalty)
+                        bias_err = abs(bias_error)
+                        abs_err = abs(metrics["Absolute Error"][end_use])
 
-                total_score = sum(bias_error_penalties)
+                        log_bias_err = math.log1p(bias_err)  # log1p to avoid log(0)
+                        log_abs_err = math.log1p(abs_err)
+
+                        bias_error_penalty = max(0, log_bias_err) ** 2
+                        abs_error_penalty = max(0, log_abs_err) ** 2
+                        combined_error_penalty = bias_error_penalty + abs_error_penalty
+
+                        combined_error_penalties.append(combined_error_penalty)
+
+                total_score = sum(combined_error_penalties)
 
                 return (total_score,), comparison, temp_output_dir
 
