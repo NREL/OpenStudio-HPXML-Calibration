@@ -455,9 +455,9 @@ class Calibrate:
                     num_days = (last_bill_date - first_bill_date + timedelta(days=1)).days
                 for delivery in fuel_consumption.ConsumptionDetail:
                     measured_consumption += int(delivery.Consumption)
-            logger.debug(
-                f"Measured {fuel} consumption: {measured_consumption:,.0f} {fuel_consumption.ConsumptionType.Energy.UnitofMeasure}"
-            )
+            # logger.debug(
+            #     f"Measured {fuel} consumption: {measured_consumption:,.0f} {fuel_consumption.ConsumptionType.Energy.UnitofMeasure}"
+            # )
             measured_consumption = convert_units(measured_consumption, "kBtu", "mBtu")
 
             modeled_baseload = model_results[fuel].get("baseload", 0)
@@ -478,7 +478,7 @@ class Calibrate:
             )
 
             annual_delivered_fuel_usage = measured_consumption / (baseload + heating + cooling)
-            logger.debug(f"annual_delivered_fuel_usage: {annual_delivered_fuel_usage:,.2f} mBtu")
+            # logger.debug(f"annual_delivered_fuel_usage: {annual_delivered_fuel_usage:,.2f} mBtu")
 
             normalized_annual_baseload = annual_delivered_fuel_usage * baseload_fraction
             normalized_annual_heating = annual_delivered_fuel_usage * heating_fraction

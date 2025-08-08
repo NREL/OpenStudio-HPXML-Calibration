@@ -45,7 +45,7 @@ def set_consumption_on_hpxml(hpxml_object: HpxmlDoc, csv_bills_filepath: Path) -
         # doesn't get added to every consumption section in the xml object.
         unit = consumption_df["UnitofMeasure"].iloc[0]
         narrower_consumption_df = consumption_df.drop(["UnitofMeasure"], axis=1)
-        logger.debug(f"{fuel=}")
+        # logger.debug(f"{fuel=}")
         xml_str = narrower_consumption_df.to_xml(
             root_name="ConsumptionInfo",
             row_name="ConsumptionDetail",
