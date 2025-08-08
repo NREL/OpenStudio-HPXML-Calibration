@@ -143,10 +143,10 @@ def test_calibrate_runs_successfully():
     app(
         [
             "calibrate",
-            "test_hpxmls/ihmh_homes/ihmh8.xml",
+            "test_hpxmls/ihmh_homes/ihmh4.xml",
             "--output-dir",
-            "tests/ga_search_results/ihmh8_test",
+            "tests/ga_search_results/ihmh4_test",
         ]
     )
-    output_file = TEST_DIR / "ga_search_results/ihmh8_test/logbook.json"
+    output_file = TEST_DIR / "ga_search_results/ihmh4_test/logbook.json"
     assert output_file.exists()
