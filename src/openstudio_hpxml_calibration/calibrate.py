@@ -59,6 +59,13 @@ class Calibrate:
         # InverseModel is not applicable to delivered fuels, so we only use it for electricity and natural gas
         self.inv_model = InverseModel(self.hpxml)
         for fuel_type, bills in self.inv_model.bills_by_fuel_type.items():
+            if fuel_type in (
+                FuelType.FUEL_OIL,
+                FuelType.PROPANE,
+                FuelType.WOOD,
+                FuelType.WOOD_PELLETS,
+            ):
+                continue  # Delivered fuels have a separate calibration process: simplified_annual_usage()
 
             def _calculate_wrapped_total(row):
                 """Extract the epw_daily rows that correspond to the bill month
@@ -445,8 +452,9 @@ class Calibrate:
         comparison_results = {}
 
         for fuel in total_period_tmy_dd:
-            measured_consumption = 0.0
             for fuel_consumption in consumption.ConsumptionDetails.ConsumptionInfo:
+                measured_consumption = 0.0
+                fuel_unit_type = fuel_consumption.ConsumptionType.Energy.UnitofMeasure
                 if fuel_consumption.ConsumptionType.Energy.FuelType == fuel:
                     first_bill_date = fuel_consumption.ConsumptionDetail[0].StartDateTime
                     last_bill_date = fuel_consumption.ConsumptionDetail[-1].EndDateTime
@@ -455,10 +463,16 @@ class Calibrate:
                     num_days = (last_bill_date - first_bill_date + timedelta(days=1)).days
                 for delivery in fuel_consumption.ConsumptionDetail:
                     measured_consumption += int(delivery.Consumption)
-            # logger.debug(
-            #     f"Measured {fuel} consumption: {measured_consumption:,.0f} {fuel_consumption.ConsumptionType.Energy.UnitofMeasure}"
-            # )
-            measured_consumption = convert_units(measured_consumption, "kBtu", "mBtu")
+                # logger.debug(
+                #     f"Measured {fuel} consumption: {measured_consumption:,.0f} {fuel_unit_type}"
+                # )
+                if fuel_unit_type == "gal" and fuel == FuelType.FUEL_OIL.value:
+                    fuel_unit_type = f"{fuel_unit_type}_fuel_oil"
+                elif fuel_unit_type == "gal" and fuel == FuelType.PROPANE.value:
+                    fuel_unit_type = f"{fuel_unit_type}_propane"
+                measured_consumption = convert_units(
+                    measured_consumption, str(fuel_unit_type), "mBtu"
+                )
 
             modeled_baseload = model_results[fuel].get("baseload", 0)
             modeled_heating = model_results[fuel].get("heating", 0)
@@ -730,9 +744,12 @@ class Calibrate:
         for fuel in consumption.ConsumptionDetails.ConsumptionInfo:
             if fuel.ConsumptionType.Energy.FuelType == FuelType.ELECTRICITY.value:
                 num_elec_bills = len(fuel.ConsumptionDetail)
-                if num_elec_bills < self.ga_config["min_num_electrical_bills"]:
+                if (
+                    num_elec_bills
+                    < self.ga_config["utility_bill_criteria"]["min_num_electrical_bills"]
+                ):
                     raise ValueError(
-                        f"Electricity consumption must have at least {self.ga_config['min_num_electrical_bills']} bill periods, found {num_elec_bills}."
+                        f"Electricity consumption must have at least {self.ga_config['utility_bill_criteria']['min_num_electrical_bills']} bill periods, found {num_elec_bills}."
                     )
 
         for fuel in consumption.ConsumptionDetails.ConsumptionInfo:
