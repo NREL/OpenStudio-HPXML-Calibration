@@ -741,9 +741,9 @@ class Calibrate:
             if (
                 dt.strptime(str(fuel.ConsumptionDetail[-1].EndDateTime), "%Y-%m-%dT%H:%M:%S")
                 - dt.strptime(str(fuel.ConsumptionDetail[0].StartDateTime), "%Y-%m-%dT%H:%M:%S")
-            ).days < self.ga_config["min_days_of_consumption_data"]:
+            ).days < self.ga_config["utility_bill_criteria"]["min_days_of_consumption_data"]:
                 raise ValueError(
-                    f"Consumption dates for {fuel.ConsumptionType.Energy.FuelType} must cover at least {self.ga_config['min_days_of_consumption_data']} days."
+                    f"Consumption dates for {fuel.ConsumptionType.Energy.FuelType} must cover at least {self.ga_config['utility_bill_criteria']['min_days_of_consumption_data']} days."
                 )
             for idx, detail in enumerate(fuel.ConsumptionDetail):
                 # Check that StartDateTime and EndDateTime are present
@@ -755,16 +755,22 @@ class Calibrate:
                     raise ValueError(
                         f"Consumption dates {start_date} - {end_date} cannot be in the future."
                     )
-                if (now - start_date).days > self.ga_config["max_years"] * 365 or (
-                    now - end_date
-                ).days > self.ga_config["max_years"] * 365:
+                if (now - start_date).days > self.ga_config["utility_bill_criteria"][
+                    "max_years"
+                ] * 365 or (now - end_date).days > self.ga_config["utility_bill_criteria"][
+                    "max_years"
+                ] * 365:
                     raise ValueError(
                         f"Consumption dates {start_date} - {end_date} must be within the past 5 years."
                     )
 
                 # Check that electricity bill periods are within the configured min/max days
-                longest_bill_period = self.ga_config["max_electrical_bill_days"]
-                shortest_bill_period = self.ga_config["min_electrical_bill_days"]
+                longest_bill_period = self.ga_config["utility_bill_criteria"][
+                    "max_electrical_bill_days"
+                ]
+                shortest_bill_period = self.ga_config["utility_bill_criteria"][
+                    "min_electrical_bill_days"
+                ]
                 if fuel.ConsumptionType.Energy.FuelType == FuelType.ELECTRICITY.value:
                     if (end_date - start_date).days > longest_bill_period:
                         raise ValueError(
