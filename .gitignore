@@ -28,3 +28,7 @@ src/measures/ModifyXML/tests/run
 tests/modifications
 tests/run
 tests/results/
+
+# Developer files
+*_playground.py
+*_playground.ipynb
