@@ -648,142 +648,177 @@
         </ConsumptionType>
         <ConsumptionDetail>
           <Consumption>2440</Consumption>
+          <StartDateTime>1996-12-29T00:00:00</StartDateTime>
           <EndDateTime>1997-01-28T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>2210</Consumption>
+          <StartDateTime>1997-01-28T00:00:00</StartDateTime>
           <EndDateTime>1997-02-27T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>2070</Consumption>
+          <StartDateTime>1997-02-27T00:00:00</StartDateTime>
           <EndDateTime>1997-03-31T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>2090</Consumption>
+          <StartDateTime>1997-03-31T00:00:00</StartDateTime>
           <EndDateTime>1997-04-28T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1670</Consumption>
+          <StartDateTime>1997-04-28T00:00:00</StartDateTime>
           <EndDateTime>1997-05-28T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1800</Consumption>
+          <StartDateTime>1997-05-28T00:00:00</StartDateTime>
           <EndDateTime>1997-06-27T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>2360</Consumption>
+          <StartDateTime>1997-06-27T00:00:00</StartDateTime>
           <EndDateTime>1997-07-29T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>2200</Consumption>
+          <StartDateTime>1997-07-29T00:00:00</StartDateTime>
           <EndDateTime>1997-08-27T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1960</Consumption>
+          <StartDateTime>1997-08-27T00:00:00</StartDateTime>
           <EndDateTime>1997-09-29T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1830</Consumption>
+          <StartDateTime>1997-09-29T00:00:00</StartDateTime>
           <EndDateTime>1997-10-28T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1890</Consumption>
+          <StartDateTime>1997-10-28T00:00:00</StartDateTime>
           <EndDateTime>1997-11-26T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>2430</Consumption>
+          <StartDateTime>1997-11-26T00:00:00</StartDateTime>
           <EndDateTime>1997-12-30T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>2230</Consumption>
+          <StartDateTime>1997-12-30T00:00:00</StartDateTime>
           <EndDateTime>1998-01-28T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1880</Consumption>
+          <StartDateTime>1998-01-28T00:00:00</StartDateTime>
           <EndDateTime>1998-02-27T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>2290</Consumption>
+          <StartDateTime>1998-02-27T00:00:00</StartDateTime>
           <EndDateTime>1998-03-27T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1880</Consumption>
+          <StartDateTime>1998-03-27T00:00:00</StartDateTime>
           <EndDateTime>1998-04-28T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1450</Consumption>
+          <StartDateTime>1998-04-28T00:00:00</StartDateTime>
           <EndDateTime>1998-05-27T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1570</Consumption>
+          <StartDateTime>1998-05-27T00:00:00</StartDateTime>
           <EndDateTime>1998-06-26T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>2690</Consumption>
+          <StartDateTime>1998-06-26T00:00:00</StartDateTime>
           <EndDateTime>1998-07-29T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>2240</Consumption>
+          <StartDateTime>1998-07-29T00:00:00</StartDateTime>
           <EndDateTime>1998-08-27T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>2370</Consumption>
+          <StartDateTime>1998-08-27T00:00:00</StartDateTime>
           <EndDateTime>1998-09-28T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1750</Consumption>
+          <StartDateTime>1998-09-28T00:00:00</StartDateTime>
           <EndDateTime>1998-10-28T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1720</Consumption>
+          <StartDateTime>1998-10-28T00:00:00</StartDateTime>
           <EndDateTime>1998-11-30T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>2340</Consumption>
+          <StartDateTime>1998-11-30T00:00:00</StartDateTime>
           <EndDateTime>1998-12-29T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>3410</Consumption>
+          <StartDateTime>1998-12-29T00:00:00</StartDateTime>
           <EndDateTime>1999-01-27T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1160</Consumption>
+          <StartDateTime>1999-01-27T00:00:00</StartDateTime>
           <EndDateTime>1999-02-26T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1580</Consumption>
+          <StartDateTime>1999-02-26T00:00:00</StartDateTime>
           <EndDateTime>1999-03-26T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1750</Consumption>
+          <StartDateTime>1999-03-26T00:00:00</StartDateTime>
           <EndDateTime>1999-04-27T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1590</Consumption>
+          <StartDateTime>1999-04-27T00:00:00</StartDateTime>
           <EndDateTime>1999-05-27T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1760</Consumption>
+          <StartDateTime>1999-05-27T00:00:00</StartDateTime>
           <EndDateTime>1999-06-28T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1790</Consumption>
+          <StartDateTime>1999-06-28T00:00:00</StartDateTime>
           <EndDateTime>1999-07-28T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>2080</Consumption>
+          <StartDateTime>1999-07-28T00:00:00</StartDateTime>
           <EndDateTime>1999-08-26T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1410</Consumption>
+          <StartDateTime>1999-08-26T00:00:00</StartDateTime>
           <EndDateTime>1999-09-28T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1720</Consumption>
+          <StartDateTime>1999-09-28T00:00:00</StartDateTime>
           <EndDateTime>1999-10-27T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1700</Consumption>
+          <StartDateTime>1999-10-27T00:00:00</StartDateTime>
           <EndDateTime>1999-11-29T00:00:00</EndDateTime>
         </ConsumptionDetail>
       </ConsumptionInfo>
