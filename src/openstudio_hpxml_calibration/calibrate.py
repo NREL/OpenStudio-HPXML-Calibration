@@ -119,23 +119,6 @@ class Calibrate:
 
         self.hpxml_data_error_checking()
 
-        consumption = self.hpxml.get_consumption()
-        for fuel_consumption in consumption.ConsumptionDetails.ConsumptionInfo:
-            fuel_type = fuel_consumption.ConsumptionType.Energy.FuelType
-            if (
-                2 <= len(fuel_consumption) <= 10
-                and self.get_calibration_type(fuel_type) == "simple"
-            ):
-                logger.info("Using simplified calibration method")
-                self.calculate_annual_degree_days()
-            elif self.get_calibration_type(fuel_type) == "detailed":
-                logger.info("Using detailed calibration method")
-                self.inv_model = InverseModel(self.hpxml)
-            else:
-                raise ValueError(
-                    f"Unknown calibration type: {self.get_calibration_type(fuel_consumption.FuelType)}. How did you get here?"
-                )
-
     def get_normalized_consumption_per_bill(self) -> dict[FuelType, pd.DataFrame]:
         """
         Get the normalized consumption for the building.
@@ -145,6 +128,8 @@ class Calibrate:
         """
 
         normalized_consumption = {}
+        # InverseModel is not applicable to delivered fuels, so we only use it for electricity and natural gas
+        self.inv_model = InverseModel(self.hpxml)
         for fuel_type, bills in self.inv_model.bills_by_fuel_type.items():
 
             def _calculate_wrapped_total(row):
@@ -443,43 +428,23 @@ class Calibrate:
                         ),
                         1,
                     )
-                    # Warn if either error exceeds the criteria
-                    # TODO: Instead of warning, adjust the modification and simulate again
+                    # Notify amount error exceeds the criteria
                     if (
                         abs(comparison_results[model_fuel_type]["Bias Error"][load_type])
                         > bias_error_criteria
                     ):
-                        logger.warning(
+                        logger.info(
                             f"Bias error for {model_fuel_type} {load_type} is {comparison_results[model_fuel_type]['Bias Error'][load_type]} but the limit is +/- {bias_error_criteria}"
                         )
                     if (
                         abs(comparison_results[model_fuel_type]["Absolute Error"][load_type])
                         > absolute_error_criteria
                     ):
-                        logger.warning(
+                        logger.info(
                             f"Absolute error for {model_fuel_type} {load_type} is {comparison_results[model_fuel_type]['Absolute Error'][load_type]} but the limit is +/- {absolute_error_criteria}"
                         )
 
         return comparison_results
-
-    def get_calibration_type(self, fuel_type: str) -> str:
-        """
-        Determine the calibration type based on the HPXML file.
-
-        Returns:
-            str: "simple" for simplified calibration, "detailed" for detailed calibration.
-        """
-        if fuel_type in (
-            FuelType.FUEL_OIL.value,
-            FuelType.PROPANE.value,
-            FuelType.WOOD.value,
-            FuelType.WOOD_PELLETS.value,
-        ):
-            # If the fuel type is one of the delivered fuels, use simple calibration
-            return "simple"
-
-        # Otherwise use detailed calibration
-        return "detailed"
 
     def calculate_annual_degree_days(self) -> dict[str, float]:
         """Calculate annual heating and cooling degree days from TMY data and actual weather data.
@@ -546,21 +511,19 @@ class Calibrate:
 
         return total_period_tmy_dd, total_period_actual_dd
 
-    def simplified_annual_usage(self, annual_results_json: Path):
-        model_results = self.get_model_results(annual_results_json)
+    def simplified_annual_usage(self, model_results: dict, consumption) -> dict:
         total_period_tmy_dd, total_period_actual_dd = self.calculate_annual_degree_days()
-        consumption = self.hpxml.get_consumption()
+
+        comparison_results = {}
 
         for fuel in total_period_tmy_dd:
             measured_consumption = 0.0
             for fuel_consumption in consumption.ConsumptionDetails.ConsumptionInfo:
                 if fuel_consumption.ConsumptionType.Energy.FuelType == fuel:
-                    # Get the first and last bill dates
                     first_bill_date = fuel_consumption.ConsumptionDetail[0].StartDateTime
                     last_bill_date = fuel_consumption.ConsumptionDetail[-1].EndDateTime
                     first_bill_date = dt.strptime(str(first_bill_date), "%Y-%m-%dT%H:%M:%S")
                     last_bill_date = dt.strptime(str(last_bill_date), "%Y-%m-%dT%H:%M:%S")
-                    # Add a day to the last bill date to include the last day in the calculation
                     num_days = (last_bill_date - first_bill_date + timedelta(days=1)).days
                 for delivery in fuel_consumption.ConsumptionDetail:
                     measured_consumption += int(delivery.Consumption)
@@ -569,8 +532,6 @@ class Calibrate:
             )
             measured_consumption = convert_units(measured_consumption, "kBtu", "mBtu")
 
-            calibration_results = {}
-            # for load_type in ["heating", "cooling", "baseload"]:
             modeled_baseload = model_results[fuel].get("baseload", 0)
             modeled_heating = model_results[fuel].get("heating", 0)
             modeled_cooling = model_results[fuel].get("cooling", 0)
@@ -615,15 +576,19 @@ class Calibrate:
             heating_absolute_error = abs(normalized_annual_heating - modeled_heating)
             cooling_absolute_error = abs(normalized_annual_cooling - modeled_cooling)
 
-            calibration_results[fuel] = {
-                "Baseload bias error %": round(baseload_bias_error, 2),
-                "Heating bias error %": round(heating_bias_error, 2),
-                "Cooling bias error %": round(cooling_bias_error, 2),
-                "Baseload absolute error mBtu": round(baseload_absolute_error, 2),
-                "Heating absolute error mBtu": round(heating_absolute_error, 2),
-                "Cooling absolute error mBtu": round(cooling_absolute_error, 2),
+            comparison_results[fuel] = {
+                "Bias Error": {
+                    "baseload": round(baseload_bias_error, 2),
+                    "heating": round(heating_bias_error, 2),
+                    "cooling": round(cooling_bias_error, 2),
+                },
+                "Absolute Error": {
+                    "baseload": round(baseload_absolute_error, 2),
+                    "heating": round(heating_absolute_error, 2),
+                    "cooling": round(cooling_absolute_error, 2),
+                },
             }
-        return calibration_results
+        return comparison_results
 
     def hpxml_data_error_checking(self) -> None:
         """Check for common HPXML errors
@@ -993,8 +958,32 @@ class Calibrate:
 
                 output_file = temp_output_dir / "run" / "results_annual.json"
                 simulation_results = self.get_model_results(json_results_path=output_file)
-                normalized_consumption = self.get_normalized_consumption_per_bill()
-                comparison = self.compare_results(normalized_consumption, simulation_results)
+                consumption = self.hpxml.get_consumption()
+                comparison = {}
+                delivered_fuels = (
+                    FuelType.FUEL_OIL.value,
+                    FuelType.PROPANE.value,
+                    FuelType.WOOD.value,
+                    FuelType.WOOD_PELLETS.value,
+                )
+                # loop twice to ensure we get outputs for non-delivered fuels first. Overwrite with simplified results, if any exist
+                for fuel_type in consumption.ConsumptionDetails.ConsumptionInfo:
+                    if fuel_type.ConsumptionType.Energy.FuelType not in delivered_fuels:
+                        normalized_consumption = self.get_normalized_consumption_per_bill()
+                        comparison.update(
+                            self.compare_results(normalized_consumption, simulation_results)
+                        )
+                for fuel_type in consumption.ConsumptionDetails.ConsumptionInfo:
+                    if fuel_type.ConsumptionType.Energy.FuelType in delivered_fuels:
+                        simplified_calibration_results = self.simplified_annual_usage(
+                            simulation_results, consumption
+                        )
+                        # Overwrite the relevant fuel_type in the comparison dict
+                        comparison[fuel_type.ConsumptionType.Energy.FuelType] = (
+                            simplified_calibration_results.get(
+                                fuel_type.ConsumptionType.Energy.FuelType, {}
+                            )
+                        )
 
                 bias_error_penalties = []
                 for fuel_type, metrics in comparison.items():
