@@ -919,23 +919,17 @@ class Calibrate:
                     FuelType.WOOD.value,
                     FuelType.WOOD_PELLETS.value,
                 )
-                # loop twice to ensure we get outputs for non-delivered fuels first. Overwrite with simplified results, if any exist
                 for fuel_type in consumption.ConsumptionDetails.ConsumptionInfo:
-                    if fuel_type.ConsumptionType.Energy.FuelType not in delivered_fuels:
-                        normalized_consumption = self.get_normalized_consumption_per_bill()
-                        comparison.update(
-                            self.compare_results(normalized_consumption, simulation_results)
-                        )
-                for fuel_type in consumption.ConsumptionDetails.ConsumptionInfo:
-                    if fuel_type.ConsumptionType.Energy.FuelType in delivered_fuels:
+                    fuel = fuel_type.ConsumptionType.Energy.FuelType
+                    if fuel in delivered_fuels:
                         simplified_calibration_results = self.simplified_annual_usage(
                             simulation_results, consumption
                         )
-                        # Overwrite the relevant fuel_type in the comparison dict
-                        comparison[fuel_type.ConsumptionType.Energy.FuelType] = (
-                            simplified_calibration_results.get(
-                                fuel_type.ConsumptionType.Energy.FuelType, {}
-                            )
+                        comparison[fuel] = simplified_calibration_results.get(fuel, {})
+                    else:
+                        normalized_consumption = self.get_normalized_consumption_per_bill()
+                        comparison.update(
+                            self.compare_results(normalized_consumption, simulation_results)
                         )
 
                 bias_error_penalties = []
