@@ -3,8 +3,8 @@
   <schema_version>3.1</schema_version>
   <name>modify_xml</name>
   <uid>afd74b96-8b2c-4ebd-83be-0d3fdc35bf9a</uid>
-  <version_id>9153759e-6d13-4bb2-9b31-dcd5dedea07c</version_id>
-  <version_modified>2025-08-05T21:42:53Z</version_modified>
+  <version_id>29710ca1-17ec-490b-a79c-ab17dfb90687</version_id>
+  <version_modified>2025-08-11T17:37:21Z</version_modified>
   <xml_checksum>1B7C870F</xml_checksum>
   <class_name>ModifyXML</class_name>
   <display_name>ModifyXML</display_name>
@@ -30,7 +30,7 @@
     <argument>
       <name>heating_setpoint_offset</name>
       <display_name>Heating setpoint offset</display_name>
-      <description>Degrees to change heating setpoint</description>
+      <description>Degrees to change heating setpoint. Positive increases, negative decreases.</description>
       <type>Double</type>
       <units>F</units>
       <required>false</required>
@@ -39,7 +39,7 @@
     <argument>
       <name>cooling_setpoint_offset</name>
       <display_name>Cooling setpoint offset</display_name>
-      <description>Degrees to change cooling setpoint</description>
+      <description>Degrees to change cooling setpoint. Positive increases, negative decreases.</description>
       <type>Double</type>
       <units>F</units>
       <required>false</required>
@@ -47,160 +47,144 @@
     </argument>
     <argument>
       <name>air_leakage_multiplier</name>
-      <display_name>Air leakage percent change</display_name>
-      <description>Percentage to change the air leakage rate.
-      Positive value increases air leakage, negative value decreases air leakage.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.</description>
+      <display_name>Air leakage multiplier</display_name>
+      <description>Multiplier on the air leakage rate.
+      Value &gt; 1 increases air leakage, &lt; 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
     </argument>
     <argument>
       <name>heating_efficiency_multiplier</name>
-      <display_name>Heating efficiency percent change</display_name>
-      <description>Percentage to change the heating equipment efficiency.
-      Positive value increases efficiency, negative value decreases efficiency.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.</description>
+      <display_name>Heating efficiency multiplier</display_name>
+      <description>Multiplier on heating equipment efficiency.
+      Value &gt; 1 increases efficiency, &lt; 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
     </argument>
     <argument>
       <name>cooling_efficiency_multiplier</name>
-      <display_name>Cooling efficiency percent change</display_name>
-      <description>Percentage to change the cooling equipment efficiency.
-      Positive value increases efficiency, negative value decreases efficiency.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.</description>
+      <display_name>Cooling efficiency multiplier</display_name>
+      <description>Multiplier on cooling equipment efficiency.
+      Value &gt; 1 increases efficiency, &lt; 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
     </argument>
     <argument>
       <name>misc_load_multiplier</name>
-      <display_name>Miscellaneous load percent change</display_name>
-      <description>Percentage to change the various miscellaneous load usage multipliers.
-      Positive value increases load, negative value decreases load.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.</description>
+      <display_name>Miscellaneous load multiplier</display_name>
+      <description>Multiplier on miscellaneous load usage.
+      Value &gt; 1 increases load, &lt; 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
     </argument>
     <argument>
       <name>roof_r_value_multiplier</name>
-      <display_name>Roof R-Value percent change</display_name>
-      <description>Percentage to change the Roof R-value.
-      Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.</description>
+      <display_name>Roof R-Value multiplier</display_name>
+      <description>Multiplier on roof R-value.
+      Value &gt; 1 increases R-value, &lt; 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
     </argument>
     <argument>
       <name>ceiling_r_value_multiplier</name>
-      <display_name>Ceiling R-Value percent change</display_name>
-      <description>Percentage to change the ceiling (attic floor) R-value.
-      Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.</description>
+      <display_name>Ceiling R-Value multiplier</display_name>
+      <description>Multiplier on ceiling (attic floor) R-value.
+      Value &gt; 1 increases R-value, &lt; 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
     </argument>
     <argument>
       <name>floor_r_value_multiplier</name>
-      <display_name>Floor R-Value percent change</display_name>
-      <description>Percentage to change the floor R-value.
-      Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.</description>
+      <display_name>Floor R-Value multiplier</display_name>
+      <description>Multiplier on floor R-value.
+      Value &gt; 1 increases R-value, &lt; 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
     </argument>
     <argument>
       <name>above_ground_walls_r_value_multiplier</name>
-      <display_name>Above-ground wall R-Value percent change</display_name>
-      <description>Percentage to change the above-ground wall R-value.
-      Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.</description>
+      <display_name>Above-ground wall R-Value multiplier</display_name>
+      <description>Multiplier on above-ground wall R-value.
+      Value &gt; 1 increases R-value, &lt; 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
     </argument>
     <argument>
       <name>below_ground_walls_r_value_multiplier</name>
-      <display_name>Below-ground wall R-Value percent change</display_name>
-      <description>Percentage to change the below-ground wall R-value.
-      Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.</description>
+      <display_name>Below-ground wall R-Value multiplier</display_name>
+      <description>Multiplier on below-ground wall R-value.
+      Value &gt; 1 increases R-value, &lt; 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
     </argument>
     <argument>
       <name>slab_r_value_multiplier</name>
-      <display_name>Slab R-Value percent change</display_name>
-      <description>Percentage to change the foundation slab R-value.
-      Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.</description>
+      <display_name>Slab R-Value multiplier</display_name>
+      <description>Multiplier on foundation slab R-value.
+      Value &gt; 1 increases R-value, &lt; 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
     </argument>
     <argument>
       <name>water_heater_efficiency_multiplier</name>
-      <display_name>Water heater efficiency percent change</display_name>
-      <description>Percentage to change the Energy Factor or Unified Energy Factor.
-      Positive value increases efficiency (EF/UEF), negative value decreases efficiency (EF/UEF).
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.</description>
+      <display_name>Water heater efficiency multiplier</display_name>
+      <description>Multiplier on water heater efficiency (EF/UEF).
+      Value &gt; 1 increases efficiency, &lt; 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
     </argument>
     <argument>
       <name>water_fixtures_usage_multiplier</name>
-      <display_name>Water fixtures usage percent change</display_name>
-      <description>Percentage to change the water fixtures usage multiplier.
-      Positive value increases usage, negative value decreases usage.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.</description>
+      <display_name>Water fixtures usage multiplier</display_name>
+      <description>Multiplier on water fixtures usage.
+      Value &gt; 1 increases usage, &lt; 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
     </argument>
     <argument>
       <name>lighting_load_multiplier</name>
-      <display_name>Lighting load percent change</display_name>
-      <description>Percentage to change the lighting load.
-      Positive value increases lighting load, negative value decreases lighting load.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.</description>
+      <display_name>Lighting load multiplier</display_name>
+      <description>Multiplier on lighting load.
+      Value &gt; 1 increases load, &lt; 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
     </argument>
     <argument>
       <name>window_u_factor_multiplier</name>
-      <display_name>Window U-factor percent change</display_name>
-      <description>Percentage to change the window U-factor.
-      Positive value increases U-factor, negative value decreases U-factor.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.</description>
+      <display_name>Window U-factor multiplier</display_name>
+      <description>Multiplier on window U-factor.
+      Value &gt; 1 increases U-factor, &lt; 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
     </argument>
     <argument>
       <name>window_shgc_multiplier</name>
-      <display_name>Window SHGC percent change</display_name>
-      <description>Percentage to change the window SHGC.
-      Positive value increases SHGC, negative value decreases SHGC.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.</description>
+      <display_name>Window SHGC multiplier</display_name>
+      <description>Multiplier on window SHGC.
+      Value &gt; 1 increases SHGC, &lt; 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
     </argument>
     <argument>
       <name>appliance_usage_multiplier</name>
-      <display_name>Appliance usage percent change</display_name>
-      <description>Percentage to change usage_multiplier of all appliances.
-      Positive value increases usage_multiplier, negative value decreases usage_multiplier.
-      Expressed as a multiplier of the original number. Examples: 0.1 == 10x reduction, and 10 == 10x increase.</description>
+      <display_name>Appliance usage multiplier</display_name>
+      <description>Multiplier on usage_multiplier of all appliances.
+      Value &gt; 1 increases usage, &lt; 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.</description>
       <type>Double</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
@@ -233,13 +217,13 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>C888C216</checksum>
+      <checksum>54BD1866</checksum>
     </file>
     <file>
       <filename>modify_xml_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
-      <checksum>09D010F8</checksum>
+      <checksum>3CAD3920</checksum>
     </file>
   </files>
 </measure>
