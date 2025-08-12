@@ -171,7 +171,7 @@ class HpxmlDoc:
         cooling_fuels = set()
         with suppress(AttributeError):
             for hvac_system in building.BuildingDetails.Systems.HVAC.HVACPlant:
-                heating_fuels.add(hvac_system.HeatingSystemFuel.text.strip())
+                heating_fuels.add(hvac_system.HeatingSystem.HeatingSystemFuel.text.strip())
                 heating_fuels.add(hvac_system.HeatPump.HeatPumpFuel.text.strip())
                 heating_fuels.add(
                     hvac_system.HeatPump.BackupSystemFuel.text.strip()
