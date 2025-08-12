@@ -23,7 +23,7 @@ def main(filepath):
         original_hpxml_filepath=filepath,
     )
     start = time.time()
-    best_individual, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search(
+    best_individual_dict, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search(
         output_filepath=output_filepath
     )
     print(f"Evaluation took {time.time() - start:.2f} seconds")

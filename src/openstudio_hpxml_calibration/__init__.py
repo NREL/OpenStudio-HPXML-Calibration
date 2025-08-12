@@ -199,7 +199,7 @@ def calibrate(
     cal = Calibrate(original_hpxml_filepath=hpxml_filepath, config_filepath=config_filepath)
 
     start = time.time()
-    best_individual, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search(
+    best_individual_dict, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search(
         num_proc=num_proc, output_filepath=output_filepath
     )
     logger.info(f"Calibration took {time.time() - start:.2f} seconds")
