@@ -178,7 +178,7 @@ def test_workflow_with_upgrade():
     assert existing_hpxml_file.exists()
 
     # Run existing home simulation
-    # FUTURE: Shouldn't have to do this, this is run during the calibration
+    # FUTURE: Is this already run during the calibration?
     existing_run_dir = TEST_DIR / "data/uncalibrated_existing/run"
     app(
         [
@@ -211,27 +211,7 @@ def test_workflow_with_upgrade():
     calibration_output_file = calibration_output_dir / "logbook.json"
     assert calibration_output_file.exists()
     results = json.loads(calibration_output_file.read_text())
-    calibration_adjustments = results[-1]['best_individual']
-    arguments = {
-        "misc_load_multiplier": calibration_adjustments[0],
-        "heating_setpoint_offset": calibration_adjustments[1],
-        "cooling_setpoint_offset": calibration_adjustments[2],
-        "air_leakage_multiplier": calibration_adjustments[3],
-        "heating_efficiency_multiplier": calibration_adjustments[4],
-        "cooling_efficiency_multiplier": calibration_adjustments[5],
-        "roof_r_value_multiplier": calibration_adjustments[6],
-        "ceiling_r_value_multiplier": calibration_adjustments[7],
-        "above_ground_walls_r_value_multiplier": calibration_adjustments[8],
-        "below_ground_walls_r_value_multiplier": calibration_adjustments[9],
-        "slab_r_value_multiplier": calibration_adjustments[10],
-        "floor_r_value_multiplier": calibration_adjustments[11],
-        "water_heater_efficiency_multiplier": calibration_adjustments[12],
-        "water_fixtures_usage_multiplier": calibration_adjustments[13],
-        "window_u_factor_multiplier": calibration_adjustments[14],
-        "window_shgc_multiplier": calibration_adjustments[15],
-        "appliance_usage_multiplier": calibration_adjustments[16],
-        "lighting_load_multiplier": calibration_adjustments[17],
-    }
+    calibration_adjustments = results[-1]['best_individual'][0]
 
     # Create HPXML file for upgrade scenario (R-60 attic insulation)
     upgrade_osw_path = TEST_DIR / "data/ihmh3_upgrade_hpxml.osw"
@@ -264,12 +244,13 @@ def test_workflow_with_upgrade():
     )
 
     # Run existing model w/ calibration adjustments
-    # FUTURE: Shouldn't have to do this, this is run during the calibration
+    # FUTURE: Get simulation results from calibration results rather than running a simulation
     calibrated_existing_hpxml_file = TEST_DIR / "data/calibrated_existing/ihmh3.xml"
-    arguments["xml_file_path"] = str(existing_hpxml_file)
-    arguments["save_file_path"] = str(calibrated_existing_hpxml_file)
+    calibrated_existing_arguments = calibration_adjustments.copy()
+    calibrated_existing_arguments["xml_file_path"] = str(existing_hpxml_file)
+    calibrated_existing_arguments["save_file_path"] = str(calibrated_existing_hpxml_file)
     adjustments_osw = Path(temp_output_dir / "modify_hpxml.osw")
-    create_measure_input_file(arguments, adjustments_osw)
+    create_measure_input_file(calibrated_existing_arguments, adjustments_osw)
     app(["modify-xml", str(adjustments_osw)])
     calibrated_existing_run_dir = TEST_DIR / "data/calibrated_existing/run"
     app(
@@ -287,11 +268,12 @@ def test_workflow_with_upgrade():
     # **NOTE**: We exclude the ceiling R-value adjustment so as not to override the
     #           upgrade scenario R-value.
     calibrated_upgrade_hpxml_file = TEST_DIR / "data/calibrated_upgrade/ihmh3.xml"
-    arguments["xml_file_path"] = str(upgrade_hpxml_file)
-    arguments["save_file_path"] = str(calibrated_upgrade_hpxml_file)
-    arguments.pop("ceiling_r_value_multiplier")
+    calibrated_upgrade_arguments = calibration_adjustments.copy()
+    calibrated_upgrade_arguments["xml_file_path"] = str(upgrade_hpxml_file)
+    calibrated_upgrade_arguments["save_file_path"] = str(calibrated_upgrade_hpxml_file)
+    calibrated_upgrade_arguments.pop("ceiling_r_value_multiplier")
     adjustments_osw = Path(temp_output_dir / "modify_hpxml.osw")
-    create_measure_input_file(arguments, adjustments_osw)
+    create_measure_input_file(calibrated_upgrade_arguments, adjustments_osw)
     app(["modify-xml", str(adjustments_osw)])
     calibrated_upgrade_run_dir = TEST_DIR / "data/calibrated_upgrade/run"
     app(

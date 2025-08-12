@@ -653,7 +653,8 @@ class Calibrate:
         mutpb = cfg["genetic_algorithm"]["mutation_probability"]
         misc_load_multiplier_choices = cfg["value_choices"]["misc_load_multiplier_choices"]
         air_leakage_multiplier_choices = cfg["value_choices"]["air_leakage_multiplier_choices"]
-        hvac_eff_multiplier_choices = cfg["value_choices"]["hvac_eff_multiplier_choices"]
+        heating_efficiency_multiplier_choices = cfg["value_choices"]["heating_efficiency_multiplier_choices"]
+        cooling_efficiency_multiplier_choices = cfg["value_choices"]["cooling_efficiency_multiplier_choices"]
         roof_r_value_multiplier_choices = cfg["value_choices"]["roof_r_value_multiplier_choices"]
         ceiling_r_value_multiplier_choices = cfg["value_choices"][
             "ceiling_r_value_multiplier_choices"
@@ -807,10 +808,10 @@ class Calibrate:
             "attr_air_leakage_multiplier", random.choice, air_leakage_multiplier_choices
         )
         toolbox.register(
-            "attr_heating_efficiency_multiplier", random.choice, hvac_eff_multiplier_choices
+            "attr_heating_efficiency_multiplier", random.choice, heating_efficiency_multiplier_choices
         )
         toolbox.register(
-            "attr_cooling_efficiency_multiplier", random.choice, hvac_eff_multiplier_choices
+            "attr_cooling_efficiency_multiplier", random.choice, cooling_efficiency_multiplier_choices
         )
         toolbox.register(
             "attr_roof_r_value_multiplier", random.choice, roof_r_value_multiplier_choices
@@ -890,8 +891,8 @@ class Calibrate:
                     random.choice(heating_setpoint_choices),
                     random.choice(cooling_setpoint_choices),
                     random.choice(air_leakage_multiplier_choices),
-                    random.choice(hvac_eff_multiplier_choices),
-                    random.choice(hvac_eff_multiplier_choices),
+                    random.choice(heating_efficiency_multiplier_choices),
+                    random.choice(cooling_efficiency_multiplier_choices),
                     random.choice(roof_r_value_multiplier_choices),
                     random.choice(ceiling_r_value_multiplier_choices),
                     random.choice(above_ground_walls_r_value_multiplier_choices),
@@ -918,8 +919,8 @@ class Calibrate:
             "heating_setpoint_offset": heating_setpoint_choices,
             "cooling_setpoint_offset": cooling_setpoint_choices,
             "air_leakage_multiplier": air_leakage_multiplier_choices,
-            "heating_hvac_eff_multiplier": hvac_eff_multiplier_choices,
-            "cooling_hvac_eff_multiplier": hvac_eff_multiplier_choices,
+            "heating_efficiency_multiplier": heating_efficiency_multiplier_choices,
+            "cooling_efficiency_multiplier": cooling_efficiency_multiplier_choices,
             "roof_r_value_multiplier": roof_r_value_multiplier_choices,
             "ceiling_r_value_multiplier": ceiling_r_value_multiplier_choices,
             "above_ground_walls_r_value_multiplier": above_ground_walls_r_value_multiplier_choices,
@@ -940,7 +941,7 @@ class Calibrate:
             "electricity_heating": [
                 "heating_setpoint_offset",
                 "air_leakage_multiplier",
-                "heating_hvac_eff_multiplier",
+                "heating_efficiency_multiplier",
                 "roof_r_value_multiplier",
                 "ceiling_r_value_multiplier",
                 "above_ground_walls_r_value_multiplier",
@@ -951,7 +952,7 @@ class Calibrate:
             "electricity_cooling": [
                 "cooling_setpoint_offset",
                 "air_leakage_multiplier",
-                "cooling_hvac_eff_multiplier",
+                "cooling_efficiency_multiplier",
                 "roof_r_value_multiplier",
                 "ceiling_r_value_multiplier",
                 "above_ground_walls_r_value_multiplier",
@@ -967,7 +968,7 @@ class Calibrate:
             "natural_gas_heating": [
                 "heating_setpoint_offset",
                 "air_leakage_multiplier",
-                "heating_hvac_eff_multiplier",
+                "heating_efficiency_multiplier",
                 "roof_r_value_multiplier",
                 "ceiling_r_value_multiplier",
                 "above_ground_walls_r_value_multiplier",

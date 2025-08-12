@@ -12,7 +12,8 @@ acceptance_criteria:
 value_choices:
   misc_load_multiplier_choices: [0.1, 0.25, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2, 4, 7, 10]
   air_leakage_multiplier_choices: [0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2]
-  hvac_eff_multiplier_choices: [0.8, 0.9, 1, 1.1, 1.2]
+  heating_efficiency_multiplier_choices: [0.8, 0.9, 1, 1.1, 1.2]
+  cooling_efficiency_multiplier_choices: [0.8, 0.9, 1, 1.1, 1.2]
   roof_r_value_multiplier_choices: [0.8, 0.9, 1, 1.1, 1.2]
   ceiling_r_value_multiplier_choices: [0.8, 0.9, 1, 1.1, 1.2]
   above_ground_walls_r_value_multiplier_choices: [0.8, 0.9, 1, 1.1, 1.2]
