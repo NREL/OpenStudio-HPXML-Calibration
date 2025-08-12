@@ -911,117 +911,117 @@
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>434</Consumption>
-          <StartDateTime>2009-12-23T00:00:00</StartDateTime>
+          <StartDateTime>2009-12-22T00:00:00</StartDateTime>
           <EndDateTime>2010-01-22T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>378</Consumption>
-          <StartDateTime>2010-01-23T00:00:00</StartDateTime>
+          <StartDateTime>2010-01-22T00:00:00</StartDateTime>
           <EndDateTime>2010-02-22T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>292</Consumption>
-          <StartDateTime>2010-02-23T00:00:00</StartDateTime>
+          <StartDateTime>2010-02-22T00:00:00</StartDateTime>
           <EndDateTime>2010-03-24T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>234</Consumption>
-          <StartDateTime>2010-03-25T00:00:00</StartDateTime>
+          <StartDateTime>2010-03-24T00:00:00</StartDateTime>
           <EndDateTime>2010-04-23T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>280</Consumption>
-          <StartDateTime>2010-04-24T00:00:00</StartDateTime>
+          <StartDateTime>2010-04-23T00:00:00</StartDateTime>
           <EndDateTime>2010-05-24T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>345</Consumption>
-          <StartDateTime>2010-05-25T00:00:00</StartDateTime>
+          <StartDateTime>2010-05-24T00:00:00</StartDateTime>
           <EndDateTime>2010-06-23T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>536</Consumption>
-          <StartDateTime>2010-06-24T00:00:00</StartDateTime>
+          <StartDateTime>2010-06-23T00:00:00</StartDateTime>
           <EndDateTime>2010-07-23T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>755</Consumption>
-          <StartDateTime>2010-07-24T00:00:00</StartDateTime>
+          <StartDateTime>2010-07-23T00:00:00</StartDateTime>
           <EndDateTime>2010-08-23T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>288</Consumption>
-          <StartDateTime>2010-08-24T00:00:00</StartDateTime>
+          <StartDateTime>2010-08-23T00:00:00</StartDateTime>
           <EndDateTime>2010-09-22T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>249</Consumption>
-          <StartDateTime>2010-09-23T00:00:00</StartDateTime>
+          <StartDateTime>2010-09-22T00:00:00</StartDateTime>
           <EndDateTime>2010-10-22T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>321</Consumption>
-          <StartDateTime>2010-10-23T00:00:00</StartDateTime>
+          <StartDateTime>2010-10-22T00:00:00</StartDateTime>
           <EndDateTime>2010-11-22T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>379</Consumption>
-          <StartDateTime>2010-11-23T00:00:00</StartDateTime>
+          <StartDateTime>2010-11-22T00:00:00</StartDateTime>
           <EndDateTime>2010-12-22T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>377</Consumption>
-          <StartDateTime>2010-12-23T00:00:00</StartDateTime>
+          <StartDateTime>2010-12-22T00:00:00</StartDateTime>
           <EndDateTime>2011-01-21T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>365</Consumption>
-          <StartDateTime>2011-01-22T00:00:00</StartDateTime>
+          <StartDateTime>2011-01-21T00:00:00</StartDateTime>
           <EndDateTime>2011-02-21T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>263</Consumption>
-          <StartDateTime>2011-02-22T00:00:00</StartDateTime>
+          <StartDateTime>2011-02-21T00:00:00</StartDateTime>
           <EndDateTime>2011-03-22T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>292</Consumption>
-          <StartDateTime>2011-03-23T00:00:00</StartDateTime>
+          <StartDateTime>2011-03-22T00:00:00</StartDateTime>
           <EndDateTime>2011-04-20T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>275</Consumption>
-          <StartDateTime>2011-04-21T00:00:00</StartDateTime>
+          <StartDateTime>2011-04-20T00:00:00</StartDateTime>
           <EndDateTime>2011-05-20T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>326</Consumption>
-          <StartDateTime>2011-05-21T00:00:00</StartDateTime>
+          <StartDateTime>2011-05-20T00:00:00</StartDateTime>
           <EndDateTime>2011-06-21T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>660</Consumption>
-          <StartDateTime>2011-06-22T00:00:00</StartDateTime>
+          <StartDateTime>2011-06-21T00:00:00</StartDateTime>
           <EndDateTime>2011-07-21T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>699</Consumption>
-          <StartDateTime>2011-07-22T00:00:00</StartDateTime>
+          <StartDateTime>2011-07-21T00:00:00</StartDateTime>
           <EndDateTime>2011-08-22T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>350</Consumption>
-          <StartDateTime>2011-08-23T00:00:00</StartDateTime>
+          <StartDateTime>2011-08-22T00:00:00</StartDateTime>
           <EndDateTime>2011-09-21T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>256</Consumption>
-          <StartDateTime>2011-09-22T00:00:00</StartDateTime>
+          <StartDateTime>2011-09-21T00:00:00</StartDateTime>
           <EndDateTime>2011-10-21T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>350</Consumption>
-          <StartDateTime>2011-10-22T00:00:00</StartDateTime>
+          <StartDateTime>2011-10-21T00:00:00</StartDateTime>
           <EndDateTime>2011-11-21T00:00:00</EndDateTime>
         </ConsumptionDetail>
       </ConsumptionInfo>
@@ -1040,117 +1040,117 @@
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>137.2</Consumption>
-          <StartDateTime>2009-12-22T00:00:00</StartDateTime>
+          <StartDateTime>2009-12-21T00:00:00</StartDateTime>
           <EndDateTime>2010-01-21T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>135.3</Consumption>
-          <StartDateTime>2010-01-22T00:00:00</StartDateTime>
+          <StartDateTime>2010-01-21T00:00:00</StartDateTime>
           <EndDateTime>2010-02-21T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>87.9</Consumption>
-          <StartDateTime>2010-02-22T00:00:00</StartDateTime>
+          <StartDateTime>2010-02-21T00:00:00</StartDateTime>
           <EndDateTime>2010-03-23T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>45.3</Consumption>
-          <StartDateTime>2010-03-24T00:00:00</StartDateTime>
+          <StartDateTime>2010-03-23T00:00:00</StartDateTime>
           <EndDateTime>2010-04-22T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>32.2</Consumption>
-          <StartDateTime>2010-04-23T00:00:00</StartDateTime>
+          <StartDateTime>2010-04-22T00:00:00</StartDateTime>
           <EndDateTime>2010-05-23T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>8.1</Consumption>
-          <StartDateTime>2010-05-24T00:00:00</StartDateTime>
+          <StartDateTime>2010-05-23T00:00:00</StartDateTime>
           <EndDateTime>2010-06-22T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>4.1</Consumption>
-          <StartDateTime>2010-06-23T00:00:00</StartDateTime>
+          <StartDateTime>2010-06-22T00:00:00</StartDateTime>
           <EndDateTime>2010-07-22T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>5</Consumption>
-          <StartDateTime>2010-07-23T00:00:00</StartDateTime>
+          <StartDateTime>2010-07-22T00:00:00</StartDateTime>
           <EndDateTime>2010-08-22T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>7</Consumption>
-          <StartDateTime>2010-08-23T00:00:00</StartDateTime>
+          <StartDateTime>2010-08-22T00:00:00</StartDateTime>
           <EndDateTime>2010-09-21T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>28.1</Consumption>
-          <StartDateTime>2010-09-22T00:00:00</StartDateTime>
+          <StartDateTime>2010-09-21T00:00:00</StartDateTime>
           <EndDateTime>2010-10-21T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>66.5</Consumption>
-          <StartDateTime>2010-10-22T00:00:00</StartDateTime>
+          <StartDateTime>2010-10-21T00:00:00</StartDateTime>
           <EndDateTime>2010-11-21T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>122.5</Consumption>
-          <StartDateTime>2010-11-22T00:00:00</StartDateTime>
+          <StartDateTime>2010-11-21T00:00:00</StartDateTime>
           <EndDateTime>2010-12-21T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>122.9</Consumption>
-          <StartDateTime>2010-12-22T00:00:00</StartDateTime>
+          <StartDateTime>2010-12-21T00:00:00</StartDateTime>
           <EndDateTime>2011-01-20T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>135.1</Consumption>
-          <StartDateTime>2011-01-21T00:00:00</StartDateTime>
+          <StartDateTime>2011-01-20T00:00:00</StartDateTime>
           <EndDateTime>2011-02-20T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>97</Consumption>
-          <StartDateTime>2011-02-21T00:00:00</StartDateTime>
+          <StartDateTime>2011-02-20T00:00:00</StartDateTime>
           <EndDateTime>2011-03-21T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>77</Consumption>
-          <StartDateTime>2011-03-22T00:00:00</StartDateTime>
+          <StartDateTime>2011-03-21T00:00:00</StartDateTime>
           <EndDateTime>2011-04-19T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>46.2</Consumption>
-          <StartDateTime>2011-04-20T00:00:00</StartDateTime>
+          <StartDateTime>2011-04-19T00:00:00</StartDateTime>
           <EndDateTime>2011-05-19T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>11.1</Consumption>
-          <StartDateTime>2011-05-20T00:00:00</StartDateTime>
+          <StartDateTime>2011-05-19T00:00:00</StartDateTime>
           <EndDateTime>2011-06-20T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>5</Consumption>
-          <StartDateTime>2011-06-21T00:00:00</StartDateTime>
+          <StartDateTime>2011-06-20T00:00:00</StartDateTime>
           <EndDateTime>2011-07-20T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>6.1</Consumption>
-          <StartDateTime>2011-07-21T00:00:00</StartDateTime>
+          <StartDateTime>2011-07-20T00:00:00</StartDateTime>
           <EndDateTime>2011-08-21T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>8.1</Consumption>
-          <StartDateTime>2011-08-22T00:00:00</StartDateTime>
+          <StartDateTime>2011-08-21T00:00:00</StartDateTime>
           <EndDateTime>2011-09-20T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>25.3</Consumption>
-          <StartDateTime>2011-09-21T00:00:00</StartDateTime>
+          <StartDateTime>2011-09-20T00:00:00</StartDateTime>
           <EndDateTime>2011-10-20T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>73.9</Consumption>
-          <StartDateTime>2011-10-21T00:00:00</StartDateTime>
+          <StartDateTime>2011-10-20T00:00:00</StartDateTime>
           <EndDateTime>2011-11-20T00:00:00</EndDateTime>
         </ConsumptionDetail>
       </ConsumptionInfo>
