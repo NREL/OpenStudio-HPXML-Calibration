@@ -640,9 +640,9 @@ class Calibrate:
         cfg = self.ga_config
         population_size = cfg["genetic_algorithm"]["population_size"]
         generations = cfg["genetic_algorithm"]["generations"]
-        bias_error_threshold = cfg["genetic_algorithm"]["bias_error_threshold"]
-        abs_error_elec_threshold = cfg["genetic_algorithm"]["abs_error_elec_threshold"]
-        abs_error_fuel_threshold = cfg["genetic_algorithm"]["abs_error_fuel_threshold"]
+        bias_error_threshold = cfg["acceptance_criteria"]["bias_error_threshold"]
+        abs_error_elec_threshold = cfg["acceptance_criteria"]["abs_error_elec_threshold"]
+        abs_error_fuel_threshold = cfg["acceptance_criteria"]["abs_error_fuel_threshold"]
         cxpb = cfg["genetic_algorithm"]["crossover_probability"]
         mutpb = cfg["genetic_algorithm"]["mutation_probability"]
         misc_load_multiplier_choices = cfg["value_choices"]["misc_load_multiplier_choices"]
@@ -706,9 +706,9 @@ class Calibrate:
                 arguments = {
                     "xml_file_path": str(self.hpxml_filepath),
                     "save_file_path": str(mod_hpxml_path),
+                    "misc_load_multiplier": misc_load_multiplier,
                     "heating_setpoint_offset": heating_setpoint_offset,
                     "cooling_setpoint_offset": cooling_setpoint_offset,
-                    "misc_load_multiplier": misc_load_multiplier,
                     "air_leakage_multiplier": air_leakage_multiplier,
                     "heating_efficiency_multiplier": heating_efficiency_multiplier,
                     "cooling_efficiency_multiplier": cooling_efficiency_multiplier,

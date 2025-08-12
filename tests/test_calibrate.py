@@ -1,4 +1,7 @@
 import json
+import subprocess
+import tempfile
+import uuid
 from pathlib import Path
 
 import pandas as pd
@@ -150,3 +153,174 @@ def test_calibrate_runs_successfully():
     )
     output_file = TEST_DIR / "ga_search_results/ihmh8_test/logbook.json"
     assert output_file.exists()
+
+
+def test_workflow_with_upgrade():
+    temp_output_dir = Path(
+        tempfile.mkdtemp(prefix=f"calib_test_{uuid.uuid4().hex[:6]}_")
+    )
+
+    # Create HPXML file for existing home
+    existing_osw_path = TEST_DIR / "data/ihmh3_existing_hpxml.osw"
+    build_existing_hpxml_command = [
+        "openstudio",
+        "run",
+        "--workflow",
+        str(existing_osw_path),
+        "--measures_only"
+    ]
+    subprocess.run(
+        build_existing_hpxml_command,
+        capture_output=True,
+        check=True,
+    )
+    existing_hpxml_file = TEST_DIR / "data/uncalibrated_existing/ihmh3.xml"
+    assert existing_hpxml_file.exists()
+
+    # Run existing home simulation
+    # FUTURE: Shouldn't have to do this, this is run during the calibration
+    existing_run_dir = TEST_DIR / "data/uncalibrated_existing/run"
+    app(
+        [
+            "run-sim",
+            str(existing_hpxml_file),
+            "--output-dir",
+            str(existing_run_dir),
+            "--output-format",
+            "json",
+        ]
+    )
+
+    # Run calibration
+    csv_bills_file = TEST_DIR / "data/ihmh3_existing_bills.csv"
+    config_file = TEST_DIR / "data/ihmh3_config.yaml"
+    calibration_output_dir = TEST_DIR / "data/uncalibrated_existing/ga_search_results"
+    app(
+        [
+            "calibrate",
+            str(existing_hpxml_file),
+            str(csv_bills_file),
+            "--output-dir",
+            str(calibration_output_dir),
+            "--config-filepath",
+            str(config_file),
+            "--num-proc",
+            "14"
+        ]
+    )
+    calibration_output_file = calibration_output_dir / "logbook.json"
+    assert calibration_output_file.exists()
+    results = json.loads(calibration_output_file.read_text())
+    calibration_adjustments = results[-1]['best_individual']
+    arguments = {
+        "misc_load_multiplier": calibration_adjustments[0],
+        "heating_setpoint_offset": calibration_adjustments[1],
+        "cooling_setpoint_offset": calibration_adjustments[2],
+        "air_leakage_multiplier": calibration_adjustments[3],
+        "heating_efficiency_multiplier": calibration_adjustments[4],
+        "cooling_efficiency_multiplier": calibration_adjustments[5],
+        "roof_r_value_multiplier": calibration_adjustments[6],
+        "ceiling_r_value_multiplier": calibration_adjustments[7],
+        "above_ground_walls_r_value_multiplier": calibration_adjustments[8],
+        "below_ground_walls_r_value_multiplier": calibration_adjustments[9],
+        "slab_r_value_multiplier": calibration_adjustments[10],
+        "floor_r_value_multiplier": calibration_adjustments[11],
+        "water_heater_efficiency_multiplier": calibration_adjustments[12],
+        "water_fixtures_usage_multiplier": calibration_adjustments[13],
+        "window_u_factor_multiplier": calibration_adjustments[14],
+        "window_shgc_multiplier": calibration_adjustments[15],
+        "appliance_usage_multiplier": calibration_adjustments[16],
+        "lighting_load_multiplier": calibration_adjustments[17],
+    }
+
+    # Create HPXML file for upgrade scenario (R-60 attic insulation)
+    upgrade_osw_path = TEST_DIR / "data/ihmh3_upgrade_hpxml.osw"
+    build_upgrade_hpxml_command = [
+        "openstudio",
+        "run",
+        "--workflow",
+        str(upgrade_osw_path),
+        "--measures_only"
+    ]
+    subprocess.run(
+        build_upgrade_hpxml_command,
+        capture_output=True,
+        check=True,
+    )
+    upgrade_hpxml_file = TEST_DIR / "data/uncalibrated_upgrade/ihmh3.xml"
+    assert upgrade_hpxml_file.exists()
+
+    # Run upgrade scenario simulation
+    upgrade_run_dir = TEST_DIR / "data/uncalibrated_upgrade/run"
+    app(
+        [
+            "run-sim",
+            str(upgrade_hpxml_file),
+            "--output-dir",
+            str(upgrade_run_dir),
+            "--output-format",
+            "json",
+        ]
+    )
+
+    # Run existing model w/ calibration adjustments
+    # FUTURE: Shouldn't have to do this, this is run during the calibration
+    calibrated_existing_hpxml_file = TEST_DIR / "data/calibrated_existing/ihmh3.xml"
+    arguments["xml_file_path"] = str(existing_hpxml_file)
+    arguments["save_file_path"] = str(calibrated_existing_hpxml_file)
+    adjustments_osw = Path(temp_output_dir / "modify_hpxml.osw")
+    create_measure_input_file(arguments, adjustments_osw)
+    app(["modify-xml", str(adjustments_osw)])
+    calibrated_existing_run_dir = TEST_DIR / "data/calibrated_existing/run"
+    app(
+        [
+            "run-sim",
+            str(calibrated_existing_hpxml_file),
+            "--output-dir",
+            str(calibrated_existing_run_dir),
+            "--output-format",
+            "json",
+        ]
+    )
+
+    # Run upgrade model w/ calibration adjustments
+    # **NOTE**: We exclude the ceiling R-value adjustment so as not to override the
+    #           upgrade scenario R-value.
+    calibrated_upgrade_hpxml_file = TEST_DIR / "data/calibrated_upgrade/ihmh3.xml"
+    arguments["xml_file_path"] = str(upgrade_hpxml_file)
+    arguments["save_file_path"] = str(calibrated_upgrade_hpxml_file)
+    arguments.pop("ceiling_r_value_multiplier")
+    adjustments_osw = Path(temp_output_dir / "modify_hpxml.osw")
+    create_measure_input_file(arguments, adjustments_osw)
+    app(["modify-xml", str(adjustments_osw)])
+    calibrated_upgrade_run_dir = TEST_DIR / "data/calibrated_upgrade/run"
+    app(
+        [
+            "run-sim",
+            str(calibrated_upgrade_hpxml_file),
+            "--output-dir",
+            str(calibrated_upgrade_run_dir),
+            "--output-format",
+            "json",
+        ]
+    )
+
+    # FIXME: Compare energy savings with and without calibration
+
+    # Clean up
+    # Comment out to debug
+    # FIXME: Uncomment
+    # for subdir in ('uncalibrated_existing', 'uncalibrated_upgrade',
+    #                'calibrated_existing', 'calibrated_upgrade',
+    #                'generated_files'):
+    #     shutil.rmtree(subdir)
+
+def create_measure_input_file(arguments: dict, output_file_path: str):
+    data = {
+        "run_directory": str(Path(arguments["save_file_path"]).parent),
+        "measure_paths": [str(Path(__file__).resolve().parent.parent / "src/measures")],
+        "steps": [{"measure_dir_name": "ModifyXML", "arguments": arguments}],
+    }
+    Path(output_file_path).parent.mkdir(parents=True, exist_ok=True)
+    with open(output_file_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)

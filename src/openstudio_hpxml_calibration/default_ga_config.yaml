@@ -3,13 +3,15 @@ genetic_algorithm:
   generations: 50
   mutation_probability: 0.4
   crossover_probability: 0.4
+
+acceptance_criteria:
   bias_error_threshold: 5  # Bias error threshold in percent for all end uses
   abs_error_elec_threshold: 500  # Absolute error threshold for electricity in kWh
   abs_error_fuel_threshold: 5  # Absolute error threshold for fossil fuels in MBtu
 
 value_choices:
-  misc_load_multiplier_choices: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2, 5, 10]
-  air_leakage_multiplier_choices: [0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2]
+  misc_load_multiplier_choices: [0.1, 0.25, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2, 4, 7, 10]
+  air_leakage_multiplier_choices: [0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2]
   hvac_eff_multiplier_choices: [0.8, 0.9, 1, 1.1, 1.2]
   roof_r_value_multiplier_choices: [0.8, 0.9, 1, 1.1, 1.2]
   ceiling_r_value_multiplier_choices: [0.8, 0.9, 1, 1.1, 1.2]
@@ -20,11 +22,11 @@ value_choices:
   heating_setpoint_choices: [-5, -3, -1, 0, 1, 3, 5]
   cooling_setpoint_choices: [-5, -3, -1, 0, 1, 3, 5]
   water_heater_efficiency_multiplier_choices: [0.8, 0.9, 1, 1.1, 1.2]
-  water_fixtures_usage_multiplier_choices: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2, 5, 10]
+  water_fixtures_usage_multiplier_choices: [0.1, 0.25, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2, 4, 7, 10]
   window_u_factor_multiplier_choices: [0.8, 0.9, 1, 1.1, 1.2]
   window_shgc_multiplier_choices: [0.8, 0.9, 1, 1.1, 1.2]
-  appliance_usage_multiplier_choices: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2, 5, 10]
-  lighting_load_multiplier_choices: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2, 5, 10]
+  appliance_usage_multiplier_choices: [0.1, 0.25, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2, 4, 7, 10]
+  lighting_load_multiplier_choices: [0.1, 0.25, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2, 4, 7, 10]
 
 min_days_of_consumption_data: 330
 max_years: 25
