@@ -702,13 +702,8 @@
           <EndDateTime>2008-03-25T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
-          <Consumption>764</Consumption>
+          <Consumption>936</Consumption>
           <StartDateTime>2008-03-25T00:00:00</StartDateTime>
-          <EndDateTime>2008-04-23T00:00:00</EndDateTime>
-        </ConsumptionDetail>
-        <ConsumptionDetail>
-          <Consumption>172</Consumption>
-          <StartDateTime>2008-04-23T00:00:00</StartDateTime>
           <EndDateTime>2008-04-24T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
