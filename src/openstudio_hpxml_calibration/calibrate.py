@@ -631,7 +631,13 @@ class Calibrate:
                         )
 
     def run_ga_search(
-        self, population_size=None, generations=None, cxpb=None, mutpb=None, num_proc=None
+        self,
+        population_size=None,
+        generations=None,
+        cxpb=None,
+        mutpb=None,
+        num_proc=None,
+        output_filepath=None,
     ):
         print(f"Running GA search algorithm for '{Path(self.hpxml_filepath).name}'...")
 
@@ -938,15 +944,14 @@ class Calibrate:
             "natural_gas_baseload": [12, 13],
         }
 
-        def get_worst_bias_end_use(comparison):
-            max_bias = -float("inf")
+        def get_worst_abs_err_end_use(comparison):
+            max_abs_err = -float("inf")
             worst_end_use_key = None
             for fuel_type, metrics in comparison.items():
-                for end_use, bias in metrics["Bias Error"].items():
-                    abs_bias = abs(bias)
+                for end_use, abs_err in metrics["Absolute Error"].items():
                     key = f"{fuel_type}_{end_use}"
-                    if abs_bias > max_bias:
-                        max_bias = abs_bias
+                    if abs(abs_err) > max_abs_err:
+                        max_abs_err = abs(abs_err)
                         worst_end_use_key = key
             return worst_end_use_key
 
@@ -979,7 +984,7 @@ class Calibrate:
         if num_proc is None:
             num_proc = multiprocessing.cpu_count() - 1
 
-        with Pool(processes=num_proc, maxtasksperchild=1) as pool:
+        with Pool(processes=num_proc, maxtasksperchild=15) as pool:
             toolbox.register("map", pool.map)
             pop = toolbox.population(n=population_size)
             hall_of_fame = tools.HallOfFame(1)
@@ -1044,7 +1049,7 @@ class Calibrate:
 
                 # Select next generation (excluding elites), then add elites
                 if invalid_ind:
-                    worst_key = get_worst_bias_end_use(invalid_ind[0].comparison)
+                    worst_key = get_worst_abs_err_end_use(invalid_ind[0].comparison)
                     worst_end_uses_by_gen.append(worst_key)
 
                 pop = toolbox.select(offspring, population_size - len(elite))
@@ -1105,6 +1110,10 @@ class Calibrate:
                     break
 
         best_individual = hall_of_fame[0]
+
+        best_individual_hpxml = best_individual.temp_output_dir / "modified.xml"
+        if best_individual_hpxml.exists():
+            shutil.copy(best_individual_hpxml, output_filepath / "best_individual.xml")
 
         # Cleanup
         time.sleep(0.5)

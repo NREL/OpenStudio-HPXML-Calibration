@@ -1,4 +1,5 @@
 import json
+import shutil
 import statistics
 import time
 from pathlib import Path
@@ -10,16 +11,22 @@ from openstudio_hpxml_calibration.calibrate import Calibrate
 
 def main(filepath):
     filename = Path(filepath).stem
+    output_filepath = Path(__file__).resolve().parent / "tests" / "ga_search_results" / filename
+
+    # Remove old results if they exist
+    if output_filepath.exists():
+        shutil.rmtree(output_filepath)
+
+    output_filepath.mkdir(parents=True, exist_ok=True)
+
     cal = Calibrate(
         original_hpxml_filepath=filepath,
     )
     start = time.time()
-    best_individual, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search()
+    best_individual, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search(
+        output_filepath=output_filepath
+    )
     print(f"Evaluation took {time.time() - start:.2f} seconds")
-
-    # Define the output file path
-    output_filepath = Path(__file__).resolve().parent / "tests" / "ga_search_results" / filename
-    output_filepath.mkdir(parents=True, exist_ok=True)
 
     # Save the logbook
     log_data = []
@@ -53,6 +60,7 @@ def main(filepath):
     plt.grid(True)
     plt.tight_layout()
     plt.savefig(str(output_filepath / "min_penalty_plot.png"))
+    plt.close()
 
     # Plot average penalty over generations
     plt.figure(figsize=(10, 6))
@@ -64,6 +72,7 @@ def main(filepath):
     plt.grid(True)
     plt.tight_layout()
     plt.savefig(str(output_filepath / "avg_penalty_plot.png"))
+    plt.close()
 
     # Plot bias error per end-use
     plt.figure(figsize=(12, 6))
@@ -77,6 +86,7 @@ def main(filepath):
     plt.grid(True)
     plt.tight_layout()
     plt.savefig(str(output_filepath / "bias_error_plot.png"), bbox_inches="tight")
+    plt.close()
 
     # Plot absolute error per end-use
     best_abs_series = {}
@@ -121,6 +131,7 @@ def main(filepath):
     ax1.grid(True)
     plt.tight_layout()
     plt.savefig(str(output_filepath / "absolute_error_plot.png"), bbox_inches="tight")
+    plt.close()
 
 
 if __name__ == "__main__":
