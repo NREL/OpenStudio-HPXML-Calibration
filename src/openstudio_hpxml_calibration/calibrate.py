@@ -325,13 +325,19 @@ class Calibrate:
 
         # combine the annual normalized bill consumption with the model results
         for model_fuel_type, disagg_results in annual_model_results.items():
-            bias_error_criteria = 5  # percent
-            absolute_error_criteria = 5  # measured in mbtu
+            bias_error_criteria = self.ga_config["genetic_algorithm"][
+                "bias_error_threshold"
+            ]  # percent
+            absolute_error_criteria = self.ga_config["genetic_algorithm"][
+                "abs_error_fuel_threshold"
+            ]  # measured in mbtu
             if model_fuel_type in annual_normalized_bill_consumption:
                 comparison_results[model_fuel_type] = {"Bias Error": {}, "Absolute Error": {}}
                 for load_type in disagg_results:
                     if model_fuel_type == "electricity":
-                        absolute_error_criteria = 500  # measured in kWh
+                        absolute_error_criteria = self.ga_config["genetic_algorithm"][
+                            "abs_error_elec_threshold"
+                        ]  # measured in kWh
                         # All results from simulation and normalized bills are in mbtu.
                         # convert electric loads from mbtu to kWh for bpi2400
                         annual_normalized_bill_consumption[model_fuel_type][load_type] = (
