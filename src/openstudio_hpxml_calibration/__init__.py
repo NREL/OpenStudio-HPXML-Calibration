@@ -1,4 +1,5 @@
 import json
+import shutil
 import subprocess
 import time
 import zipfile
@@ -184,22 +185,24 @@ def calibrate(
     from openstudio_hpxml_calibration.calibrate import Calibrate
 
     filename = Path(hpxml_filepath).stem
-    cal = Calibrate(original_hpxml_filepath=hpxml_filepath, config_filepath=config_filepath)
-
-    start = time.time()
-    best_individual, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search(
-        num_proc=num_proc
-    )
-    logger.info(f"Calibration took {time.time() - start:.2f} seconds")
-
-    # Output directory
     if output_dir is None:
         output_filepath = (
             Path(__file__).resolve().parent.parent / "tests" / "ga_search_results" / filename
         )
     else:
         output_filepath = Path(output_dir)
+    # Remove old output_filepath if it exists
+    if output_filepath.exists() and output_filepath.is_dir():
+        shutil.rmtree(output_filepath)
     output_filepath.mkdir(parents=True, exist_ok=True)
+
+    cal = Calibrate(original_hpxml_filepath=hpxml_filepath, config_filepath=config_filepath)
+
+    start = time.time()
+    best_individual, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search(
+        num_proc=num_proc, output_filepath=output_filepath
+    )
+    logger.info(f"Calibration took {time.time() - start:.2f} seconds")
 
     # Save logbook
     logbook_path = output_filepath / "logbook.json"
@@ -220,6 +223,7 @@ def calibrate(
     plt.grid(True)
     plt.tight_layout()
     plt.savefig(str(output_filepath / "min_penalty_plot.png"))
+    plt.close()
 
     # Plot Avg Penalty
     plt.figure(figsize=(10, 6))
@@ -231,6 +235,7 @@ def calibrate(
     plt.grid(True)
     plt.tight_layout()
     plt.savefig(str(output_filepath / "avg_penalty_plot.png"))
+    plt.close()
 
     # Bias error series
     best_bias_series = {}
@@ -250,6 +255,7 @@ def calibrate(
     plt.grid(True)
     plt.tight_layout()
     plt.savefig(str(output_filepath / "bias_error_plot.png"), bbox_inches="tight")
+    plt.close()
 
     # Absolute error series
     best_abs_series = {}
@@ -288,6 +294,7 @@ def calibrate(
     ax1.grid(True)
     plt.tight_layout()
     plt.savefig(str(output_filepath / "absolute_error_plot.png"), bbox_inches="tight")
+    plt.close()
 
 
 if __name__ == "__main__":

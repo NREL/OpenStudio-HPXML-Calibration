@@ -1,5 +1,6 @@
 import copy
 import json
+import math
 import multiprocessing
 import random
 import shutil
@@ -345,17 +346,20 @@ class Calibrate:
                         )
 
                     # Calculate error levels
-                    comparison_results[model_fuel_type]["Bias Error"][load_type] = round(
-                        (
+                    if annual_normalized_bill_consumption[model_fuel_type][load_type] == 0:
+                        comparison_results[model_fuel_type]["Bias Error"][load_type] = float("nan")
+                    else:
+                        comparison_results[model_fuel_type]["Bias Error"][load_type] = round(
                             (
-                                annual_normalized_bill_consumption[model_fuel_type][load_type]
-                                - disagg_results[load_type]
+                                (
+                                    annual_normalized_bill_consumption[model_fuel_type][load_type]
+                                    - disagg_results[load_type]
+                                )
+                                / annual_normalized_bill_consumption[model_fuel_type][load_type]
                             )
-                            / annual_normalized_bill_consumption[model_fuel_type][load_type]
+                            * 100,
+                            1,
                         )
-                        * 100,
-                        1,
-                    )
                     comparison_results[model_fuel_type]["Absolute Error"][load_type] = round(
                         abs(
                             annual_normalized_bill_consumption[model_fuel_type][load_type]
@@ -799,7 +803,13 @@ class Calibrate:
                         )
 
     def run_ga_search(
-        self, population_size=None, generations=None, cxpb=None, mutpb=None, num_proc=None
+        self,
+        population_size=None,
+        generations=None,
+        cxpb=None,
+        mutpb=None,
+        num_proc=None,
+        output_filepath=None,
     ):
         print(f"Running GA search algorithm for '{Path(self.hpxml_filepath).name}'...")
 
@@ -932,23 +942,25 @@ class Calibrate:
                             self.compare_results(normalized_consumption, simulation_results)
                         )
 
-                bias_error_penalties = []
+                combined_error_penalties = []
                 for fuel_type, metrics in comparison.items():
                     for end_use, bias_error in metrics["Bias Error"].items():
-                        bias_error_penalty = max(0, abs(bias_error)) ** 2
-                        # if absolute error is within the bpi2400 criteria, relax the penalty
-                        if abs_error_within_threshold(
-                            fuel_type,
-                            abs(metrics["Absolute Error"][end_use]),
-                            abs_error_elec_threshold,
-                            abs_error_fuel_threshold,
-                        ):
-                            penalty_relaxation_factor = 0.2
-                            bias_error_penalty *= penalty_relaxation_factor
+                        if math.isnan(bias_error) or math.isnan(metrics["Absolute Error"][end_use]):
+                            continue  # Skip NaN values
 
-                        bias_error_penalties.append(bias_error_penalty)
+                        bias_err = abs(bias_error)
+                        abs_err = abs(metrics["Absolute Error"][end_use])
 
-                total_score = sum(bias_error_penalties)
+                        log_bias_err = math.log1p(bias_err)  # log1p to avoid log(0)
+                        log_abs_err = math.log1p(abs_err)
+
+                        bias_error_penalty = max(0, log_bias_err) ** 2
+                        abs_error_penalty = max(0, log_abs_err) ** 2
+                        combined_error_penalty = bias_error_penalty + abs_error_penalty
+
+                        combined_error_penalties.append(combined_error_penalty)
+
+                total_score = sum(combined_error_penalties)
 
                 return (total_score,), comparison, temp_output_dir
 
@@ -1122,15 +1134,14 @@ class Calibrate:
             "natural_gas_baseload": [12, 13],
         }
 
-        def get_worst_bias_end_use(comparison):
-            max_bias = -float("inf")
+        def get_worst_abs_err_end_use(comparison):
+            max_abs_err = -float("inf")
             worst_end_use_key = None
             for fuel_type, metrics in comparison.items():
-                for end_use, bias in metrics["Bias Error"].items():
-                    abs_bias = abs(bias)
+                for end_use, abs_err in metrics["Absolute Error"].items():
                     key = f"{fuel_type}_{end_use}"
-                    if abs_bias > max_bias:
-                        max_bias = abs_bias
+                    if abs(abs_err) > max_abs_err:
+                        max_abs_err = abs(abs_err)
                         worst_end_use_key = key
             return worst_end_use_key
 
@@ -1163,7 +1174,7 @@ class Calibrate:
         if num_proc is None:
             num_proc = multiprocessing.cpu_count() - 1
 
-        with Pool(processes=num_proc, maxtasksperchild=1) as pool:
+        with Pool(processes=num_proc, maxtasksperchild=15) as pool:
             toolbox.register("map", pool.map)
             pop = toolbox.population(n=population_size)
             hall_of_fame = tools.HallOfFame(1)
@@ -1228,7 +1239,7 @@ class Calibrate:
 
                 # Select next generation (excluding elites), then add elites
                 if invalid_ind:
-                    worst_key = get_worst_bias_end_use(invalid_ind[0].comparison)
+                    worst_key = get_worst_abs_err_end_use(invalid_ind[0].comparison)
                     worst_end_uses_by_gen.append(worst_key)
 
                 pop = toolbox.select(offspring, population_size - len(elite))
@@ -1289,6 +1300,10 @@ class Calibrate:
                     break
 
         best_individual = hall_of_fame[0]
+
+        best_individual_hpxml = best_individual.temp_output_dir / "modified.xml"
+        if best_individual_hpxml.exists():
+            shutil.copy(best_individual_hpxml, output_filepath / "best_individual.xml")
 
         # Cleanup
         time.sleep(0.5)
