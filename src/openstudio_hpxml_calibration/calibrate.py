@@ -750,8 +750,9 @@ class Calibrate:
 
                 output_file = temp_output_dir / "run" / "results_annual.json"
                 simulation_results = self.get_model_results(json_results_path=output_file)
+                simulation_results_copy = copy.deepcopy(simulation_results)
                 normalized_consumption = self.get_normalized_consumption_per_bill()
-                comparison = self.compare_results(normalized_consumption, simulation_results)
+                comparison = self.compare_results(normalized_consumption, simulation_results_copy)
 
                 combined_error_penalties = []
                 for fuel_type, metrics in comparison.items():
@@ -773,7 +774,12 @@ class Calibrate:
 
                 total_score = sum(combined_error_penalties)
 
-                return (total_score,), comparison, temp_output_dir, simulation_results
+                return (
+                    (total_score,),
+                    comparison,
+                    temp_output_dir,
+                    simulation_results_copy,
+                )
 
             except Exception as e:
                 logger.error(f"Error evaluating individual {individual}: {e}")
@@ -1074,8 +1080,8 @@ class Calibrate:
             record = stats.compile(pop)
             record.update({f"bias_error_{k}": v[-1] for k, v in best_bias_series.items()})
             record.update({f"abs_error_{k}": v[-1] for k, v in best_abs_series.items()})
-            record["best_individual"] = [dict(zip(param_choices_map.keys(), best_ind))]
-            record["best_individual_sim_results_in_mbtu"] = [best_ind.sim_results]
+            record["best_individual"] = json.dumps(dict(zip(param_choices_map.keys(), best_ind)))
+            record["best_individual_sim_results"] = json.dumps(best_ind.sim_results)
             record["diversity"] = diversity(pop)
             logbook.record(gen=0, nevals=len(invalid_ind), **record)
             print(logbook.stream)
@@ -1125,8 +1131,10 @@ class Calibrate:
                     {f"bias_error_{k}": best_bias_series[k][-1] for k in best_bias_series}
                 )
                 record.update({f"abs_error_{k}": best_abs_series[k][-1] for k in best_abs_series})
-                record["best_individual"] = [dict(zip(param_choices_map.keys(), best_ind))]
-                record["best_individual_sim_results_in_mbtu"] = [best_ind.sim_results]
+                record["best_individual"] = json.dumps(
+                    dict(zip(param_choices_map.keys(), best_ind))
+                )
+                record["best_individual_sim_results"] = json.dumps(best_ind.sim_results)
                 record["diversity"] = diversity(pop)
                 logbook.record(gen=gen, nevals=len(invalid_ind), **record)
                 print(logbook.stream)
