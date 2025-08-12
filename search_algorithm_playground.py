@@ -1,3 +1,4 @@
+import contextlib
 import json
 import shutil
 import statistics
@@ -30,8 +31,17 @@ def main(filepath):
 
     # Save the logbook
     log_data = []
-    for gen, record in enumerate(logbook):
-        log_data.append(record)
+    for record in logbook:
+        rec = record.copy()
+        if "best_individual" in rec and isinstance(rec["best_individual"], str):
+            with contextlib.suppress(json.JSONDecodeError):
+                rec["best_individual"] = json.loads(rec["best_individual"])
+        if "best_individual_sim_results" in rec and isinstance(
+            rec["best_individual_sim_results"], str
+        ):
+            with contextlib.suppress(json.JSONDecodeError):
+                rec["best_individual_sim_results"] = json.loads(rec["best_individual_sim_results"])
+        log_data.append(rec)
 
     logbook_path = output_filepath / "logbook.json"
     with open(logbook_path, "w", encoding="utf-8") as f:
