@@ -772,7 +772,7 @@ class Calibrate:
 
                 total_score = sum(combined_error_penalties)
 
-                return (total_score,), comparison, temp_output_dir
+                return (total_score,), comparison, temp_output_dir, simulation_results
 
             except Exception as e:
                 logger.error(f"Error evaluating individual {individual}: {e}")
@@ -1047,12 +1047,13 @@ class Calibrate:
             # Initial evaluation
             invalid_ind = [ind for ind in pop if not ind.fitness.valid]
             fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
-            for ind, (fit, comp, temp_dir) in zip(invalid_ind, fitnesses):
+            for ind, (fit, comp, temp_dir, sim_results) in zip(invalid_ind, fitnesses):
                 ind.fitness.values = fit
                 ind.comparison = comp
                 ind.temp_output_dir = temp_dir
                 if temp_dir is not None:
                     all_temp_dirs.add(temp_dir)
+                ind.sim_results = sim_results
 
             hall_of_fame.update(pop)
             best_ind = tools.selBest(pop, 1)[0]
@@ -1073,6 +1074,7 @@ class Calibrate:
             record.update({f"bias_error_{k}": v[-1] for k, v in best_bias_series.items()})
             record.update({f"abs_error_{k}": v[-1] for k, v in best_abs_series.items()})
             record["best_individual"] = [dict(zip(param_choices_map.keys(), best_ind))]
+            record["best_individual_sim_results_in_mbtu"] = [best_ind.sim_results]
             record["diversity"] = diversity(pop)
             logbook.record(gen=0, nevals=len(invalid_ind), **record)
             print(logbook.stream)
@@ -1087,11 +1089,12 @@ class Calibrate:
                 # Evaluate offspring
                 invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
                 fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
-                for ind, (fit, comp, temp_dir) in zip(invalid_ind, fitnesses):
+                for ind, (fit, comp, temp_dir, sim_results) in zip(invalid_ind, fitnesses):
                     ind.fitness.values = fit
                     ind.comparison = comp
                     ind.temp_output_dir = temp_dir
                     all_temp_dirs.add(temp_dir)
+                    ind.sim_results = sim_results
 
                 # Select next generation (excluding elites), then add elites
                 if invalid_ind:
@@ -1122,6 +1125,7 @@ class Calibrate:
                 )
                 record.update({f"abs_error_{k}": best_abs_series[k][-1] for k in best_abs_series})
                 record["best_individual"] = [dict(zip(param_choices_map.keys(), best_ind))]
+                record["best_individual_sim_results_in_mbtu"] = [best_ind.sim_results]
                 record["diversity"] = diversity(pop)
                 logbook.record(gen=gen, nevals=len(invalid_ind), **record)
                 print(logbook.stream)
