@@ -178,7 +178,6 @@ def test_workflow_with_upgrade():
     assert existing_hpxml_file.exists()
 
     # Run existing home simulation
-    # FUTURE: Is this already run during the calibration?
     existing_run_dir = TEST_DIR / "data/uncalibrated_existing/run"
     app(
         [
@@ -211,7 +210,7 @@ def test_workflow_with_upgrade():
     calibration_output_file = calibration_output_dir / "logbook.json"
     assert calibration_output_file.exists()
     results = json.loads(calibration_output_file.read_text())
-    calibration_adjustments = results[-1]['best_individual'][0]
+    calibration_adjustments = results[-1]['best_individual']
 
     # Create HPXML file for upgrade scenario (R-60 attic insulation)
     upgrade_osw_path = TEST_DIR / "data/ihmh3_upgrade_hpxml.osw"
