@@ -330,21 +330,12 @@ class Calibrate:
 
         # combine the annual normalized bill consumption with the model results
         for model_fuel_type, disagg_results in annual_model_results.items():
-            bias_error_criteria = self.ga_config["genetic_algorithm"][
-                "bias_error_threshold"
-            ]  # percent
-            absolute_error_criteria = self.ga_config["genetic_algorithm"][
-                "abs_error_fuel_threshold"
-            ]  # measured in mbtu
             if model_fuel_type in annual_normalized_bill_consumption:
                 comparison_results[model_fuel_type] = {"Bias Error": {}, "Absolute Error": {}}
                 for load_type in disagg_results:
                     if load_type not in annual_normalized_bill_consumption[model_fuel_type]:
                         continue
                     if model_fuel_type == "electricity":
-                        absolute_error_criteria = self.ga_config["genetic_algorithm"][
-                            "abs_error_elec_threshold"
-                        ]  # measured in kWh
                         # All results from simulation and normalized bills are in mbtu.
                         # convert electric loads from mbtu to kWh for bpi2400
                         annual_normalized_bill_consumption[model_fuel_type][load_type] = (
@@ -380,21 +371,6 @@ class Calibrate:
                         ),
                         1,
                     )
-                    # Notify if error exceeds the criteria
-                    if (
-                        abs(comparison_results[model_fuel_type]["Bias Error"][load_type])
-                        > bias_error_criteria
-                    ):
-                        logger.info(
-                            f"Bias error for {model_fuel_type} {load_type} is {comparison_results[model_fuel_type]['Bias Error'][load_type]} but the limit is +/- {bias_error_criteria}"
-                        )
-                    if (
-                        abs(comparison_results[model_fuel_type]["Absolute Error"][load_type])
-                        > absolute_error_criteria
-                    ):
-                        logger.info(
-                            f"Absolute error for {model_fuel_type} {load_type} is {comparison_results[model_fuel_type]['Absolute Error'][load_type]} but the limit is +/- {absolute_error_criteria}"
-                        )
 
         return comparison_results
 
@@ -955,6 +931,27 @@ class Calibrate:
                         comparison.update(
                             self.compare_results(normalized_consumption, simulation_results_copy)
                         )
+                for model_fuel_type, result in comparison.items():
+                    bias_error_criteria = self.ga_config["genetic_algorithm"][
+                        "bias_error_threshold"
+                    ]
+                    if model_fuel_type == "electricity":
+                        absolute_error_criteria = self.ga_config["genetic_algorithm"][
+                            "abs_error_elec_threshold"
+                        ]
+                    else:
+                        absolute_error_criteria = self.ga_config["genetic_algorithm"][
+                            "abs_error_fuel_threshold"
+                        ]
+                    for load_type in result["Bias Error"]:
+                        if abs(result["Bias Error"][load_type]) > bias_error_criteria:
+                            logger.info(
+                                f"Bias error for {model_fuel_type} {load_type} is {result['Bias Error'][load_type]} but the limit is +/- {bias_error_criteria}"
+                            )
+                        if abs(result["Absolute Error"][load_type]) > absolute_error_criteria:
+                            logger.info(
+                                f"Absolute error for {model_fuel_type} {load_type} is {result['Absolute Error'][load_type]} but the limit is +/- {absolute_error_criteria}"
+                            )
 
                 combined_error_penalties = []
                 for fuel_type, metrics in comparison.items():
