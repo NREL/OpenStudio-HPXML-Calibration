@@ -1,7 +1,6 @@
 import functools
 import os
 import re
-from contextlib import suppress
 from enum import Enum
 from pathlib import Path
 
@@ -169,15 +168,18 @@ class HpxmlDoc:
         building = self.get_building(building_id)
         heating_fuels = set()
         cooling_fuels = set()
-        with suppress(AttributeError):
-            for hvac_system in building.BuildingDetails.Systems.HVAC.HVACPlant:
+        for hvac_system in building.BuildingDetails.Systems.HVAC.HVACPlant:
+            try:
                 heating_fuels.add(hvac_system.HeatingSystem.HeatingSystemFuel.text.strip())
+                cooling_fuels.add(hvac_system.CoolingSystem.CoolingSystemFuel.text.strip())
                 heating_fuels.add(hvac_system.HeatPump.HeatPumpFuel.text.strip())
                 heating_fuels.add(
                     hvac_system.HeatPump.BackupSystemFuel.text.strip()
                 )  # TODO: Need to capture fuel used for integrated AC?
-                cooling_fuels.add(hvac_system.CoolingSystem.CoolingSystemFuel.text.strip())
+
                 cooling_fuels.add(hvac_system.HeatPump.HeatPumpFuel.text.strip())
+            except AttributeError:
+                continue
 
         return heating_fuels, cooling_fuels
 
