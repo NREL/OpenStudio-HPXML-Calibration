@@ -1,3 +1,4 @@
+import contextlib
 import json
 import shutil
 import statistics
@@ -23,15 +24,24 @@ def main(filepath):
         original_hpxml_filepath=filepath,
     )
     start = time.time()
-    best_individual, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search(
+    best_individual_dict, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search(
         output_filepath=output_filepath
     )
     print(f"Evaluation took {time.time() - start:.2f} seconds")
 
     # Save the logbook
     log_data = []
-    for gen, record in enumerate(logbook):
-        log_data.append(record)
+    for record in logbook:
+        rec = record.copy()
+        if "best_individual" in rec and isinstance(rec["best_individual"], str):
+            with contextlib.suppress(json.JSONDecodeError):
+                rec["best_individual"] = json.loads(rec["best_individual"])
+        if "best_individual_sim_results" in rec and isinstance(
+            rec["best_individual_sim_results"], str
+        ):
+            with contextlib.suppress(json.JSONDecodeError):
+                rec["best_individual_sim_results"] = json.loads(rec["best_individual_sim_results"])
+        log_data.append(rec)
 
     logbook_path = output_filepath / "logbook.json"
     with open(logbook_path, "w", encoding="utf-8") as f:

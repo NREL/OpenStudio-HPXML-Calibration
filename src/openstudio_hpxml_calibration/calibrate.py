@@ -921,26 +921,9 @@ class Calibrate:
 
                 output_file = temp_output_dir / "run" / "results_annual.json"
                 simulation_results = self.get_model_results(json_results_path=output_file)
-                consumption = self.hpxml.get_consumption()
-                comparison = {}
-                delivered_fuels = (
-                    FuelType.FUEL_OIL.value,
-                    FuelType.PROPANE.value,
-                    FuelType.WOOD.value,
-                    FuelType.WOOD_PELLETS.value,
-                )
-                for fuel_type in consumption.ConsumptionDetails.ConsumptionInfo:
-                    fuel = fuel_type.ConsumptionType.Energy.FuelType
-                    if fuel in delivered_fuels:
-                        simplified_calibration_results = self.simplified_annual_usage(
-                            simulation_results, consumption
-                        )
-                        comparison[fuel] = simplified_calibration_results.get(fuel, {})
-                    else:
-                        normalized_consumption = self.get_normalized_consumption_per_bill()
-                        comparison.update(
-                            self.compare_results(normalized_consumption, simulation_results)
-                        )
+                simulation_results_copy = copy.deepcopy(simulation_results)
+                normalized_consumption = self.get_normalized_consumption_per_bill()
+                comparison = self.compare_results(normalized_consumption, simulation_results_copy)
 
                 combined_error_penalties = []
                 for fuel_type, metrics in comparison.items():
@@ -962,7 +945,12 @@ class Calibrate:
 
                 total_score = sum(combined_error_penalties)
 
-                return (total_score,), comparison, temp_output_dir
+                return (
+                    (total_score,),
+                    comparison,
+                    temp_output_dir,
+                    simulation_results_copy,
+                )
 
             except Exception as e:
                 logger.error(f"Error evaluating individual {individual}: {e}")
@@ -1104,35 +1092,76 @@ class Calibrate:
 
         # Define parameter-to-choices mapping for mutation
         param_choices_map = {
-            0: misc_load_multiplier_choices,
-            1: heating_setpoint_choices,
-            2: cooling_setpoint_choices,
-            3: air_leakage_multiplier_choices,
-            4: hvac_eff_multiplier_choices,
-            5: hvac_eff_multiplier_choices,
-            6: roof_r_value_multiplier_choices,
-            7: ceiling_r_value_multiplier_choices,
-            8: above_ground_walls_r_value_multiplier_choices,
-            9: below_ground_walls_r_value_multiplier_choices,
-            10: slab_r_value_multiplier_choices,
-            11: floor_r_value_multiplier_choices,
-            12: water_heater_efficiency_multiplier_choices,
-            13: water_fixtures_usage_multiplier_choices,
-            14: window_u_factor_multiplier_choices,
-            15: window_shgc_multiplier_choices,
-            16: appliance_usage_multiplier_choices,
-            17: lighting_load_multiplier_choices,
+            "misc_load_multiplier": misc_load_multiplier_choices,
+            "heating_setpoint_offset": heating_setpoint_choices,
+            "cooling_setpoint_offset": cooling_setpoint_choices,
+            "air_leakage_multiplier": air_leakage_multiplier_choices,
+            "heating_hvac_eff_multiplier": hvac_eff_multiplier_choices,
+            "cooling_hvac_eff_multiplier": hvac_eff_multiplier_choices,
+            "roof_r_value_multiplier": roof_r_value_multiplier_choices,
+            "ceiling_r_value_multiplier": ceiling_r_value_multiplier_choices,
+            "above_ground_walls_r_value_multiplier": above_ground_walls_r_value_multiplier_choices,
+            "below_ground_walls_r_value_multiplier": below_ground_walls_r_value_multiplier_choices,
+            "slab_r_value_multiplier": slab_r_value_multiplier_choices,
+            "floor_r_value_multiplier": floor_r_value_multiplier_choices,
+            "water_heater_efficiency_multiplier": water_heater_efficiency_multiplier_choices,
+            "water_fixtures_usage_multiplier": water_fixtures_usage_multiplier_choices,
+            "window_u_factor_multiplier": window_u_factor_multiplier_choices,
+            "window_shgc_multiplier": window_shgc_multiplier_choices,
+            "appliance_usage_multiplier": appliance_usage_multiplier_choices,
+            "lighting_load_multiplier": lighting_load_multiplier_choices,
         }
 
         worst_end_uses_by_gen = []
 
         end_use_param_map = {
-            "electricity_heating": [1, 3, 4, 6, 7, 8, 10, 14, 15],
-            "electricity_cooling": [2, 3, 5, 6, 7, 8, 10, 14, 15],
-            "electricity_baseload": [0, 16, 17],
-            "natural_gas_heating": [1, 3, 4, 6, 7, 8, 10, 14, 15],
-            "natural_gas_baseload": [12, 13],
+            "electricity_heating": [
+                "heating_setpoint_offset",
+                "air_leakage_multiplier",
+                "heating_hvac_eff_multiplier",
+                "roof_r_value_multiplier",
+                "ceiling_r_value_multiplier",
+                "above_ground_walls_r_value_multiplier",
+                "slab_r_value_multiplier",
+                "window_u_factor_multiplier",
+                "window_shgc_multiplier",
+            ],
+            "electricity_cooling": [
+                "cooling_setpoint_offset",
+                "air_leakage_multiplier",
+                "cooling_hvac_eff_multiplier",
+                "roof_r_value_multiplier",
+                "ceiling_r_value_multiplier",
+                "above_ground_walls_r_value_multiplier",
+                "slab_r_value_multiplier",
+                "window_u_factor_multiplier",
+                "window_shgc_multiplier",
+            ],
+            "electricity_baseload": [
+                "misc_load_multiplier",
+                "appliance_usage_multiplier",
+                "lighting_load_multiplier",
+            ],
+            "natural_gas_heating": [
+                "heating_setpoint_offset",
+                "air_leakage_multiplier",
+                "heating_hvac_eff_multiplier",
+                "roof_r_value_multiplier",
+                "ceiling_r_value_multiplier",
+                "above_ground_walls_r_value_multiplier",
+                "slab_r_value_multiplier",
+                "window_u_factor_multiplier",
+                "window_shgc_multiplier",
+            ],
+            "natural_gas_baseload": [
+                "water_heater_efficiency_multiplier",
+                "water_fixtures_usage_multiplier",
+            ],
         }
+
+        param_names = list(param_choices_map.keys())
+        name_to_index = {name: idx for idx, name in enumerate(param_names)}
+        index_to_name = {idx: name for name, idx in name_to_index.items()}
 
         def get_worst_abs_err_end_use(comparison):
             max_abs_err = -float("inf")
@@ -1150,18 +1179,23 @@ class Calibrate:
 
             if worst_end_uses_by_gen:
                 worst_end_use = worst_end_uses_by_gen[-1]
-                impacted_indices = end_use_param_map.get(worst_end_use, [])
-                if impacted_indices:
-                    mutation_indices.update(
-                        random.sample(impacted_indices, min(len(impacted_indices), 2))
-                    )
+                impacted_param_names = end_use_param_map.get(worst_end_use, [])
+                if impacted_param_names:
+                    impacted_indices = [
+                        name_to_index[n] for n in impacted_param_names if n in name_to_index
+                    ]
+                    if impacted_indices:
+                        mutation_indices.update(
+                            random.sample(impacted_indices, min(len(impacted_indices), 2))
+                        )
 
             while len(mutation_indices) < random.randint(3, 6):
                 mutation_indices.add(random.randint(0, len(individual) - 1))
 
             for i in mutation_indices:
                 current_val = individual[i]
-                choices = [val for val in param_choices_map[i] if val != current_val]
+                param_name = index_to_name[i]
+                choices = [val for val in param_choices_map[param_name] if val != current_val]
                 if choices:
                     individual[i] = random.choice(choices)
             return (individual,)
@@ -1191,12 +1225,13 @@ class Calibrate:
             # Initial evaluation
             invalid_ind = [ind for ind in pop if not ind.fitness.valid]
             fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
-            for ind, (fit, comp, temp_dir) in zip(invalid_ind, fitnesses):
+            for ind, (fit, comp, temp_dir, sim_results) in zip(invalid_ind, fitnesses):
                 ind.fitness.values = fit
                 ind.comparison = comp
                 ind.temp_output_dir = temp_dir
                 if temp_dir is not None:
                     all_temp_dirs.add(temp_dir)
+                ind.sim_results = sim_results
 
             hall_of_fame.update(pop)
             best_ind = tools.selBest(pop, 1)[0]
@@ -1216,7 +1251,8 @@ class Calibrate:
             record = stats.compile(pop)
             record.update({f"bias_error_{k}": v[-1] for k, v in best_bias_series.items()})
             record.update({f"abs_error_{k}": v[-1] for k, v in best_abs_series.items()})
-            record["best_individual"] = list(best_ind)
+            record["best_individual"] = json.dumps(dict(zip(param_choices_map.keys(), best_ind)))
+            record["best_individual_sim_results"] = json.dumps(best_ind.sim_results)
             record["diversity"] = diversity(pop)
             logbook.record(gen=0, nevals=len(invalid_ind), **record)
             print(logbook.stream)
@@ -1231,11 +1267,12 @@ class Calibrate:
                 # Evaluate offspring
                 invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
                 fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
-                for ind, (fit, comp, temp_dir) in zip(invalid_ind, fitnesses):
+                for ind, (fit, comp, temp_dir, sim_results) in zip(invalid_ind, fitnesses):
                     ind.fitness.values = fit
                     ind.comparison = comp
                     ind.temp_output_dir = temp_dir
                     all_temp_dirs.add(temp_dir)
+                    ind.sim_results = sim_results
 
                 # Select next generation (excluding elites), then add elites
                 if invalid_ind:
@@ -1265,7 +1302,10 @@ class Calibrate:
                     {f"bias_error_{k}": best_bias_series[k][-1] for k in best_bias_series}
                 )
                 record.update({f"abs_error_{k}": best_abs_series[k][-1] for k in best_abs_series})
-                record["best_individual"] = list(best_ind)
+                record["best_individual"] = json.dumps(
+                    dict(zip(param_choices_map.keys(), best_ind))
+                )
+                record["best_individual_sim_results"] = json.dumps(best_ind.sim_results)
                 record["diversity"] = diversity(pop)
                 logbook.record(gen=gen, nevals=len(invalid_ind), **record)
                 print(logbook.stream)
@@ -1300,6 +1340,7 @@ class Calibrate:
                     break
 
         best_individual = hall_of_fame[0]
+        best_individual_dict = dict(zip(param_choices_map.keys(), best_individual))
 
         best_individual_hpxml = best_individual.temp_output_dir / "modified.xml"
         if best_individual_hpxml.exists():
@@ -1321,4 +1362,4 @@ class Calibrate:
                 "and absolute error thresholds before reaching the maximum number of generations."
             )
 
-        return best_individual, pop, logbook, best_bias_series, best_abs_series
+        return best_individual_dict, pop, logbook, best_bias_series, best_abs_series
