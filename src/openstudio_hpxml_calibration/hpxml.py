@@ -197,6 +197,20 @@ class HpxmlDoc:
             "h:Consumption[h:BuildingID/@idref=$building_id]", building_id=building_id
         )[0]
 
+    def get_consumptions(self, building_id: str | None = None) -> tuple:
+        """Get all Consumption elements for a building
+
+        :param building_id: The id of the Building to retrieve, gets first one if missing
+        :type building_id: str | None, optional
+        :return: Tuple of Consumption elements
+        :rtype: tuple
+        """
+        if building_id is None:
+            return tuple(self.xpath("h:Consumption"))
+        return tuple(
+            self.xpath("h:Consumption[h:BuildingID/@idref=$building_id]", building_id=building_id)
+        )
+
     @functools.cache
     def get_epw_path(self, building_id: str | None = None) -> Path:
         """Get the filesystem path to the EPW file.
