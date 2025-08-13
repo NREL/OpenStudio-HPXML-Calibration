@@ -144,6 +144,8 @@ def test_calibrate_runs_successfully():
         [
             "calibrate",
             "test_hpxmls/ihmh_homes/ihmh4.xml",
+            "--config-filepath",
+            "tests/data/test_config.yaml",
             "--output-dir",
             "tests/ga_search_results/ihmh4_test",
         ]
