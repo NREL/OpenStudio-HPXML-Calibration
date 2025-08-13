@@ -317,6 +317,11 @@ class Calibrate:
         for fuel_type, consumption in normalized_consumption.items():
             annual_normalized_bill_consumption[fuel_type] = {}
             for end_use in ["heating", "cooling", "baseload"]:
+                if (
+                    end_use not in annual_model_results[fuel_type]
+                    or annual_model_results[fuel_type][end_use] == 0.0
+                ):
+                    continue
                 annual_normalized_bill_consumption[fuel_type][end_use] = (
                     consumption[end_use].sum().round(1)
                 )
@@ -334,6 +339,8 @@ class Calibrate:
             if model_fuel_type in annual_normalized_bill_consumption:
                 comparison_results[model_fuel_type] = {"Bias Error": {}, "Absolute Error": {}}
                 for load_type in disagg_results:
+                    if load_type not in annual_normalized_bill_consumption[model_fuel_type]:
+                        continue
                     if model_fuel_type == "electricity":
                         absolute_error_criteria = self.ga_config["genetic_algorithm"][
                             "abs_error_elec_threshold"
@@ -373,7 +380,7 @@ class Calibrate:
                         ),
                         1,
                     )
-                    # Notify amount error exceeds the criteria
+                    # Notify if error exceeds the criteria
                     if (
                         abs(comparison_results[model_fuel_type]["Bias Error"][load_type])
                         > bias_error_criteria
