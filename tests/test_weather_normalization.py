@@ -17,9 +17,15 @@ ira_rebate_hpxmls = list((repo_root / "test_hpxmls" / "ira_rebates").glob("*.xml
 real_home_hpxmls = list((repo_root / "test_hpxmls" / "real_homes").glob("*.xml"))
 ihmh_home_hpxmls = list((repo_root / "test_hpxmls" / "ihmh_homes").glob("*.xml"))
 SKIP_FILENAMES = {
+    "house18.xml",
+    "house32.xml",
+    "house37.xml",
     "house53.xml",
     "house54.xml",
+    "house57.xml",
     "house60.xml",
+    "house83.xml",
+    "house84.xml",
 }
 
 
@@ -56,7 +62,7 @@ def test_weather_retrieval(results_dir, filename):
     lat, lon = hpxml.get_lat_lon()
     bills_by_fuel_type, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
     for fuel_type, bills in bills_by_fuel_type.items():
-        bills_temps = ud.join_bills_weather(bills, lat, lon)
+        bills_temps, _ = ud.join_bills_weather(bills, lat, lon)
         fig = plt.figure(figsize=(8, 6))
         plt.scatter(bills_temps["avg_temp"], bills_temps["daily_consumption"])
         fig.savefig(

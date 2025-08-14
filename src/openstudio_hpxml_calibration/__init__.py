@@ -205,12 +205,12 @@ def calibrate(
                     csv_bills_filepath=csv_bills_filepath)
 
     start = time.time()
-    best_individual_dict, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search(
+    best_individual_pop, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search(
         num_proc=num_proc, output_filepath=output_filepath
     )
     logger.info(f"Calibration took {time.time() - start:.2f} seconds")
 
-    # Save the logbook
+    # Save logbook
     log_data = []
     for record in logbook:
         rec = record.copy()

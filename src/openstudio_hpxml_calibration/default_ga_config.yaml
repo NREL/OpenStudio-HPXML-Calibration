@@ -29,8 +29,9 @@ value_choices:
   appliance_usage_multiplier_choices: [0.1, 0.25, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2, 4, 7, 10]
   lighting_load_multiplier_choices: [0.1, 0.25, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2, 4, 7, 10]
 
-min_days_of_consumption_data: 330
-max_years: 25
-min_electrical_bill_days: 20
-max_electrical_bill_days: 45
-min_num_electrical_bills: 10
+utility_bill_criteria:
+  min_days_of_consumption_data: 330
+  max_years: 25
+  min_electrical_bill_days: 20
+  max_electrical_bill_days: 45
+  min_num_electrical_bills: 10
