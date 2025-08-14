@@ -1,3 +1,4 @@
+import contextlib
 import json
 import shutil
 import subprocess
@@ -199,15 +200,28 @@ def calibrate(
     cal = Calibrate(original_hpxml_filepath=hpxml_filepath, config_filepath=config_filepath)
 
     start = time.time()
-    best_individual, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search(
+    best_individual_pop, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search(
         num_proc=num_proc, output_filepath=output_filepath
     )
     logger.info(f"Calibration took {time.time() - start:.2f} seconds")
 
     # Save logbook
+    log_data = []
+    for record in logbook:
+        rec = record.copy()
+        if "best_individual" in rec and isinstance(rec["best_individual"], str):
+            with contextlib.suppress(json.JSONDecodeError):
+                rec["best_individual"] = json.loads(rec["best_individual"])
+        if "best_individual_sim_results" in rec and isinstance(
+            rec["best_individual_sim_results"], str
+        ):
+            with contextlib.suppress(json.JSONDecodeError):
+                rec["best_individual_sim_results"] = json.loads(rec["best_individual_sim_results"])
+        log_data.append(rec)
+
     logbook_path = output_filepath / "logbook.json"
     with open(logbook_path, "w", encoding="utf-8") as f:
-        json.dump(logbook, f, indent=2)
+        json.dump(log_data, f, indent=2)
 
     # Min and avg penalties
     min_penalty = [entry["min"] for entry in logbook]
