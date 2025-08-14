@@ -312,14 +312,18 @@ class Calibrate:
 
         # TODO: prevent double-calculating when running multiple times in the same kernel session
 
+        model_results = copy.deepcopy(
+            annual_model_results
+        )  # Don't change units in original annual_model_results
+
         # Build annual normalized bill consumption dicts
         annual_normalized_bill_consumption = {}
         for fuel_type, consumption in normalized_consumption.items():
             annual_normalized_bill_consumption[fuel_type] = {}
             for end_use in ["heating", "cooling", "baseload"]:
                 if (
-                    end_use not in annual_model_results[fuel_type]
-                    or annual_model_results[fuel_type][end_use] == 0.0
+                    end_use not in model_results[fuel_type]
+                    or model_results[fuel_type][end_use] == 0.0
                 ):
                     continue
                 annual_normalized_bill_consumption[fuel_type][end_use] = (
@@ -329,7 +333,7 @@ class Calibrate:
         comparison_results = {}
 
         # combine the annual normalized bill consumption with the model results
-        for model_fuel_type, disagg_results in annual_model_results.items():
+        for model_fuel_type, disagg_results in model_results.items():
             if model_fuel_type in annual_normalized_bill_consumption:
                 comparison_results[model_fuel_type] = {"Bias Error": {}, "Absolute Error": {}}
                 for load_type in disagg_results:
@@ -439,7 +443,10 @@ class Calibrate:
 
         return total_period_tmy_dd, total_period_actual_dd
 
-    def simplified_annual_usage(self, model_results: dict, consumption) -> dict:
+    def simplified_annual_usage(self, annual_model_results: dict, consumption) -> dict:
+        model_results = copy.deepcopy(
+            annual_model_results
+        )  # Don't change units in original annual_model_results
         total_period_tmy_dd, total_period_actual_dd = self.calculate_annual_degree_days()
 
         comparison_results = {}
@@ -798,6 +805,20 @@ class Calibrate:
                     "Please provide the clothes dryer fuel type in the HPXML"
                 )
 
+    def create_measure_input_file(
+        self, arguments: dict, output_file_path: str, measure_path: str | None = None
+    ):
+        if measure_path is None:
+            measure_path = str(Path(__file__).resolve().parent.parent / "measures")
+        data = {
+            "run_directory": str(Path(arguments["save_file_path"]).parent),
+            "measure_paths": [measure_path],
+            "steps": [{"measure_dir_name": "ModifyXML", "arguments": arguments}],
+        }
+        Path(output_file_path).parent.mkdir(parents=True, exist_ok=True)
+        with open(output_file_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2)
+
     def run_ga_search(
         self,
         population_size=None,
@@ -906,7 +927,7 @@ class Calibrate:
                 }
 
                 temp_osw = Path(temp_output_dir / "modify_hpxml.osw")
-                create_measure_input_file(arguments, temp_osw)
+                self.create_measure_input_file(arguments, temp_osw)
 
                 app(["modify-xml", str(temp_osw)])
                 app(
@@ -922,7 +943,6 @@ class Calibrate:
 
                 output_file = temp_output_dir / "run" / "results_annual.json"
                 simulation_results = self.get_model_results(json_results_path=output_file)
-                simulation_results_copy = copy.deepcopy(simulation_results)
                 consumptions = self.hpxml.get_consumptions()
                 comparison = {}
                 delivered_fuels = (
@@ -936,7 +956,7 @@ class Calibrate:
                         fuel = fuel_info.ConsumptionType.Energy.FuelType
                         if fuel in delivered_fuels:
                             simplified_calibration_results = self.simplified_annual_usage(
-                                simulation_results_copy, consumption
+                                simulation_results, consumption
                             )
                             # Merge results, prefer later sections if duplicate fuel keys
                             comparison[fuel] = simplified_calibration_results.get(fuel, {})
@@ -944,9 +964,7 @@ class Calibrate:
                             normalized_consumption = self.get_normalized_consumption_per_bill()
                             # Merge results, prefer later sections if duplicate fuel keys
                             comparison.update(
-                                self.compare_results(
-                                    normalized_consumption, simulation_results_copy
-                                )
+                                self.compare_results(normalized_consumption, simulation_results)
                             )
                 for model_fuel_type, result in comparison.items():
                     bias_error_criteria = self.ga_config["acceptance_criteria"][
@@ -994,7 +1012,7 @@ class Calibrate:
                     (total_score,),
                     comparison,
                     temp_output_dir,
-                    simulation_results_copy,
+                    simulation_results,
                 )
 
             except Exception as e:
@@ -1008,16 +1026,6 @@ class Calibrate:
                 return abs(abs_error) <= elec_threshold
             else:
                 return abs(abs_error) <= fuel_threshold
-
-        def create_measure_input_file(arguments: dict, output_file_path: str):
-            data = {
-                "run_directory": str(Path(arguments["save_file_path"]).parent),
-                "measure_paths": [str(Path(__file__).resolve().parent.parent / "measures")],
-                "steps": [{"measure_dir_name": "ModifyXML", "arguments": arguments}],
-            }
-            Path(output_file_path).parent.mkdir(parents=True, exist_ok=True)
-            with open(output_file_path, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2)
 
         def diversity(pop):
             return len({tuple(ind) for ind in pop}) / len(pop)
@@ -1301,7 +1309,7 @@ class Calibrate:
             record.update({f"bias_error_{k}": v[-1] for k, v in best_bias_series.items()})
             record.update({f"abs_error_{k}": v[-1] for k, v in best_abs_series.items()})
             record["best_individual"] = json.dumps(dict(zip(param_choices_map.keys(), best_ind)))
-            record["best_individual_sim_results"] = json.dumps(best_ind.sim_results)
+            record["best_individual_sim_results_mbtu"] = json.dumps(best_ind.sim_results)
             record["diversity"] = diversity(pop)
             logbook.record(gen=0, nevals=len(invalid_ind), **record)
             print(logbook.stream)
@@ -1354,7 +1362,7 @@ class Calibrate:
                 record["best_individual"] = json.dumps(
                     dict(zip(param_choices_map.keys(), best_ind))
                 )
-                record["best_individual_sim_results"] = json.dumps(best_ind.sim_results)
+                record["best_individual_sim_results_mbtu"] = json.dumps(best_ind.sim_results)
                 record["diversity"] = diversity(pop)
                 logbook.record(gen=gen, nevals=len(invalid_ind), **record)
                 print(logbook.stream)

@@ -220,11 +220,13 @@ def calibrate(
         if "best_individual" in rec and isinstance(rec["best_individual"], str):
             with contextlib.suppress(json.JSONDecodeError):
                 rec["best_individual"] = json.loads(rec["best_individual"])
-        if "best_individual_sim_results" in rec and isinstance(
-            rec["best_individual_sim_results"], str
+        if "best_individual_sim_results_mbtu" in rec and isinstance(
+            rec["best_individual_sim_results_mbtu"], str
         ):
             with contextlib.suppress(json.JSONDecodeError):
-                rec["best_individual_sim_results"] = json.loads(rec["best_individual_sim_results"])
+                rec["best_individual_sim_results_mbtu"] = json.loads(
+                    rec["best_individual_sim_results_mbtu"]
+                )
         log_data.append(rec)
 
     logbook_path = output_filepath / "logbook.json"

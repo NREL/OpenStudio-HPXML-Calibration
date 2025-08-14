@@ -1,5 +1,4 @@
 {
-  "run_directory": "run",
   "measure_paths": [
     "../../src/OpenStudio-HPXML"
   ],
