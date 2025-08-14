@@ -183,21 +183,9 @@ class HpxmlDoc:
 
         return heating_fuels, cooling_fuels
 
-    def get_consumption(self, building_id: str | None = None) -> objectify.ObjectifiedElement:
-        """Get the Consumption element for a building
-
-        :param building_id: The id of the Building to retrieve, gets first one if missing
-        :type building_id: str | None, optional
-        :return: Consumption element
-        :rtype: objectify.ObjectifiedElement
-        """
-        if building_id is None:
-            return self.xpath("h:Consumption[1]")[0]
-        return self.xpath(
-            "h:Consumption[h:BuildingID/@idref=$building_id]", building_id=building_id
-        )[0]
-
-    def get_consumptions(self, building_id: str | None = None) -> tuple:
+    def get_consumptions(
+        self, building_id: str | None = None
+    ) -> tuple[objectify.ObjectifiedElement, ...]:
         """Get all Consumption elements for a building
 
         :param building_id: The id of the Building to retrieve, gets first one if missing
