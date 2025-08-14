@@ -201,8 +201,11 @@ def calibrate(
         shutil.rmtree(output_filepath)
     output_filepath.mkdir(parents=True, exist_ok=True)
 
-    cal = Calibrate(original_hpxml_filepath=hpxml_filepath, config_filepath=config_filepath,
-                    csv_bills_filepath=csv_bills_filepath)
+    cal = Calibrate(
+        original_hpxml_filepath=hpxml_filepath,
+        config_filepath=config_filepath,
+        csv_bills_filepath=csv_bills_filepath,
+    )
 
     start = time.time()
     best_individual_pop, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search(

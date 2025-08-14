@@ -821,8 +821,12 @@ class Calibrate:
         mutpb = cfg["genetic_algorithm"]["mutation_probability"]
         misc_load_multiplier_choices = cfg["value_choices"]["misc_load_multiplier_choices"]
         air_leakage_multiplier_choices = cfg["value_choices"]["air_leakage_multiplier_choices"]
-        heating_efficiency_multiplier_choices = cfg["value_choices"]["heating_efficiency_multiplier_choices"]
-        cooling_efficiency_multiplier_choices = cfg["value_choices"]["cooling_efficiency_multiplier_choices"]
+        heating_efficiency_multiplier_choices = cfg["value_choices"][
+            "heating_efficiency_multiplier_choices"
+        ]
+        cooling_efficiency_multiplier_choices = cfg["value_choices"][
+            "cooling_efficiency_multiplier_choices"
+        ]
         roof_r_value_multiplier_choices = cfg["value_choices"]["roof_r_value_multiplier_choices"]
         ceiling_r_value_multiplier_choices = cfg["value_choices"][
             "ceiling_r_value_multiplier_choices"
@@ -1026,10 +1030,14 @@ class Calibrate:
             "attr_air_leakage_multiplier", random.choice, air_leakage_multiplier_choices
         )
         toolbox.register(
-            "attr_heating_efficiency_multiplier", random.choice, heating_efficiency_multiplier_choices
+            "attr_heating_efficiency_multiplier",
+            random.choice,
+            heating_efficiency_multiplier_choices,
         )
         toolbox.register(
-            "attr_cooling_efficiency_multiplier", random.choice, cooling_efficiency_multiplier_choices
+            "attr_cooling_efficiency_multiplier",
+            random.choice,
+            cooling_efficiency_multiplier_choices,
         )
         toolbox.register(
             "attr_roof_r_value_multiplier", random.choice, roof_r_value_multiplier_choices

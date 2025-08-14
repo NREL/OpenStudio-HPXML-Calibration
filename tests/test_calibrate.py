@@ -160,9 +160,7 @@ def test_calibrate_runs_successfully():
 
 
 def test_workflow_with_upgrade():
-    temp_output_dir = Path(
-        tempfile.mkdtemp(prefix=f"calib_test_{uuid.uuid4().hex[:6]}_")
-    )
+    temp_output_dir = Path(tempfile.mkdtemp(prefix=f"calib_test_{uuid.uuid4().hex[:6]}_"))
 
     # Create HPXML file for existing home
     existing_osw_path = TEST_DIR / "data/ihmh3_existing_hpxml.osw"
@@ -171,7 +169,7 @@ def test_workflow_with_upgrade():
         "run",
         "--workflow",
         str(existing_osw_path),
-        "--measures_only"
+        "--measures_only",
     ]
     subprocess.run(
         build_existing_hpxml_command,
@@ -208,13 +206,13 @@ def test_workflow_with_upgrade():
             "--config-filepath",
             str(config_file),
             "--num-proc",
-            "14"
+            "14",
         ]
     )
     calibration_output_file = calibration_output_dir / "logbook.json"
     assert calibration_output_file.exists()
     results = json.loads(calibration_output_file.read_text())
-    calibration_adjustments = results[-1]['best_individual']
+    calibration_adjustments = results[-1]["best_individual"]
 
     # Create HPXML file for upgrade scenario (R-60 attic insulation)
     upgrade_osw_path = TEST_DIR / "data/ihmh3_upgrade_hpxml.osw"
@@ -223,7 +221,7 @@ def test_workflow_with_upgrade():
         "run",
         "--workflow",
         str(upgrade_osw_path),
-        "--measures_only"
+        "--measures_only",
     ]
     subprocess.run(
         build_upgrade_hpxml_command,
@@ -299,6 +297,7 @@ def test_workflow_with_upgrade():
     #                'calibrated_existing', 'calibrated_upgrade',
     #                'generated_files'):
     #     shutil.rmtree(subdir)
+
 
 def create_measure_input_file(arguments: dict, output_file_path: str):
     data = {
