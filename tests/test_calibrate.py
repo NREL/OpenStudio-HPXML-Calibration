@@ -196,7 +196,7 @@ def test_workflow_with_upgrade():
 
     # Run calibration
     csv_bills_file = TEST_DIR / "data/ihmh3_existing_bills.csv"
-    config_file = TEST_DIR / "data/ihmh3_config.yaml"
+    config_file = TEST_DIR / "data/test_config.yaml"
     calibration_output_dir = TEST_DIR / "data/uncalibrated_existing/ga_search_results"
     app(
         [
