@@ -1219,11 +1219,15 @@ class Calibrate:
 
             if worst_end_uses_by_gen:
                 worst_end_use = worst_end_uses_by_gen[-1]
-                impacted_indices = end_use_param_map.get(worst_end_use, [])
-                if impacted_indices:
-                    mutation_indices.update(
-                        random.sample(impacted_indices, min(len(impacted_indices), 2))
-                    )
+                impacted_param_names = end_use_param_map.get(worst_end_use, [])
+                if impacted_param_names:
+                    impacted_indices = [
+                        name_to_index[n] for n in impacted_param_names if n in name_to_index
+                    ]
+                    if impacted_indices:
+                        mutation_indices.update(
+                            random.sample(impacted_indices, min(len(impacted_indices), 2))
+                        )
 
             while len(mutation_indices) < random.randint(3, 6):
                 mutation_indices.add(random.randint(0, len(individual) - 1))
