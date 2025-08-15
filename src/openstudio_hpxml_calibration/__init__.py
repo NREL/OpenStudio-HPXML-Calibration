@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import requests
 from cyclopts import App
 from loguru import logger
+from matplotlib.ticker import MaxNLocator
 from tqdm import tqdm
 
 from openstudio_hpxml_calibration.utils import OS_HPXML_PATH, calculate_sha256, get_cache_dir
@@ -235,6 +236,7 @@ def calibrate(
     plt.title("Min Penalty Over Generations")
     plt.legend()
     plt.grid(True)
+    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
     plt.tight_layout()
     plt.savefig(str(output_filepath / "min_penalty_plot.png"))
     plt.close()
@@ -247,6 +249,7 @@ def calibrate(
     plt.title("Avg Penalty Over Generations")
     plt.legend()
     plt.grid(True)
+    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
     plt.tight_layout()
     plt.savefig(str(output_filepath / "avg_penalty_plot.png"))
     plt.close()
@@ -267,6 +270,7 @@ def calibrate(
     plt.title("Per-End-Use Bias Error Over Generations")
     plt.legend(loc="best", fontsize="small")
     plt.grid(True)
+    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
     plt.tight_layout()
     plt.savefig(str(output_filepath / "bias_error_plot.png"), bbox_inches="tight")
     plt.close()
@@ -306,6 +310,7 @@ def calibrate(
     lines2, labels2 = ax2.get_legend_handles_labels()
     ax1.legend(lines1 + lines2, labels1 + labels2, loc="best", fontsize="small")
     ax1.grid(True)
+    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
     plt.tight_layout()
     plt.savefig(str(output_filepath / "absolute_error_plot.png"), bbox_inches="tight")
     plt.close()
