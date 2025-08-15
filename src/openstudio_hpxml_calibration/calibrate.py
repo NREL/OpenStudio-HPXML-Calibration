@@ -311,6 +311,7 @@ class Calibrate:
         """
 
         # TODO: prevent double-calculating when running multiple times in the same kernel session
+        annual_model_results_copy = copy.deepcopy(annual_model_results)
 
         # Build annual normalized bill consumption dicts
         annual_normalized_bill_consumption = {}
@@ -318,8 +319,8 @@ class Calibrate:
             annual_normalized_bill_consumption[fuel_type] = {}
             for end_use in ["heating", "cooling", "baseload"]:
                 if (
-                    end_use not in annual_model_results[fuel_type]
-                    or annual_model_results[fuel_type][end_use] == 0.0
+                    end_use not in annual_model_results_copy[fuel_type]
+                    or annual_model_results_copy[fuel_type][end_use] == 0.0
                 ):
                     continue
                 annual_normalized_bill_consumption[fuel_type][end_use] = (
@@ -329,7 +330,7 @@ class Calibrate:
         comparison_results = {}
 
         # combine the annual normalized bill consumption with the model results
-        for model_fuel_type, disagg_results in annual_model_results.items():
+        for model_fuel_type, disagg_results in annual_model_results_copy.items():
             if model_fuel_type in annual_normalized_bill_consumption:
                 comparison_results[model_fuel_type] = {"Bias Error": {}, "Absolute Error": {}}
                 for load_type in disagg_results:
@@ -441,11 +442,13 @@ class Calibrate:
 
     def simplified_annual_usage(self, model_results: dict, consumption) -> dict:
         total_period_tmy_dd, total_period_actual_dd = self.calculate_annual_degree_days()
+        consumption_copy = copy.deepcopy(consumption)
+        model_results_copy = copy.deepcopy(model_results)
 
         comparison_results = {}
 
         for fuel in total_period_tmy_dd:
-            for fuel_consumption in consumption.ConsumptionDetails.ConsumptionInfo:
+            for fuel_consumption in consumption_copy.ConsumptionDetails.ConsumptionInfo:
                 measured_consumption = 0.0
                 fuel_unit_type = fuel_consumption.ConsumptionType.Energy.UnitofMeasure
                 if fuel_consumption.ConsumptionType.Energy.FuelType == fuel:
@@ -467,9 +470,9 @@ class Calibrate:
                     measured_consumption, str(fuel_unit_type), "mBtu"
                 )
 
-            modeled_baseload = model_results[fuel].get("baseload", 0)
-            modeled_heating = model_results[fuel].get("heating", 0)
-            modeled_cooling = model_results[fuel].get("cooling", 0)
+            modeled_baseload = model_results_copy[fuel].get("baseload", 0)
+            modeled_heating = model_results_copy[fuel].get("heating", 0)
+            modeled_cooling = model_results_copy[fuel].get("cooling", 0)
             total_modeled_usage = modeled_baseload + modeled_heating + modeled_cooling
 
             baseload_fraction = modeled_baseload / total_modeled_usage
@@ -917,7 +920,6 @@ class Calibrate:
 
                 output_file = temp_output_dir / "run" / "results_annual.json"
                 simulation_results = self.get_model_results(json_results_path=output_file)
-                simulation_results_copy = copy.deepcopy(simulation_results)
                 consumptions = self.hpxml.get_consumptions()
                 comparison = {}
                 delivered_fuels = (
@@ -931,7 +933,7 @@ class Calibrate:
                         fuel = fuel_info.ConsumptionType.Energy.FuelType
                         if fuel in delivered_fuels:
                             simplified_calibration_results = self.simplified_annual_usage(
-                                simulation_results_copy, consumption
+                                simulation_results, consumption
                             )
                             # Merge results, prefer later sections if duplicate fuel keys
                             comparison[fuel] = simplified_calibration_results.get(fuel, {})
@@ -939,9 +941,7 @@ class Calibrate:
                             normalized_consumption = self.get_normalized_consumption_per_bill()
                             # Merge results, prefer later sections if duplicate fuel keys
                             comparison.update(
-                                self.compare_results(
-                                    normalized_consumption, simulation_results_copy
-                                )
+                                self.compare_results(normalized_consumption, simulation_results)
                             )
                 for model_fuel_type, result in comparison.items():
                     bias_error_criteria = self.ga_config["genetic_algorithm"][
@@ -989,7 +989,7 @@ class Calibrate:
                     (total_score,),
                     comparison,
                     temp_output_dir,
-                    simulation_results_copy,
+                    simulation_results,
                 )
 
             except Exception as e:
