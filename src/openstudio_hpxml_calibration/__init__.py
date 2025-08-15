@@ -258,6 +258,9 @@ def calibrate(
     best_bias_series = {}
     for entry in logbook:
         for key, value in entry.items():
+            # Skip zero values to avoid cluttering the plot
+            if value == 0:
+                continue
             if key.startswith("bias_error_"):
                 best_bias_series.setdefault(key, []).append(value)
 
@@ -279,11 +282,16 @@ def calibrate(
     best_abs_series = {}
     for entry in logbook:
         for key, value in entry.items():
+            # Skip zero values to avoid cluttering the plot
+            if value == 0:
+                continue
             if key.startswith("abs_error_"):
                 best_abs_series.setdefault(key, []).append(value)
 
     electric_keys = [k for k in best_abs_series if "electricity" in k]
-    gas_keys = [k for k in best_abs_series if "natural gas" in k]
+    fuel_keys = [
+        k for k in best_abs_series if "natural gas" in k or "fuel oil" in k or "propane" in k
+    ]
 
     fig, ax1 = plt.subplots(figsize=(12, 6))
     ax2 = ax1.twinx()
@@ -295,7 +303,7 @@ def calibrate(
             label=key.replace("abs_error_", "") + " (kWh)",
             color=colors[i % len(colors)],
         )
-    for i, key in enumerate(gas_keys):
+    for i, key in enumerate(fuel_keys):
         ax2.plot(
             best_abs_series[key],
             label=key.replace("abs_error_", "") + " (MBtu)",
@@ -304,7 +312,7 @@ def calibrate(
 
     ax1.set_xlabel("Generation")
     ax1.set_ylabel("Electricity Abs Error (kWh)", color="blue")
-    ax2.set_ylabel("Gas Abs Error (MBtu)", color="red")
+    ax2.set_ylabel("Fossil Fuel Abs Error (MBtu)", color="red")
     plt.title("Per-End-Use Absolute Errors Over Generations")
     lines1, labels1 = ax1.get_legend_handles_labels()
     lines2, labels2 = ax2.get_legend_handles_labels()
