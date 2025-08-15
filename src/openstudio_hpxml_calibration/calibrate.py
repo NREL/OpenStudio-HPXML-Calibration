@@ -860,8 +860,8 @@ class Calibrate:
         ]
         slab_r_value_multiplier_choices = cfg["value_choices"]["slab_r_value_multiplier_choices"]
         floor_r_value_multiplier_choices = cfg["value_choices"]["floor_r_value_multiplier_choices"]
-        heating_setpoint_choices = cfg["value_choices"]["heating_setpoint_choices"]
-        cooling_setpoint_choices = cfg["value_choices"]["cooling_setpoint_choices"]
+        heating_setpoint_offset_choices = cfg["value_choices"]["heating_setpoint_offset_choices"]
+        cooling_setpoint_offset_choices = cfg["value_choices"]["cooling_setpoint_offset_choices"]
         water_heater_efficiency_multiplier_choices = cfg["value_choices"][
             "water_heater_efficiency_multiplier_choices"
         ]
@@ -1032,8 +1032,12 @@ class Calibrate:
 
         toolbox = base.Toolbox()
         toolbox.register("attr_misc_load_multiplier", random.choice, misc_load_multiplier_choices)
-        toolbox.register("attr_heating_setpoint_offset", random.choice, heating_setpoint_choices)
-        toolbox.register("attr_cooling_setpoint_offset", random.choice, cooling_setpoint_choices)
+        toolbox.register(
+            "attr_heating_setpoint_offset", random.choice, heating_setpoint_offset_choices
+        )
+        toolbox.register(
+            "attr_cooling_setpoint_offset", random.choice, cooling_setpoint_offset_choices
+        )
         toolbox.register(
             "attr_air_leakage_multiplier", random.choice, air_leakage_multiplier_choices
         )
@@ -1122,8 +1126,8 @@ class Calibrate:
             return creator.Individual(
                 [
                     random.choice(misc_load_multiplier_choices),
-                    random.choice(heating_setpoint_choices),
-                    random.choice(cooling_setpoint_choices),
+                    random.choice(heating_setpoint_offset_choices),
+                    random.choice(cooling_setpoint_offset_choices),
                     random.choice(air_leakage_multiplier_choices),
                     random.choice(heating_efficiency_multiplier_choices),
                     random.choice(cooling_efficiency_multiplier_choices),
@@ -1150,8 +1154,8 @@ class Calibrate:
         # Define parameter-to-choices mapping for mutation
         param_choices_map = {
             "misc_load_multiplier": misc_load_multiplier_choices,
-            "heating_setpoint_offset": heating_setpoint_choices,
-            "cooling_setpoint_offset": cooling_setpoint_choices,
+            "heating_setpoint_offset": heating_setpoint_offset_choices,
+            "cooling_setpoint_offset": cooling_setpoint_offset_choices,
             "air_leakage_multiplier": air_leakage_multiplier_choices,
             "heating_efficiency_multiplier": heating_efficiency_multiplier_choices,
             "cooling_efficiency_multiplier": cooling_efficiency_multiplier_choices,
