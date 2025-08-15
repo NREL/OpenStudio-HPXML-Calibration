@@ -311,7 +311,6 @@ class Calibrate:
         """
 
         # TODO: prevent double-calculating when running multiple times in the same kernel session
-        annual_model_results_copy = copy.deepcopy(annual_model_results)
 
         # Build annual normalized bill consumption dicts
         annual_normalized_bill_consumption = {}
@@ -319,8 +318,8 @@ class Calibrate:
             annual_normalized_bill_consumption[fuel_type] = {}
             for end_use in ["heating", "cooling", "baseload"]:
                 if (
-                    end_use not in annual_model_results_copy[fuel_type]
-                    or annual_model_results_copy[fuel_type][end_use] == 0.0
+                    end_use not in annual_model_results[fuel_type]
+                    or annual_model_results[fuel_type][end_use] == 0.0
                 ):
                     continue
                 annual_normalized_bill_consumption[fuel_type][end_use] = (
@@ -330,12 +329,14 @@ class Calibrate:
         comparison_results = {}
 
         # combine the annual normalized bill consumption with the model results
-        for model_fuel_type, disagg_results in annual_model_results_copy.items():
+        for model_fuel_type, disagg_results in annual_model_results.items():
             if model_fuel_type in annual_normalized_bill_consumption:
                 comparison_results[model_fuel_type] = {"Bias Error": {}, "Absolute Error": {}}
                 for load_type in disagg_results:
                     if load_type not in annual_normalized_bill_consumption[model_fuel_type]:
                         continue
+
+                    disagg_result = disagg_results[load_type]
                     if model_fuel_type == "electricity":
                         # All results from simulation and normalized bills are in mbtu.
                         # convert electric loads from mbtu to kWh for bpi2400
@@ -346,9 +347,7 @@ class Calibrate:
                                 to_="kwh",
                             )
                         )
-                        disagg_results[load_type] = convert_units(
-                            disagg_results[load_type], from_="mbtu", to_="kwh"
-                        )
+                        disagg_result = convert_units(disagg_result, from_="mbtu", to_="kwh")
 
                     # Calculate error levels
                     if annual_normalized_bill_consumption[model_fuel_type][load_type] == 0:
@@ -358,7 +357,7 @@ class Calibrate:
                             (
                                 (
                                     annual_normalized_bill_consumption[model_fuel_type][load_type]
-                                    - disagg_results[load_type]
+                                    - disagg_result
                                 )
                                 / annual_normalized_bill_consumption[model_fuel_type][load_type]
                             )
@@ -368,7 +367,7 @@ class Calibrate:
                     comparison_results[model_fuel_type]["Absolute Error"][load_type] = round(
                         abs(
                             annual_normalized_bill_consumption[model_fuel_type][load_type]
-                            - disagg_results[load_type]
+                            - disagg_result
                         ),
                         1,
                     )
@@ -448,8 +447,8 @@ class Calibrate:
         comparison_results = {}
 
         for fuel in total_period_tmy_dd:
+            measured_consumption = 0.0
             for fuel_consumption in consumption_copy.ConsumptionDetails.ConsumptionInfo:
-                measured_consumption = 0.0
                 fuel_unit_type = fuel_consumption.ConsumptionType.Energy.UnitofMeasure
                 if fuel_consumption.ConsumptionType.Energy.FuelType == fuel:
                     first_bill_date = fuel_consumption.ConsumptionDetail[0].StartDateTime
