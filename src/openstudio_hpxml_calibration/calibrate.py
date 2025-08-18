@@ -456,9 +456,9 @@ class Calibrate:
             num_days = (last_bill_date - first_bill_date + timedelta(days=1)).days
             for period_consumption in delivered_consumption.ConsumptionDetail:
                 measured_consumption += float(period_consumption.Consumption)
-            logger.debug(
-                f"Measured {fuel_type} consumption: {measured_consumption:,.2f} {fuel_unit_type}"
-            )
+            # logger.debug(
+            #     f"Measured {fuel_type} consumption: {measured_consumption:,.2f} {fuel_unit_type}"
+            # )
             if fuel_unit_type == "gal" and fuel_type == FuelType.FUEL_OIL.value:
                 fuel_unit_type = f"{fuel_unit_type}_fuel_oil"
             elif fuel_unit_type == "gal" and fuel_type == FuelType.PROPANE.value:
