@@ -3,6 +3,6 @@ genetic_algorithm:
   generations: 20
 
 acceptance_criteria:
-  bias_error_threshold: 15  # Bias error threshold in percent for all end uses
-  abs_error_elec_threshold: 2500  # Absolute error threshold for electricity in kWh
-  abs_error_fuel_threshold: 15  # Absolute error threshold for fossil fuels in MBtu
+  bias_error_threshold: 10  # Bias error threshold in percent for all end uses
+  abs_error_elec_threshold: 1500  # Absolute error threshold for electricity in kWh
+  abs_error_fuel_threshold: 10  # Absolute error threshold for fossil fuels in MBtu
