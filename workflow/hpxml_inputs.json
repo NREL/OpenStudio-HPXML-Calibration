@@ -367,7 +367,7 @@
     "geometry_eaves": "None",
     "enclosure_slab": "Detailed Example: Uninsulated, No Carpet",
     "enclosure_foundation_wall": "Solid Concrete, Whole Wall, R-10",
-    "enclosure_rim_joist": "R-13",
+    "enclosure_rim_joist": "Exterior, R-10",
     "enclosure_ceiling": "R-38",
     "enclosure_roof_material": "Asphalt/Fiberglass Shingles, Medium",
     "enclosure_roof": "Uninsulated",
@@ -564,7 +564,7 @@
   },
   "sample_files/base-vehicle-ev-charger-undercharged.xml": {
     "parent_hpxml": "sample_files/base-vehicle-ev-charger.xml",
-    "electric_vehicle": "SUV, 200 Mile Range, 200% Usage",
+    "electric_vehicle": "SUV, 200 Mile Range, 22500 miles/yr",
     "schedules_paths": "../../HPXMLtoOpenStudio/resources/schedule_files/vehicle-ev-undercharged.csv"
   },
   "sample_files/base-vehicle-ev-charger-plug-load-ev.xml": {
@@ -1289,7 +1289,6 @@
     "geometry_foundation_type": "Basement, Unconditioned",
     "enclosure_floor_over_foundation": "Wood Frame, R-15",
     "enclosure_foundation_wall": "Solid Concrete, Uninsulated",
-    "enclosure_rim_joist": "Uninsulated",
     "hvac_ducts_supply_location": "Basement",
     "hvac_ducts_return_location": "Basement",
     "dhw_water_heater_location": "Basement",
@@ -1733,8 +1732,8 @@
   },
   "sample_files/base-hvac-furnace-gas-only-detailed-setpoints.xml": {
     "parent_hpxml": "sample_files/base-hvac-furnace-gas-only.xml",
-    "hvac_control_heating_weekday_setpoint": null,
-    "hvac_control_heating_weekend_setpoint": null,
+    "hvac_control_heating_weekday_setpoint": "0",
+    "hvac_control_heating_weekend_setpoint": "0",
     "schedules_paths": "../../HPXMLtoOpenStudio/resources/schedule_files/setpoints-heating-only.csv"
   },
   "sample_files/base-hvac-furnace-gas-plus-air-to-air-heat-pump-cooling.xml": {
@@ -2036,8 +2035,8 @@
   },
   "sample_files/base-hvac-room-ac-only-detailed-setpoints.xml": {
     "parent_hpxml": "sample_files/base-hvac-room-ac-only.xml",
-    "hvac_control_cooling_weekday_setpoint": null,
-    "hvac_control_cooling_weekend_setpoint": null,
+    "hvac_control_cooling_weekday_setpoint": "0",
+    "hvac_control_cooling_weekend_setpoint": "0",
     "schedules_paths": "../../HPXMLtoOpenStudio/resources/schedule_files/setpoints-cooling-only.csv"
   },
   "sample_files/base-hvac-room-ac-only-research-features.xml": {
@@ -2143,9 +2142,7 @@
     "hvac_heating_system_capacity": "25 kBtu/hr"
   },
   "sample_files/base-location-detailed.xml": {
-    "parent_hpxml": "sample_files/base.xml",
-    "location_zip_code": "80019",
-    "location_epw_path": null
+    "parent_hpxml": "sample_files/base-location-zipcode.xml"
   },
   "sample_files/base-location-duluth-mn.xml": {
     "parent_hpxml": "sample_files/base-foundation-unconditioned-basement.xml",
@@ -2175,6 +2172,11 @@
     "parent_hpxml": "sample_files/base-foundation-vented-crawlspace.xml",
     "location_epw_path": "USA_OR_Portland.Intl.AP.726980_TMY3.epw",
     "hvac_heating_system_capacity": "25 kBtu/hr"
+  },
+  "sample_files/base-location-zipcode.xml": {
+    "parent_hpxml": "sample_files/base.xml",
+    "location_zip_code": "80019",
+    "location_epw_path": null
   },
   "sample_files/base-mechvent-balanced.xml": {
     "parent_hpxml": "sample_files/base.xml",
@@ -2301,10 +2303,10 @@
     "enclosure_roof_material": null,
     "enclosure_wall_siding": null,
     "enclosure_window_interior_shading": null,
-    "hvac_control_heating_weekday_setpoint": null,
-    "hvac_control_heating_weekend_setpoint": null,
-    "hvac_control_cooling_weekday_setpoint": null,
-    "hvac_control_cooling_weekend_setpoint": null,
+    "hvac_control_heating_weekday_setpoint": "0",
+    "hvac_control_heating_weekend_setpoint": "0",
+    "hvac_control_cooling_weekday_setpoint": "0",
+    "hvac_control_cooling_weekend_setpoint": "0",
     "hvac_ducts_supply_location": "Default",
     "hvac_ducts_return_location": "Default",
     "ventilation_mechanical": "Exhaust Only",
@@ -2317,7 +2319,7 @@
     "pv_system": "4.0 kW",
     "pv_system_direction": "20 Degrees, South",
     "battery": "20.0 kWh",
-    "electric_vehicle": "Midsize, 200 Mile Range, 100% Usage",
+    "electric_vehicle": "Midsize, 200 Mile Range, 11000 miles/yr",
     "electric_vehicle_charger": "Level 1, 50% Charging at Home",
     "ceiling_fans": "#Bedrooms+1 Fans, 45.0 W"
   },
@@ -2397,7 +2399,7 @@
     "misc_fireplace": "Wood, 75% Usage",
     "misc_pool": "Natural Gas Heater, 75% Usage",
     "misc_permanent_spa": "Electric Resistance Heater, 75% Usage",
-    "electric_vehicle": "Midsize, 200 Mile Range, 75% Usage",
+    "electric_vehicle": "Midsize, 200 Mile Range, 11000 miles/yr",
     "electric_vehicle_charger": "Level 1, 50% Charging at Home"
   },
   "sample_files/base-bldgtype-mf-whole-building.xml": {
@@ -2525,18 +2527,18 @@
   },
   "sample_files/base-schedules-detailed-all-10-mins.xml": {
     "parent_hpxml": "sample_files/base-simcontrol-timestep-10-mins.xml",
-    "hvac_control_heating_weekday_setpoint": null,
-    "hvac_control_heating_weekend_setpoint": null,
-    "hvac_control_cooling_weekday_setpoint": null,
-    "hvac_control_cooling_weekend_setpoint": null,
+    "hvac_control_heating_weekday_setpoint": "0",
+    "hvac_control_heating_weekend_setpoint": "0",
+    "hvac_control_cooling_weekday_setpoint": "0",
+    "hvac_control_cooling_weekend_setpoint": "0",
     "schedules_paths": "../../HPXMLtoOpenStudio/resources/schedule_files/setpoints-10-mins.csv, ../../HPXMLtoOpenStudio/resources/schedule_files/water-heater-setpoints-10-mins.csv, ../../HPXMLtoOpenStudio/resources/schedule_files/occupancy-stochastic-10-mins.csv"
   },
   "sample_files/base-schedules-detailed-mixed-timesteps.xml": {
     "parent_hpxml": "sample_files/base-simcontrol-timestep-10-mins.xml",
-    "hvac_control_heating_weekday_setpoint": null,
-    "hvac_control_heating_weekend_setpoint": null,
-    "hvac_control_cooling_weekday_setpoint": null,
-    "hvac_control_cooling_weekend_setpoint": null,
+    "hvac_control_heating_weekday_setpoint": "0",
+    "hvac_control_heating_weekend_setpoint": "0",
+    "hvac_control_cooling_weekday_setpoint": "0",
+    "hvac_control_cooling_weekend_setpoint": "0",
     "schedules_paths": "../../HPXMLtoOpenStudio/resources/schedule_files/setpoints.csv, ../../HPXMLtoOpenStudio/resources/schedule_files/water-heater-setpoints-10-mins.csv, ../../HPXMLtoOpenStudio/resources/schedule_files/occupancy-stochastic-30-mins.csv"
   },
   "sample_files/base-schedules-detailed-mixed-timesteps-power-outage.xml": {
@@ -2564,10 +2566,10 @@
   },
   "sample_files/base-schedules-detailed-setpoints.xml": {
     "parent_hpxml": "sample_files/base.xml",
-    "hvac_control_heating_weekday_setpoint": null,
-    "hvac_control_heating_weekend_setpoint": null,
-    "hvac_control_cooling_weekday_setpoint": null,
-    "hvac_control_cooling_weekend_setpoint": null,
+    "hvac_control_heating_weekday_setpoint": "0",
+    "hvac_control_heating_weekend_setpoint": "0",
+    "hvac_control_cooling_weekday_setpoint": "0",
+    "hvac_control_cooling_weekend_setpoint": "0",
     "schedules_paths": "../../HPXMLtoOpenStudio/resources/schedule_files/setpoints.csv"
   },
   "sample_files/base-schedules-detailed-setpoints-daily-schedules.xml": {

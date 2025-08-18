@@ -277,7 +277,12 @@ class BuildResidentialHPXMLTest < Minitest::Test
     assert_equal(31, hvac_control.seasons_cooling_end_day)
   end
 
-  def test_option_tsv
+  def test_option_tsvs
+    # Get measure arguments up front
+    model = OpenStudio::Model::Model.new
+    measure = BuildResidentialHPXML.new
+    arguments = measure.arguments(model)
+
     num_tsvs = 0
     Dir["#{File.dirname(__FILE__)}/../resources/options/*.tsv"].each do |tsv_path|
       tsv_name = File.basename(tsv_path)
@@ -290,6 +295,15 @@ class BuildResidentialHPXMLTest < Minitest::Test
       assert_equal(option_names.size, option_names.uniq.size) # Make sure there are no duplicates
       option_names.each do |option_name|
         refute(option_name.include?('=')) # don't allow "=" in option names for resstock
+      end
+
+      # Check for a valid default value
+      arg = arguments.find { |a| a.name == tsv_name.gsub('.tsv', '') }
+      if arg.hasDefaultValue
+        puts "  Default value: #{arg.defaultValueAsString}"
+        assert(option_names.include?(arg.defaultValueAsString))
+      else
+        flunk "Missing/invalid default value for #{tsv_name}; expected one of: \"#{option_names.to_a.join('","')}\"."
       end
 
       # Check we can retrieve properties for each option
@@ -346,7 +360,7 @@ class BuildResidentialHPXMLTest < Minitest::Test
       args['geometry_unit_num_bedrooms'] = '3'
       args['geometry_unit_num_bathrooms'] = '2'
       args['geometry_unit_num_occupants'] = '3'
-      args['enclosure_rim_joist'] = 'R-13'
+      args['enclosure_rim_joist'] = 'Interior, R-13'
       args['enclosure_air_leakage'] = '3 ACH50'
       args['enclosure_ceiling'] = 'R-38'
       args['enclosure_roof_material'] = 'Asphalt/Fiberglass Shingles, Medium'
@@ -519,10 +533,10 @@ class BuildResidentialHPXMLTest < Minitest::Test
     when 'extra-water-heater-attic.xml'
       args['dhw_water_heater_location'] = 'Attic'
     when 'extra-vehicle-ev.xml'
-      args['electric_vehicle'] = 'Midsize, 200 Mile Range, 100% Usage'
+      args['electric_vehicle'] = 'Midsize, 200 Mile Range, 11000 miles/yr'
       args['electric_vehicle_charger'] = 'Level 2, 70% Charging at Home'
     when 'extra-two-batteries.xml'
-      args['electric_vehicle'] = 'Midsize, 200 Mile Range, 100% Usage'
+      args['electric_vehicle'] = 'Midsize, 200 Mile Range, 11000 miles/yr'
       args['battery'] = '20.0 kWh'
     when 'extra-detailed-performance-autosize.xml'
       args['hvac_heating_system'] = 'None'

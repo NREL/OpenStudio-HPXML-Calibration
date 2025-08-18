@@ -419,13 +419,13 @@ def apply_hpxml_modification_sample_files(hpxml_path, hpxml)
       hpxml_bldg.cambium_region_gea = 'RMPAc'
     end
     if ['base-simcontrol-daylight-saving-custom.xml'].include? hpxml_file
-      hpxml_bldg.dst_enabled = true
+      hpxml_bldg.dst_observed = true
       hpxml_bldg.dst_begin_month = 3
       hpxml_bldg.dst_begin_day = 10
       hpxml_bldg.dst_end_month = 11
       hpxml_bldg.dst_end_day = 6
     elsif ['base-simcontrol-daylight-saving-disabled.xml'].include? hpxml_file
-      hpxml_bldg.dst_enabled = false
+      hpxml_bldg.dst_observed = false
     end
     if ['base-hvac-autosize-sizing-controls.xml'].include? hpxml_file
       hpxml_bldg.header.manualj_heating_design_temp = 0
@@ -2909,6 +2909,10 @@ def apply_hpxml_modification_sample_files(hpxml_path, hpxml)
     end
     if ['base-vehicle-ev-charger-occupancy-stochastic.xml'].include? hpxml_file
       hpxml_bldg.vehicles[0].hours_per_week = 14.0
+    end
+    if ['base-misc-usage-multiplier.xml'].include? hpxml_file
+      hpxml_bldg.vehicles[0].miles_per_year = nil
+      hpxml_bldg.vehicles[0].ev_usage_multiplier = 0.75
     end
 
     # ---------------- #
