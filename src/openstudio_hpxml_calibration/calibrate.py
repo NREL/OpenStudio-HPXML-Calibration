@@ -688,53 +688,49 @@ class Calibrate:
 
         # Check that each fuel type covers enough days and dates are valid
         min_days = self.ga_config["utility_bill_criteria"]["min_days_of_consumption_data"]
-        max_years = self.ga_config["utility_bill_criteria"]["max_years"]
-        for fuel_type in {
-            getattr(fuel.ConsumptionType.Energy, "FuelType", None)
-            for _, fuel in all_fuels
-            if hasattr(fuel.ConsumptionType, "Energy")
-        }:
-            # Find all fuels of this type
-            fuels_of_type = [
-                fuel
-                for _, fuel in all_fuels
-                if getattr(fuel.ConsumptionType.Energy, "FuelType", None) == fuel_type
-            ]
-            if not fuels_of_type:
-                continue
-            # Only require one section to satisfy the criteria
-            if not any(
-                (
-                    len(getattr(fuel, "ConsumptionDetail", [])) > 0
-                    and (
-                        dt.strptime(
-                            str(fuel.ConsumptionDetail[-1].EndDateTime), "%Y-%m-%dT%H:%M:%S"
-                        )
-                        - dt.strptime(
-                            str(fuel.ConsumptionDetail[0].StartDateTime), "%Y-%m-%dT%H:%M:%S"
-                        )
-                    ).days
-                    >= min_days
-                    and all(
-                        (
-                            dt.strptime(str(detail.StartDateTime), "%Y-%m-%dT%H:%M:%S") <= now
-                            and dt.strptime(str(detail.EndDateTime), "%Y-%m-%dT%H:%M:%S") <= now
-                            and (
-                                now - dt.strptime(str(detail.StartDateTime), "%Y-%m-%dT%H:%M:%S")
-                            ).days
-                            <= max_years * 365
-                            and (
-                                now - dt.strptime(str(detail.EndDateTime), "%Y-%m-%dT%H:%M:%S")
-                            ).days
-                            <= max_years * 365
-                        )
-                        for detail in getattr(fuel, "ConsumptionDetail", [])
-                    )
-                )
-                for fuel in fuels_of_type
-            ):
+        recent_bill_max_age_days = self.ga_config["utility_bill_criteria"]["days_since_newest_bill"]
+
+        def _parse_dt(val):
+            return dt.strptime(str(val), "%Y-%m-%dT%H:%M:%S")
+
+        def _fuel_period_ok(fuel):
+            details = getattr(fuel, "ConsumptionDetail", [])
+            if details is None or len(details) == 0:
+                return False
+
+            first_start = _parse_dt(details[0].StartDateTime)
+            last_end = _parse_dt(details[-1].EndDateTime)
+
+            # Total covered span must meet min_days
+            if (last_end - first_start).days < min_days:
+                return False
+
+            # Most recent bill must be within allowed age
+            if (now - last_end).days > recent_bill_max_age_days:
+                return False
+
+            # No future dates
+            for bill_info in details:
+                if (
+                    _parse_dt(bill_info.StartDateTime) > now
+                    or _parse_dt(bill_info.EndDateTime) > now
+                ):
+                    return False
+            return True
+
+        # Build mapping of fuel type -> list of fuel entries
+        fuels_by_type: dict[str, list] = {}
+        for _, fuel in all_fuels:
+            if hasattr(fuel.ConsumptionType, "Energy"):
+                ftype = getattr(fuel.ConsumptionType.Energy, "FuelType", None)
+                if ftype is not None:
+                    fuels_by_type.setdefault(ftype, []).append(fuel)
+
+        for fuel_type, consumption_info in fuels_by_type.items():
+            # Require at least one consumption section for this fuel type to satisfy criteria
+            if not any(_fuel_period_ok(fuel) for fuel in consumption_info):
                 raise ValueError(
-                    f"Consumption dates for {fuel_type} must cover at least {min_days} days and be within the past {max_years} years."
+                    f"Consumption dates for {fuel_type} must cover at least {min_days} days and the most recent bill must end within the past {recent_bill_max_age_days} days."
                 )
 
         # Check that electricity bill periods are within configured min/max days
