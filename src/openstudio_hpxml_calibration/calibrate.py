@@ -688,7 +688,9 @@ class Calibrate:
 
         # Check that each fuel type covers enough days and dates are valid
         min_days = self.ga_config["utility_bill_criteria"]["min_days_of_consumption_data"]
-        recent_bill_max_age_days = self.ga_config["utility_bill_criteria"]["days_since_newest_bill"]
+        recent_bill_max_age_days = self.ga_config["utility_bill_criteria"][
+            "max_days_since_newest_bill"
+        ]
 
         def _parse_dt(val):
             return dt.strptime(str(val), "%Y-%m-%dT%H:%M:%S")
