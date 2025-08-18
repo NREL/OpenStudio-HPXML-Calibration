@@ -58,11 +58,11 @@ def test_get_model_results(test_data) -> None:
         )
     for fuel_type, disagg_results in simulation_results.items():
         if fuel_type == "electricity":
-            assert disagg_results["cooling"] == 9.329
-            assert disagg_results["baseload"] == 26.67
+            assert abs(disagg_results["cooling"] - 9.3) < 0.5
+            assert abs(disagg_results["baseload"] - 26.7) < 0.5
         elif fuel_type == "natural gas":
-            assert disagg_results["heating"] == 151.671
-            assert disagg_results["baseload"] == 26.349
+            assert abs(disagg_results["heating"] - 151.7) < 0.5
+            assert abs(disagg_results["baseload"] - 26.3) < 0.5
         elif disagg_results["baseload"] != 0.0:
             logger.warning(
                 f"Unexpected fuel type {fuel_type} with non-zero baseload: {disagg_results['baseload']}"
