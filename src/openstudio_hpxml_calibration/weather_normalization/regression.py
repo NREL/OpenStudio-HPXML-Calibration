@@ -39,6 +39,7 @@ class UtilityBillRegressionModel:
         )
         self.parameters = popt
         self.pcov = pcov
+        self.cvrmse = self.calc_cvrmse(bills_temps)
 
     def __call__(self, temperatures: np.ndarray) -> np.ndarray:
         """Given an array of temperatures [degF], return the predicted energy use.
@@ -259,6 +260,7 @@ class FiveParameter(UtilityBillRegressionModel):
 
         self.parameters = result.x
         self.pcov = None  # scipy.optimize.minimize doesn't calculate it
+        self.cvrmse = self.calc_cvrmse(bills_temps)
 
     def func(
         self,
@@ -318,7 +320,7 @@ def fit_model(bills_temps: pd.DataFrame, bpi2400=True) -> UtilityBillRegressionM
                 continue
             else:
                 raise
-    best_model = min(models, key=lambda x: x.calc_cvrmse(bills_temps))
-    if bpi2400 and (cvrmse := best_model.calc_cvrmse(bills_temps)) > 0.2:
-        raise Bpi2400ModelFitError(f"CVRMSE = {cvrmse:0.1%}, which is greater than 20%")
+    best_model = min(models, key=lambda x: x.cvrmse)
+    if bpi2400 and best_model.cvrmse > 0.2:
+        raise Bpi2400ModelFitError(f"CVRMSE = {best_model.cvrmse:0.1%}, which is greater than 20%")
     return best_model
