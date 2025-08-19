@@ -99,7 +99,7 @@ class Calibrate:
             normalized_consumption[fuel_type.value]["start_date"] = bills["start_date"]
             normalized_consumption[fuel_type.value]["end_date"] = bills["end_date"]
 
-        return normalized_consumption
+        return normalized_consumption, self.inv_model
 
     def get_model_results(self, json_results_path: Path) -> dict[str, dict[str, float]]:
         """
@@ -849,7 +849,13 @@ class Calibrate:
         ]
         lighting_load_multiplier_choices = cfg["value_choices"]["lighting_load_multiplier_choices"]
 
-        normalized_consumption_per_bill = self.get_normalized_consumption_per_bill()
+        normalized_consumption_per_bill, inv_model = self.get_normalized_consumption_per_bill()
+        weather_norm_regression_models = {}
+        for fuel, reg_model in inv_model.regression_models.items():
+            weather_norm_regression_models[fuel.value] = {
+                "model_type": getattr(reg_model, "MODEL_NAME", None),
+                "cvrmse": getattr(reg_model, "cvrmse", None),
+            }
 
         def evaluate(individual):
             try:
@@ -1377,4 +1383,11 @@ class Calibrate:
                 "and absolute error thresholds before reaching the maximum number of generations."
             )
 
-        return best_individual_dict, pop, logbook, best_bias_series, best_abs_series
+        return (
+            best_individual_dict,
+            pop,
+            logbook,
+            best_bias_series,
+            best_abs_series,
+            weather_norm_regression_models,
+        )

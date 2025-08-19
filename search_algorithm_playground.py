@@ -25,9 +25,14 @@ def main(filepath):
         original_hpxml_filepath=filepath,
     )
     start = time.time()
-    best_individual_dict, pop, logbook, best_bias_series, best_abs_series = cal.run_search(
-        output_filepath=output_filepath
-    )
+    (
+        best_individual_dict,
+        pop,
+        logbook,
+        best_bias_series,
+        best_abs_series,
+        weather_norm_reg_models,
+    ) = cal.run_search(output_filepath=output_filepath)
     print(f"Evaluation took {time.time() - start:.2f} seconds")
 
     # Save the logbook
@@ -44,9 +49,14 @@ def main(filepath):
                 rec["best_individual_sim_results"] = json.loads(rec["best_individual_sim_results"])
         log_data.append(rec)
 
+    output_data = {
+        "weather_normalization_results": weather_norm_reg_models,
+        "calibration_results": log_data,
+    }
+
     logbook_path = output_filepath / "logbook.json"
     with open(logbook_path, "w", encoding="utf-8") as f:
-        json.dump(log_data, f, indent=2)
+        json.dump(output_data, f, indent=2)
 
     # Min and avg penalties
     min_penalty = [entry["min"] for entry in logbook]
@@ -156,6 +166,7 @@ if __name__ == "__main__":
     real_home_hpxml_dir = Path("test_hpxmls/real_homes")
     real_home_hpxml_files = real_home_hpxml_dir.glob("*.xml")
     test_hpxml_files.extend(real_home_hpxml_files)
+    output_path = Path(__file__).resolve().parent / "tests" / "calibration_results"
 
     gen_values = []
 
@@ -168,13 +179,7 @@ if __name__ == "__main__":
 
         # Derive expected logbook.json path
         filename_stem = test_hpxml_file.stem
-        logbook_path = (
-            Path(__file__).resolve().parent
-            / "tests"
-            / "ga_search_results"
-            / filename_stem
-            / "logbook.json"
-        )
+        logbook_path = output_path / filename_stem / "logbook.json"
 
         if not logbook_path.exists():
             print(f"Logbook not found for {filename_stem}")
@@ -200,12 +205,7 @@ if __name__ == "__main__":
         print(f"\nAverage generations to solution: {avg_gen:.2f}")
 
         # Write the result to a text file
-        output_txt_path = (
-            Path(__file__).resolve().parent
-            / "tests"
-            / "calibration_search_results"
-            / "average_calibration_performace.txt"
-        )
+        output_txt_path = output_path / "average_calibration_performace.txt"
         output_txt_path.parent.mkdir(parents=True, exist_ok=True)  # Ensure directory exists
         with open(output_txt_path, "w") as f:
             f.write(f"Average generations to solution: {avg_gen:.2f}\n")

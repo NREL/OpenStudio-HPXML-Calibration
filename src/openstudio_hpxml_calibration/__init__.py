@@ -189,7 +189,7 @@ def calibrate(
     filename = Path(hpxml_filepath).stem
     if output_dir is None:
         output_filepath = (
-            Path(__file__).resolve().parent.parent / "tests" / "ga_search_results" / filename
+            Path(__file__).resolve().parent.parent / "tests" / "calibration_results" / filename
         )
     else:
         output_filepath = Path(output_dir)
@@ -201,9 +201,14 @@ def calibrate(
     cal = Calibrate(original_hpxml_filepath=hpxml_filepath, config_filepath=config_filepath)
 
     start = time.time()
-    best_individual_pop, pop, logbook, best_bias_series, best_abs_series = cal.run_search(
-        num_proc=num_proc, output_filepath=output_filepath
-    )
+    (
+        best_individual_pop,
+        pop,
+        logbook,
+        best_bias_series,
+        best_abs_series,
+        weather_norm_reg_models,
+    ) = cal.run_search(num_proc=num_proc, output_filepath=output_filepath)
     logger.info(f"Calibration took {time.time() - start:.2f} seconds")
 
     # Save logbook
@@ -220,9 +225,14 @@ def calibrate(
                 rec["best_individual_sim_results"] = json.loads(rec["best_individual_sim_results"])
         log_data.append(rec)
 
+    output_data = {
+        "weather_normalization_results": weather_norm_reg_models,
+        "calibration_results": log_data,
+    }
+
     logbook_path = output_filepath / "logbook.json"
     with open(logbook_path, "w", encoding="utf-8") as f:
-        json.dump(log_data, f, indent=2)
+        json.dump(output_data, f, indent=2)
 
     # Min and avg penalties
     min_penalty = [entry["min"] for entry in logbook]
