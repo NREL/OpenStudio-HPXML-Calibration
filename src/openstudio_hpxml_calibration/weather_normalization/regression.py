@@ -286,7 +286,7 @@ class Bpi2400ModelFitError(Exception):
 
 
 def fit_model(
-    bills_temps: pd.DataFrame, bpi2400=True, user_config: dict | None = None
+    bills_temps: pd.DataFrame, cvrmse_requirement: float | None = None
 ) -> UtilityBillRegressionModel:
     """Fit a regression model to the utility bills
 
@@ -297,8 +297,8 @@ def fit_model(
 
     :param bills_temps: dataframe of utility bills and temperatures.
     :type bills_temps: pd.DataFrame
-    :param bpi2400: Use BPI-2400 criteria for model selection, defaults to True
-    :type bpi2400: bool, optional
+    :param cvrmse_requirement: CVRMSE requirement for model selection.
+    :type cvrmse_requirement: float | None
     :raises Bpi2400ModelFitError: Error thrown if model doesn't meet BPI-2400
         criteria
     :return: An instance of a model class, fit to your data.
@@ -321,12 +321,8 @@ def fit_model(
             else:
                 raise
     best_model = min(models, key=lambda x: x.calc_cvrmse(bills_temps))
-    if (
-        bpi2400
-        and (cvrmse := best_model.calc_cvrmse(bills_temps))
-        > user_config["weather_normalization"]["max_cvrmse"]
-    ):
+    if (cvrmse := best_model.calc_cvrmse(bills_temps)) > cvrmse_requirement:
         raise Bpi2400ModelFitError(
-            f"CVRMSE = {cvrmse:0.1%}, which is greater than {user_config['weather_normalization']['max_cvrmse']:0.1%}"
+            f"CVRMSE = {cvrmse:0.1%}, which is greater than {cvrmse_requirement:0.1%}"
         )
     return best_model
