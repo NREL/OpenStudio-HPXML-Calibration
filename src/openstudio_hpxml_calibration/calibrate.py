@@ -58,7 +58,7 @@ class Calibrate:
 
         normalized_consumption = {}
         # InverseModel is not applicable to delivered fuels, so we only use it for electricity and natural gas
-        self.inv_model = InverseModel(self.hpxml)
+        self.inv_model = InverseModel(self.hpxml, user_config=self.ga_config)
         for fuel_type, bills in self.inv_model.bills_by_fuel_type.items():
             if fuel_type in (
                 FuelType.FUEL_OIL,
@@ -674,17 +674,6 @@ class Calibrate:
                     raise ValueError(
                         f"Estimated consumption value for {fuel.ConsumptionType.Energy.FuelType} cannot be greater than zero for bill-period: {detail.StartDateTime}"
                     )
-
-        # Check that electricity has at least 10 bill periods per year in at least one section
-        min_elec_bills = self.ga_config["utility_bill_criteria"]["min_num_electrical_bills"]
-        if not any(
-            getattr(fuel.ConsumptionType.Energy, "FuelType", None) == FuelType.ELECTRICITY.value
-            and len(getattr(fuel, "ConsumptionDetail", [])) >= min_elec_bills
-            for _, fuel in all_fuels
-        ):
-            raise ValueError(
-                f"Electricity consumption must have at least {min_elec_bills} bill periods."
-            )
 
         # Check that each fuel type covers enough days and dates are valid
         min_days = self.ga_config["utility_bill_criteria"]["min_days_of_consumption_data"]
