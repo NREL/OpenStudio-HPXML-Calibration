@@ -849,6 +849,8 @@ class Calibrate:
         ]
         lighting_load_multiplier_choices = cfg["value_choices"]["lighting_load_multiplier_choices"]
 
+        normalized_consumption_per_bill = self.get_normalized_consumption_per_bill()
+
         def evaluate(individual):
             try:
                 (
@@ -901,8 +903,6 @@ class Calibrate:
                 temp_osw = Path(temp_output_dir / "modify_hpxml.osw")
                 create_measure_input_file(arguments, temp_osw)
 
-                normalized_consumption_per_bill = self.get_normalized_consumption_per_bill()
-
                 app(["modify-xml", str(temp_osw)])
                 app(
                     [
@@ -940,27 +940,6 @@ class Calibrate:
                                 self.compare_results(
                                     normalized_consumption_per_bill, simulation_results
                                 )
-                            )
-                for model_fuel_type, result in comparison.items():
-                    bias_error_criteria = self.ga_config["genetic_algorithm"][
-                        "bias_error_threshold"
-                    ]
-                    if model_fuel_type == "electricity":
-                        absolute_error_criteria = self.ga_config["genetic_algorithm"][
-                            "abs_error_elec_threshold"
-                        ]
-                    else:
-                        absolute_error_criteria = self.ga_config["genetic_algorithm"][
-                            "abs_error_fuel_threshold"
-                        ]
-                    for load_type in result["Bias Error"]:
-                        if abs(result["Bias Error"][load_type]) > bias_error_criteria:
-                            logger.info(
-                                f"Bias error for {model_fuel_type} {load_type} is {result['Bias Error'][load_type]} but the limit is +/- {bias_error_criteria}"
-                            )
-                        if abs(result["Absolute Error"][load_type]) > absolute_error_criteria:
-                            logger.info(
-                                f"Absolute error for {model_fuel_type} {load_type} is {result['Absolute Error'][load_type]} but the limit is +/- {absolute_error_criteria}"
                             )
 
                 combined_error_penalties = []
