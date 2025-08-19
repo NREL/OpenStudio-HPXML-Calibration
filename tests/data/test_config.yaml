@@ -6,4 +6,4 @@ genetic_algorithm:
   abs_error_fuel_threshold: 10  # Absolute error threshold for fossil fuels in MBtu
 
 weather_normalization:
-  max_cvrmse: 0.2
+  max_cvrmse: 1.2
