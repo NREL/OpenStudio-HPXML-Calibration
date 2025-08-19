@@ -13,7 +13,7 @@ from openstudio_hpxml_calibration.calibrate import Calibrate
 
 def main(filepath):
     filename = Path(filepath).stem
-    output_filepath = Path(__file__).resolve().parent / "tests" / "ga_search_results" / filename
+    output_filepath = Path(__file__).resolve().parent / "tests" / "calibration_results" / filename
 
     # Remove old results if they exist
     if output_filepath.exists():
@@ -25,7 +25,7 @@ def main(filepath):
         original_hpxml_filepath=filepath,
     )
     start = time.time()
-    best_individual_dict, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search(
+    best_individual_dict, pop, logbook, best_bias_series, best_abs_series = cal.run_search(
         output_filepath=output_filepath
     )
     print(f"Evaluation took {time.time() - start:.2f} seconds")
@@ -203,8 +203,8 @@ if __name__ == "__main__":
         output_txt_path = (
             Path(__file__).resolve().parent
             / "tests"
-            / "ga_search_results"
-            / "average_ga_performace.txt"
+            / "calibration_search_results"
+            / "average_calibration_performace.txt"
         )
         output_txt_path.parent.mkdir(parents=True, exist_ok=True)  # Ensure directory exists
         with open(output_txt_path, "w") as f:

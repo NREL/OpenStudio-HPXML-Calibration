@@ -38,7 +38,7 @@ def _merge_with_defaults(user_config, default_config: dict) -> dict:
 
 
 def _load_config(config_filepath: Path | None = None) -> dict:
-    default_config_filepath = Path(__file__).resolve().parent / "default_ga_config.yaml"
+    default_config_filepath = Path(__file__).resolve().parent / "default_calibration_config.yaml"
     with open(default_config_filepath) as f:
         default_config = yaml.safe_load(f)
     if not config_filepath or not Path(config_filepath).exists():

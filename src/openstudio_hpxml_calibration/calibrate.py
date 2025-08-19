@@ -796,7 +796,7 @@ class Calibrate:
                     "Please provide the clothes dryer fuel type in the HPXML"
                 )
 
-    def run_ga_search(
+    def run_search(
         self,
         population_size=None,
         generations=None,
@@ -805,7 +805,7 @@ class Calibrate:
         num_proc=None,
         output_filepath=None,
     ):
-        print(f"Running GA search algorithm for '{Path(self.hpxml_filepath).name}'...")
+        print(f"Running search algorithm for '{Path(self.hpxml_filepath).name}'...")
 
         all_temp_dirs = set()
         best_dirs_by_gen = []
@@ -901,6 +901,8 @@ class Calibrate:
                 temp_osw = Path(temp_output_dir / "modify_hpxml.osw")
                 create_measure_input_file(arguments, temp_osw)
 
+                normalized_consumption_per_bill = self.get_normalized_consumption_per_bill()
+
                 app(["modify-xml", str(temp_osw)])
                 app(
                     [
@@ -933,10 +935,11 @@ class Calibrate:
                             # Merge results, prefer later sections if duplicate fuel keys
                             comparison[fuel] = simplified_calibration_results.get(fuel, {})
                         else:
-                            normalized_consumption = self.get_normalized_consumption_per_bill()
                             # Merge results, prefer later sections if duplicate fuel keys
                             comparison.update(
-                                self.compare_results(normalized_consumption, simulation_results)
+                                self.compare_results(
+                                    normalized_consumption_per_bill, simulation_results
+                                )
                             )
                 for model_fuel_type, result in comparison.items():
                     bias_error_criteria = self.ga_config["genetic_algorithm"][
@@ -1388,12 +1391,10 @@ class Calibrate:
                 shutil.rmtree(temp_dir, ignore_errors=True)
 
         if terminated_early:
-            print(
-                "GA search has completed early: A solution satisfying error thresholds was found."
-            )
+            print("Search has completed early: A solution satisfying error thresholds was found.")
         else:
             print(
-                "GA search has completed. However, no solution was found that satisfies the bias error "
+                "Search has completed. However, no solution was found that satisfies the bias error "
                 "and absolute error thresholds before reaching the maximum number of generations."
             )
 
