@@ -6,6 +6,7 @@ import time
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 
 from openstudio_hpxml_calibration.calibrate import Calibrate
 
@@ -47,98 +48,101 @@ def main(filepath):
     with open(logbook_path, "w", encoding="utf-8") as f:
         json.dump(log_data, f, indent=2)
 
-    # Extract penalties per generation
+    # Min and avg penalties
     min_penalty = [entry["min"] for entry in logbook]
     avg_penalty = [entry["avg"] for entry in logbook]
 
-    # Extract bias error series per end use
-    best_bias_series = {}
-    for entry in logbook:
-        for key, value in entry.items():
-            if key.startswith("bias_error_"):
-                if key not in best_bias_series:
-                    best_bias_series[key] = []
-                best_bias_series[key].append(value)
-
-    # Plot minimum penalty over generations
+    # Plot Min Penalty
     plt.figure(figsize=(10, 6))
     plt.plot(min_penalty, label="Min Penalty")
     plt.xlabel("Generation")
     plt.ylabel("Penalty")
-    plt.title("Hall-of-Fame Penalty Over Generations")
+    plt.title("Min Penalty Over Generations")
     plt.legend()
     plt.grid(True)
+    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
     plt.tight_layout()
     plt.savefig(str(output_filepath / "min_penalty_plot.png"))
     plt.close()
 
-    # Plot average penalty over generations
+    # Plot Avg Penalty
     plt.figure(figsize=(10, 6))
     plt.plot(avg_penalty, label="Avg Penalty")
     plt.xlabel("Generation")
     plt.ylabel("Penalty")
-    plt.title("Average Penalty Over Generations")
+    plt.title("Avg Penalty Over Generations")
     plt.legend()
     plt.grid(True)
+    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
     plt.tight_layout()
     plt.savefig(str(output_filepath / "avg_penalty_plot.png"))
     plt.close()
 
-    # Plot bias error per end-use
+    # Bias error series
+    best_bias_series = {}
+    for entry in logbook:
+        for key, value in entry.items():
+            # Skip zero values to avoid cluttering the plot
+            if value == 0:
+                continue
+            if key.startswith("bias_error_"):
+                best_bias_series.setdefault(key, []).append(value)
+
     plt.figure(figsize=(12, 6))
     for key, values in best_bias_series.items():
         label = key.replace("bias_error_", "")
         plt.plot(values, label=label)
     plt.xlabel("Generation")
     plt.ylabel("Bias Error (%)")
-    plt.title("Hall-of-Fame Per-End-Use Bias Error Over Generations")
+    plt.title("Per-End-Use Bias Error Over Generations")
     plt.legend(loc="best", fontsize="small")
     plt.grid(True)
+    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
     plt.tight_layout()
     plt.savefig(str(output_filepath / "bias_error_plot.png"), bbox_inches="tight")
     plt.close()
 
-    # Plot absolute error per end-use
+    # Absolute error series
     best_abs_series = {}
-    # Build series from each generation entry
     for entry in logbook:
         for key, value in entry.items():
+            # Skip zero values to avoid cluttering the plot
+            if value == 0:
+                continue
             if key.startswith("abs_error_"):
-                if key not in best_abs_series:
-                    best_abs_series[key] = []
-                best_abs_series[key].append(value)
-    # Separate keys into electricity (kWh) and gas (MBtu)
+                best_abs_series.setdefault(key, []).append(value)
+
     electric_keys = [k for k in best_abs_series if "electricity" in k]
-    gas_keys = [k for k in best_abs_series if "natural gas" in k]
-    # Plotting
+    fuel_keys = [
+        k for k in best_abs_series if "natural gas" in k or "fuel oil" in k or "propane" in k
+    ]
+
     fig, ax1 = plt.subplots(figsize=(12, 6))
     ax2 = ax1.twinx()
     colors = plt.cm.tab20.colors
-    # Plot electricity errors
+
     for i, key in enumerate(electric_keys):
         ax1.plot(
             best_abs_series[key],
             label=key.replace("abs_error_", "") + " (kWh)",
             color=colors[i % len(colors)],
         )
-    # Plot fossil fuel errors
-    for i, key in enumerate(gas_keys):
+    for i, key in enumerate(fuel_keys):
         ax2.plot(
             best_abs_series[key],
             label=key.replace("abs_error_", "") + " (MBtu)",
             color=colors[(i + len(electric_keys)) % len(colors)],
         )
-    # Labeling
+
     ax1.set_xlabel("Generation")
-    ax1.set_ylabel("Absolute Error for Electricity End-Uses (kWh)", color="blue")
-    ax2.set_ylabel("Absolute Error for Natural Gas End-Uses (MBtu)", color="red")
+    ax1.set_ylabel("Electricity Abs Error (kWh)", color="blue")
+    ax2.set_ylabel("Fossil Fuel Abs Error (MBtu)", color="red")
     plt.title("Per-End-Use Absolute Errors Over Generations")
-    # Combine legends
-    lines_1, labels_1 = ax1.get_legend_handles_labels()
-    lines_2, labels_2 = ax2.get_legend_handles_labels()
-    ax1.legend(lines_1 + lines_2, labels_1 + labels_2, loc="best", fontsize="small")
-    # Grid and save
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines1 + lines2, labels1 + labels2, loc="best", fontsize="small")
     ax1.grid(True)
+    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
     plt.tight_layout()
     plt.savefig(str(output_filepath / "absolute_error_plot.png"), bbox_inches="tight")
     plt.close()
