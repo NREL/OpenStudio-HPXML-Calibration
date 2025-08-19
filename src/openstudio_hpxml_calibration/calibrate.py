@@ -675,17 +675,6 @@ class Calibrate:
                         f"Estimated consumption value for {fuel.ConsumptionType.Energy.FuelType} cannot be greater than zero for bill-period: {detail.StartDateTime}"
                     )
 
-        # Check that electricity has at least 10 bill periods per year in at least one section
-        min_elec_bills = self.ga_config["utility_bill_criteria"]["min_num_electrical_bills"]
-        if not any(
-            getattr(fuel.ConsumptionType.Energy, "FuelType", None) == FuelType.ELECTRICITY.value
-            and len(getattr(fuel, "ConsumptionDetail", [])) >= min_elec_bills
-            for _, fuel in all_fuels
-        ):
-            raise ValueError(
-                f"Electricity consumption must have at least {min_elec_bills} bill periods."
-            )
-
         # Check that each fuel type covers enough days and dates are valid
         min_days = self.ga_config["utility_bill_criteria"]["min_days_of_consumption_data"]
         recent_bill_max_age_days = self.ga_config["utility_bill_criteria"][
