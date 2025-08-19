@@ -6,7 +6,7 @@ genetic_algorithm:
   abs_error_fuel_threshold: 10  # Absolute error threshold for fossil fuels in MBtu
 
 weather_normalization:
-  max_cvrmse: 3.02
+  max_cvrmse: 0.81
 
 utility_bill_criteria:
   max_days_since_newest_bill: 9125  # 25 years * 365 days/year

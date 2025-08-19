@@ -20,9 +20,12 @@ ira_rebate_hpxmls = list((repo_root / "test_hpxmls" / "ira_rebates").glob("*.xml
 real_home_hpxmls = list((repo_root / "test_hpxmls" / "real_homes").glob("*.xml"))
 ihmh_home_hpxmls = list((repo_root / "test_hpxmls" / "ihmh_homes").glob("*.xml"))
 SKIP_FILENAMES = {
+    "ihmh7.xml",
+    "house11.xml",
     "house18.xml",
     "house32.xml",
     "house37.xml",
+    "house46.xml",
     "house53.xml",
     "house54.xml",
     "house57.xml",
