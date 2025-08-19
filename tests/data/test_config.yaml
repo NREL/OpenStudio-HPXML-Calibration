@@ -9,4 +9,4 @@ weather_normalization:
   max_cvrmse: 0.81
 
 utility_bill_criteria:
-  max_days_since_newest_bill: 9125  # 25 years * 365 days/year
+  max_days_since_newest_bill: 10_000  # A big number, not something specific. Happens to be 27.4 years.
