@@ -35,7 +35,6 @@ class InverseModel:
         try:
             return self.regression_models[fuel_type]
         except KeyError:
-            # TODO: Determine sufficiency for bill coverage
             bills_weather = self.bills_weather_by_fuel_type_in_btu[fuel_type]
             model = fit_model(
                 bills_weather,
