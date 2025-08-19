@@ -285,9 +285,7 @@ class Bpi2400ModelFitError(Exception):
     pass
 
 
-def fit_model(
-    bills_temps: pd.DataFrame, cvrmse_requirement: float | None = None
-) -> UtilityBillRegressionModel:
+def fit_model(bills_temps: pd.DataFrame, cvrmse_requirement: float) -> UtilityBillRegressionModel:
     """Fit a regression model to the utility bills
 
     The ``bills_temps`` dataframe should be in the format returned by the
@@ -298,7 +296,7 @@ def fit_model(
     :param bills_temps: dataframe of utility bills and temperatures.
     :type bills_temps: pd.DataFrame
     :param cvrmse_requirement: CVRMSE requirement for model selection.
-    :type cvrmse_requirement: float | None
+    :type cvrmse_requirement: float
     :raises Bpi2400ModelFitError: Error thrown if model doesn't meet BPI-2400
         criteria
     :return: An instance of a model class, fit to your data.

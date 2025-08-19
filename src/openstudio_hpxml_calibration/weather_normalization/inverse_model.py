@@ -10,10 +10,8 @@ from openstudio_hpxml_calibration.weather_normalization.regression import (
 
 
 class InverseModel:
-    def __init__(
-        self, hpxml: HpxmlDoc, building_id: str | None = None, user_config: dict | None = None
-    ):
-        self.user_config = user_config or {}
+    def __init__(self, hpxml: HpxmlDoc, user_config: dict, building_id: str | None = None):
+        self.user_config = user_config
         self.hpxml = hpxml
         self.building_id = building_id
         self.bills_by_fuel_type, self.bill_units, self.tz = ud.get_bills_from_hpxml(
@@ -42,7 +40,7 @@ class InverseModel:
             model = fit_model(
                 bills_weather,
                 cvrmse_requirement=self.user_config["weather_normalization"]["max_cvrmse"],
-            )  # TODO: Add more model fit criteria
+            )
             self.regression_models[fuel_type] = model
             return model
 
