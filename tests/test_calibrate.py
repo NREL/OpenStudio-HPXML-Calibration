@@ -31,7 +31,7 @@ def test_data():
 
 def test_calibrate_normalizes_bills_to_weather(test_data) -> None:
     cal = Calibrate(original_hpxml_filepath=test_data["sample_xml_file"])
-    normalized_usage = cal.get_normalized_consumption_per_bill()
+    normalized_usage, _ = cal.get_normalized_consumption_per_bill()
     for fuel_type, normalized_consumption in normalized_usage.items():
         assert normalized_consumption.shape == (12, 5)
         # Assert that baseload has 12 non-zero values
@@ -68,7 +68,7 @@ def test_get_model_results(test_data) -> None:
 @pytest.mark.order(3)
 def test_compare_results(test_data):
     cal = Calibrate(original_hpxml_filepath=test_data["sample_xml_file"])
-    normalized_usage = cal.get_normalized_consumption_per_bill()
+    normalized_usage, _ = cal.get_normalized_consumption_per_bill()
     if results_path.exists():
         simulation_results = cal.get_model_results(json_results_path=results_path)
     else:
