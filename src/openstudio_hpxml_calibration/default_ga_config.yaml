@@ -31,7 +31,7 @@ weather_normalization:
 
 utility_bill_criteria:
   min_days_of_consumption_data: 330
-  max_years: 25
+  max_days_since_newest_bill: 365
   min_electrical_bill_days: 20
   max_electrical_bill_days: 45
   min_num_electrical_bills: 10

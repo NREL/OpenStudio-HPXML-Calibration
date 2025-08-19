@@ -7,3 +7,6 @@ genetic_algorithm:
 
 weather_normalization:
   max_cvrmse: 1.2
+
+utility_bill_criteria:
+  max_days_since_newest_bill: 9125  # 25 years * 365 days/year
