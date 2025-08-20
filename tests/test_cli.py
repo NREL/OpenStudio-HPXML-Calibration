@@ -11,7 +11,7 @@ TEST_DIR = Path(__file__).parent
 TEST_DATA_DIR = TEST_DIR / "data"
 TEST_SIM_DIR = TEST_DIR / "run"
 TEST_MODIFY_DIR = TEST_DIR / "modifications"
-TEST_CONFIG = TEST_DATA_DIR / "test_config.json"
+TEST_CONFIG = TEST_DATA_DIR / "test_fixture_data.json"
 
 
 @pytest.fixture
