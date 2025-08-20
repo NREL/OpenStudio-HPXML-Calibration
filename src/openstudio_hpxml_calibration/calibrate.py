@@ -311,7 +311,6 @@ class Calibrate:
         """
 
         # TODO: prevent double-calculating when running multiple times in the same kernel session
-        annual_model_results_copy = copy.deepcopy(annual_model_results)
 
         # Build annual normalized bill consumption dicts
         annual_normalized_bill_consumption = {}
@@ -319,8 +318,8 @@ class Calibrate:
             annual_normalized_bill_consumption[fuel_type] = {}
             for end_use in ["heating", "cooling", "baseload"]:
                 if (
-                    end_use not in annual_model_results_copy[fuel_type]
-                    or annual_model_results_copy[fuel_type][end_use] == 0.0
+                    end_use not in annual_model_results[fuel_type]
+                    or annual_model_results[fuel_type][end_use] == 0.0
                 ):
                     continue
                 annual_normalized_bill_consumption[fuel_type][end_use] = (
@@ -330,12 +329,14 @@ class Calibrate:
         comparison_results = {}
 
         # combine the annual normalized bill consumption with the model results
-        for model_fuel_type, disagg_results in annual_model_results_copy.items():
+        for model_fuel_type, disagg_results in annual_model_results.items():
             if model_fuel_type in annual_normalized_bill_consumption:
                 comparison_results[model_fuel_type] = {"Bias Error": {}, "Absolute Error": {}}
                 for load_type in disagg_results:
                     if load_type not in annual_normalized_bill_consumption[model_fuel_type]:
                         continue
+
+                    disagg_result = disagg_results[load_type]
                     if model_fuel_type == "electricity":
                         # All results from simulation and normalized bills are in mbtu.
                         # convert electric loads from mbtu to kWh for bpi2400
@@ -346,9 +347,7 @@ class Calibrate:
                                 to_="kwh",
                             )
                         )
-                        disagg_results[load_type] = convert_units(
-                            disagg_results[load_type], from_="mbtu", to_="kwh"
-                        )
+                        disagg_result = convert_units(disagg_result, from_="mbtu", to_="kwh")
 
                     # Calculate error levels
                     if annual_normalized_bill_consumption[model_fuel_type][load_type] == 0:
@@ -358,7 +357,7 @@ class Calibrate:
                             (
                                 (
                                     annual_normalized_bill_consumption[model_fuel_type][load_type]
-                                    - disagg_results[load_type]
+                                    - disagg_result
                                 )
                                 / annual_normalized_bill_consumption[model_fuel_type][load_type]
                             )
@@ -368,7 +367,7 @@ class Calibrate:
                     comparison_results[model_fuel_type]["Absolute Error"][load_type] = round(
                         abs(
                             annual_normalized_bill_consumption[model_fuel_type][load_type]
-                            - disagg_results[load_type]
+                            - disagg_result
                         ),
                         1,
                     )
@@ -440,92 +439,88 @@ class Calibrate:
 
         return total_period_tmy_dd, total_period_actual_dd
 
-    def simplified_annual_usage(self, model_results: dict, consumption) -> dict:
+    def simplified_annual_usage(
+        self, model_results: dict, delivered_consumption, fuel_type: str
+    ) -> dict:
         total_period_tmy_dd, total_period_actual_dd = self.calculate_annual_degree_days()
-        consumption_copy = copy.deepcopy(consumption)
-        model_results_copy = copy.deepcopy(model_results)
 
         comparison_results = {}
 
-        for fuel in total_period_tmy_dd:
-            for fuel_consumption in consumption_copy.ConsumptionDetails.ConsumptionInfo:
-                measured_consumption = 0.0
-                fuel_unit_type = fuel_consumption.ConsumptionType.Energy.UnitofMeasure
-                if fuel_consumption.ConsumptionType.Energy.FuelType == fuel:
-                    first_bill_date = fuel_consumption.ConsumptionDetail[0].StartDateTime
-                    last_bill_date = fuel_consumption.ConsumptionDetail[-1].EndDateTime
-                    first_bill_date = dt.strptime(str(first_bill_date), "%Y-%m-%dT%H:%M:%S")
-                    last_bill_date = dt.strptime(str(last_bill_date), "%Y-%m-%dT%H:%M:%S")
-                    num_days = (last_bill_date - first_bill_date + timedelta(days=1)).days
-                for delivery in fuel_consumption.ConsumptionDetail:
-                    measured_consumption += int(delivery.Consumption)
-                # logger.debug(
-                #     f"Measured {fuel} consumption: {measured_consumption:,.0f} {fuel_unit_type}"
-                # )
-                if fuel_unit_type == "gal" and fuel == FuelType.FUEL_OIL.value:
-                    fuel_unit_type = f"{fuel_unit_type}_fuel_oil"
-                elif fuel_unit_type == "gal" and fuel == FuelType.PROPANE.value:
-                    fuel_unit_type = f"{fuel_unit_type}_propane"
-                measured_consumption = convert_units(
-                    measured_consumption, str(fuel_unit_type), "mBtu"
-                )
+        measured_consumption = 0.0
+        fuel_unit_type = delivered_consumption.ConsumptionType.Energy.UnitofMeasure
+        if delivered_consumption.ConsumptionType.Energy.FuelType == fuel_type:
+            first_bill_date = delivered_consumption.ConsumptionDetail[0].StartDateTime
+            last_bill_date = delivered_consumption.ConsumptionDetail[-1].EndDateTime
+            first_bill_date = dt.strptime(str(first_bill_date), "%Y-%m-%dT%H:%M:%S")
+            last_bill_date = dt.strptime(str(last_bill_date), "%Y-%m-%dT%H:%M:%S")
+            num_days = (last_bill_date - first_bill_date + timedelta(days=1)).days
+            for period_consumption in delivered_consumption.ConsumptionDetail:
+                measured_consumption += float(period_consumption.Consumption)
+            # logger.debug(
+            #     f"Measured {fuel_type} consumption: {measured_consumption:,.2f} {fuel_unit_type}"
+            # )
+            if fuel_unit_type == "gal" and fuel_type == FuelType.FUEL_OIL.value:
+                fuel_unit_type = f"{fuel_unit_type}_fuel_oil"
+            elif fuel_unit_type == "gal" and fuel_type == FuelType.PROPANE.value:
+                fuel_unit_type = f"{fuel_unit_type}_propane"
+        measured_consumption = convert_units(measured_consumption, str(fuel_unit_type), "mBtu")
 
-            modeled_baseload = model_results_copy[fuel].get("baseload", 0)
-            modeled_heating = model_results_copy[fuel].get("heating", 0)
-            modeled_cooling = model_results_copy[fuel].get("cooling", 0)
-            total_modeled_usage = modeled_baseload + modeled_heating + modeled_cooling
+        modeled_baseload = model_results[fuel_type].get("baseload", 0)
+        modeled_heating = model_results[fuel_type].get("heating", 0)
+        modeled_cooling = model_results[fuel_type].get("cooling", 0)
+        total_modeled_usage = modeled_baseload + modeled_heating + modeled_cooling
 
-            baseload_fraction = modeled_baseload / total_modeled_usage
-            heating_fraction = modeled_heating / total_modeled_usage
-            cooling_fraction = modeled_cooling / total_modeled_usage
+        baseload_fraction = modeled_baseload / total_modeled_usage
+        heating_fraction = modeled_heating / total_modeled_usage
+        cooling_fraction = modeled_cooling / total_modeled_usage
 
-            baseload = baseload_fraction * (num_days / 365)
-            heating = heating_fraction * (
-                total_period_actual_dd[fuel]["HDD65F"] / total_period_tmy_dd[fuel]["HDD65F"]
-            )
-            cooling = cooling_fraction * (
-                total_period_actual_dd[fuel]["CDD65F"] / total_period_tmy_dd[fuel]["CDD65F"]
-            )
+        baseload = baseload_fraction * (num_days / 365)
+        heating = heating_fraction * (
+            total_period_actual_dd[fuel_type]["HDD65F"] / total_period_tmy_dd[fuel_type]["HDD65F"]
+        )
+        cooling = cooling_fraction * (
+            total_period_actual_dd[fuel_type]["CDD65F"] / total_period_tmy_dd[fuel_type]["CDD65F"]
+        )
 
-            annual_delivered_fuel_usage = measured_consumption / (baseload + heating + cooling)
-            # logger.debug(f"annual_delivered_fuel_usage: {annual_delivered_fuel_usage:,.2f} mBtu")
+        annual_delivered_fuel_usage = measured_consumption / (baseload + heating + cooling)
+        # logger.debug(f"annual_delivered_fuel_usage: {annual_delivered_fuel_usage:,.2f} mBtu")
 
-            normalized_annual_baseload = annual_delivered_fuel_usage * baseload_fraction
-            normalized_annual_heating = annual_delivered_fuel_usage * heating_fraction
-            normalized_annual_cooling = annual_delivered_fuel_usage * cooling_fraction
+        normalized_annual_baseload = annual_delivered_fuel_usage * baseload_fraction
+        normalized_annual_heating = annual_delivered_fuel_usage * heating_fraction
+        normalized_annual_cooling = annual_delivered_fuel_usage * cooling_fraction
 
-            baseload_bias_error = (
-                ((normalized_annual_baseload - modeled_baseload) / normalized_annual_baseload) * 100
-                if normalized_annual_baseload
-                else 0
-            )
-            heating_bias_error = (
-                ((normalized_annual_heating - modeled_heating) / normalized_annual_heating) * 100
-                if normalized_annual_heating
-                else 0
-            )
-            cooling_bias_error = (
-                ((normalized_annual_cooling - modeled_cooling) / normalized_annual_cooling) * 100
-                if normalized_annual_cooling
-                else 0
-            )
+        baseload_bias_error = (
+            ((normalized_annual_baseload - modeled_baseload) / normalized_annual_baseload) * 100
+            if normalized_annual_baseload
+            else 0
+        )
+        heating_bias_error = (
+            ((normalized_annual_heating - modeled_heating) / normalized_annual_heating) * 100
+            if normalized_annual_heating
+            else 0
+        )
+        cooling_bias_error = (
+            ((normalized_annual_cooling - modeled_cooling) / normalized_annual_cooling) * 100
+            if normalized_annual_cooling
+            else 0
+        )
 
-            baseload_absolute_error = abs(normalized_annual_baseload - modeled_baseload)
-            heating_absolute_error = abs(normalized_annual_heating - modeled_heating)
-            cooling_absolute_error = abs(normalized_annual_cooling - modeled_cooling)
+        baseload_absolute_error = abs(normalized_annual_baseload - modeled_baseload)
+        heating_absolute_error = abs(normalized_annual_heating - modeled_heating)
+        cooling_absolute_error = abs(normalized_annual_cooling - modeled_cooling)
 
-            comparison_results[fuel] = {
-                "Bias Error": {
-                    "baseload": round(baseload_bias_error, 2),
-                    "heating": round(heating_bias_error, 2),
-                    "cooling": round(cooling_bias_error, 2),
-                },
-                "Absolute Error": {
-                    "baseload": round(baseload_absolute_error, 2),
-                    "heating": round(heating_absolute_error, 2),
-                    "cooling": round(cooling_absolute_error, 2),
-                },
-            }
+        comparison_results[fuel_type] = {
+            "Bias Error": {
+                "baseload": round(baseload_bias_error, 2),
+                "heating": round(heating_bias_error, 2),
+                "cooling": round(cooling_bias_error, 2),
+            },
+            "Absolute Error": {
+                "baseload": round(baseload_absolute_error, 2),
+                "heating": round(heating_absolute_error, 2),
+                "cooling": round(cooling_absolute_error, 2),
+            },
+        }
         return comparison_results
 
     def hpxml_data_error_checking(self) -> None:
@@ -920,7 +915,7 @@ class Calibrate:
                         fuel = fuel_info.ConsumptionType.Energy.FuelType
                         if fuel in delivered_fuels:
                             simplified_calibration_results = self.simplified_annual_usage(
-                                simulation_results, consumption
+                                simulation_results, fuel_info, fuel
                             )
                             # Merge results, prefer later sections if duplicate fuel keys
                             comparison[fuel] = simplified_calibration_results.get(fuel, {})

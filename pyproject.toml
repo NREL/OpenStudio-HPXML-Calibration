@@ -28,6 +28,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "flaky>=3.8.1",
     "marimo>=0.13.6",
     "matplotlib>=3.10.0",
     "pre-commit>=4.1.0",
