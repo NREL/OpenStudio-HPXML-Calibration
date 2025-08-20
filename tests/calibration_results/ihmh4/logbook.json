@@ -12,56 +12,56 @@
   "calibration_results": [
     {
       "gen": 0,
-      "nevals": 70,
-      "min": 80.34464314083485,
-      "avg": 161.49487199449945,
-      "bias_error_electricity_cooling": 60.7,
-      "bias_error_electricity_baseload": 0.7,
-      "bias_error_natural gas_baseload": -2.4,
+      "nevals": 50,
+      "min": 75.62020878455903,
+      "avg": 168.64305472100088,
+      "bias_error_electricity_cooling": 48.0,
+      "bias_error_electricity_baseload": 0.1,
+      "bias_error_natural gas_baseload": -1.9,
       "bias_error_fuel oil_baseload": 0,
-      "bias_error_fuel oil_heating": -3.3,
+      "bias_error_fuel oil_heating": -19.69,
       "bias_error_fuel oil_cooling": 0,
-      "abs_error_electricity_cooling": 640.1,
-      "abs_error_electricity_baseload": 54.5,
-      "abs_error_natural gas_baseload": 1.0,
+      "abs_error_electricity_cooling": 506.7,
+      "abs_error_electricity_baseload": 8.2,
+      "abs_error_natural gas_baseload": 0.8,
       "abs_error_fuel oil_baseload": 0.0,
-      "abs_error_fuel oil_heating": 1.8,
+      "abs_error_fuel oil_heating": 10.75,
       "abs_error_fuel oil_cooling": 0.0,
       "best_individual": {
-        "misc_load_multiplier": 1.6,
-        "heating_setpoint_offset": 0,
-        "cooling_setpoint_offset": 5,
-        "air_leakage_multiplier": 1.1,
-        "heating_hvac_eff_multiplier": 0.9,
+        "misc_load_multiplier": 1.9,
+        "heating_setpoint_offset": 3,
+        "cooling_setpoint_offset": 3,
+        "air_leakage_multiplier": 0.8,
+        "heating_hvac_eff_multiplier": 0.8,
         "cooling_hvac_eff_multiplier": 1,
-        "roof_r_value_multiplier": 1.2,
-        "ceiling_r_value_multiplier": 1.2,
-        "above_ground_walls_r_value_multiplier": 0.9,
-        "below_ground_walls_r_value_multiplier": 0.8,
-        "slab_r_value_multiplier": 0.8,
-        "floor_r_value_multiplier": 0.9,
-        "water_heater_efficiency_multiplier": 1,
-        "water_fixtures_usage_multiplier": 1.4,
-        "window_u_factor_multiplier": 0.8,
+        "roof_r_value_multiplier": 1,
+        "ceiling_r_value_multiplier": 0.8,
+        "above_ground_walls_r_value_multiplier": 1.1,
+        "below_ground_walls_r_value_multiplier": 0.9,
+        "slab_r_value_multiplier": 1,
+        "floor_r_value_multiplier": 1.1,
+        "water_heater_efficiency_multiplier": 1.2,
+        "water_fixtures_usage_multiplier": 0.9,
+        "window_u_factor_multiplier": 0.9,
         "window_shgc_multiplier": 1.1,
-        "appliance_usage_multiplier": 0.4,
-        "lighting_load_multiplier": 1.8
+        "appliance_usage_multiplier": 1.8,
+        "lighting_load_multiplier": 0.2
       },
       "best_individual_sim_results": {
         "electricity": {
-          "cooling": 1.416,
-          "baseload": 25.814
+          "cooling": 1.871,
+          "baseload": 25.972
         },
         "natural gas": {
           "heating": 0.0,
-          "baseload": 42.289
+          "baseload": 42.097
         },
         "propane": {
           "heating": 0.0,
           "baseload": 0.0
         },
         "fuel oil": {
-          "heating": 56.406,
+          "heating": 65.356,
           "baseload": 0.0
         },
         "wood cord": {
@@ -77,60 +77,256 @@
           "baseload": 0.0
         }
       },
-      "diversity": 1.0
+      "diversity": 1.0,
+      "parameter_choice_stats": {
+        "misc_load_multiplier": {
+          "min": 0.1,
+          "max": 10,
+          "median": 1.1,
+          "std": 1.6852726782334069
+        },
+        "heating_setpoint_offset": {
+          "min": -5,
+          "max": 5,
+          "median": -0.5,
+          "std": 3.0890775322092514
+        },
+        "cooling_setpoint_offset": {
+          "min": -5,
+          "max": 5,
+          "median": 1.0,
+          "std": 3.0495245531065986
+        },
+        "air_leakage_multiplier": {
+          "min": 0.5,
+          "max": 2,
+          "median": 1.1,
+          "std": 0.48
+        },
+        "heating_hvac_eff_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.9,
+          "std": 0.1431782106327635
+        },
+        "cooling_hvac_eff_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.1369525465261599
+        },
+        "roof_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.13159027319676786
+        },
+        "ceiling_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.13310146505579867
+        },
+        "above_ground_walls_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.13189389675038038
+        },
+        "below_ground_walls_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.14277254638059797
+        },
+        "slab_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.11745637488020817
+        },
+        "floor_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.12619033243477884
+        },
+        "water_heater_efficiency_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.14177446878757824
+        },
+        "water_fixtures_usage_multiplier": {
+          "min": 0.1,
+          "max": 10,
+          "median": 1.35,
+          "std": 2.9686960100353823
+        },
+        "window_u_factor_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.1478377489006106
+        },
+        "window_shgc_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.14069825869569247
+        },
+        "appliance_usage_multiplier": {
+          "min": 0.1,
+          "max": 10,
+          "median": 1.1,
+          "std": 2.1330016408807566
+        },
+        "lighting_load_multiplier": {
+          "min": 0.1,
+          "max": 10,
+          "median": 1.1,
+          "std": 2.5656687237443574
+        }
+      },
+      "simulation_result_stats": {
+        "electricity_cooling": {
+          "min": 1.065,
+          "max": 3.849,
+          "median": 1.9220000000000002,
+          "std": 0.6674782980741771
+        },
+        "natural gas_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "propane_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "natural gas_baseload": {
+          "min": 9.63,
+          "max": 233.459,
+          "median": 49.454,
+          "std": 65.10389717674357
+        },
+        "wood cord_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 3.485,
+          "max": 106.326,
+          "median": 24.698,
+          "std": 20.535928763812947
+        },
+        "wood pellets_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 7.649,
+          "max": 101.129,
+          "median": 57.066500000000005,
+          "std": 22.078893316368916
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "propane_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "wood cord_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        }
+      }
     },
     {
       "gen": 1,
-      "nevals": 47,
-      "min": 80.34464314083485,
-      "avg": 140.49061357256574,
-      "bias_error_electricity_cooling": 60.7,
-      "bias_error_electricity_baseload": 0.7,
-      "bias_error_natural gas_baseload": -2.4,
+      "nevals": 23,
+      "min": 75.62020878455903,
+      "avg": 160.68132214827483,
+      "bias_error_electricity_cooling": 48.0,
+      "bias_error_electricity_baseload": 0.1,
+      "bias_error_natural gas_baseload": -1.9,
       "bias_error_fuel oil_baseload": 0,
-      "bias_error_fuel oil_heating": -3.3,
+      "bias_error_fuel oil_heating": -19.69,
       "bias_error_fuel oil_cooling": 0,
-      "abs_error_electricity_cooling": 640.1,
-      "abs_error_electricity_baseload": 54.5,
-      "abs_error_natural gas_baseload": 1.0,
+      "abs_error_electricity_cooling": 506.7,
+      "abs_error_electricity_baseload": 8.2,
+      "abs_error_natural gas_baseload": 0.8,
       "abs_error_fuel oil_baseload": 0.0,
-      "abs_error_fuel oil_heating": 1.8,
+      "abs_error_fuel oil_heating": 10.75,
       "abs_error_fuel oil_cooling": 0.0,
       "best_individual": {
-        "misc_load_multiplier": 1.6,
-        "heating_setpoint_offset": 0,
-        "cooling_setpoint_offset": 5,
-        "air_leakage_multiplier": 1.1,
-        "heating_hvac_eff_multiplier": 0.9,
+        "misc_load_multiplier": 1.9,
+        "heating_setpoint_offset": 3,
+        "cooling_setpoint_offset": 3,
+        "air_leakage_multiplier": 0.8,
+        "heating_hvac_eff_multiplier": 0.8,
         "cooling_hvac_eff_multiplier": 1,
-        "roof_r_value_multiplier": 1.2,
-        "ceiling_r_value_multiplier": 1.2,
-        "above_ground_walls_r_value_multiplier": 0.9,
-        "below_ground_walls_r_value_multiplier": 0.8,
-        "slab_r_value_multiplier": 0.8,
-        "floor_r_value_multiplier": 0.9,
-        "water_heater_efficiency_multiplier": 1,
-        "water_fixtures_usage_multiplier": 1.4,
-        "window_u_factor_multiplier": 0.8,
+        "roof_r_value_multiplier": 1,
+        "ceiling_r_value_multiplier": 0.8,
+        "above_ground_walls_r_value_multiplier": 1.1,
+        "below_ground_walls_r_value_multiplier": 0.9,
+        "slab_r_value_multiplier": 1,
+        "floor_r_value_multiplier": 1.1,
+        "water_heater_efficiency_multiplier": 1.2,
+        "water_fixtures_usage_multiplier": 0.9,
+        "window_u_factor_multiplier": 0.9,
         "window_shgc_multiplier": 1.1,
-        "appliance_usage_multiplier": 0.4,
-        "lighting_load_multiplier": 1.8
+        "appliance_usage_multiplier": 1.8,
+        "lighting_load_multiplier": 0.2
       },
       "best_individual_sim_results": {
         "electricity": {
-          "cooling": 1.416,
-          "baseload": 25.814
+          "cooling": 1.871,
+          "baseload": 25.972
         },
         "natural gas": {
           "heating": 0.0,
-          "baseload": 42.289
+          "baseload": 42.097
         },
         "propane": {
           "heating": 0.0,
           "baseload": 0.0
         },
         "fuel oil": {
-          "heating": 56.406,
+          "heating": 65.356,
           "baseload": 0.0
         },
         "wood cord": {
@@ -146,60 +342,256 @@
           "baseload": 0.0
         }
       },
-      "diversity": 0.5571428571428572
+      "diversity": 0.6,
+      "parameter_choice_stats": {
+        "misc_load_multiplier": {
+          "min": 0.2,
+          "max": 5,
+          "median": 1.25,
+          "std": 0.9085570978204947
+        },
+        "heating_setpoint_offset": {
+          "min": -5,
+          "max": 5,
+          "median": -1.0,
+          "std": 3.117691453623979
+        },
+        "cooling_setpoint_offset": {
+          "min": -5,
+          "max": 5,
+          "median": 1.0,
+          "std": 3.4811492355255327
+        },
+        "air_leakage_multiplier": {
+          "min": 0.6,
+          "max": 2,
+          "median": 1.0,
+          "std": 0.483822281421598
+        },
+        "heating_hvac_eff_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.14853955702101712
+        },
+        "cooling_hvac_eff_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.1369525465261599
+        },
+        "roof_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.9,
+          "std": 0.1305526713629407
+        },
+        "ceiling_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.14696938456699066
+        },
+        "above_ground_walls_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.126
+        },
+        "below_ground_walls_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.1407977272543843
+        },
+        "slab_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.12165525060596438
+        },
+        "floor_r_value_multiplier": {
+          "min": 0.9,
+          "max": 1.2,
+          "median": 1.05,
+          "std": 0.106226173799116
+        },
+        "water_heater_efficiency_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.1280781011726829
+        },
+        "water_fixtures_usage_multiplier": {
+          "min": 0.1,
+          "max": 10,
+          "median": 1.4,
+          "std": 2.930780783340849
+        },
+        "window_u_factor_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.146
+        },
+        "window_shgc_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.13304134695650072
+        },
+        "appliance_usage_multiplier": {
+          "min": 0.2,
+          "max": 10,
+          "median": 1.2,
+          "std": 2.427361530551228
+        },
+        "lighting_load_multiplier": {
+          "min": 0.2,
+          "max": 10,
+          "median": 1.05,
+          "std": 1.9088017183563095
+        }
+      },
+      "simulation_result_stats": {
+        "electricity_cooling": {
+          "min": 1.058,
+          "max": 3.06,
+          "median": 2.0465,
+          "std": 0.5370840861541143
+        },
+        "natural gas_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "propane_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "natural gas_baseload": {
+          "min": 15.802,
+          "max": 228.594,
+          "median": 52.296499999999995,
+          "std": 62.33428159523137
+        },
+        "wood cord_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 10.174,
+          "max": 59.705,
+          "median": 25.060000000000002,
+          "std": 11.980082062557
+        },
+        "wood pellets_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 14.916,
+          "max": 101.129,
+          "median": 56.595,
+          "std": 20.629137502125484
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "propane_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "wood cord_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        }
+      }
     },
     {
       "gen": 2,
-      "nevals": 47,
-      "min": 57.19938619517201,
-      "avg": 128.13633365853508,
-      "bias_error_electricity_cooling": 6.4,
-      "bias_error_electricity_baseload": -0.4,
-      "bias_error_natural gas_baseload": -4.9,
+      "nevals": 25,
+      "min": 75.62020878455903,
+      "avg": 154.8299098932161,
+      "bias_error_electricity_cooling": 48.0,
+      "bias_error_electricity_baseload": 0.1,
+      "bias_error_natural gas_baseload": -1.9,
       "bias_error_fuel oil_baseload": 0,
-      "bias_error_fuel oil_heating": -29.38,
+      "bias_error_fuel oil_heating": -19.69,
       "bias_error_fuel oil_cooling": 0,
-      "abs_error_electricity_cooling": 67.4,
-      "abs_error_electricity_baseload": 27.3,
-      "abs_error_natural gas_baseload": 2.0,
+      "abs_error_electricity_cooling": 506.7,
+      "abs_error_electricity_baseload": 8.2,
+      "abs_error_natural gas_baseload": 0.8,
       "abs_error_fuel oil_baseload": 0.0,
-      "abs_error_fuel oil_heating": 16.04,
+      "abs_error_fuel oil_heating": 10.75,
       "abs_error_fuel oil_cooling": 0.0,
       "best_individual": {
-        "misc_load_multiplier": 1.6,
-        "heating_setpoint_offset": 1,
-        "cooling_setpoint_offset": -5,
-        "air_leakage_multiplier": 1.5,
-        "heating_hvac_eff_multiplier": 0.9,
-        "cooling_hvac_eff_multiplier": 0.9,
-        "roof_r_value_multiplier": 0.8,
-        "ceiling_r_value_multiplier": 0.9,
-        "above_ground_walls_r_value_multiplier": 0.8,
-        "below_ground_walls_r_value_multiplier": 1,
-        "slab_r_value_multiplier": 1.2,
-        "floor_r_value_multiplier": 0.8,
-        "water_heater_efficiency_multiplier": 0.8,
-        "water_fixtures_usage_multiplier": 0.8,
-        "window_u_factor_multiplier": 1.2,
-        "window_shgc_multiplier": 0.9,
-        "appliance_usage_multiplier": 1.5,
-        "lighting_load_multiplier": 0.8
+        "misc_load_multiplier": 1.9,
+        "heating_setpoint_offset": 3,
+        "cooling_setpoint_offset": 3,
+        "air_leakage_multiplier": 0.8,
+        "heating_hvac_eff_multiplier": 0.8,
+        "cooling_hvac_eff_multiplier": 1,
+        "roof_r_value_multiplier": 1,
+        "ceiling_r_value_multiplier": 0.8,
+        "above_ground_walls_r_value_multiplier": 1.1,
+        "below_ground_walls_r_value_multiplier": 0.9,
+        "slab_r_value_multiplier": 1,
+        "floor_r_value_multiplier": 1.1,
+        "water_heater_efficiency_multiplier": 1.2,
+        "water_fixtures_usage_multiplier": 0.9,
+        "window_u_factor_multiplier": 0.9,
+        "window_shgc_multiplier": 1.1,
+        "appliance_usage_multiplier": 1.8,
+        "lighting_load_multiplier": 0.2
       },
       "best_individual_sim_results": {
         "electricity": {
-          "cooling": 3.37,
-          "baseload": 26.093
+          "cooling": 1.871,
+          "baseload": 25.972
         },
         "natural gas": {
           "heating": 0.0,
-          "baseload": 43.331
+          "baseload": 42.097
         },
         "propane": {
           "heating": 0.0,
           "baseload": 0.0
         },
         "fuel oil": {
-          "heating": 70.65,
+          "heating": 65.356,
           "baseload": 0.0
         },
         "wood cord": {
@@ -215,60 +607,256 @@
           "baseload": 0.0
         }
       },
-      "diversity": 0.4857142857142857
+      "diversity": 0.56,
+      "parameter_choice_stats": {
+        "misc_load_multiplier": {
+          "min": 0.4,
+          "max": 5,
+          "median": 1.5,
+          "std": 0.9980060120059397
+        },
+        "heating_setpoint_offset": {
+          "min": -5,
+          "max": 5,
+          "median": -0.5,
+          "std": 3.200562450570212
+        },
+        "cooling_setpoint_offset": {
+          "min": -5,
+          "max": 5,
+          "median": 1.0,
+          "std": 3.4985711369071804
+        },
+        "air_leakage_multiplier": {
+          "min": 0.6,
+          "max": 2,
+          "median": 1.0,
+          "std": 0.43146726411165887
+        },
+        "heating_hvac_eff_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.13741906709041504
+        },
+        "cooling_hvac_eff_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.144069427707616
+        },
+        "roof_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.9,
+          "std": 0.11906300852909772
+        },
+        "ceiling_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.1604493689610526
+        },
+        "above_ground_walls_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.12529964086141668
+        },
+        "below_ground_walls_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.13417898494175604
+        },
+        "slab_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.12147427711248171
+        },
+        "floor_r_value_multiplier": {
+          "min": 0.9,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.10371113729971337
+        },
+        "water_heater_efficiency_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.05,
+          "std": 0.12489995996796795
+        },
+        "water_fixtures_usage_multiplier": {
+          "min": 0.1,
+          "max": 10,
+          "median": 1.25,
+          "std": 2.2093293099943248
+        },
+        "window_u_factor_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.15620499351813308
+        },
+        "window_shgc_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.05,
+          "std": 0.12642784503423288
+        },
+        "appliance_usage_multiplier": {
+          "min": 0.1,
+          "max": 10,
+          "median": 1.2,
+          "std": 2.9624456113150837
+        },
+        "lighting_load_multiplier": {
+          "min": 0.1,
+          "max": 10,
+          "median": 1.1,
+          "std": 2.7763890217330855
+        }
+      },
+      "simulation_result_stats": {
+        "electricity_cooling": {
+          "min": 1.152,
+          "max": 3.416,
+          "median": 2.0705,
+          "std": 0.6277696077383804
+        },
+        "natural gas_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "propane_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "natural gas_baseload": {
+          "min": 15.802,
+          "max": 225.128,
+          "median": 47.068,
+          "std": 53.313746568403914
+        },
+        "wood cord_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 10.861,
+          "max": 83.584,
+          "median": 25.77,
+          "std": 18.34721696262406
+        },
+        "wood pellets_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 7.976,
+          "max": 101.129,
+          "median": 52.968999999999994,
+          "std": 23.126380579424875
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "propane_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "wood cord_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        }
+      }
     },
     {
       "gen": 3,
-      "nevals": 43,
-      "min": 57.19938619517201,
-      "avg": 118.26957521071371,
-      "bias_error_electricity_cooling": 6.4,
-      "bias_error_electricity_baseload": -0.4,
-      "bias_error_natural gas_baseload": -4.9,
+      "nevals": 31,
+      "min": 75.62020878455903,
+      "avg": 153.83610931649736,
+      "bias_error_electricity_cooling": 48.0,
+      "bias_error_electricity_baseload": 0.1,
+      "bias_error_natural gas_baseload": -1.9,
       "bias_error_fuel oil_baseload": 0,
-      "bias_error_fuel oil_heating": -29.38,
+      "bias_error_fuel oil_heating": -19.69,
       "bias_error_fuel oil_cooling": 0,
-      "abs_error_electricity_cooling": 67.4,
-      "abs_error_electricity_baseload": 27.3,
-      "abs_error_natural gas_baseload": 2.0,
+      "abs_error_electricity_cooling": 506.7,
+      "abs_error_electricity_baseload": 8.2,
+      "abs_error_natural gas_baseload": 0.8,
       "abs_error_fuel oil_baseload": 0.0,
-      "abs_error_fuel oil_heating": 16.04,
+      "abs_error_fuel oil_heating": 10.75,
       "abs_error_fuel oil_cooling": 0.0,
       "best_individual": {
-        "misc_load_multiplier": 1.6,
-        "heating_setpoint_offset": 1,
-        "cooling_setpoint_offset": -5,
-        "air_leakage_multiplier": 1.5,
-        "heating_hvac_eff_multiplier": 0.9,
-        "cooling_hvac_eff_multiplier": 0.9,
-        "roof_r_value_multiplier": 0.8,
-        "ceiling_r_value_multiplier": 0.9,
-        "above_ground_walls_r_value_multiplier": 0.8,
-        "below_ground_walls_r_value_multiplier": 1,
-        "slab_r_value_multiplier": 1.2,
-        "floor_r_value_multiplier": 0.8,
-        "water_heater_efficiency_multiplier": 0.8,
-        "water_fixtures_usage_multiplier": 0.8,
-        "window_u_factor_multiplier": 1.2,
-        "window_shgc_multiplier": 0.9,
-        "appliance_usage_multiplier": 1.5,
-        "lighting_load_multiplier": 0.8
+        "misc_load_multiplier": 1.9,
+        "heating_setpoint_offset": 3,
+        "cooling_setpoint_offset": 3,
+        "air_leakage_multiplier": 0.8,
+        "heating_hvac_eff_multiplier": 0.8,
+        "cooling_hvac_eff_multiplier": 1,
+        "roof_r_value_multiplier": 1,
+        "ceiling_r_value_multiplier": 0.8,
+        "above_ground_walls_r_value_multiplier": 1.1,
+        "below_ground_walls_r_value_multiplier": 0.9,
+        "slab_r_value_multiplier": 1,
+        "floor_r_value_multiplier": 1.1,
+        "water_heater_efficiency_multiplier": 1.2,
+        "water_fixtures_usage_multiplier": 0.9,
+        "window_u_factor_multiplier": 0.9,
+        "window_shgc_multiplier": 1.1,
+        "appliance_usage_multiplier": 1.8,
+        "lighting_load_multiplier": 0.2
       },
       "best_individual_sim_results": {
         "electricity": {
-          "cooling": 3.37,
-          "baseload": 26.093
+          "cooling": 1.871,
+          "baseload": 25.972
         },
         "natural gas": {
           "heating": 0.0,
-          "baseload": 43.331
+          "baseload": 42.097
         },
         "propane": {
           "heating": 0.0,
           "baseload": 0.0
         },
         "fuel oil": {
-          "heating": 70.65,
+          "heating": 65.356,
           "baseload": 0.0
         },
         "wood cord": {
@@ -284,60 +872,256 @@
           "baseload": 0.0
         }
       },
-      "diversity": 0.45714285714285713
+      "diversity": 0.6,
+      "parameter_choice_stats": {
+        "misc_load_multiplier": {
+          "min": 0.2,
+          "max": 10,
+          "median": 1.2999999999999998,
+          "std": 2.6208395601409866
+        },
+        "heating_setpoint_offset": {
+          "min": -5,
+          "max": 5,
+          "median": -1.0,
+          "std": 2.9707911404203426
+        },
+        "cooling_setpoint_offset": {
+          "min": -5,
+          "max": 5,
+          "median": -2.0,
+          "std": 3.7094473981982814
+        },
+        "air_leakage_multiplier": {
+          "min": 0.6,
+          "max": 2,
+          "median": 1.0,
+          "std": 0.41513371339846633
+        },
+        "heating_hvac_eff_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.13658696863171096
+        },
+        "cooling_hvac_eff_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.14340153416194681
+        },
+        "roof_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.9,
+          "std": 0.12529964086141668
+        },
+        "ceiling_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.16662532820672848
+        },
+        "above_ground_walls_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.12369316876852982
+        },
+        "below_ground_walls_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.12165525060596438
+        },
+        "slab_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.12451505933018703
+        },
+        "floor_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.10816653826391968
+        },
+        "water_heater_efficiency_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.1459451951932642
+        },
+        "water_fixtures_usage_multiplier": {
+          "min": 0.1,
+          "max": 10,
+          "median": 1.2,
+          "std": 2.17611029132257
+        },
+        "window_u_factor_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.9,
+          "std": 0.1587450786638754
+        },
+        "window_shgc_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.12713772060250256
+        },
+        "appliance_usage_multiplier": {
+          "min": 0.1,
+          "max": 10,
+          "median": 1.2,
+          "std": 2.5095370090915177
+        },
+        "lighting_load_multiplier": {
+          "min": 0.1,
+          "max": 10,
+          "median": 1.3,
+          "std": 1.9348343598354873
+        }
+      },
+      "simulation_result_stats": {
+        "electricity_cooling": {
+          "min": 1.064,
+          "max": 4.461,
+          "median": 2.4939999999999998,
+          "std": 0.8606633079201181
+        },
+        "natural gas_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "propane_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "natural gas_baseload": {
+          "min": 10.534,
+          "max": 231.239,
+          "median": 47.37,
+          "std": 50.85179026518536
+        },
+        "wood cord_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 10.861,
+          "max": 122.218,
+          "median": 25.214,
+          "std": 27.42067994612096
+        },
+        "wood pellets_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 6.126,
+          "max": 89.875,
+          "median": 51.393,
+          "std": 19.396925047532662
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "propane_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "wood cord_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        }
+      }
     },
     {
       "gen": 4,
-      "nevals": 44,
-      "min": 57.19938619517201,
-      "avg": 107.34447907679147,
-      "bias_error_electricity_cooling": 6.4,
-      "bias_error_electricity_baseload": -0.4,
-      "bias_error_natural gas_baseload": -4.9,
+      "nevals": 32,
+      "min": 75.62020878455903,
+      "avg": 154.20595371298413,
+      "bias_error_electricity_cooling": 48.0,
+      "bias_error_electricity_baseload": 0.1,
+      "bias_error_natural gas_baseload": -1.9,
       "bias_error_fuel oil_baseload": 0,
-      "bias_error_fuel oil_heating": -29.38,
+      "bias_error_fuel oil_heating": -19.69,
       "bias_error_fuel oil_cooling": 0,
-      "abs_error_electricity_cooling": 67.4,
-      "abs_error_electricity_baseload": 27.3,
-      "abs_error_natural gas_baseload": 2.0,
+      "abs_error_electricity_cooling": 506.7,
+      "abs_error_electricity_baseload": 8.2,
+      "abs_error_natural gas_baseload": 0.8,
       "abs_error_fuel oil_baseload": 0.0,
-      "abs_error_fuel oil_heating": 16.04,
+      "abs_error_fuel oil_heating": 10.75,
       "abs_error_fuel oil_cooling": 0.0,
       "best_individual": {
-        "misc_load_multiplier": 1.6,
-        "heating_setpoint_offset": 1,
-        "cooling_setpoint_offset": -5,
-        "air_leakage_multiplier": 1.5,
-        "heating_hvac_eff_multiplier": 0.9,
-        "cooling_hvac_eff_multiplier": 0.9,
-        "roof_r_value_multiplier": 0.8,
-        "ceiling_r_value_multiplier": 0.9,
-        "above_ground_walls_r_value_multiplier": 0.8,
-        "below_ground_walls_r_value_multiplier": 1,
-        "slab_r_value_multiplier": 1.2,
-        "floor_r_value_multiplier": 0.8,
-        "water_heater_efficiency_multiplier": 0.8,
-        "water_fixtures_usage_multiplier": 0.8,
-        "window_u_factor_multiplier": 1.2,
-        "window_shgc_multiplier": 0.9,
-        "appliance_usage_multiplier": 1.5,
-        "lighting_load_multiplier": 0.8
+        "misc_load_multiplier": 1.9,
+        "heating_setpoint_offset": 3,
+        "cooling_setpoint_offset": 3,
+        "air_leakage_multiplier": 0.8,
+        "heating_hvac_eff_multiplier": 0.8,
+        "cooling_hvac_eff_multiplier": 1,
+        "roof_r_value_multiplier": 1,
+        "ceiling_r_value_multiplier": 0.8,
+        "above_ground_walls_r_value_multiplier": 1.1,
+        "below_ground_walls_r_value_multiplier": 0.9,
+        "slab_r_value_multiplier": 1,
+        "floor_r_value_multiplier": 1.1,
+        "water_heater_efficiency_multiplier": 1.2,
+        "water_fixtures_usage_multiplier": 0.9,
+        "window_u_factor_multiplier": 0.9,
+        "window_shgc_multiplier": 1.1,
+        "appliance_usage_multiplier": 1.8,
+        "lighting_load_multiplier": 0.2
       },
       "best_individual_sim_results": {
         "electricity": {
-          "cooling": 3.37,
-          "baseload": 26.093
+          "cooling": 1.871,
+          "baseload": 25.972
         },
         "natural gas": {
           "heating": 0.0,
-          "baseload": 43.331
+          "baseload": 42.097
         },
         "propane": {
           "heating": 0.0,
           "baseload": 0.0
         },
         "fuel oil": {
-          "heating": 70.65,
+          "heating": 65.356,
           "baseload": 0.0
         },
         "wood cord": {
@@ -353,60 +1137,256 @@
           "baseload": 0.0
         }
       },
-      "diversity": 0.45714285714285713
+      "diversity": 0.52,
+      "parameter_choice_stats": {
+        "misc_load_multiplier": {
+          "min": 0.1,
+          "max": 10,
+          "median": 1.4,
+          "std": 2.8026958450748807
+        },
+        "heating_setpoint_offset": {
+          "min": -5,
+          "max": 5,
+          "median": -1.0,
+          "std": 2.8464714999451513
+        },
+        "cooling_setpoint_offset": {
+          "min": -5,
+          "max": 5,
+          "median": 0.0,
+          "std": 3.704105830021599
+        },
+        "air_leakage_multiplier": {
+          "min": 0.6,
+          "max": 2,
+          "median": 1.1,
+          "std": 0.4214071665266266
+        },
+        "heating_hvac_eff_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.14062716664997554
+        },
+        "cooling_hvac_eff_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.13177253128023306
+        },
+        "roof_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.9,
+          "std": 0.12472369462135091
+        },
+        "ceiling_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.16169106345126186
+        },
+        "above_ground_walls_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.11779643458101777
+        },
+        "below_ground_walls_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.11539497389401324
+        },
+        "slab_r_value_multiplier": {
+          "min": 0.9,
+          "max": 1.2,
+          "median": 1.05,
+          "std": 0.10992724866929035
+        },
+        "floor_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.10031948963187562
+        },
+        "water_heater_efficiency_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.14978651474682222
+        },
+        "water_fixtures_usage_multiplier": {
+          "min": 0.1,
+          "max": 10,
+          "median": 1.1,
+          "std": 1.770140107449125
+        },
+        "window_u_factor_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.95,
+          "std": 0.15564061166674975
+        },
+        "window_shgc_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.11135528725660045
+        },
+        "appliance_usage_multiplier": {
+          "min": 0.1,
+          "max": 10,
+          "median": 1.7,
+          "std": 2.814920247538107
+        },
+        "lighting_load_multiplier": {
+          "min": 0.1,
+          "max": 2,
+          "median": 1.0,
+          "std": 0.6463311844557711
+        }
+      },
+      "simulation_result_stats": {
+        "electricity_cooling": {
+          "min": 1.064,
+          "max": 5.244,
+          "median": 2.3609999999999998,
+          "std": 0.8909118798175272
+        },
+        "natural gas_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "propane_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "natural gas_baseload": {
+          "min": 10.616,
+          "max": 225.015,
+          "median": 47.957,
+          "std": 44.24108707785558
+        },
+        "wood cord_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 8.117,
+          "max": 108.675,
+          "median": 25.972,
+          "std": 27.896983893059122
+        },
+        "wood pellets_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 8.15,
+          "max": 105.881,
+          "median": 46.1725,
+          "std": 21.672307038245837
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "propane_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "wood cord_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        }
+      }
     },
     {
       "gen": 5,
-      "nevals": 36,
-      "min": 57.19938619517201,
-      "avg": 104.98051221681818,
-      "bias_error_electricity_cooling": 6.4,
-      "bias_error_electricity_baseload": -0.4,
-      "bias_error_natural gas_baseload": -4.9,
+      "nevals": 32,
+      "min": 75.62020878455903,
+      "avg": 145.62514654371057,
+      "bias_error_electricity_cooling": 48.0,
+      "bias_error_electricity_baseload": 0.1,
+      "bias_error_natural gas_baseload": -1.9,
       "bias_error_fuel oil_baseload": 0,
-      "bias_error_fuel oil_heating": -29.38,
+      "bias_error_fuel oil_heating": -19.69,
       "bias_error_fuel oil_cooling": 0,
-      "abs_error_electricity_cooling": 67.4,
-      "abs_error_electricity_baseload": 27.3,
-      "abs_error_natural gas_baseload": 2.0,
+      "abs_error_electricity_cooling": 506.7,
+      "abs_error_electricity_baseload": 8.2,
+      "abs_error_natural gas_baseload": 0.8,
       "abs_error_fuel oil_baseload": 0.0,
-      "abs_error_fuel oil_heating": 16.04,
+      "abs_error_fuel oil_heating": 10.75,
       "abs_error_fuel oil_cooling": 0.0,
       "best_individual": {
-        "misc_load_multiplier": 1.6,
-        "heating_setpoint_offset": 1,
-        "cooling_setpoint_offset": -5,
-        "air_leakage_multiplier": 1.5,
-        "heating_hvac_eff_multiplier": 0.9,
-        "cooling_hvac_eff_multiplier": 0.9,
-        "roof_r_value_multiplier": 0.8,
-        "ceiling_r_value_multiplier": 0.9,
-        "above_ground_walls_r_value_multiplier": 0.8,
-        "below_ground_walls_r_value_multiplier": 1,
-        "slab_r_value_multiplier": 1.2,
-        "floor_r_value_multiplier": 0.8,
-        "water_heater_efficiency_multiplier": 0.8,
-        "water_fixtures_usage_multiplier": 0.8,
-        "window_u_factor_multiplier": 1.2,
-        "window_shgc_multiplier": 0.9,
-        "appliance_usage_multiplier": 1.5,
-        "lighting_load_multiplier": 0.8
+        "misc_load_multiplier": 1.9,
+        "heating_setpoint_offset": 3,
+        "cooling_setpoint_offset": 3,
+        "air_leakage_multiplier": 0.8,
+        "heating_hvac_eff_multiplier": 0.8,
+        "cooling_hvac_eff_multiplier": 1,
+        "roof_r_value_multiplier": 1,
+        "ceiling_r_value_multiplier": 0.8,
+        "above_ground_walls_r_value_multiplier": 1.1,
+        "below_ground_walls_r_value_multiplier": 0.9,
+        "slab_r_value_multiplier": 1,
+        "floor_r_value_multiplier": 1.1,
+        "water_heater_efficiency_multiplier": 1.2,
+        "water_fixtures_usage_multiplier": 0.9,
+        "window_u_factor_multiplier": 0.9,
+        "window_shgc_multiplier": 1.1,
+        "appliance_usage_multiplier": 1.8,
+        "lighting_load_multiplier": 0.2
       },
       "best_individual_sim_results": {
         "electricity": {
-          "cooling": 3.37,
-          "baseload": 26.093
+          "cooling": 1.871,
+          "baseload": 25.972
         },
         "natural gas": {
           "heating": 0.0,
-          "baseload": 43.331
+          "baseload": 42.097
         },
         "propane": {
           "heating": 0.0,
           "baseload": 0.0
         },
         "fuel oil": {
-          "heating": 70.65,
+          "heating": 65.356,
           "baseload": 0.0
         },
         "wood cord": {
@@ -422,60 +1402,256 @@
           "baseload": 0.0
         }
       },
-      "diversity": 0.5
+      "diversity": 0.48,
+      "parameter_choice_stats": {
+        "misc_load_multiplier": {
+          "min": 0.2,
+          "max": 10,
+          "median": 1.4,
+          "std": 2.2638984076146174
+        },
+        "heating_setpoint_offset": {
+          "min": -3,
+          "max": 5,
+          "median": 3.0,
+          "std": 2.4738633753705965
+        },
+        "cooling_setpoint_offset": {
+          "min": -5,
+          "max": 5,
+          "median": 3.0,
+          "std": 3.6115924465531823
+        },
+        "air_leakage_multiplier": {
+          "min": 0.6,
+          "max": 2,
+          "median": 1.1,
+          "std": 0.41982853642886164
+        },
+        "heating_hvac_eff_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.9,
+          "std": 0.14062716664997554
+        },
+        "cooling_hvac_eff_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.1328006024082722
+        },
+        "roof_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.11280070921762858
+        },
+        "ceiling_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.9,
+          "std": 0.1726962651593832
+        },
+        "above_ground_walls_r_value_multiplier": {
+          "min": 0.9,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.1061319932913728
+        },
+        "below_ground_walls_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.11399999999999999
+        },
+        "slab_r_value_multiplier": {
+          "min": 0.9,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.1050904372433572
+        },
+        "floor_r_value_multiplier": {
+          "min": 0.9,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.09558242516278814
+        },
+        "water_heater_efficiency_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.13898201322473347
+        },
+        "water_fixtures_usage_multiplier": {
+          "min": 0.1,
+          "max": 10,
+          "median": 0.95,
+          "std": 2.1743274822344496
+        },
+        "window_u_factor_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.9,
+          "std": 0.14012851244482688
+        },
+        "window_shgc_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.10121264743103996
+        },
+        "appliance_usage_multiplier": {
+          "min": 0.3,
+          "max": 10,
+          "median": 1.7,
+          "std": 2.155626127138006
+        },
+        "lighting_load_multiplier": {
+          "min": 0.2,
+          "max": 2,
+          "median": 0.8,
+          "std": 0.6531646040624063
+        }
+      },
+      "simulation_result_stats": {
+        "electricity_cooling": {
+          "min": 0.924,
+          "max": 4.663,
+          "median": 1.9965,
+          "std": 0.8222061843601032
+        },
+        "natural gas_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "propane_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "natural gas_baseload": {
+          "min": 10.616,
+          "max": 228.433,
+          "median": 42.097,
+          "std": 50.56035012497441
+        },
+        "wood cord_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 5.93,
+          "max": 111.607,
+          "median": 25.972,
+          "std": 23.487835032595065
+        },
+        "wood pellets_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 8.382,
+          "max": 105.881,
+          "median": 64.15549999999999,
+          "std": 22.209751352808972
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "propane_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "wood cord_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        }
+      }
     },
     {
       "gen": 6,
-      "nevals": 40,
-      "min": 57.19938619517201,
-      "avg": 103.58258989810498,
-      "bias_error_electricity_cooling": 6.4,
-      "bias_error_electricity_baseload": -0.4,
-      "bias_error_natural gas_baseload": -4.9,
+      "nevals": 32,
+      "min": 75.62020878455903,
+      "avg": 146.66589136236018,
+      "bias_error_electricity_cooling": 48.0,
+      "bias_error_electricity_baseload": 0.1,
+      "bias_error_natural gas_baseload": -1.9,
       "bias_error_fuel oil_baseload": 0,
-      "bias_error_fuel oil_heating": -29.38,
+      "bias_error_fuel oil_heating": -19.69,
       "bias_error_fuel oil_cooling": 0,
-      "abs_error_electricity_cooling": 67.4,
-      "abs_error_electricity_baseload": 27.3,
-      "abs_error_natural gas_baseload": 2.0,
+      "abs_error_electricity_cooling": 506.7,
+      "abs_error_electricity_baseload": 8.2,
+      "abs_error_natural gas_baseload": 0.8,
       "abs_error_fuel oil_baseload": 0.0,
-      "abs_error_fuel oil_heating": 16.04,
+      "abs_error_fuel oil_heating": 10.75,
       "abs_error_fuel oil_cooling": 0.0,
       "best_individual": {
-        "misc_load_multiplier": 1.6,
-        "heating_setpoint_offset": 1,
-        "cooling_setpoint_offset": -5,
-        "air_leakage_multiplier": 1.5,
-        "heating_hvac_eff_multiplier": 0.9,
-        "cooling_hvac_eff_multiplier": 0.9,
-        "roof_r_value_multiplier": 0.8,
-        "ceiling_r_value_multiplier": 0.9,
-        "above_ground_walls_r_value_multiplier": 0.8,
-        "below_ground_walls_r_value_multiplier": 1,
-        "slab_r_value_multiplier": 1.2,
-        "floor_r_value_multiplier": 0.8,
-        "water_heater_efficiency_multiplier": 0.8,
-        "water_fixtures_usage_multiplier": 0.8,
-        "window_u_factor_multiplier": 1.2,
-        "window_shgc_multiplier": 0.9,
-        "appliance_usage_multiplier": 1.5,
-        "lighting_load_multiplier": 0.8
+        "misc_load_multiplier": 1.9,
+        "heating_setpoint_offset": 3,
+        "cooling_setpoint_offset": 3,
+        "air_leakage_multiplier": 0.8,
+        "heating_hvac_eff_multiplier": 0.8,
+        "cooling_hvac_eff_multiplier": 1,
+        "roof_r_value_multiplier": 1,
+        "ceiling_r_value_multiplier": 0.8,
+        "above_ground_walls_r_value_multiplier": 1.1,
+        "below_ground_walls_r_value_multiplier": 0.9,
+        "slab_r_value_multiplier": 1,
+        "floor_r_value_multiplier": 1.1,
+        "water_heater_efficiency_multiplier": 1.2,
+        "water_fixtures_usage_multiplier": 0.9,
+        "window_u_factor_multiplier": 0.9,
+        "window_shgc_multiplier": 1.1,
+        "appliance_usage_multiplier": 1.8,
+        "lighting_load_multiplier": 0.2
       },
       "best_individual_sim_results": {
         "electricity": {
-          "cooling": 3.37,
-          "baseload": 26.093
+          "cooling": 1.871,
+          "baseload": 25.972
         },
         "natural gas": {
           "heating": 0.0,
-          "baseload": 43.331
+          "baseload": 42.097
         },
         "propane": {
           "heating": 0.0,
           "baseload": 0.0
         },
         "fuel oil": {
-          "heating": 70.65,
+          "heating": 65.356,
           "baseload": 0.0
         },
         "wood cord": {
@@ -491,60 +1667,256 @@
           "baseload": 0.0
         }
       },
-      "diversity": 0.5714285714285714
+      "diversity": 0.54,
+      "parameter_choice_stats": {
+        "misc_load_multiplier": {
+          "min": 0.2,
+          "max": 5,
+          "median": 1.35,
+          "std": 1.222620137246234
+        },
+        "heating_setpoint_offset": {
+          "min": -3,
+          "max": 5,
+          "median": 3.0,
+          "std": 2.778488797889961
+        },
+        "cooling_setpoint_offset": {
+          "min": -5,
+          "max": 5,
+          "median": 3.0,
+          "std": 3.4703890271841282
+        },
+        "air_leakage_multiplier": {
+          "min": 0.6,
+          "max": 2,
+          "median": 1.1,
+          "std": 0.40892053017670804
+        },
+        "heating_hvac_eff_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.9,
+          "std": 0.12165525060596438
+        },
+        "cooling_hvac_eff_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.14142135623730948
+        },
+        "roof_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.10150862032359616
+        },
+        "ceiling_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.9,
+          "std": 0.17867288546391136
+        },
+        "above_ground_walls_r_value_multiplier": {
+          "min": 0.9,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.10198039027185568
+        },
+        "below_ground_walls_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.10440306508910549
+        },
+        "slab_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.10583005244258362
+        },
+        "floor_r_value_multiplier": {
+          "min": 0.9,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.0913016976841066
+        },
+        "water_heater_efficiency_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.1146123902551552
+        },
+        "water_fixtures_usage_multiplier": {
+          "min": 0.1,
+          "max": 10,
+          "median": 0.9,
+          "std": 1.8061627833614555
+        },
+        "window_u_factor_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.9,
+          "std": 0.1233531515608742
+        },
+        "window_shgc_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.11356055653262712
+        },
+        "appliance_usage_multiplier": {
+          "min": 0.3,
+          "max": 10,
+          "median": 1.8,
+          "std": 2.612811512528219
+        },
+        "lighting_load_multiplier": {
+          "min": 0.2,
+          "max": 2,
+          "median": 0.8,
+          "std": 0.6157402049566034
+        }
+      },
+      "simulation_result_stats": {
+        "electricity_cooling": {
+          "min": 0.924,
+          "max": 3.856,
+          "median": 2.0,
+          "std": 0.6529204852047452
+        },
+        "natural gas_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "propane_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "natural gas_baseload": {
+          "min": 10.616,
+          "max": 227.981,
+          "median": 42.099000000000004,
+          "std": 44.886647432411344
+        },
+        "wood cord_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 5.93,
+          "max": 82.879,
+          "median": 25.972,
+          "std": 15.20250088457817
+        },
+        "wood pellets_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 8.382,
+          "max": 105.881,
+          "median": 65.356,
+          "std": 21.000928592002783
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "propane_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "wood cord_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        }
+      }
     },
     {
       "gen": 7,
-      "nevals": 37,
-      "min": 57.19938619517201,
-      "avg": 99.71483490818193,
-      "bias_error_electricity_cooling": 6.4,
-      "bias_error_electricity_baseload": -0.4,
-      "bias_error_natural gas_baseload": -4.9,
+      "nevals": 32,
+      "min": 75.62020878455903,
+      "avg": 134.6496652723049,
+      "bias_error_electricity_cooling": 48.0,
+      "bias_error_electricity_baseload": 0.1,
+      "bias_error_natural gas_baseload": -1.9,
       "bias_error_fuel oil_baseload": 0,
-      "bias_error_fuel oil_heating": -29.38,
+      "bias_error_fuel oil_heating": -19.69,
       "bias_error_fuel oil_cooling": 0,
-      "abs_error_electricity_cooling": 67.4,
-      "abs_error_electricity_baseload": 27.3,
-      "abs_error_natural gas_baseload": 2.0,
+      "abs_error_electricity_cooling": 506.7,
+      "abs_error_electricity_baseload": 8.2,
+      "abs_error_natural gas_baseload": 0.8,
       "abs_error_fuel oil_baseload": 0.0,
-      "abs_error_fuel oil_heating": 16.04,
+      "abs_error_fuel oil_heating": 10.75,
       "abs_error_fuel oil_cooling": 0.0,
       "best_individual": {
-        "misc_load_multiplier": 1.6,
-        "heating_setpoint_offset": 1,
-        "cooling_setpoint_offset": -5,
-        "air_leakage_multiplier": 1.5,
-        "heating_hvac_eff_multiplier": 0.9,
-        "cooling_hvac_eff_multiplier": 0.9,
-        "roof_r_value_multiplier": 0.8,
-        "ceiling_r_value_multiplier": 0.9,
-        "above_ground_walls_r_value_multiplier": 0.8,
-        "below_ground_walls_r_value_multiplier": 1,
-        "slab_r_value_multiplier": 1.2,
-        "floor_r_value_multiplier": 0.8,
-        "water_heater_efficiency_multiplier": 0.8,
-        "water_fixtures_usage_multiplier": 0.8,
-        "window_u_factor_multiplier": 1.2,
-        "window_shgc_multiplier": 0.9,
-        "appliance_usage_multiplier": 1.5,
-        "lighting_load_multiplier": 0.8
+        "misc_load_multiplier": 1.9,
+        "heating_setpoint_offset": 3,
+        "cooling_setpoint_offset": 3,
+        "air_leakage_multiplier": 0.8,
+        "heating_hvac_eff_multiplier": 0.8,
+        "cooling_hvac_eff_multiplier": 1,
+        "roof_r_value_multiplier": 1,
+        "ceiling_r_value_multiplier": 0.8,
+        "above_ground_walls_r_value_multiplier": 1.1,
+        "below_ground_walls_r_value_multiplier": 0.9,
+        "slab_r_value_multiplier": 1,
+        "floor_r_value_multiplier": 1.1,
+        "water_heater_efficiency_multiplier": 1.2,
+        "water_fixtures_usage_multiplier": 0.9,
+        "window_u_factor_multiplier": 0.9,
+        "window_shgc_multiplier": 1.1,
+        "appliance_usage_multiplier": 1.8,
+        "lighting_load_multiplier": 0.2
       },
       "best_individual_sim_results": {
         "electricity": {
-          "cooling": 3.37,
-          "baseload": 26.093
+          "cooling": 1.871,
+          "baseload": 25.972
         },
         "natural gas": {
           "heating": 0.0,
-          "baseload": 43.331
+          "baseload": 42.097
         },
         "propane": {
           "heating": 0.0,
           "baseload": 0.0
         },
         "fuel oil": {
-          "heating": 70.65,
+          "heating": 65.356,
           "baseload": 0.0
         },
         "wood cord": {
@@ -560,60 +1932,256 @@
           "baseload": 0.0
         }
       },
-      "diversity": 0.4142857142857143
+      "diversity": 0.5,
+      "parameter_choice_stats": {
+        "misc_load_multiplier": {
+          "min": 0.2,
+          "max": 10,
+          "median": 1.45,
+          "std": 1.448266550052165
+        },
+        "heating_setpoint_offset": {
+          "min": -3,
+          "max": 5,
+          "median": 3.0,
+          "std": 2.7434285119171595
+        },
+        "cooling_setpoint_offset": {
+          "min": -5,
+          "max": 5,
+          "median": 3.0,
+          "std": 3.6891733491393435
+        },
+        "air_leakage_multiplier": {
+          "min": 0.6,
+          "max": 2,
+          "median": 1.05,
+          "std": 0.34458090486850834
+        },
+        "heating_hvac_eff_multiplier": {
+          "min": 0.8,
+          "max": 1.1,
+          "median": 0.8500000000000001,
+          "std": 0.08845337754998392
+        },
+        "cooling_hvac_eff_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.12191800523302534
+        },
+        "roof_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.10239140588936162
+        },
+        "ceiling_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.9,
+          "std": 0.16638509548634453
+        },
+        "above_ground_walls_r_value_multiplier": {
+          "min": 0.9,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.07045565981523412
+        },
+        "below_ground_walls_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.12139192724394812
+        },
+        "slab_r_value_multiplier": {
+          "min": 0.9,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.07922120928135346
+        },
+        "floor_r_value_multiplier": {
+          "min": 0.9,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.07851114570556207
+        },
+        "water_heater_efficiency_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.15,
+          "std": 0.10770329614269004
+        },
+        "water_fixtures_usage_multiplier": {
+          "min": 0.1,
+          "max": 10,
+          "median": 0.9,
+          "std": 2.1471804768113927
+        },
+        "window_u_factor_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.9,
+          "std": 0.12034949106664308
+        },
+        "window_shgc_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.10809255293497329
+        },
+        "appliance_usage_multiplier": {
+          "min": 0.3,
+          "max": 10,
+          "median": 1.8,
+          "std": 2.5730479979977052
+        },
+        "lighting_load_multiplier": {
+          "min": 0.2,
+          "max": 10,
+          "median": 0.8,
+          "std": 1.4347139087636949
+        }
+      },
+      "simulation_result_stats": {
+        "electricity_cooling": {
+          "min": 0.924,
+          "max": 4.317,
+          "median": 1.942,
+          "std": 0.6185771832196852
+        },
+        "natural gas_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "propane_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "natural gas_baseload": {
+          "min": 22.551,
+          "max": 227.981,
+          "median": 42.097,
+          "std": 48.81346554556847
+        },
+        "wood cord_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 5.93,
+          "max": 105.18,
+          "median": 25.972,
+          "std": 16.53711874996367
+        },
+        "wood pellets_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 7.412,
+          "max": 102.86,
+          "median": 65.356,
+          "std": 18.781728559948895
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "propane_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "wood cord_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        }
+      }
     },
     {
       "gen": 8,
-      "nevals": 42,
-      "min": 47.980768045166634,
-      "avg": 91.96665959653484,
-      "bias_error_electricity_cooling": 4.4,
-      "bias_error_electricity_baseload": -1.0,
-      "bias_error_natural gas_baseload": -5.1,
+      "nevals": 30,
+      "min": 75.62020878455903,
+      "avg": 135.9942819441759,
+      "bias_error_electricity_cooling": 48.0,
+      "bias_error_electricity_baseload": 0.1,
+      "bias_error_natural gas_baseload": -1.9,
       "bias_error_fuel oil_baseload": 0,
-      "bias_error_fuel oil_heating": -6.42,
+      "bias_error_fuel oil_heating": -19.69,
       "bias_error_fuel oil_cooling": 0,
-      "abs_error_electricity_cooling": 46.9,
-      "abs_error_electricity_baseload": 75.9,
-      "abs_error_natural gas_baseload": 2.1,
+      "abs_error_electricity_cooling": 506.7,
+      "abs_error_electricity_baseload": 8.2,
+      "abs_error_natural gas_baseload": 0.8,
       "abs_error_fuel oil_baseload": 0.0,
-      "abs_error_fuel oil_heating": 3.5,
+      "abs_error_fuel oil_heating": 10.75,
       "abs_error_fuel oil_cooling": 0.0,
       "best_individual": {
-        "misc_load_multiplier": 1.6,
-        "heating_setpoint_offset": 0,
-        "cooling_setpoint_offset": -5,
-        "air_leakage_multiplier": 1.6,
-        "heating_hvac_eff_multiplier": 1,
-        "cooling_hvac_eff_multiplier": 0.9,
-        "roof_r_value_multiplier": 1.1,
-        "ceiling_r_value_multiplier": 1,
-        "above_ground_walls_r_value_multiplier": 0.9,
-        "below_ground_walls_r_value_multiplier": 1.1,
-        "slab_r_value_multiplier": 1.2,
-        "floor_r_value_multiplier": 0.8,
-        "water_heater_efficiency_multiplier": 0.8,
-        "water_fixtures_usage_multiplier": 0.8,
-        "window_u_factor_multiplier": 1.1,
-        "window_shgc_multiplier": 1,
-        "appliance_usage_multiplier": 1.5,
-        "lighting_load_multiplier": 0.8
+        "misc_load_multiplier": 1.9,
+        "heating_setpoint_offset": 3,
+        "cooling_setpoint_offset": 3,
+        "air_leakage_multiplier": 0.8,
+        "heating_hvac_eff_multiplier": 0.8,
+        "cooling_hvac_eff_multiplier": 1,
+        "roof_r_value_multiplier": 1,
+        "ceiling_r_value_multiplier": 0.8,
+        "above_ground_walls_r_value_multiplier": 1.1,
+        "below_ground_walls_r_value_multiplier": 0.9,
+        "slab_r_value_multiplier": 1,
+        "floor_r_value_multiplier": 1.1,
+        "water_heater_efficiency_multiplier": 1.2,
+        "water_fixtures_usage_multiplier": 0.9,
+        "window_u_factor_multiplier": 0.9,
+        "window_shgc_multiplier": 1.1,
+        "appliance_usage_multiplier": 1.8,
+        "lighting_load_multiplier": 0.2
       },
       "best_individual_sim_results": {
         "electricity": {
-          "cooling": 3.44,
-          "baseload": 26.259
+          "cooling": 1.871,
+          "baseload": 25.972
         },
         "natural gas": {
           "heating": 0.0,
-          "baseload": 43.41
+          "baseload": 42.097
         },
         "propane": {
           "heating": 0.0,
           "baseload": 0.0
         },
         "fuel oil": {
-          "heating": 58.11,
+          "heating": 65.356,
           "baseload": 0.0
         },
         "wood cord": {
@@ -629,7 +2197,998 @@
           "baseload": 0.0
         }
       },
-      "diversity": 0.45714285714285713
+      "diversity": 0.42,
+      "parameter_choice_stats": {
+        "misc_load_multiplier": {
+          "min": 0.1,
+          "max": 5,
+          "median": 1.7,
+          "std": 1.139164606191748
+        },
+        "heating_setpoint_offset": {
+          "min": -3,
+          "max": 5,
+          "median": 3.0,
+          "std": 2.268391500601252
+        },
+        "cooling_setpoint_offset": {
+          "min": -5,
+          "max": 5,
+          "median": 3.0,
+          "std": 3.2249030993194197
+        },
+        "air_leakage_multiplier": {
+          "min": 0.6,
+          "max": 2,
+          "median": 0.8,
+          "std": 0.37797354404772826
+        },
+        "heating_hvac_eff_multiplier": {
+          "min": 0.8,
+          "max": 1.1,
+          "median": 0.8,
+          "std": 0.08717797887081347
+        },
+        "cooling_hvac_eff_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.1243221621433604
+        },
+        "roof_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.1,
+          "median": 1.0,
+          "std": 0.09551963149007643
+        },
+        "ceiling_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.9,
+          "std": 0.17116074316267732
+        },
+        "above_ground_walls_r_value_multiplier": {
+          "min": 0.9,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.08333066662399863
+        },
+        "below_ground_walls_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.11007270324653609
+        },
+        "slab_r_value_multiplier": {
+          "min": 0.9,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.08187795796183488
+        },
+        "floor_r_value_multiplier": {
+          "min": 0.9,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.07592101158440921
+        },
+        "water_heater_efficiency_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.2,
+          "std": 0.11235657524150508
+        },
+        "water_fixtures_usage_multiplier": {
+          "min": 0.1,
+          "max": 10,
+          "median": 0.9,
+          "std": 1.2896263024612982
+        },
+        "window_u_factor_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.9,
+          "std": 0.12165525060596441
+        },
+        "window_shgc_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.09097252332435327
+        },
+        "appliance_usage_multiplier": {
+          "min": 0.3,
+          "max": 10,
+          "median": 1.8,
+          "std": 3.0565182806585667
+        },
+        "lighting_load_multiplier": {
+          "min": 0.2,
+          "max": 2,
+          "median": 0.30000000000000004,
+          "std": 0.7065663450802054
+        }
+      },
+      "simulation_result_stats": {
+        "electricity_cooling": {
+          "min": 1.004,
+          "max": 3.52,
+          "median": 1.947,
+          "std": 0.5049354259704898
+        },
+        "natural gas_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "propane_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "natural gas_baseload": {
+          "min": 22.551,
+          "max": 226.914,
+          "median": 42.097,
+          "std": 38.73616378656513
+        },
+        "wood cord_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 7.755,
+          "max": 59.326,
+          "median": 25.972,
+          "std": 13.332447996913395
+        },
+        "wood pellets_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 24.993,
+          "max": 100.624,
+          "median": 65.356,
+          "std": 17.19695201579629
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "propane_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "wood cord_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        }
+      }
+    },
+    {
+      "gen": 9,
+      "nevals": 27,
+      "min": 75.62020878455903,
+      "avg": 125.1357849211289,
+      "bias_error_electricity_cooling": 48.0,
+      "bias_error_electricity_baseload": 0.1,
+      "bias_error_natural gas_baseload": -1.9,
+      "bias_error_fuel oil_baseload": 0,
+      "bias_error_fuel oil_heating": -19.69,
+      "bias_error_fuel oil_cooling": 0,
+      "abs_error_electricity_cooling": 506.7,
+      "abs_error_electricity_baseload": 8.2,
+      "abs_error_natural gas_baseload": 0.8,
+      "abs_error_fuel oil_baseload": 0.0,
+      "abs_error_fuel oil_heating": 10.75,
+      "abs_error_fuel oil_cooling": 0.0,
+      "best_individual": {
+        "misc_load_multiplier": 1.9,
+        "heating_setpoint_offset": 3,
+        "cooling_setpoint_offset": 3,
+        "air_leakage_multiplier": 0.8,
+        "heating_hvac_eff_multiplier": 0.8,
+        "cooling_hvac_eff_multiplier": 1,
+        "roof_r_value_multiplier": 1,
+        "ceiling_r_value_multiplier": 0.8,
+        "above_ground_walls_r_value_multiplier": 1.1,
+        "below_ground_walls_r_value_multiplier": 0.9,
+        "slab_r_value_multiplier": 1,
+        "floor_r_value_multiplier": 1.1,
+        "water_heater_efficiency_multiplier": 1.2,
+        "water_fixtures_usage_multiplier": 0.9,
+        "window_u_factor_multiplier": 0.9,
+        "window_shgc_multiplier": 1.1,
+        "appliance_usage_multiplier": 1.8,
+        "lighting_load_multiplier": 0.2
+      },
+      "best_individual_sim_results": {
+        "electricity": {
+          "cooling": 1.871,
+          "baseload": 25.972
+        },
+        "natural gas": {
+          "heating": 0.0,
+          "baseload": 42.097
+        },
+        "propane": {
+          "heating": 0.0,
+          "baseload": 0.0
+        },
+        "fuel oil": {
+          "heating": 65.356,
+          "baseload": 0.0
+        },
+        "wood cord": {
+          "heating": 0.0,
+          "baseload": 0.0
+        },
+        "wood pellets": {
+          "heating": 0.0,
+          "baseload": 0.0
+        },
+        "coal": {
+          "heating": 0.0,
+          "baseload": 0.0
+        }
+      },
+      "diversity": 0.42,
+      "parameter_choice_stats": {
+        "misc_load_multiplier": {
+          "min": 0.2,
+          "max": 5,
+          "median": 1.5,
+          "std": 0.7474650493501351
+        },
+        "heating_setpoint_offset": {
+          "min": -3,
+          "max": 5,
+          "median": 3.0,
+          "std": 2.196724834839357
+        },
+        "cooling_setpoint_offset": {
+          "min": -5,
+          "max": 5,
+          "median": 3.0,
+          "std": 3.72
+        },
+        "air_leakage_multiplier": {
+          "min": 0.6,
+          "max": 2,
+          "median": 1.0,
+          "std": 0.3429810490391561
+        },
+        "heating_hvac_eff_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.8,
+          "std": 0.08717797887081345
+        },
+        "cooling_hvac_eff_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.11838918869558991
+        },
+        "roof_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.10983624174196784
+        },
+        "ceiling_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.9,
+          "std": 0.15374004032782088
+        },
+        "above_ground_walls_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.08306623862918074
+        },
+        "below_ground_walls_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.9,
+          "std": 0.13564659966250533
+        },
+        "slab_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.08000000000000002
+        },
+        "floor_r_value_multiplier": {
+          "min": 0.9,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.07483314773547879
+        },
+        "water_heater_efficiency_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.2,
+          "std": 0.1000799680255744
+        },
+        "water_fixtures_usage_multiplier": {
+          "min": 0.1,
+          "max": 10,
+          "median": 0.9,
+          "std": 2.134107776097543
+        },
+        "window_u_factor_multiplier": {
+          "min": 0.8,
+          "max": 1.1,
+          "median": 0.9,
+          "std": 0.11187493016757599
+        },
+        "window_shgc_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.09200000000000003
+        },
+        "appliance_usage_multiplier": {
+          "min": 0.3,
+          "max": 10,
+          "median": 1.8,
+          "std": 1.2968207277800583
+        },
+        "lighting_load_multiplier": {
+          "min": 0.2,
+          "max": 2,
+          "median": 0.45,
+          "std": 0.7839285681744224
+        }
+      },
+      "simulation_result_stats": {
+        "electricity_cooling": {
+          "min": 1.004,
+          "max": 3.265,
+          "median": 1.871,
+          "std": 0.4386459114137507
+        },
+        "natural gas_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "propane_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "natural gas_baseload": {
+          "min": 34.877,
+          "max": 226.914,
+          "median": 42.1535,
+          "std": 43.60859016249436
+        },
+        "wood cord_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 7.755,
+          "max": 59.477,
+          "median": 24.87,
+          "std": 8.158916580036838
+        },
+        "wood pellets_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 25.245,
+          "max": 101.508,
+          "median": 65.356,
+          "std": 14.331557525251746
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "propane_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "wood cord_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        }
+      }
+    },
+    {
+      "gen": 10,
+      "nevals": 31,
+      "min": 75.62020878455903,
+      "avg": 133.17454764417732,
+      "bias_error_electricity_cooling": 48.0,
+      "bias_error_electricity_baseload": 0.1,
+      "bias_error_natural gas_baseload": -1.9,
+      "bias_error_fuel oil_baseload": 0,
+      "bias_error_fuel oil_heating": -19.69,
+      "bias_error_fuel oil_cooling": 0,
+      "abs_error_electricity_cooling": 506.7,
+      "abs_error_electricity_baseload": 8.2,
+      "abs_error_natural gas_baseload": 0.8,
+      "abs_error_fuel oil_baseload": 0.0,
+      "abs_error_fuel oil_heating": 10.75,
+      "abs_error_fuel oil_cooling": 0.0,
+      "best_individual": {
+        "misc_load_multiplier": 1.9,
+        "heating_setpoint_offset": 3,
+        "cooling_setpoint_offset": 3,
+        "air_leakage_multiplier": 0.8,
+        "heating_hvac_eff_multiplier": 0.8,
+        "cooling_hvac_eff_multiplier": 1,
+        "roof_r_value_multiplier": 1,
+        "ceiling_r_value_multiplier": 0.8,
+        "above_ground_walls_r_value_multiplier": 1.1,
+        "below_ground_walls_r_value_multiplier": 0.9,
+        "slab_r_value_multiplier": 1,
+        "floor_r_value_multiplier": 1.1,
+        "water_heater_efficiency_multiplier": 1.2,
+        "water_fixtures_usage_multiplier": 0.9,
+        "window_u_factor_multiplier": 0.9,
+        "window_shgc_multiplier": 1.1,
+        "appliance_usage_multiplier": 1.8,
+        "lighting_load_multiplier": 0.2
+      },
+      "best_individual_sim_results": {
+        "electricity": {
+          "cooling": 1.871,
+          "baseload": 25.972
+        },
+        "natural gas": {
+          "heating": 0.0,
+          "baseload": 42.097
+        },
+        "propane": {
+          "heating": 0.0,
+          "baseload": 0.0
+        },
+        "fuel oil": {
+          "heating": 65.356,
+          "baseload": 0.0
+        },
+        "wood cord": {
+          "heating": 0.0,
+          "baseload": 0.0
+        },
+        "wood pellets": {
+          "heating": 0.0,
+          "baseload": 0.0
+        },
+        "coal": {
+          "heating": 0.0,
+          "baseload": 0.0
+        }
+      },
+      "diversity": 0.42,
+      "parameter_choice_stats": {
+        "misc_load_multiplier": {
+          "min": 0.1,
+          "max": 5,
+          "median": 1.5,
+          "std": 1.0227981227984337
+        },
+        "heating_setpoint_offset": {
+          "min": -1,
+          "max": 5,
+          "median": 3.0,
+          "std": 1.9137397942249097
+        },
+        "cooling_setpoint_offset": {
+          "min": -5,
+          "max": 5,
+          "median": 3.0,
+          "std": 3.8218320214263737
+        },
+        "air_leakage_multiplier": {
+          "min": 0.6,
+          "max": 2,
+          "median": 0.8,
+          "std": 0.26276224995230957
+        },
+        "heating_hvac_eff_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.8,
+          "std": 0.12114454176726244
+        },
+        "cooling_hvac_eff_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.13260467563400619
+        },
+        "roof_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.10697663296253064
+        },
+        "ceiling_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.8,
+          "std": 0.14510685717773641
+        },
+        "above_ground_walls_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.07472616676907759
+        },
+        "below_ground_walls_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.9,
+          "std": 0.13747727084867517
+        },
+        "slab_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.08774964387392122
+        },
+        "floor_r_value_multiplier": {
+          "min": 0.9,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.07665507158694716
+        },
+        "water_heater_efficiency_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.2,
+          "std": 0.08890444308357144
+        },
+        "water_fixtures_usage_multiplier": {
+          "min": 0.1,
+          "max": 10,
+          "median": 0.9,
+          "std": 2.496913294449769
+        },
+        "window_u_factor_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.9,
+          "std": 0.11320777358467926
+        },
+        "window_shgc_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.10800000000000001
+        },
+        "appliance_usage_multiplier": {
+          "min": 0.3,
+          "max": 10,
+          "median": 1.8,
+          "std": 2.5321011038266223
+        },
+        "lighting_load_multiplier": {
+          "min": 0.2,
+          "max": 10,
+          "median": 0.7,
+          "std": 1.4770240350109405
+        }
+      },
+      "simulation_result_stats": {
+        "electricity_cooling": {
+          "min": 1.327,
+          "max": 5.116,
+          "median": 1.8935,
+          "std": 0.8598571334820686
+        },
+        "natural gas_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "propane_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "natural gas_baseload": {
+          "min": 31.61,
+          "max": 232.997,
+          "median": 43.2855,
+          "std": 54.92896856907473
+        },
+        "wood cord_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 10.292,
+          "max": 63.307,
+          "median": 25.972,
+          "std": 12.223986398814422
+        },
+        "wood pellets_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 23.866,
+          "max": 85.509,
+          "median": 65.356,
+          "std": 16.591635195471238
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "propane_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "wood cord_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        }
+      }
+    },
+    {
+      "gen": 11,
+      "nevals": 24,
+      "min": 66.18204830795035,
+      "avg": 117.09387996201808,
+      "bias_error_electricity_cooling": 39.5,
+      "bias_error_electricity_baseload": 0.3,
+      "bias_error_natural gas_baseload": -2.0,
+      "bias_error_fuel oil_baseload": 0,
+      "bias_error_fuel oil_heating": 4.66,
+      "bias_error_fuel oil_cooling": 0,
+      "abs_error_electricity_cooling": 417.0,
+      "abs_error_electricity_baseload": 22.0,
+      "abs_error_natural gas_baseload": 0.8,
+      "abs_error_fuel oil_baseload": 0.0,
+      "abs_error_fuel oil_heating": 2.54,
+      "abs_error_fuel oil_cooling": 0.0,
+      "best_individual": {
+        "misc_load_multiplier": 1.9,
+        "heating_setpoint_offset": 3,
+        "cooling_setpoint_offset": 1,
+        "air_leakage_multiplier": 0.8,
+        "heating_hvac_eff_multiplier": 1.1,
+        "cooling_hvac_eff_multiplier": 1,
+        "roof_r_value_multiplier": 0.8,
+        "ceiling_r_value_multiplier": 0.8,
+        "above_ground_walls_r_value_multiplier": 0.9,
+        "below_ground_walls_r_value_multiplier": 0.9,
+        "slab_r_value_multiplier": 1,
+        "floor_r_value_multiplier": 1.1,
+        "water_heater_efficiency_multiplier": 1.2,
+        "water_fixtures_usage_multiplier": 0.9,
+        "window_u_factor_multiplier": 0.9,
+        "window_shgc_multiplier": 1.1,
+        "appliance_usage_multiplier": 1.8,
+        "lighting_load_multiplier": 0.2
+      },
+      "best_individual_sim_results": {
+        "electricity": {
+          "cooling": 2.177,
+          "baseload": 25.925
+        },
+        "natural gas": {
+          "heating": 0.0,
+          "baseload": 42.128
+        },
+        "propane": {
+          "heating": 0.0,
+          "baseload": 0.0
+        },
+        "fuel oil": {
+          "heating": 52.061,
+          "baseload": 0.0
+        },
+        "wood cord": {
+          "heating": 0.0,
+          "baseload": 0.0
+        },
+        "wood pellets": {
+          "heating": 0.0,
+          "baseload": 0.0
+        },
+        "coal": {
+          "heating": 0.0,
+          "baseload": 0.0
+        }
+      },
+      "diversity": 0.46,
+      "parameter_choice_stats": {
+        "misc_load_multiplier": {
+          "min": 0.2,
+          "max": 5,
+          "median": 1.9,
+          "std": 0.6902057664204204
+        },
+        "heating_setpoint_offset": {
+          "min": -1,
+          "max": 5,
+          "median": 3.0,
+          "std": 1.57175061635108
+        },
+        "cooling_setpoint_offset": {
+          "min": -5,
+          "max": 5,
+          "median": 3.0,
+          "std": 3.3084135170803544
+        },
+        "air_leakage_multiplier": {
+          "min": 0.7,
+          "max": 1.8,
+          "median": 0.8,
+          "std": 0.20895932618574362
+        },
+        "heating_hvac_eff_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.8,
+          "std": 0.12165525060596437
+        },
+        "cooling_hvac_eff_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.11745637488020816
+        },
+        "roof_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.11737120600896966
+        },
+        "ceiling_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.8500000000000001,
+          "std": 0.1409113196304683
+        },
+        "above_ground_walls_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.07613146524269711
+        },
+        "below_ground_walls_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.9,
+          "std": 0.12812493902437572
+        },
+        "slab_r_value_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 1.0,
+          "std": 0.07323933369440223
+        },
+        "floor_r_value_multiplier": {
+          "min": 0.9,
+          "max": 1.2,
+          "median": 1.1,
+          "std": 0.07386474125047753
+        },
+        "water_heater_efficiency_multiplier": {
+          "min": 0.9,
+          "max": 1.2,
+          "median": 1.2,
+          "std": 0.05919459434779492
+        },
+        "water_fixtures_usage_multiplier": {
+          "min": 0.1,
+          "max": 10,
+          "median": 0.9,
+          "std": 1.924058211177614
+        },
+        "window_u_factor_multiplier": {
+          "min": 0.8,
+          "max": 1.2,
+          "median": 0.9,
+          "std": 0.11469960767151735
+        },
+        "window_shgc_multiplier": {
+          "min": 0.8,
+          "max": 1.1,
+          "median": 1.1,
+          "std": 0.0918477000256403
+        },
+        "appliance_usage_multiplier": {
+          "min": 0.3,
+          "max": 10,
+          "median": 1.8,
+          "std": 2.039667619981256
+        },
+        "lighting_load_multiplier": {
+          "min": 0.2,
+          "max": 10,
+          "median": 0.2,
+          "std": 1.9324554328625538
+        }
+      },
+      "simulation_result_stats": {
+        "electricity_cooling": {
+          "min": 1.327,
+          "max": 3.965,
+          "median": 1.879,
+          "std": 0.6305366606312436
+        },
+        "natural gas_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "propane_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "natural gas_baseload": {
+          "min": 26.344,
+          "max": 232.997,
+          "median": 42.114000000000004,
+          "std": 44.302725793792874
+        },
+        "wood cord_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 11.371,
+          "max": 63.307,
+          "median": 25.972,
+          "std": 10.737213678063783
+        },
+        "wood pellets_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 20.296,
+          "max": 85.509,
+          "median": 65.356,
+          "std": 12.700579830165234
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "propane_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "wood cord_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        }
+      }
     }
   ]
 }

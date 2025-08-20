@@ -213,16 +213,18 @@ def calibrate(
 
     # Save logbook
     log_data = []
+    json_keys = [
+        "best_individual",
+        "best_individual_sim_results",
+        "parameter_choice_stats",
+        "simulation_result_stats",
+    ]
     for record in logbook:
         rec = record.copy()
-        if "best_individual" in rec and isinstance(rec["best_individual"], str):
-            with contextlib.suppress(json.JSONDecodeError):
-                rec["best_individual"] = json.loads(rec["best_individual"])
-        if "best_individual_sim_results" in rec and isinstance(
-            rec["best_individual_sim_results"], str
-        ):
-            with contextlib.suppress(json.JSONDecodeError):
-                rec["best_individual_sim_results"] = json.loads(rec["best_individual_sim_results"])
+        for key in json_keys:
+            if key in rec and isinstance(rec[key], str):
+                with contextlib.suppress(json.JSONDecodeError):
+                    rec[key] = json.loads(rec[key])
         log_data.append(rec)
 
     output_data = {

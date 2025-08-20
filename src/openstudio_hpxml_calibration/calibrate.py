@@ -4,6 +4,7 @@ import math
 import multiprocessing
 import random
 import shutil
+import statistics
 import tempfile
 import time
 import uuid
@@ -1000,6 +1001,39 @@ class Calibrate:
         def diversity(pop):
             return len({tuple(ind) for ind in pop}) / len(pop)
 
+        def calc_stats(values):
+            if not values:
+                return {"min": None, "max": None, "median": None, "std": None}
+            return {
+                "min": min(values),
+                "max": max(values),
+                "median": statistics.median(values),
+                "std": statistics.pstdev(values) if len(values) > 1 else 0.0,
+            }
+
+        def meets_termination_criteria(comparison):
+            all_bias_err_limit_met = True
+            all_abs_err_limit_met = True
+            for fuel_type, metrics in comparison.items():
+                for end_use in metrics["Bias Error"]:
+                    bias_err = metrics["Bias Error"][end_use]
+                    abs_err = metrics["Absolute Error"][end_use]
+
+                    # Check bias error
+                    if abs(bias_err) > bias_error_threshold:
+                        all_bias_err_limit_met = False
+
+                    # Check absolute error
+                    if not abs_error_within_threshold(
+                        fuel_type,
+                        abs_err,
+                        abs_error_elec_threshold,
+                        abs_error_fuel_threshold,
+                    ):
+                        all_abs_err_limit_met = False
+
+            return all_bias_err_limit_met or all_abs_err_limit_met
+
         toolbox = base.Toolbox()
         toolbox.register("attr_misc_load_multiplier", random.choice, misc_load_multiplier_choices)
         toolbox.register("attr_heating_setpoint_offset", random.choice, heating_setpoint_choices)
@@ -1223,6 +1257,98 @@ class Calibrate:
                     individual[i] = random.choice(choices)
             return (individual,)
 
+        def process_gen(
+            pop,
+            gen,
+            invalid_ind,
+            output_filepath,
+            all_temp_dirs,
+            best_dirs_by_gen,
+            best_bias_series,
+            best_abs_series,
+            index_to_name,
+            param_choices_map,
+            stats,
+            logbook,
+        ):
+            # Evaluate individuals
+            fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
+            for ind, (fit, comp, temp_dir, sim_results) in zip(invalid_ind, fitnesses):
+                ind.fitness.values = fit
+                ind.comparison = comp
+                ind.temp_output_dir = temp_dir
+                ind.sim_results = sim_results
+                if temp_dir is not None:
+                    all_temp_dirs.add(temp_dir)
+
+            # Save all individual hpxmls
+            if temp_dir is not None and Path(temp_dir).exists():
+                gen_dir = output_filepath / f"gen_{gen}"
+                gen_dir.mkdir(parents=True, exist_ok=True)
+                shutil.copy(
+                    temp_dir / "modified.xml",
+                    gen_dir / f"ind_{uuid.uuid4().hex[:6]}.xml",
+                )
+
+            # Update Hall of Fame
+            hall_of_fame.update(pop)
+            best_ind = tools.selBest(pop, 1)[0]
+            best_dirs_by_gen.append(getattr(best_ind, "temp_output_dir", None))
+
+            # Update bias/abs error series
+            best_comp = best_ind.comparison
+            for end_use, metrics in best_comp.items():
+                for fuel_type, bias_error in metrics["Bias Error"].items():
+                    key = f"{end_use}_{fuel_type}"
+                    best_bias_series.setdefault(key, []).append(bias_error)
+                for fuel_type, abs_error in metrics["Absolute Error"].items():
+                    key = f"{end_use}_{fuel_type}"
+                    best_abs_series.setdefault(key, []).append(abs_error)
+
+            # Parameter statistics
+            param_stats = {
+                pname: {
+                    "min": min(values := [ind[i] for ind in pop]),
+                    "max": max(values),
+                    "median": statistics.median(values),
+                    "std": statistics.pstdev(values) if len(values) > 1 else 0.0,
+                }
+                for i, pname in index_to_name.items()
+            }
+
+            # Simulation result statistics
+            sim_result_stats = {}
+            all_results = [ind.sim_results for ind in pop if hasattr(ind, "sim_results")]
+            if all_results:
+                fuel_enduse_keys = {
+                    (fuel_type, end_use)
+                    for r in all_results
+                    for fuel_type, end_uses in r.items()
+                    for end_use in end_uses
+                }
+                for fuel_type, end_use in fuel_enduse_keys:
+                    vals = [
+                        r[fuel_type][end_use]
+                        for r in all_results
+                        if fuel_type in r and end_use in r[fuel_type]
+                    ]
+                    if vals:
+                        sim_result_stats[f"{fuel_type}_{end_use}"] = calc_stats(vals)
+
+            # Log
+            record = stats.compile(pop)
+            record.update({f"bias_error_{k}": best_bias_series[k][-1] for k in best_bias_series})
+            record.update({f"abs_error_{k}": best_abs_series[k][-1] for k in best_abs_series})
+            record["best_individual"] = json.dumps(dict(zip(param_choices_map.keys(), best_ind)))
+            record["best_individual_sim_results"] = json.dumps(best_ind.sim_results)
+            record["diversity"] = diversity(pop)
+            record["parameter_choice_stats"] = json.dumps(param_stats)
+            record["simulation_result_stats"] = json.dumps(sim_result_stats)
+            logbook.record(gen=gen, nevals=len(invalid_ind), **record)
+            print(logbook.stream)
+
+            return best_comp
+
         toolbox.register("mutate", adaptive_mutation)
         toolbox.register("select", tools.selTournament, tournsize=2)
 
@@ -1247,38 +1373,20 @@ class Calibrate:
 
             # Initial evaluation
             invalid_ind = [ind for ind in pop if not ind.fitness.valid]
-            fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
-            for ind, (fit, comp, temp_dir, sim_results) in zip(invalid_ind, fitnesses):
-                ind.fitness.values = fit
-                ind.comparison = comp
-                ind.temp_output_dir = temp_dir
-                ind.sim_results = sim_results
-                if temp_dir is not None:
-                    all_temp_dirs.add(temp_dir)
-
-            hall_of_fame.update(pop)
-            best_ind = tools.selBest(pop, 1)[0]
-            best_dirs_by_gen.append(getattr(best_ind, "temp_output_dir", None))
-
-            # Save best individual bias/abs errors
-            best_comp = best_ind.comparison
-            for end_use, metrics in best_comp.items():
-                for fuel_type, bias_error in metrics["Bias Error"].items():
-                    key = f"{end_use}_{fuel_type}"
-                    best_bias_series.setdefault(key, []).append(bias_error)
-                for fuel_type, abs_error in metrics["Absolute Error"].items():
-                    key = f"{end_use}_{fuel_type}"
-                    best_abs_series.setdefault(key, []).append(abs_error)
-
-            # Log generation 0
-            record = stats.compile(pop)
-            record.update({f"bias_error_{k}": v[-1] for k, v in best_bias_series.items()})
-            record.update({f"abs_error_{k}": v[-1] for k, v in best_abs_series.items()})
-            record["best_individual"] = json.dumps(dict(zip(param_choices_map.keys(), best_ind)))
-            record["best_individual_sim_results"] = json.dumps(best_ind.sim_results)
-            record["diversity"] = diversity(pop)
-            logbook.record(gen=0, nevals=len(invalid_ind), **record)
-            print(logbook.stream)
+            best_comp = process_gen(
+                pop,
+                0,
+                invalid_ind,
+                output_filepath,
+                all_temp_dirs,
+                best_dirs_by_gen,
+                best_bias_series,
+                best_abs_series,
+                index_to_name,
+                param_choices_map,
+                stats,
+                logbook,
+            )
 
             for gen in range(1, generations + 1):
                 # Elitism: Copy the best individuals
@@ -1289,15 +1397,6 @@ class Calibrate:
 
                 # Evaluate offspring
                 invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
-                fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
-                for ind, (fit, comp, temp_dir, sim_results) in zip(invalid_ind, fitnesses):
-                    ind.fitness.values = fit
-                    ind.comparison = comp
-                    ind.temp_output_dir = temp_dir
-                    ind.sim_results = sim_results
-                    all_temp_dirs.add(temp_dir)
-
-                # Select next generation (excluding elites), then add elites
                 if invalid_ind:
                     worst_key = get_worst_abs_err_end_use(invalid_ind[0].comparison)
                     worst_end_uses_by_gen.append(worst_key)
@@ -1305,58 +1404,22 @@ class Calibrate:
                 pop = toolbox.select(offspring, population_size - len(elite))
                 pop.extend(elite)
 
-                # Update Hall of Fame and stats
-                hall_of_fame.update(pop)
-                best_ind = tools.selBest(pop, 1)[0]
-                best_dirs_by_gen.append(getattr(best_ind, "temp_output_dir", None))
-
-                # Save hall of fame bias/abs errors
-                best_comp = best_ind.comparison
-                for end_use, metrics in best_comp.items():
-                    for fuel_type, bias_error in metrics["Bias Error"].items():
-                        key = f"{end_use}_{fuel_type}"
-                        best_bias_series.setdefault(key, []).append(bias_error)
-                    for fuel_type, abs_error in metrics["Absolute Error"].items():
-                        key = f"{end_use}_{fuel_type}"
-                        best_abs_series.setdefault(key, []).append(abs_error)
-
-                record = stats.compile(pop)
-                record.update(
-                    {f"bias_error_{k}": best_bias_series[k][-1] for k in best_bias_series}
+                best_comp = process_gen(
+                    pop,
+                    gen,
+                    invalid_ind,
+                    output_filepath,
+                    all_temp_dirs,
+                    best_dirs_by_gen,
+                    best_bias_series,
+                    best_abs_series,
+                    index_to_name,
+                    param_choices_map,
+                    stats,
+                    logbook,
                 )
-                record.update({f"abs_error_{k}": best_abs_series[k][-1] for k in best_abs_series})
-                record["best_individual"] = json.dumps(
-                    dict(zip(param_choices_map.keys(), best_ind))
-                )
-                record["best_individual_sim_results"] = json.dumps(best_ind.sim_results)
-                record["diversity"] = diversity(pop)
-                logbook.record(gen=gen, nevals=len(invalid_ind), **record)
-                print(logbook.stream)
 
                 # Early termination conditions
-                def meets_termination_criteria(comparison):
-                    all_bias_err_limit_met = True
-                    all_abs_err_limit_met = True
-                    for fuel_type, metrics in comparison.items():
-                        for end_use in metrics["Bias Error"]:
-                            bias_err = metrics["Bias Error"][end_use]
-                            abs_err = metrics["Absolute Error"][end_use]
-
-                            # Check bias error
-                            if abs(bias_err) > bias_error_threshold:
-                                all_bias_err_limit_met = False
-
-                            # Check absolute error
-                            if not abs_error_within_threshold(
-                                fuel_type,
-                                abs_err,
-                                abs_error_elec_threshold,
-                                abs_error_fuel_threshold,
-                            ):
-                                all_abs_err_limit_met = False
-
-                    return all_bias_err_limit_met or all_abs_err_limit_met
-
                 if meets_termination_criteria(best_comp):
                     print(f"Early stopping: termination criteria met at generation {gen}")
                     terminated_early = True

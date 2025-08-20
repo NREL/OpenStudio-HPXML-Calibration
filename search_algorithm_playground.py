@@ -37,16 +37,18 @@ def main(filepath):
 
     # Save the logbook
     log_data = []
+    json_keys = [
+        "best_individual",
+        "best_individual_sim_results",
+        "parameter_choice_stats",
+        "simulation_result_stats",
+    ]
     for record in logbook:
         rec = record.copy()
-        if "best_individual" in rec and isinstance(rec["best_individual"], str):
-            with contextlib.suppress(json.JSONDecodeError):
-                rec["best_individual"] = json.loads(rec["best_individual"])
-        if "best_individual_sim_results" in rec and isinstance(
-            rec["best_individual_sim_results"], str
-        ):
-            with contextlib.suppress(json.JSONDecodeError):
-                rec["best_individual_sim_results"] = json.loads(rec["best_individual_sim_results"])
+        for key in json_keys:
+            if key in rec and isinstance(rec[key], str):
+                with contextlib.suppress(json.JSONDecodeError):
+                    rec[key] = json.loads(rec[key])
         log_data.append(rec)
 
     output_data = {
@@ -161,10 +163,10 @@ def main(filepath):
 if __name__ == "__main__":
     test_hpxml_files = []
     ihmh_home_hpxml_dir = Path("test_hpxmls/ihmh_homes")
-    ihmh_hpxml_files = ihmh_home_hpxml_dir.glob("*.xml")
+    ihmh_hpxml_files = ihmh_home_hpxml_dir.glob("ihmh4.xml")
     test_hpxml_files.extend(ihmh_hpxml_files)
     real_home_hpxml_dir = Path("test_hpxmls/real_homes")
-    real_home_hpxml_files = real_home_hpxml_dir.glob("*.xml")
+    real_home_hpxml_files = real_home_hpxml_dir.glob("house21.xml")
     test_hpxml_files.extend(real_home_hpxml_files)
     output_path = Path(__file__).resolve().parent / "tests" / "calibration_results"
 
@@ -188,8 +190,8 @@ if __name__ == "__main__":
         try:
             with open(logbook_path) as f:
                 logbook = json.load(f)
-                if isinstance(logbook, list) and logbook:
-                    final_gen = logbook[-1].get("gen")
+                if logbook:
+                    final_gen = logbook["calibration_results"][-1].get("gen")
                     if final_gen is not None:
                         gen_values.append(final_gen)
                         print(f"Final gen for {filename_stem}: {final_gen}")
