@@ -11,9 +11,10 @@ from openstudio_hpxml_calibration.calibrate import Calibrate
 
 TEST_DIR = Path(__file__).parent
 TEST_DATA_DIR = TEST_DIR / "data"
-TEST_CONFIG = TEST_DATA_DIR / "test_config.json"
+FIXTURE_DATA = TEST_DATA_DIR / "test_fixture_data.json"
+TEST_CONFIG = TEST_DATA_DIR / "test_config.yaml"
 
-repo_root = Path(__file__).resolve().parent.parent
+repo_root = TEST_DIR.parent
 invalid_hpxmls = list((repo_root / "test_hpxmls" / "invalid_homes").glob("*.xml"))
 results_path = TEST_DIR / "run" / "results_annual.json"
 
@@ -21,7 +22,7 @@ results_path = TEST_DIR / "run" / "results_annual.json"
 @pytest.fixture
 def test_data():
     # Setup phase
-    data: dict = json.loads(TEST_CONFIG.read_text())
+    data: dict = json.loads(FIXTURE_DATA.read_text())
     return data  # Provide data dict to the test
     # To implement a teardown phase:
     # yield data
@@ -30,7 +31,9 @@ def test_data():
 
 
 def test_calibrate_normalizes_bills_to_weather(test_data) -> None:
-    cal = Calibrate(original_hpxml_filepath=test_data["sample_xml_file"])
+    cal = Calibrate(
+        original_hpxml_filepath=test_data["sample_xml_file"], config_filepath=TEST_CONFIG
+    )
     normalized_usage, _ = cal.get_normalized_consumption_per_bill()
     for fuel_type, normalized_consumption in normalized_usage.items():
         assert normalized_consumption.shape == (12, 5)
@@ -44,7 +47,9 @@ def test_calibrate_normalizes_bills_to_weather(test_data) -> None:
 
 @pytest.mark.order(2)
 def test_get_model_results(test_data) -> None:
-    cal = Calibrate(original_hpxml_filepath=test_data["sample_xml_file"])
+    cal = Calibrate(
+        original_hpxml_filepath=test_data["sample_xml_file"], config_filepath=TEST_CONFIG
+    )
     if results_path.exists():
         simulation_results = cal.get_model_results(json_results_path=results_path)
     else:
@@ -67,7 +72,9 @@ def test_get_model_results(test_data) -> None:
 
 @pytest.mark.order(3)
 def test_compare_results(test_data):
-    cal = Calibrate(original_hpxml_filepath=test_data["sample_xml_file"])
+    cal = Calibrate(
+        original_hpxml_filepath=test_data["sample_xml_file"], config_filepath=TEST_CONFIG
+    )
     normalized_usage, _ = cal.get_normalized_consumption_per_bill()
     if results_path.exists():
         simulation_results = cal.get_model_results(json_results_path=results_path)
@@ -87,11 +94,15 @@ def test_compare_results(test_data):
 def test_add_bills(test_data):
     # Confirm that an error is raised if no consumption data is in the hpxml object
     with pytest.raises(ValueError, match="No Consumption section matches the Building ID"):
-        cal = Calibrate(original_hpxml_filepath=test_data["model_without_bills"])
+        cal = Calibrate(
+            original_hpxml_filepath=test_data["model_without_bills"],
+            config_filepath=TEST_CONFIG,
+        )
     # Confirm that the Consumption section is added when bills are provided
     cal = Calibrate(
         original_hpxml_filepath=test_data["model_without_bills"],
         csv_bills_filepath=test_data["sample_bill_csv_path"],
+        config_filepath=TEST_CONFIG,
     )
     assert cal.hpxml.get_consumptions() is not None
     assert cal.hpxml.get_consumptions()[0] is not None
@@ -135,10 +146,10 @@ def test_add_bills(test_data):
 def test_hpxml_invalid(filename):
     if filename.stem in ("invalid_hpxml_xsd", "invalid_oshpxml_sch"):
         with pytest.raises(etree.DocumentInvalid):
-            Calibrate(filename)
+            Calibrate(filename, config_filepath=TEST_CONFIG)
     else:
         with pytest.raises(ValueError):  # noqa: PT011
-            Calibrate(filename)
+            Calibrate(filename, config_filepath=TEST_CONFIG)
 
 
 def test_calibrate_runs_successfully():
@@ -147,7 +158,7 @@ def test_calibrate_runs_successfully():
             "calibrate",
             "test_hpxmls/ihmh_homes/ihmh4.xml",
             "--config-filepath",
-            "tests/data/test_config.yaml",
+            str(TEST_CONFIG),
             "--output-dir",
             "tests/ga_search_results/ihmh4_test",
         ]
