@@ -59,8 +59,8 @@ class Calibrate:
         normalized_consumption = {}
         # InverseModel is not applicable to delivered fuels, so we only use it for electricity and natural gas
         self.inv_model = InverseModel(self.hpxml, user_config=self.ga_config)
-        heating_fuel, cooling_fuel = self.hpxml.get_fuel_types()
-        conditioning_fuels = heating_fuel | cooling_fuel
+        heating_fuels, cooling_fuels = self.hpxml.get_fuel_types()
+        conditioning_fuels = heating_fuels | cooling_fuels
         for fuel_type, bills in self.inv_model.bills_by_fuel_type.items():
             if (
                 fuel_type
