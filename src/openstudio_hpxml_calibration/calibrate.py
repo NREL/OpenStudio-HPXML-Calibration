@@ -59,14 +59,20 @@ class Calibrate:
         normalized_consumption = {}
         # InverseModel is not applicable to delivered fuels, so we only use it for electricity and natural gas
         self.inv_model = InverseModel(self.hpxml, user_config=self.ga_config)
+        heating_fuel, cooling_fuel = self.hpxml.get_fuel_types()
+        conditioning_fuels = heating_fuel | cooling_fuel
         for fuel_type, bills in self.inv_model.bills_by_fuel_type.items():
-            if fuel_type in (
-                FuelType.FUEL_OIL,
-                FuelType.PROPANE,
-                FuelType.WOOD,
-                FuelType.WOOD_PELLETS,
+            if (
+                fuel_type
+                in (
+                    FuelType.FUEL_OIL,
+                    FuelType.PROPANE,
+                    FuelType.WOOD,
+                    FuelType.WOOD_PELLETS,
+                )
+                or fuel_type.value not in conditioning_fuels
             ):
-                continue  # Delivered fuels have a separate calibration process: simplified_annual_usage()
+                continue  # Do not attempt weather regression for delivered fuels or non-conditioning fuels
 
             def _calculate_wrapped_total(row):
                 """Extract the epw_daily rows that correspond to the bill month
