@@ -36,9 +36,13 @@ class InverseModel:
             return self.regression_models[fuel_type]
         except KeyError:
             bills_weather = self.bills_weather_by_fuel_type_in_btu[fuel_type]
+            heating_fuels, cooling_fuels = self.hpxml.get_fuel_types()
+            conditioning_fuels = heating_fuels | cooling_fuels
             model = fit_model(
                 bills_weather,
                 cvrmse_requirement=self.user_config["weather_normalization"]["max_cvrmse"],
+                conditioning_fuels=conditioning_fuels,
+                fuel_type=fuel_type,
             )
             self.regression_models[fuel_type] = model
             return model

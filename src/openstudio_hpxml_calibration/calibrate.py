@@ -59,18 +59,12 @@ class Calibrate:
         normalized_consumption = {}
         # InverseModel is not applicable to delivered fuels, so we only use it for electricity and natural gas
         self.inv_model = InverseModel(self.hpxml, user_config=self.ga_config)
-        heating_fuels, cooling_fuels = self.hpxml.get_fuel_types()
-        conditioning_fuels = heating_fuels | cooling_fuels
         for fuel_type, bills in self.inv_model.bills_by_fuel_type.items():
-            if (
-                fuel_type
-                in (
-                    FuelType.FUEL_OIL,
-                    FuelType.PROPANE,
-                    FuelType.WOOD,
-                    FuelType.WOOD_PELLETS,
-                )
-                or fuel_type.value not in conditioning_fuels
+            if fuel_type in (
+                FuelType.FUEL_OIL,
+                FuelType.PROPANE,
+                FuelType.WOOD,
+                FuelType.WOOD_PELLETS,
             ):
                 continue  # Do not attempt weather regression for delivered fuels or non-conditioning fuels
 
@@ -537,6 +531,8 @@ class Calibrate:
         now = dt.now()
         building = self.hpxml.get_building()
         consumptions = self.hpxml.get_consumptions()
+        heating_fuels, cooling_fuels = self.hpxml.get_fuel_types()
+        conditioning_fuels = heating_fuels | cooling_fuels
 
         # Check that the building doesn't have PV
         try:
@@ -693,8 +689,11 @@ class Calibrate:
             first_start = _parse_dt(details[0].StartDateTime)
             last_end = _parse_dt(details[-1].EndDateTime)
 
-            # Total covered span must meet min_days
-            if (last_end - first_start).days < min_days:
+            # Total covered span must meet min_days (if the fuel is used for space conditioning)
+            if (
+                fuel.ConsumptionType.Energy.FuelType in conditioning_fuels
+                and (last_end - first_start).days < min_days
+            ):
                 return False
 
             # Most recent bill must be within allowed age
