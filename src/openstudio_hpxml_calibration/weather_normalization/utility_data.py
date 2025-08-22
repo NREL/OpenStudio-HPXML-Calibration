@@ -1,13 +1,20 @@
 import datetime as dt
 import warnings
+from collections import namedtuple
 
 import eeweather
 import numpy as np
 import pandas as pd
+import yaml
 from lxml import objectify
 
 from openstudio_hpxml_calibration.hpxml import EnergyUnitType, FuelType, HpxmlDoc
 from openstudio_hpxml_calibration.units import convert_units
+
+
+def read_yaml_file(config_path: str):
+    with open(config_path) as file:
+        return yaml.safe_load(file)
 
 
 def get_datetime_subel(el: objectify.ObjectifiedElement, subel_name: str) -> pd.Timestamp | None:
@@ -131,4 +138,52 @@ def join_bills_weather(bills_orig: pd.DataFrame, lat: float, lon: float, **kw) -
         else:
             bill_avg_temps.append(bill_temps.mean())
     bills["avg_temp"] = bill_avg_temps
-    return bills
+    return bills, tempF
+
+
+def calc_daily_dbs(hpxml: HpxmlDoc) -> namedtuple:
+    """
+    Calculates daily average dry bulb temperatures from EPW weather data in both Celsius and Fahrenheit.
+
+    Args:
+        hpxml (HpxmlDoc): An HPXML document object containing weather data.
+
+    Returns:
+        DailyTemps: A namedtuple with two fields:
+            - c (pd.Series): Daily average dry bulb temperatures in Celsius.
+            - f (pd.Series): Daily average dry bulb temperatures in Fahrenheit.
+    """
+    DailyTemps = namedtuple("DailyTemps", ["c", "f"])
+    epw, _ = hpxml.get_epw_data(coerce_year=2007)
+    epw_daily_avg_temp_c = epw["temp_air"].groupby(pd.Grouper(freq="D")).mean()
+    epw_daily_avg_temp_f = convert_units(epw_daily_avg_temp_c, "c", "f")
+    return DailyTemps(c=epw_daily_avg_temp_c, f=epw_daily_avg_temp_f)
+
+
+def calc_degree_days(daily_dbs: pd.Series, base_temp_f: float, is_heating: bool) -> float:
+    """Calculate degree days from daily temperature data.
+    Adapted from methods in https://github.com/NREL/OpenStudio-HPXML/blob/master/HPXMLtoOpenStudio/resources/weather.rb"""
+
+    deg_days = []
+    for temp in daily_dbs:
+        if is_heating and temp < base_temp_f:
+            deg_days.append(base_temp_f - temp)
+        elif not is_heating and temp > base_temp_f:
+            deg_days.append(temp - base_temp_f)
+
+    if len(deg_days) == 0:
+        return 0.0
+
+    deg_days_sum = round(sum(deg_days), 2)
+    return deg_days_sum
+
+
+def calc_heat_cool_degree_days(dailydbs: pd.Series) -> dict:
+    """Calculate heating and cooling degree days from daily temperature data.
+    Adapted from methods in https://github.com/NREL/OpenStudio-HPXML/blob/master/HPXMLtoOpenStudio/resources/weather.rb"""
+    degree_days = {}
+    degree_days["HDD65F"] = calc_degree_days(dailydbs, 65, True)
+    # degree_days["HDD50F"] = calc_degree_days(dailydbs, 50, True)
+    degree_days["CDD65F"] = calc_degree_days(dailydbs, 65, False)
+    # degree_days["CDD50F"] = calc_degree_days(dailydbs, 50, False)
+    return degree_days

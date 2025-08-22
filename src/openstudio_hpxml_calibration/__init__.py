@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import requests
 from cyclopts import App
 from loguru import logger
+from matplotlib.ticker import MaxNLocator
 from tqdm import tqdm
 
 from openstudio_hpxml_calibration.utils import OS_HPXML_PATH, calculate_sha256, get_cache_dir
@@ -200,12 +201,12 @@ def calibrate(
     cal = Calibrate(original_hpxml_filepath=hpxml_filepath, config_filepath=config_filepath)
 
     start = time.time()
-    best_individual_dict, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search(
+    best_individual_pop, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search(
         num_proc=num_proc, output_filepath=output_filepath
     )
     logger.info(f"Calibration took {time.time() - start:.2f} seconds")
 
-    # Save the logbook
+    # Save logbook
     log_data = []
     for record in logbook:
         rec = record.copy()
@@ -235,6 +236,7 @@ def calibrate(
     plt.title("Min Penalty Over Generations")
     plt.legend()
     plt.grid(True)
+    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
     plt.tight_layout()
     plt.savefig(str(output_filepath / "min_penalty_plot.png"))
     plt.close()
@@ -247,6 +249,7 @@ def calibrate(
     plt.title("Avg Penalty Over Generations")
     plt.legend()
     plt.grid(True)
+    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
     plt.tight_layout()
     plt.savefig(str(output_filepath / "avg_penalty_plot.png"))
     plt.close()
@@ -255,6 +258,9 @@ def calibrate(
     best_bias_series = {}
     for entry in logbook:
         for key, value in entry.items():
+            # Skip zero values to avoid cluttering the plot
+            if value == 0:
+                continue
             if key.startswith("bias_error_"):
                 best_bias_series.setdefault(key, []).append(value)
 
@@ -267,6 +273,7 @@ def calibrate(
     plt.title("Per-End-Use Bias Error Over Generations")
     plt.legend(loc="best", fontsize="small")
     plt.grid(True)
+    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
     plt.tight_layout()
     plt.savefig(str(output_filepath / "bias_error_plot.png"), bbox_inches="tight")
     plt.close()
@@ -275,11 +282,16 @@ def calibrate(
     best_abs_series = {}
     for entry in logbook:
         for key, value in entry.items():
+            # Skip zero values to avoid cluttering the plot
+            if value == 0:
+                continue
             if key.startswith("abs_error_"):
                 best_abs_series.setdefault(key, []).append(value)
 
     electric_keys = [k for k in best_abs_series if "electricity" in k]
-    gas_keys = [k for k in best_abs_series if "natural gas" in k]
+    fuel_keys = [
+        k for k in best_abs_series if "natural gas" in k or "fuel oil" in k or "propane" in k
+    ]
 
     fig, ax1 = plt.subplots(figsize=(12, 6))
     ax2 = ax1.twinx()
@@ -291,7 +303,7 @@ def calibrate(
             label=key.replace("abs_error_", "") + " (kWh)",
             color=colors[i % len(colors)],
         )
-    for i, key in enumerate(gas_keys):
+    for i, key in enumerate(fuel_keys):
         ax2.plot(
             best_abs_series[key],
             label=key.replace("abs_error_", "") + " (MBtu)",
@@ -300,12 +312,13 @@ def calibrate(
 
     ax1.set_xlabel("Generation")
     ax1.set_ylabel("Electricity Abs Error (kWh)", color="blue")
-    ax2.set_ylabel("Gas Abs Error (MBtu)", color="red")
+    ax2.set_ylabel("Fossil Fuel Abs Error (MBtu)", color="red")
     plt.title("Per-End-Use Absolute Errors Over Generations")
     lines1, labels1 = ax1.get_legend_handles_labels()
     lines2, labels2 = ax2.get_legend_handles_labels()
     ax1.legend(lines1 + lines2, labels1 + labels2, loc="best", fontsize="small")
     ax1.grid(True)
+    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
     plt.tight_layout()
     plt.savefig(str(output_filepath / "absolute_error_plot.png"), bbox_inches="tight")
     plt.close()

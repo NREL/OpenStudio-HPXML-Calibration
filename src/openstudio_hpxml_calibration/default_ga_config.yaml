@@ -3,11 +3,11 @@ genetic_algorithm:
   generations: 50
   mutation_probability: 0.4
   crossover_probability: 0.4
-  bias_error_threshold: 5  # Bias error threshold in percent for all end uses
-  abs_error_elec_threshold: 500  # Absolute error threshold for electricity in kWh
-  abs_error_fuel_threshold: 5  # Absolute error threshold for fossil fuels in MBtu
+  bias_error_threshold: 5  # Bias error threshold in percent for all end uses. BPI-2400 requirement is 5
+  abs_error_elec_threshold: 500  # Absolute error threshold for electricity in kWh. BPI-2400 requirement is 500
+  abs_error_fuel_threshold: 5  # Absolute error threshold for fossil fuels in MBtu. BPI-2400 requirement is 5
 
-value_choices:
+value_choices:  # Genetic algorithm working space. Set multipliers to 1 if you are very confident the initial model has the correct value
   misc_load_multiplier_choices: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2, 5, 10]
   air_leakage_multiplier_choices: [0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2]
   hvac_eff_multiplier_choices: [0.8, 0.9, 1, 1.1, 1.2]
@@ -26,8 +26,11 @@ value_choices:
   appliance_usage_multiplier_choices: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2, 5, 10]
   lighting_load_multiplier_choices: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2, 5, 10]
 
-min_days_of_consumption_data: 330
-max_years: 25
-min_electrical_bill_days: 20
-max_electrical_bill_days: 45
-min_num_electrical_bills: 10
+weather_normalization:
+  max_cvrmse: 0.2 # BPI-2400 requirement is 0.2
+
+utility_bill_criteria:
+  min_days_of_consumption_data: 330  # BPI-2400 requirement is 330 or 183 plus sufficient HDD & CDD (not implemented as of 2025-08-19)
+  max_days_since_newest_bill: 365  # BPI-2400 requirement is 365
+  min_electrical_bill_days: 20
+  max_electrical_bill_days: 45

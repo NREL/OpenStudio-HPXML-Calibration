@@ -10,7 +10,8 @@ from openstudio_hpxml_calibration.weather_normalization.regression import (
 
 
 class InverseModel:
-    def __init__(self, hpxml: HpxmlDoc, building_id: str | None = None):
+    def __init__(self, hpxml: HpxmlDoc, user_config: dict, building_id: str | None = None):
+        self.user_config = user_config
         self.hpxml = hpxml
         self.building_id = building_id
         self.bills_by_fuel_type, self.bill_units, self.tz = ud.get_bills_from_hpxml(
@@ -20,7 +21,7 @@ class InverseModel:
         self.lat_lon = hpxml.get_lat_lon()
         self.regression_models: dict[FuelType, UtilityBillRegressionModel] = {}
         for fuel_type, bills in self.bills_by_fuel_type.items():
-            bills_weather = ud.join_bills_weather(bills, *self.lat_lon)
+            bills_weather, _ = ud.join_bills_weather(bills, *self.lat_lon)
             for col in ["consumption", "daily_consumption"]:
                 bills_weather[col] = convert_hpxml_energy_units(
                     bills_weather[col],
@@ -34,9 +35,11 @@ class InverseModel:
         try:
             return self.regression_models[fuel_type]
         except KeyError:
-            # TODO: Determine sufficiency for bill coverage
             bills_weather = self.bills_weather_by_fuel_type_in_btu[fuel_type]
-            model = fit_model(bills_weather, bpi2400=False)  # FIXME: model fit criteria
+            model = fit_model(
+                bills_weather,
+                cvrmse_requirement=self.user_config["weather_normalization"]["max_cvrmse"],
+            )
             self.regression_models[fuel_type] = model
             return model
 
