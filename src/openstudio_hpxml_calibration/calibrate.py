@@ -66,7 +66,7 @@ class Calibrate:
                 FuelType.WOOD,
                 FuelType.WOOD_PELLETS,
             ):
-                continue  # Do not attempt weather regression for delivered fuels or non-conditioning fuels
+                continue  # Delivered fuels have a separate calibration process: simplified_annual_usage()
 
             def _calculate_wrapped_total(row):
                 """Extract the epw_daily rows that correspond to the bill month
