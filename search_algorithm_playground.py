@@ -13,6 +13,7 @@ from openstudio_hpxml_calibration.calibrate import Calibrate
 
 def main(filepath):
     filename = Path(filepath).stem
+    test_config_filepath = Path(__file__).resolve().parent / "tests" / "data" / "test_config.yaml"
     output_filepath = Path(__file__).resolve().parent / "tests" / "calibration_results" / filename
 
     # Remove old results if they exist
@@ -21,9 +22,7 @@ def main(filepath):
 
     output_filepath.mkdir(parents=True, exist_ok=True)
 
-    cal = Calibrate(
-        original_hpxml_filepath=filepath,
-    )
+    cal = Calibrate(original_hpxml_filepath=filepath, config_filepath=test_config_filepath)
     start = time.time()
     (
         best_individual_dict,
@@ -32,6 +31,7 @@ def main(filepath):
         best_bias_series,
         best_abs_series,
         weather_norm_reg_models,
+        existing_home_results,
     ) = cal.run_search(output_filepath=output_filepath)
     print(f"Evaluation took {time.time() - start:.2f} seconds")
 
@@ -42,6 +42,8 @@ def main(filepath):
         "best_individual_sim_results",
         "parameter_choice_stats",
         "simulation_result_stats",
+        "existing_home",
+        "existing_home_sim_results",
     ]
     for record in logbook:
         rec = record.copy()
@@ -50,9 +52,15 @@ def main(filepath):
                 with contextlib.suppress(json.JSONDecodeError):
                     rec[key] = json.loads(rec[key])
         log_data.append(rec)
+    parsed_existing_home = {}
+    for key in json_keys:
+        if key in existing_home_results and isinstance(existing_home_results[key], str):
+            with contextlib.suppress(json.JSONDecodeError):
+                parsed_existing_home[key] = json.loads(existing_home_results[key])
 
     output_data = {
         "weather_normalization_results": weather_norm_reg_models,
+        "existing_home_results": parsed_existing_home,
         "calibration_results": log_data,
     }
 

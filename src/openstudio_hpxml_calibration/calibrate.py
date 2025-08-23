@@ -1153,6 +1153,17 @@ class Calibrate:
                 ]
             )
 
+        def is_existing_home(individual, param_choices_map):
+            return all(
+                val == 1
+                for key, val in zip(param_choices_map.keys(), individual)
+                if "multiplier" in key
+            ) and all(
+                val == 0
+                for key, val in zip(param_choices_map.keys(), individual)
+                if "offset" in key
+            )
+
         toolbox.register("individual", generate_random_individual)
         toolbox.register("population", tools.initRepeat, list, toolbox.individual)
         toolbox.register("evaluate", evaluate)
@@ -1368,6 +1379,16 @@ class Calibrate:
             logbook.record(gen=0, nevals=len(invalid_ind), **record)
             print(logbook.stream)
 
+            # Store existing home (seed individual) results
+            existing_home_results = {}
+            for ind in pop:
+                if is_existing_home(ind, param_choices_map):
+                    existing_home_results["existing_home"] = json.dumps(
+                        dict(zip(param_choices_map.keys(), ind))
+                    )
+                    existing_home_results["existing_home_sim_results"] = json.dumps(ind.sim_results)
+                    break
+
             for gen in range(1, generations + 1):
                 # Elitism: Copy the best individuals
                 elite = [copy.deepcopy(ind) for ind in tools.selBest(pop, k=1)]
@@ -1495,4 +1516,5 @@ class Calibrate:
             best_bias_series,
             best_abs_series,
             weather_norm_regression_models,
+            existing_home_results,
         )

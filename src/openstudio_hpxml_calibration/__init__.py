@@ -208,6 +208,7 @@ def calibrate(
         best_bias_series,
         best_abs_series,
         weather_norm_reg_models,
+        existing_home_results,
     ) = cal.run_search(num_proc=num_proc, output_filepath=output_filepath)
     logger.info(f"Calibration took {time.time() - start:.2f} seconds")
 
@@ -218,6 +219,8 @@ def calibrate(
         "best_individual_sim_results",
         "parameter_choice_stats",
         "simulation_result_stats",
+        "existing_home",
+        "existing_home_sim_results",
     ]
     for record in logbook:
         rec = record.copy()
@@ -226,9 +229,15 @@ def calibrate(
                 with contextlib.suppress(json.JSONDecodeError):
                     rec[key] = json.loads(rec[key])
         log_data.append(rec)
+    parsed_existing_home = {}
+    for key in json_keys:
+        if key in existing_home_results and isinstance(existing_home_results[key], str):
+            with contextlib.suppress(json.JSONDecodeError):
+                parsed_existing_home[key] = json.loads(existing_home_results[key])
 
     output_data = {
         "weather_normalization_results": weather_norm_reg_models,
+        "existing_home_results": parsed_existing_home,
         "calibration_results": log_data,
     }
 
