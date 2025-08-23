@@ -1105,6 +1105,30 @@ class Calibrate:
             n=18,
         )
 
+        def create_seed_individual():
+            return creator.Individual(
+                [
+                    1,  # misc_load_multiplier
+                    0,  # heating_setpoint_offset
+                    0,  # cooling_setpoint_offset
+                    1,  # air_leakage_multiplier
+                    1,  # heating_efficiency_multiplier
+                    1,  # cooling_efficiency_multiplier
+                    1,  # roof_r_value_multiplier
+                    1,  # ceiling_r_value_multiplier
+                    1,  # above_ground_walls_r_value_multiplier
+                    1,  # below_ground_walls_r_value_multiplier
+                    1,  # slab_r_value_multiplier
+                    1,  # floor_r_value_multiplier
+                    1,  # water_heater_efficiency_multiplier
+                    1,  # water_fixtures_usage_multiplier
+                    1,  # window_u_factor_multiplier
+                    1,  # window_shgc_multiplier
+                    1,  # appliance_usage_multiplier
+                    1,  # lighting_load_multiplier
+                ]
+            )
+
         def generate_random_individual():
             return creator.Individual(
                 [
@@ -1254,7 +1278,8 @@ class Calibrate:
 
         with Pool(processes=num_proc, maxtasksperchild=15) as pool:
             toolbox.register("map", pool.map)
-            pop = toolbox.population(n=population_size)
+            pop = toolbox.population(n=population_size - 1)
+            pop.append(create_seed_individual())  # Add existing model as seed individual
             hall_of_fame = tools.HallOfFame(1)
             stats = tools.Statistics(lambda ind: ind.fitness.values[0])  # noqa: PD011
             stats.register("min", min)
