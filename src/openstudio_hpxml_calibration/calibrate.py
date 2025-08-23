@@ -929,11 +929,10 @@ class Calibrate:
                             # Merge results, prefer later sections if duplicate fuel keys
                             comparison[fuel] = simplified_calibration_results.get(fuel, {})
                         else:
+                            normalized_consumption = self.get_normalized_consumption_per_bill()
                             # Merge results, prefer later sections if duplicate fuel keys
                             comparison.update(
-                                self.compare_results(
-                                    normalized_consumption_per_bill, simulation_results
-                                )
+                                self.compare_results(normalized_consumption, simulation_results)
                             )
 
                 combined_error_penalties = []
