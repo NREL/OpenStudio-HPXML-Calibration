@@ -643,50 +643,62 @@
         </ConsumptionType>
         <ConsumptionDetail>
           <Consumption>1238</Consumption>
+          <StartDateTime>1998-08-18T00:00:00</StartDateTime>
           <EndDateTime>1998-09-17T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1269</Consumption>
+          <StartDateTime>1998-09-17T00:00:00</StartDateTime>
           <EndDateTime>1998-10-16T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>989</Consumption>
+          <StartDateTime>1998-10-16T00:00:00</StartDateTime>
           <EndDateTime>1998-11-16T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>986</Consumption>
+          <StartDateTime>1998-11-16T00:00:00</StartDateTime>
           <EndDateTime>1998-12-16T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1406</Consumption>
+          <StartDateTime>1998-12-16T00:00:00</StartDateTime>
           <EndDateTime>1999-01-21T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1070</Consumption>
+          <StartDateTime>1999-01-21T00:00:00</StartDateTime>
           <EndDateTime>1999-02-19T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>546</Consumption>
+          <StartDateTime>1999-02-19T00:00:00</StartDateTime>
           <EndDateTime>1999-03-19T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>988</Consumption>
+          <StartDateTime>1999-03-19T00:00:00</StartDateTime>
           <EndDateTime>1999-04-21T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>984</Consumption>
+          <StartDateTime>1999-04-21T00:00:00</StartDateTime>
           <EndDateTime>1999-05-20T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>835</Consumption>
+          <StartDateTime>1999-05-20T00:00:00</StartDateTime>
           <EndDateTime>1999-06-17T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1560</Consumption>
+          <StartDateTime>1999-06-17T00:00:00</StartDateTime>
           <EndDateTime>1999-07-21T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>1130</Consumption>
+          <StartDateTime>1999-07-21T00:00:00</StartDateTime>
           <EndDateTime>1999-08-19T00:00:00</EndDateTime>
         </ConsumptionDetail>
       </ConsumptionInfo>
@@ -700,26 +712,32 @@
         </ConsumptionType>
         <ConsumptionDetail>
           <Consumption>6</Consumption>
+          <StartDateTime>1998-12-22T00:00:00</StartDateTime>
           <EndDateTime>1999-01-21T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>4</Consumption>
+          <StartDateTime>1999-01-21T00:00:00</StartDateTime>
           <EndDateTime>1999-02-19T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>262</Consumption>
+          <StartDateTime>1999-02-19T00:00:00</StartDateTime>
           <EndDateTime>1999-03-19T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>82</Consumption>
+          <StartDateTime>1999-03-19T00:00:00</StartDateTime>
           <EndDateTime>1999-04-21T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>44</Consumption>
+          <StartDateTime>1999-04-21T00:00:00</StartDateTime>
           <EndDateTime>1999-06-17T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
           <Consumption>103</Consumption>
+          <StartDateTime>1999-06-17T00:00:00</StartDateTime>
           <EndDateTime>1999-08-19T00:00:00</EndDateTime>
         </ConsumptionDetail>
       </ConsumptionInfo>

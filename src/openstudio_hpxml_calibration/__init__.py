@@ -1,11 +1,17 @@
+import contextlib
+import json
+import shutil
 import subprocess
+import time
 import zipfile
 from importlib.metadata import version
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 import requests
 from cyclopts import App
 from loguru import logger
+from matplotlib.ticker import MaxNLocator
 from tqdm import tqdm
 
 from openstudio_hpxml_calibration.utils import OS_HPXML_PATH, calculate_sha256, get_cache_dir
@@ -40,6 +46,7 @@ def run_sim(
     output_format: Format | None = None,
     output_dir: str | None = None,
     granularity: Granularity | None = None,
+    debug: bool = False,
 ) -> None:
     """Simulate an HPXML file using the OpenStudio-HPXML workflow
 
@@ -69,6 +76,15 @@ def run_sim(
     if output_dir is not None:
         output_dir = ["--output-dir", output_dir]
         run_simulation_command.extend(output_dir)
+    if debug:
+        # the run_simulation.rb script sets skip-validation to false by default.
+        # By not including it here, we perform the validation.
+        # We also add the --debug flag to enable debug mode for run_simulation.rb.
+        debug_flags = ["--debug"]
+    else:
+        # Our default is to skip validation, for faster simulation runs.
+        debug_flags = ["--skip-validation"]
+    run_simulation_command.extend(debug_flags)
 
     logger.debug(f"Running command: {' '.join(run_simulation_command)}")
     subprocess.run(
@@ -144,6 +160,168 @@ def download_weather() -> None:
         for filename in tqdm(zf.namelist(), desc="Extracting epws"):
             if filename.endswith(".epw") and not (weather_dir / filename).exists():
                 zf.extract(filename, path=weather_dir)
+
+
+@app.command
+def calibrate(
+    hpxml_filepath: str,
+    config_filepath: str | None = None,
+    output_dir: str | None = None,
+    num_proc: int | None = None,
+) -> None:
+    """
+    Run calibration using a genetic algorithm on an HPXML file.
+
+    Parameters
+    ----------
+    hpxml_filepath: str
+        Path to the HPXML file
+    config_filepath: str
+        Optional path to calibration config file
+    output_dir: str
+        Optional output directory to save results
+    num_proc: int
+        Optional number of processors for parallel simulations
+    """
+
+    from openstudio_hpxml_calibration.calibrate import Calibrate
+
+    filename = Path(hpxml_filepath).stem
+    if output_dir is None:
+        output_filepath = (
+            Path(__file__).resolve().parent.parent / "tests" / "ga_search_results" / filename
+        )
+    else:
+        output_filepath = Path(output_dir)
+    # Remove old output_filepath if it exists
+    if output_filepath.exists() and output_filepath.is_dir():
+        shutil.rmtree(output_filepath)
+    output_filepath.mkdir(parents=True, exist_ok=True)
+
+    cal = Calibrate(original_hpxml_filepath=hpxml_filepath, config_filepath=config_filepath)
+
+    start = time.time()
+    best_individual_pop, pop, logbook, best_bias_series, best_abs_series = cal.run_ga_search(
+        num_proc=num_proc, output_filepath=output_filepath
+    )
+    logger.info(f"Calibration took {time.time() - start:.2f} seconds")
+
+    # Save logbook
+    log_data = []
+    for record in logbook:
+        rec = record.copy()
+        if "best_individual" in rec and isinstance(rec["best_individual"], str):
+            with contextlib.suppress(json.JSONDecodeError):
+                rec["best_individual"] = json.loads(rec["best_individual"])
+        if "best_individual_sim_results" in rec and isinstance(
+            rec["best_individual_sim_results"], str
+        ):
+            with contextlib.suppress(json.JSONDecodeError):
+                rec["best_individual_sim_results"] = json.loads(rec["best_individual_sim_results"])
+        log_data.append(rec)
+
+    logbook_path = output_filepath / "logbook.json"
+    with open(logbook_path, "w", encoding="utf-8") as f:
+        json.dump(log_data, f, indent=2)
+
+    # Min and avg penalties
+    min_penalty = [entry["min"] for entry in logbook]
+    avg_penalty = [entry["avg"] for entry in logbook]
+
+    # Plot Min Penalty
+    plt.figure(figsize=(10, 6))
+    plt.plot(min_penalty, label="Min Penalty")
+    plt.xlabel("Generation")
+    plt.ylabel("Penalty")
+    plt.title("Min Penalty Over Generations")
+    plt.legend()
+    plt.grid(True)
+    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
+    plt.tight_layout()
+    plt.savefig(str(output_filepath / "min_penalty_plot.png"))
+    plt.close()
+
+    # Plot Avg Penalty
+    plt.figure(figsize=(10, 6))
+    plt.plot(avg_penalty, label="Avg Penalty")
+    plt.xlabel("Generation")
+    plt.ylabel("Penalty")
+    plt.title("Avg Penalty Over Generations")
+    plt.legend()
+    plt.grid(True)
+    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
+    plt.tight_layout()
+    plt.savefig(str(output_filepath / "avg_penalty_plot.png"))
+    plt.close()
+
+    # Bias error series
+    best_bias_series = {}
+    for entry in logbook:
+        for key, value in entry.items():
+            # Skip zero values to avoid cluttering the plot
+            if value == 0:
+                continue
+            if key.startswith("bias_error_"):
+                best_bias_series.setdefault(key, []).append(value)
+
+    plt.figure(figsize=(12, 6))
+    for key, values in best_bias_series.items():
+        label = key.replace("bias_error_", "")
+        plt.plot(values, label=label)
+    plt.xlabel("Generation")
+    plt.ylabel("Bias Error (%)")
+    plt.title("Per-End-Use Bias Error Over Generations")
+    plt.legend(loc="best", fontsize="small")
+    plt.grid(True)
+    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
+    plt.tight_layout()
+    plt.savefig(str(output_filepath / "bias_error_plot.png"), bbox_inches="tight")
+    plt.close()
+
+    # Absolute error series
+    best_abs_series = {}
+    for entry in logbook:
+        for key, value in entry.items():
+            # Skip zero values to avoid cluttering the plot
+            if value == 0:
+                continue
+            if key.startswith("abs_error_"):
+                best_abs_series.setdefault(key, []).append(value)
+
+    electric_keys = [k for k in best_abs_series if "electricity" in k]
+    fuel_keys = [
+        k for k in best_abs_series if "natural gas" in k or "fuel oil" in k or "propane" in k
+    ]
+
+    fig, ax1 = plt.subplots(figsize=(12, 6))
+    ax2 = ax1.twinx()
+    colors = plt.cm.tab20.colors
+
+    for i, key in enumerate(electric_keys):
+        ax1.plot(
+            best_abs_series[key],
+            label=key.replace("abs_error_", "") + " (kWh)",
+            color=colors[i % len(colors)],
+        )
+    for i, key in enumerate(fuel_keys):
+        ax2.plot(
+            best_abs_series[key],
+            label=key.replace("abs_error_", "") + " (MBtu)",
+            color=colors[(i + len(electric_keys)) % len(colors)],
+        )
+
+    ax1.set_xlabel("Generation")
+    ax1.set_ylabel("Electricity Abs Error (kWh)", color="blue")
+    ax2.set_ylabel("Fossil Fuel Abs Error (MBtu)", color="red")
+    plt.title("Per-End-Use Absolute Errors Over Generations")
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines1 + lines2, labels1 + labels2, loc="best", fontsize="small")
+    ax1.grid(True)
+    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
+    plt.tight_layout()
+    plt.savefig(str(output_filepath / "absolute_error_plot.png"), bbox_inches="tight")
+    plt.close()
 
 
 if __name__ == "__main__":

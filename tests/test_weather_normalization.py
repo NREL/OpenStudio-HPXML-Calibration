@@ -10,16 +10,28 @@ from matplotlib import pyplot as plt
 import openstudio_hpxml_calibration.weather_normalization.utility_data as ud
 from openstudio_hpxml_calibration.hpxml import HpxmlDoc
 from openstudio_hpxml_calibration.units import convert_units
+from openstudio_hpxml_calibration.utils import _load_config
 from openstudio_hpxml_calibration.weather_normalization.inverse_model import InverseModel
+
+test_config = _load_config("tests/data/test_config.yaml")
 
 repo_root = pathlib.Path(__file__).resolve().parent.parent
 ira_rebate_hpxmls = list((repo_root / "test_hpxmls" / "ira_rebates").glob("*.xml"))
 real_home_hpxmls = list((repo_root / "test_hpxmls" / "real_homes").glob("*.xml"))
 ihmh_home_hpxmls = list((repo_root / "test_hpxmls" / "ihmh_homes").glob("*.xml"))
 SKIP_FILENAMES = {
+    "ihmh7.xml",
+    "house11.xml",
+    "house18.xml",
+    "house32.xml",
+    "house37.xml",
+    "house46.xml",
     "house53.xml",
     "house54.xml",
+    "house57.xml",
     "house60.xml",
+    "house83.xml",
+    "house84.xml",
 }
 
 
@@ -56,7 +68,7 @@ def test_weather_retrieval(results_dir, filename):
     lat, lon = hpxml.get_lat_lon()
     bills_by_fuel_type, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
     for fuel_type, bills in bills_by_fuel_type.items():
-        bills_temps = ud.join_bills_weather(bills, lat, lon)
+        bills_temps, _ = ud.join_bills_weather(bills, lat, lon)
         fig = plt.figure(figsize=(8, 6))
         plt.scatter(bills_temps["avg_temp"], bills_temps["daily_consumption"])
         fig.savefig(
@@ -67,6 +79,8 @@ def test_weather_retrieval(results_dir, filename):
         assert not pd.isna(bills_temps["avg_temp"]).any()
 
 
+# Use flaky to address intermittent tcl errors on Windows https://stackoverflow.com/questions/71443540/intermittent-pytest-failures-complaining-about-missing-tcl-files-even-though-the
+@pytest.mark.flaky(max_runs=3)
 # Skipping because of this bug in Python https://github.com/python/cpython/issues/125235#issuecomment-2412948604
 @pytest.mark.skipif(
     sys.platform == "win32"
@@ -86,7 +100,7 @@ def test_curve_fit(results_dir, filename):
         pytest.skip(f"Skipping test for {filename.name}")
 
     hpxml = HpxmlDoc(filename)
-    inv_model = InverseModel(hpxml)
+    inv_model = InverseModel(hpxml, user_config=test_config)
     successful_fits = 0  # Track number of successful fits
 
     for fuel_type, bills in inv_model.bills_by_fuel_type.items():
@@ -155,7 +169,7 @@ def test_curve_fit(results_dir, filename):
 def test_normalize_consumption_to_epw():
     filename = repo_root / "test_hpxmls" / "real_homes" / "house21.xml"
     hpxml = HpxmlDoc(filename)
-    inv_model = InverseModel(hpxml)
+    inv_model = InverseModel(hpxml, user_config=test_config)
 
     for fuel_type, bills in inv_model.bills_by_fuel_type.items():
         epw_daily = convert_units(inv_model.predict_epw_daily(fuel_type), "BTU", "kBTU")

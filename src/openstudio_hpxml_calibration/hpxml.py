@@ -1,7 +1,6 @@
 import functools
 import os
 import re
-from contextlib import suppress
 from enum import Enum
 from pathlib import Path
 
@@ -110,6 +109,9 @@ class HpxmlDoc:
             schematron.assertValid(self.tree)
 
     def __getattr__(self, name: str):
+        # This prevents infinite recursion in contexts involving logging or multiprocessing
+        if name == "root":
+            raise AttributeError("Avoid recursive getattr call on root")
         return getattr(self.root, name)
 
     def xpath(
@@ -166,31 +168,36 @@ class HpxmlDoc:
         building = self.get_building(building_id)
         heating_fuels = set()
         cooling_fuels = set()
-        with suppress(AttributeError):
-            for hvac_system in building.BuildingDetails.Systems.HVAC.HVACPlant:
-                heating_fuels.add(hvac_system.HeatingSystemFuel.text.strip())
+        for hvac_system in building.BuildingDetails.Systems.HVAC.HVACPlant:
+            try:
+                heating_fuels.add(hvac_system.HeatingSystem.HeatingSystemFuel.text.strip())
+                cooling_fuels.add(hvac_system.CoolingSystem.CoolingSystemFuel.text.strip())
                 heating_fuels.add(hvac_system.HeatPump.HeatPumpFuel.text.strip())
                 heating_fuels.add(
                     hvac_system.HeatPump.BackupSystemFuel.text.strip()
                 )  # TODO: Need to capture fuel used for integrated AC?
-                cooling_fuels.add(hvac_system.CoolingSystem.CoolingSystemFuel.text.strip())
+
                 cooling_fuels.add(hvac_system.HeatPump.HeatPumpFuel.text.strip())
+            except AttributeError:
+                continue
 
         return heating_fuels, cooling_fuels
 
-    def get_consumption(self, building_id: str | None = None) -> objectify.ObjectifiedElement:
-        """Get the Consumption element for a building
+    def get_consumptions(
+        self, building_id: str | None = None
+    ) -> tuple[objectify.ObjectifiedElement, ...]:
+        """Get all Consumption elements for a building
 
         :param building_id: The id of the Building to retrieve, gets first one if missing
         :type building_id: str | None, optional
-        :return: Consumption element
-        :rtype: objectify.ObjectifiedElement
+        :return: Tuple of Consumption elements
+        :rtype: tuple
         """
         if building_id is None:
-            return self.xpath("h:Consumption[1]")[0]
-        return self.xpath(
-            "h:Consumption[h:BuildingID/@idref=$building_id]", building_id=building_id
-        )[0]
+            return tuple(self.xpath("h:Consumption"))
+        return tuple(
+            self.xpath("h:Consumption[h:BuildingID/@idref=$building_id]", building_id=building_id)
+        )
 
     @functools.cache
     def get_epw_path(self, building_id: str | None = None) -> Path:

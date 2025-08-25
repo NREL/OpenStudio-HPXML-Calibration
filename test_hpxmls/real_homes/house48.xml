@@ -710,13 +710,8 @@
           <EndDateTime>2010-04-21T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>
-          <Consumption>324.0</Consumption>
+          <Consumption>363.0</Consumption>
           <StartDateTime>2010-04-21T00:00:00</StartDateTime>
-          <EndDateTime>2010-05-21T00:00:00</EndDateTime>
-        </ConsumptionDetail>
-        <ConsumptionDetail>
-          <Consumption>39.0</Consumption>
-          <StartDateTime>2010-05-21T00:00:00</StartDateTime>
           <EndDateTime>2010-05-28T00:00:00</EndDateTime>
         </ConsumptionDetail>
         <ConsumptionDetail>

@@ -1,27 +1,52 @@
+import copy
 import json
+import math
+import multiprocessing
+import random
+import shutil
+import tempfile
+import time
+import uuid
 from datetime import datetime as dt
+from datetime import timedelta
 from pathlib import Path
 
 import pandas as pd
+from deap import algorithms, base, creator, tools
 from loguru import logger
+from pathos.multiprocessing import ProcessingPool as Pool
 
+import openstudio_hpxml_calibration.weather_normalization.utility_data as ud
+from openstudio_hpxml_calibration import app
 from openstudio_hpxml_calibration.hpxml import FuelType, HpxmlDoc
 from openstudio_hpxml_calibration.modify_hpxml import set_consumption_on_hpxml
 from openstudio_hpxml_calibration.units import convert_units
+from openstudio_hpxml_calibration.utils import _load_config
 from openstudio_hpxml_calibration.weather_normalization.inverse_model import InverseModel
+
+# Ensure the creator is only created once
+if "FitnessMin" not in creator.__dict__:
+    creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
+if "Individual" not in creator.__dict__:
+    creator.create("Individual", list, fitness=creator.FitnessMin)
 
 
 class Calibrate:
-    def __init__(self, original_hpxml_filepath: Path, csv_bills_filepath: Path | None = None):
+    def __init__(
+        self,
+        original_hpxml_filepath: Path,
+        csv_bills_filepath: Path | None = None,
+        config_filepath: Path | None = None,
+    ):
+        self.hpxml_filepath = Path(original_hpxml_filepath).resolve()
         self.hpxml = HpxmlDoc(Path(original_hpxml_filepath).resolve())
+        self.ga_config = _load_config(config_filepath)
 
         if csv_bills_filepath:
             logger.info(f"Adding utility data from {csv_bills_filepath} to hpxml")
             self.hpxml = set_consumption_on_hpxml(self.hpxml, csv_bills_filepath)
 
         self.hpxml_data_error_checking()
-
-        self.inv_model = InverseModel(self.hpxml)
 
     def get_normalized_consumption_per_bill(self) -> dict[FuelType, pd.DataFrame]:
         """
@@ -32,7 +57,16 @@ class Calibrate:
         """
 
         normalized_consumption = {}
+        # InverseModel is not applicable to delivered fuels, so we only use it for electricity and natural gas
+        self.inv_model = InverseModel(self.hpxml, user_config=self.ga_config)
         for fuel_type, bills in self.inv_model.bills_by_fuel_type.items():
+            if fuel_type in (
+                FuelType.FUEL_OIL,
+                FuelType.PROPANE,
+                FuelType.WOOD,
+                FuelType.WOOD_PELLETS,
+            ):
+                continue  # Delivered fuels have a separate calibration process: simplified_annual_usage()
 
             def _calculate_wrapped_total(row):
                 """Extract the epw_daily rows that correspond to the bill month
@@ -283,6 +317,11 @@ class Calibrate:
         for fuel_type, consumption in normalized_consumption.items():
             annual_normalized_bill_consumption[fuel_type] = {}
             for end_use in ["heating", "cooling", "baseload"]:
+                if (
+                    end_use not in annual_model_results[fuel_type]
+                    or annual_model_results[fuel_type][end_use] == 0.0
+                ):
+                    continue
                 annual_normalized_bill_consumption[fuel_type][end_use] = (
                     consumption[end_use].sum().round(1)
                 )
@@ -291,13 +330,14 @@ class Calibrate:
 
         # combine the annual normalized bill consumption with the model results
         for model_fuel_type, disagg_results in annual_model_results.items():
-            bias_error_criteria = 5  # percent
-            absolute_error_criteria = 5  # measured in mbtu
             if model_fuel_type in annual_normalized_bill_consumption:
                 comparison_results[model_fuel_type] = {"Bias Error": {}, "Absolute Error": {}}
                 for load_type in disagg_results:
+                    if load_type not in annual_normalized_bill_consumption[model_fuel_type]:
+                        continue
+
+                    disagg_result = disagg_results[load_type]
                     if model_fuel_type == "electricity":
-                        absolute_error_criteria = 500  # measured in kWh
                         # All results from simulation and normalized bills are in mbtu.
                         # convert electric loads from mbtu to kWh for bpi2400
                         annual_normalized_bill_consumption[model_fuel_type][load_type] = (
@@ -307,46 +347,180 @@ class Calibrate:
                                 to_="kwh",
                             )
                         )
-                        disagg_results[load_type] = convert_units(
-                            disagg_results[load_type], from_="mbtu", to_="kwh"
-                        )
+                        disagg_result = convert_units(disagg_result, from_="mbtu", to_="kwh")
 
                     # Calculate error levels
-                    comparison_results[model_fuel_type]["Bias Error"][load_type] = round(
-                        (
+                    if annual_normalized_bill_consumption[model_fuel_type][load_type] == 0:
+                        comparison_results[model_fuel_type]["Bias Error"][load_type] = float("nan")
+                    else:
+                        comparison_results[model_fuel_type]["Bias Error"][load_type] = round(
                             (
-                                annual_normalized_bill_consumption[model_fuel_type][load_type]
-                                - disagg_results[load_type]
+                                (
+                                    annual_normalized_bill_consumption[model_fuel_type][load_type]
+                                    - disagg_result
+                                )
+                                / annual_normalized_bill_consumption[model_fuel_type][load_type]
                             )
-                            / annual_normalized_bill_consumption[model_fuel_type][load_type]
+                            * 100,
+                            1,
                         )
-                        * 100,
-                        1,
-                    )
                     comparison_results[model_fuel_type]["Absolute Error"][load_type] = round(
                         abs(
                             annual_normalized_bill_consumption[model_fuel_type][load_type]
-                            - disagg_results[load_type]
+                            - disagg_result
                         ),
                         1,
                     )
-                    # Warn if either error exceeds the criteria
-                    # TODO: Instead of warning, adjust the modification and simulate again
-                    if (
-                        abs(comparison_results[model_fuel_type]["Bias Error"][load_type])
-                        > bias_error_criteria
-                    ):
-                        logger.warning(
-                            f"Bias error for {model_fuel_type} {load_type} is {comparison_results[model_fuel_type]['Bias Error'][load_type]} but the limit is +/- {bias_error_criteria}"
-                        )
-                    if (
-                        abs(comparison_results[model_fuel_type]["Absolute Error"][load_type])
-                        > absolute_error_criteria
-                    ):
-                        logger.warning(
-                            f"Absolute error for {model_fuel_type} {load_type} is {comparison_results[model_fuel_type]['Absolute Error'][load_type]} but the limit is +/- {absolute_error_criteria}"
-                        )
 
+        return comparison_results
+
+    def calculate_annual_degree_days(self) -> dict[str, float]:
+        """Calculate annual heating and cooling degree days from TMY data and actual weather data.
+
+        Returns:
+            dict: A dictionary containing annual heating and cooling degree days for TMY weather data.
+            dict: A dictionary containing annual heating and cooling degree days for actual weather data.
+        """
+        tmy_dry_bulb_temps_f = ud.calc_daily_dbs(self.hpxml).f
+        bills_by_fuel_type, _, _ = ud.get_bills_from_hpxml(self.hpxml)
+        lat, lon = self.hpxml.get_lat_lon()
+        bill_tmy_degree_days = {}
+        total_period_actual_dd = {}
+
+        # Use day-of-year because TMY data contains multiple years
+        tmy_temp_index_doy = tmy_dry_bulb_temps_f.index.dayofyear
+
+        for fuel_type, bills in bills_by_fuel_type.items():
+            if fuel_type not in (
+                FuelType.FUEL_OIL,
+                FuelType.PROPANE,
+                FuelType.WOOD,
+                FuelType.WOOD_PELLETS,
+            ):
+                continue  # Skip fuels that are not delivered fuels
+            # format fuel type for dictionary keys
+            fuel_type_name = fuel_type.name.lower().replace("_", " ")
+            # Get degree days of actual weather during bill periods
+            _, actual_temp_f = ud.join_bills_weather(bills, lat, lon)
+            daily_actual_temps = actual_temp_f.resample("D").mean()
+            actual_degree_days = ud.calc_heat_cool_degree_days(daily_actual_temps)
+            actual_degree_days = {k: round(v) for k, v in actual_degree_days.items()}
+            total_period_actual_dd[fuel_type_name] = actual_degree_days
+
+            # Get degree days of TMY weather
+            bill_results = []
+            for _, row in bills.iterrows():
+                start_doy = row["start_day_of_year"]
+                end_doy = row["end_day_of_year"]
+
+                # Handle bills that wrap around the end of the year
+                if start_doy <= end_doy:
+                    mask = (tmy_temp_index_doy >= start_doy) & (tmy_temp_index_doy <= end_doy)
+                else:
+                    mask = (tmy_temp_index_doy >= start_doy) | (tmy_temp_index_doy <= end_doy)
+
+                # Select the dry bulb temperatures for the bill period
+                bill_dry_bulbs_tmy = tmy_dry_bulb_temps_f[mask]
+                tmy_degree_days = ud.calc_heat_cool_degree_days(bill_dry_bulbs_tmy)
+                bill_results.append(
+                    {
+                        "start_date": row["start_date"],
+                        "end_date": row["end_date"],
+                        **tmy_degree_days,
+                    }
+                )
+            bill_tmy_degree_days[fuel_type_name] = bill_results
+
+        total_period_tmy_dd = {}
+        for fuel, bill_list in bill_tmy_degree_days.items():
+            hdd_total = round(sum(bill.get("HDD65F", 0) for bill in bill_list))
+            cdd_total = round(sum(bill.get("CDD65F", 0) for bill in bill_list))
+            total_period_tmy_dd[fuel] = {"HDD65F": hdd_total, "CDD65F": cdd_total}
+
+        return total_period_tmy_dd, total_period_actual_dd
+
+    def simplified_annual_usage(
+        self, model_results: dict, delivered_consumption, fuel_type: str
+    ) -> dict:
+        total_period_tmy_dd, total_period_actual_dd = self.calculate_annual_degree_days()
+
+        comparison_results = {}
+
+        measured_consumption = 0.0
+        fuel_unit_type = delivered_consumption.ConsumptionType.Energy.UnitofMeasure
+        if delivered_consumption.ConsumptionType.Energy.FuelType == fuel_type:
+            first_bill_date = delivered_consumption.ConsumptionDetail[0].StartDateTime
+            last_bill_date = delivered_consumption.ConsumptionDetail[-1].EndDateTime
+            first_bill_date = dt.strptime(str(first_bill_date), "%Y-%m-%dT%H:%M:%S")
+            last_bill_date = dt.strptime(str(last_bill_date), "%Y-%m-%dT%H:%M:%S")
+            num_days = (last_bill_date - first_bill_date + timedelta(days=1)).days
+            for period_consumption in delivered_consumption.ConsumptionDetail:
+                measured_consumption += float(period_consumption.Consumption)
+            # logger.debug(
+            #     f"Measured {fuel_type} consumption: {measured_consumption:,.2f} {fuel_unit_type}"
+            # )
+            if fuel_unit_type == "gal" and fuel_type == FuelType.FUEL_OIL.value:
+                fuel_unit_type = f"{fuel_unit_type}_fuel_oil"
+            elif fuel_unit_type == "gal" and fuel_type == FuelType.PROPANE.value:
+                fuel_unit_type = f"{fuel_unit_type}_propane"
+        measured_consumption = convert_units(measured_consumption, str(fuel_unit_type), "mBtu")
+
+        modeled_baseload = model_results[fuel_type].get("baseload", 0)
+        modeled_heating = model_results[fuel_type].get("heating", 0)
+        modeled_cooling = model_results[fuel_type].get("cooling", 0)
+        total_modeled_usage = modeled_baseload + modeled_heating + modeled_cooling
+
+        baseload_fraction = modeled_baseload / total_modeled_usage
+        heating_fraction = modeled_heating / total_modeled_usage
+        cooling_fraction = modeled_cooling / total_modeled_usage
+
+        baseload = baseload_fraction * (num_days / 365)
+        heating = heating_fraction * (
+            total_period_actual_dd[fuel_type]["HDD65F"] / total_period_tmy_dd[fuel_type]["HDD65F"]
+        )
+        cooling = cooling_fraction * (
+            total_period_actual_dd[fuel_type]["CDD65F"] / total_period_tmy_dd[fuel_type]["CDD65F"]
+        )
+
+        annual_delivered_fuel_usage = measured_consumption / (baseload + heating + cooling)
+        # logger.debug(f"annual_delivered_fuel_usage: {annual_delivered_fuel_usage:,.2f} mBtu")
+
+        normalized_annual_baseload = annual_delivered_fuel_usage * baseload_fraction
+        normalized_annual_heating = annual_delivered_fuel_usage * heating_fraction
+        normalized_annual_cooling = annual_delivered_fuel_usage * cooling_fraction
+
+        baseload_bias_error = (
+            ((normalized_annual_baseload - modeled_baseload) / normalized_annual_baseload) * 100
+            if normalized_annual_baseload
+            else 0
+        )
+        heating_bias_error = (
+            ((normalized_annual_heating - modeled_heating) / normalized_annual_heating) * 100
+            if normalized_annual_heating
+            else 0
+        )
+        cooling_bias_error = (
+            ((normalized_annual_cooling - modeled_cooling) / normalized_annual_cooling) * 100
+            if normalized_annual_cooling
+            else 0
+        )
+
+        baseload_absolute_error = abs(normalized_annual_baseload - modeled_baseload)
+        heating_absolute_error = abs(normalized_annual_heating - modeled_heating)
+        cooling_absolute_error = abs(normalized_annual_cooling - modeled_cooling)
+
+        comparison_results[fuel_type] = {
+            "Bias Error": {
+                "baseload": round(baseload_bias_error, 2),
+                "heating": round(heating_bias_error, 2),
+                "cooling": round(cooling_bias_error, 2),
+            },
+            "Absolute Error": {
+                "baseload": round(baseload_absolute_error, 2),
+                "heating": round(heating_absolute_error, 2),
+                "cooling": round(cooling_absolute_error, 2),
+            },
+        }
         return comparison_results
 
     def hpxml_data_error_checking(self) -> None:
@@ -356,10 +530,7 @@ class Calibrate:
         """
         now = dt.now()
         building = self.hpxml.get_building()
-        try:
-            consumption = self.hpxml.get_consumption()
-        except IndexError:
-            raise ValueError("No Consumption section found in HPXML file.")
+        consumptions = self.hpxml.get_consumptions()
 
         # Check that the building doesn't have PV
         try:
@@ -368,80 +539,90 @@ class Calibrate:
         except AttributeError:
             pass
 
-        # Check that consumption types are appropriate (not mixing Energy and Water)
-        for fuel in consumption.ConsumptionDetails.ConsumptionInfo:
-            try:
-                if fuel.ConsumptionType.Energy.FuelType in FuelType._value2member_map_:
-                    continue
-            except AttributeError:
-                raise ValueError(
-                    "ConsumptionType.Energy.FuelType is missing or not recognized in Consumption. "
-                    "We only calibrate energy consumption, not water."
-                )
+        # Helper: flatten all fuel entries across all consumption elements
+        all_fuels = [
+            (consumption_elem, fuel)
+            for consumption_elem in consumptions
+            for fuel in consumption_elem.ConsumptionDetails.ConsumptionInfo
+        ]
 
-        # Check that build ID matches consumption BuildingID
-        if not consumption.BuildingID.attrib["idref"] == building.BuildingID.attrib["id"]:
+        # Check that every fuel in every consumption element has a ConsumptionType.Energy element
+        if not all(
+            all(
+                hasattr(fuel.ConsumptionType, "Energy")
+                for fuel in consumption_elem.ConsumptionDetails.ConsumptionInfo
+            )
+            for consumption_elem in consumptions
+        ):
             raise ValueError(
-                f"Consumption BuildingID idref '{consumption.BuildingID.attrib['idref']}' does "
-                f"not match Building ID '{building.BuildingID.attrib['id']}'"
+                "Every fuel in every Consumption section must have a valid ConsumptionType.Energy element."
             )
 
-        # Check consumption energy units are appropriate for the fuel type
-        for fuel in consumption.ConsumptionDetails.ConsumptionInfo:
-            match fuel.ConsumptionType.Energy.FuelType:
-                case FuelType.ELECTRICITY.value:
-                    if fuel.ConsumptionType.Energy.UnitofMeasure not in ("kWh", "MWh"):
-                        raise ValueError(
-                            "Electricity consumption unit must be 'kWh' or 'MWh', "
-                            f"got '{fuel.ConsumptionType.Energy.UnitofMeasure}'"
-                        )
-                case FuelType.NATURAL_GAS.value:
-                    if fuel.ConsumptionType.Energy.UnitofMeasure not in (
-                        "therms",
-                        "Btu",
-                        "kBtu",
-                        "MBtu",
-                        "ccf",
-                        "kcf",
-                        "Mcf",
-                    ):
-                        raise ValueError(
-                            "Natural gas consumption unit must be 'therm' or 'CCF', "
-                            f"got '{fuel.ConsumptionType.Energy.UnitofMeasure}'"
-                        )
-                case FuelType.FUEL_OIL.value:
-                    if fuel.ConsumptionType.Energy.UnitofMeasure not in (
-                        "gal",
-                        "Btu",
-                        "kBtu",
-                        "MBtu",
-                    ):
-                        raise ValueError(
-                            f"Fuel oil consumption unit must be 'gal', 'Btu', 'kBtu', or 'MBtu', "
-                            f"got '{fuel.ConsumptionType.Energy.UnitofMeasure}'"
-                        )
-                case FuelType.PROPANE.value:
-                    if fuel.ConsumptionType.Energy.UnitofMeasure not in (
-                        "gal",
-                        "Btu",
-                        "kBtu",
-                        "MBtu",
-                    ):
-                        raise ValueError(
-                            f"Propane consumption unit must be 'gal', 'Btu', 'kBtu', or 'MBtu', "
-                            f"got '{fuel.ConsumptionType.Energy.UnitofMeasure}'"
-                        )
-                case _:
-                    raise ValueError(
-                        f"Unsupported fuel type '{fuel.ConsumptionType.Energy.FuelType}' with "
-                        f"unit '{fuel.ConsumptionType.Energy.UnitofMeasure}'"
-                    )
+        # Check that at least one consumption element matches the building ID
+        if not any(
+            consumption_elem.BuildingID.attrib["idref"] == building.BuildingID.attrib["id"]
+            for consumption_elem in consumptions
+        ):
+            raise ValueError("No Consumption section matches the Building ID in the HPXML file.")
 
-        # Check that consumption dates have no gaps nor are overlapping
-        for fuel in consumption.ConsumptionDetails.ConsumptionInfo:
-            details = fuel.ConsumptionDetail
+        # Check that at least one fuel per fuel type has valid units
+        def valid_unit(fuel):
+            fuel_type = fuel.ConsumptionType.Energy.FuelType
+            unit = fuel.ConsumptionType.Energy.UnitofMeasure
+            match fuel_type:
+                case FuelType.ELECTRICITY.value:
+                    return unit in ("kWh", "MWh")
+                case FuelType.NATURAL_GAS.value:
+                    return unit in ("therms", "Btu", "kBtu", "MBtu", "ccf", "kcf", "Mcf")
+                case FuelType.FUEL_OIL.value | FuelType.PROPANE.value:
+                    return unit in ("gal", "Btu", "kBtu", "MBtu")
+                case _:
+                    return False
+
+        for fuel_type in {
+            getattr(fuel.ConsumptionType.Energy, "FuelType", None)
+            for _, fuel in all_fuels
+            if hasattr(fuel.ConsumptionType, "Energy")
+        }:
+            if fuel_type is None:
+                continue
+            if not any(
+                getattr(fuel.ConsumptionType.Energy, "FuelType", None) == fuel_type
+                and valid_unit(fuel)
+                for _, fuel in all_fuels
+            ):
+                raise ValueError(
+                    f"No valid unit found for fuel type '{fuel_type}' in any Consumption section."
+                )
+
+        # Check that for each fuel type, there is only one Consumption section
+        fuel_type_to_consumption = {}
+        for consumption_elem in consumptions:
+            for fuel in consumption_elem.ConsumptionDetails.ConsumptionInfo:
+                fuel_type = getattr(fuel.ConsumptionType.Energy, "FuelType", None)
+                if fuel_type is None:
+                    continue
+                if fuel_type in fuel_type_to_consumption:
+                    raise ValueError(
+                        f"Multiple Consumption sections found for fuel type '{fuel_type}'. "
+                        "Only one section per fuel type is allowed."
+                    )
+                fuel_type_to_consumption[fuel_type] = consumption_elem
+
+        # Check that electricity consumption is present in at least one section
+        if not any(
+            getattr(fuel.ConsumptionType.Energy, "FuelType", None) == FuelType.ELECTRICITY.value
+            for _, fuel in all_fuels
+        ):
+            raise ValueError(
+                "Electricity consumption is required for calibration. "
+                "Please provide electricity consumption data in the HPXML file."
+            )
+
+        # Check that for each fuel, all periods are consecutive, non-overlapping, and valid
+        for _, fuel in all_fuels:
+            details = getattr(fuel, "ConsumptionDetail", [])
             for i, detail in enumerate(details):
-                # Check that start and end dates are present
                 try:
                     start_date = dt.strptime(str(detail.StartDateTime), "%Y-%m-%dT%H:%M:%S")
                 except AttributeError:
@@ -454,68 +635,123 @@ class Calibrate:
                     raise ValueError(
                         f"Consumption detail {i} for {fuel.ConsumptionType.Energy.FuelType} is missing EndDateTime."
                     )
-                # Compare with previous detail if not the first
                 if i > 0:
                     prev_detail = details[i - 1]
-                    if detail.StartDateTime < prev_detail.EndDateTime:
+                    prev_end = dt.strptime(str(prev_detail.EndDateTime), "%Y-%m-%dT%H:%M:%S")
+                    curr_start = dt.strptime(str(detail.StartDateTime), "%Y-%m-%dT%H:%M:%S")
+                    if curr_start < prev_end:
                         raise ValueError(
                             f"Consumption details for {fuel.ConsumptionType.Energy.FuelType} overlap: "
                             f"{prev_detail.StartDateTime} - {prev_detail.EndDateTime} overlaps with "
                             f"{detail.StartDateTime} - {detail.EndDateTime}"
                         )
-                    if detail.StartDateTime > prev_detail.EndDateTime:
+                    if (curr_start - prev_end) > timedelta(minutes=1):
                         raise ValueError(
                             f"Gap in consumption data for {fuel.ConsumptionType.Energy.FuelType}: "
                             f"Period between {prev_detail.EndDateTime} and {detail.StartDateTime} is not covered.\n"
                             "Are the bill periods consecutive?"
                         )
 
-        # Check that consumption values are above zero
-        for fuel in consumption.ConsumptionDetails.ConsumptionInfo:
-            for detail in fuel.ConsumptionDetail:
-                if detail.Consumption <= 0:
-                    raise ValueError(
-                        f"Consumption value for {fuel.ConsumptionType.Energy.FuelType} cannot be "
-                        f"zero or negative for bill-period: {detail.StartDateTime}"
-                    )
-
-        # Check if consumption is estimated
-        for fuel in consumption.ConsumptionDetails.ConsumptionInfo:
-            for detail in fuel.ConsumptionDetail:
-                try:
-                    reading_type = str(detail.ReadingType)
-                    if reading_type.lower() == "estimate":
-                        # TODO: bump to simplified calibration instead of raising an error
-                        raise ValueError(
-                            f"Estimated consumption value for {fuel.ConsumptionType.Energy.FuelType} cannot be greater than zero for bill-period: {detail.StartDateTime}"
-                        )
-                except AttributeError:
-                    # If there is no ReadingType, assume it's not estimated
-                    pass
-
-        # Check that there is only one consumption section per fuel type
-        fuel_types = set()
-        for fuel in consumption.ConsumptionDetails.ConsumptionInfo:
-            fuel_type = fuel.ConsumptionType.Energy.FuelType
-            if fuel_type in fuel_types:
-                raise ValueError(
-                    f"Multiple Consumption sections found for fuel type '{fuel_type}'. "
-                    "Only one section per fuel type is allowed."
-                )
-            fuel_types.add(fuel_type)
-
-        # Check that electricity consumption is present
-        if FuelType.ELECTRICITY.value not in fuel_types:
+        # Check that all consumption values are above zero
+        if not any(
+            all(detail.Consumption > 0 for detail in getattr(fuel, "ConsumptionDetail", []))
+            for _, fuel in all_fuels
+        ):
             raise ValueError(
-                "Electricity consumption is required for calibration. "
-                "Please provide electricity consumption data in the HPXML file."
+                "All Consumption values must be greater than zero for at least one fuel type."
             )
 
-        # Check that the consumed fuel matches the equipment fuel type
+        # Check that no consumption is estimated (for now, fail if any are)
+        for _, fuel in all_fuels:
+            for detail in getattr(fuel, "ConsumptionDetail", []):
+                reading_type = getattr(detail, "ReadingType", None)
+                if reading_type and str(reading_type).lower() == "estimate":
+                    raise ValueError(
+                        f"Estimated consumption value for {fuel.ConsumptionType.Energy.FuelType} cannot be greater than zero for bill-period: {detail.StartDateTime}"
+                    )
+
+        # Check that each fuel type covers enough days and dates are valid
+        min_days = self.ga_config["utility_bill_criteria"]["min_days_of_consumption_data"]
+        recent_bill_max_age_days = self.ga_config["utility_bill_criteria"][
+            "max_days_since_newest_bill"
+        ]
+
+        def _parse_dt(val):
+            return dt.strptime(str(val), "%Y-%m-%dT%H:%M:%S")
+
+        def _fuel_period_ok(fuel):
+            details = getattr(fuel, "ConsumptionDetail", [])
+            if details is None or len(details) == 0:
+                return False
+
+            first_start = _parse_dt(details[0].StartDateTime)
+            last_end = _parse_dt(details[-1].EndDateTime)
+
+            # Total covered span must meet min_days
+            if (last_end - first_start).days < min_days:
+                return False
+
+            # Most recent bill must be within allowed age
+            if (now - last_end).days > recent_bill_max_age_days:
+                return False
+
+            # No future dates
+            for bill_info in details:
+                if (
+                    _parse_dt(bill_info.StartDateTime) > now
+                    or _parse_dt(bill_info.EndDateTime) > now
+                ):
+                    return False
+            return True
+
+        # Build mapping of fuel type -> list of fuel entries
+        fuels_by_type: dict[str, list] = {}
+        for _, fuel in all_fuels:
+            if hasattr(fuel.ConsumptionType, "Energy"):
+                ftype = getattr(fuel.ConsumptionType.Energy, "FuelType", None)
+                if ftype is not None:
+                    fuels_by_type.setdefault(ftype, []).append(fuel)
+
+        for fuel_type, consumption_info in fuels_by_type.items():
+            # Require at least one consumption section for this fuel type to satisfy criteria
+            if not any(_fuel_period_ok(fuel) for fuel in consumption_info):
+                raise ValueError(
+                    f"Consumption dates for {fuel_type} must cover at least {min_days} days and the most recent bill must end within the past {recent_bill_max_age_days} days."
+                )
+
+        # Check that electricity bill periods are within configured min/max days
+        longest_bill_period = self.ga_config["utility_bill_criteria"]["max_electrical_bill_days"]
+        shortest_bill_period = self.ga_config["utility_bill_criteria"]["min_electrical_bill_days"]
+        for _, fuel in all_fuels:
+            if getattr(fuel.ConsumptionType.Energy, "FuelType", None) == FuelType.ELECTRICITY.value:
+                for detail in getattr(fuel, "ConsumptionDetail", []):
+                    start_date = dt.strptime(str(detail.StartDateTime), "%Y-%m-%dT%H:%M:%S")
+                    end_date = dt.strptime(str(detail.EndDateTime), "%Y-%m-%dT%H:%M:%S")
+                    period_days = (end_date - start_date).days
+                    if period_days > longest_bill_period:
+                        raise ValueError(
+                            f"Electricity consumption bill period {start_date} - {end_date} cannot be longer than {longest_bill_period} days."
+                        )
+                    if period_days < shortest_bill_period:
+                        raise ValueError(
+                            f"Electricity consumption bill period {start_date} - {end_date} cannot be shorter than {shortest_bill_period} days."
+                        )
+
+        # Check that consumed fuel matches equipment fuel type (at least one section must match)
+        def fuel_type_in_any(fuel_type):
+            return any(
+                getattr(fuel.ConsumptionType.Energy, "FuelType", None) == fuel_type
+                for _, fuel in all_fuels
+            )
+
         try:
             heating_fuel_type = (
                 building.BuildingDetails.Systems.HVAC.HVACPlant.HeatingSystem.HeatingSystemFuel
             )
+            if not fuel_type_in_any(heating_fuel_type):
+                raise ValueError(
+                    f"Heating equipment fuel type {heating_fuel_type} does not match any consumption fuel type."
+                )
         except AttributeError:
             raise ValueError(
                 "Heating system fuel type is missing in the HPXML file. "
@@ -525,6 +761,10 @@ class Calibrate:
             water_heating_fuel_type = (
                 building.BuildingDetails.Systems.WaterHeating.WaterHeatingSystem.FuelType
             )
+            if not fuel_type_in_any(water_heating_fuel_type):
+                raise ValueError(
+                    f"Water heating equipment fuel type {water_heating_fuel_type} does not match any consumption fuel type."
+                )
         except AttributeError:
             raise ValueError(
                 "Water heating system fuel type is missing in the HPXML file. "
@@ -532,70 +772,616 @@ class Calibrate:
             )
         try:
             clothes_dryer_fuel_type = building.BuildingDetails.Appliances.ClothesDryer.FuelType
-        except AttributeError:
-            raise ValueError(
-                "Clothes dryer fuel type is missing in the HPXML file. "
-                "Please provide the clothes dryer fuel type in the HPXML file."
-            )
-        if heating_fuel_type not in fuel_types:
-            raise ValueError(
-                f"Heating equipment fuel type {heating_fuel_type} does not match any consumption "
-                f"fuel type. Consumption fuel types: {fuel_types}."
-            )
-        if water_heating_fuel_type not in fuel_types:
-            raise ValueError(
-                f"Heating equipment fuel type {water_heating_fuel_type} does not match any consumption "
-                f"fuel type. Consumption fuel types: {fuel_types}."
-            )
-        if clothes_dryer_fuel_type not in fuel_types:
-            raise ValueError(
-                f"Heating equipment fuel type {clothes_dryer_fuel_type} does not match any consumption "
-                f"fuel type. Consumption fuel types: {fuel_types}."
-            )
-
-        # Check that electricity has at least 10 bill periods per year
-        for fuel in consumption.ConsumptionDetails.ConsumptionInfo:
-            if fuel.ConsumptionType.Energy.FuelType == FuelType.ELECTRICITY.value:
-                num_elec_bills = len(fuel.ConsumptionDetail)
-                if num_elec_bills < 10:
-                    raise ValueError(
-                        f"Electricity consumption must have at least 10 bill periods, found {num_elec_bills}."
-                    )
-
-        # Check that the consumption dates are within the past 5 years
-        for fuel in consumption.ConsumptionDetails.ConsumptionInfo:
-            # Check that there are at least 330 days of consumption data
-            if (
-                dt.strptime(str(fuel.ConsumptionDetail[-1].EndDateTime), "%Y-%m-%dT%H:%M:%S")
-                - dt.strptime(str(fuel.ConsumptionDetail[0].StartDateTime), "%Y-%m-%dT%H:%M:%S")
-            ).days < 330:
+            if not fuel_type_in_any(clothes_dryer_fuel_type):
                 raise ValueError(
-                    f"Consumption dates for {fuel.ConsumptionType.Energy.FuelType} must cover at least 330 days."
+                    f"Clothes dryer fuel type {clothes_dryer_fuel_type} does not match any consumption fuel type."
                 )
-            for idx, detail in enumerate(fuel.ConsumptionDetail):
-                # Check that StartDateTime and EndDateTime are present
-                start_date = dt.strptime(str(detail.StartDateTime), "%Y-%m-%dT%H:%M:%S")
-                end_date = dt.strptime(str(detail.EndDateTime), "%Y-%m-%dT%H:%M:%S")
+        except AttributeError:
+            if hasattr(building.BuildingDetails.Appliances, "ClothesDryer"):
+                raise ValueError(
+                    "Clothes dryer fuel type is missing in the HPXML file. "
+                    "Please provide the clothes dryer fuel type in the HPXML"
+                )
 
-                # Check that dates are within the past 5 years
-                if start_date > now or end_date > now:
-                    raise ValueError(
-                        f"Consumption dates {start_date} - {end_date} cannot be in the future."
-                    )
-                if (now - start_date).days > 5 * 365 or (now - end_date).days > 5 * 365:
-                    raise ValueError(
-                        f"Consumption dates {start_date} - {end_date} must be within the past 5 years."
-                    )
+    def run_ga_search(
+        self,
+        population_size=None,
+        generations=None,
+        cxpb=None,
+        mutpb=None,
+        num_proc=None,
+        output_filepath=None,
+    ):
+        print(f"Running GA search algorithm for '{Path(self.hpxml_filepath).name}'...")
 
-                # Check that electricity bill periods are between 20 & 45 days
-                longest_bill_period = 45  # days
-                shortest_bill_period = 20  # days
-                if fuel.ConsumptionType.Energy.FuelType == FuelType.ELECTRICITY.value:
-                    if (end_date - start_date).days > longest_bill_period:
-                        raise ValueError(
-                            f"Electricity consumption bill period {start_date} - {end_date} cannot be longer than {longest_bill_period} days."
+        all_temp_dirs = set()
+        best_dirs_by_gen = []
+        cfg = self.ga_config
+        population_size = cfg["genetic_algorithm"]["population_size"]
+        generations = cfg["genetic_algorithm"]["generations"]
+        bias_error_threshold = cfg["genetic_algorithm"]["bias_error_threshold"]
+        abs_error_elec_threshold = cfg["genetic_algorithm"]["abs_error_elec_threshold"]
+        abs_error_fuel_threshold = cfg["genetic_algorithm"]["abs_error_fuel_threshold"]
+        cxpb = cfg["genetic_algorithm"]["crossover_probability"]
+        mutpb = cfg["genetic_algorithm"]["mutation_probability"]
+        misc_load_multiplier_choices = cfg["value_choices"]["misc_load_multiplier_choices"]
+        air_leakage_multiplier_choices = cfg["value_choices"]["air_leakage_multiplier_choices"]
+        hvac_eff_multiplier_choices = cfg["value_choices"]["hvac_eff_multiplier_choices"]
+        roof_r_value_multiplier_choices = cfg["value_choices"]["roof_r_value_multiplier_choices"]
+        ceiling_r_value_multiplier_choices = cfg["value_choices"][
+            "ceiling_r_value_multiplier_choices"
+        ]
+        above_ground_walls_r_value_multiplier_choices = cfg["value_choices"][
+            "above_ground_walls_r_value_multiplier_choices"
+        ]
+        below_ground_walls_r_value_multiplier_choices = cfg["value_choices"][
+            "below_ground_walls_r_value_multiplier_choices"
+        ]
+        slab_r_value_multiplier_choices = cfg["value_choices"]["slab_r_value_multiplier_choices"]
+        floor_r_value_multiplier_choices = cfg["value_choices"]["floor_r_value_multiplier_choices"]
+        heating_setpoint_choices = cfg["value_choices"]["heating_setpoint_choices"]
+        cooling_setpoint_choices = cfg["value_choices"]["cooling_setpoint_choices"]
+        water_heater_efficiency_multiplier_choices = cfg["value_choices"][
+            "water_heater_efficiency_multiplier_choices"
+        ]
+        water_fixtures_usage_multiplier_choices = cfg["value_choices"][
+            "water_fixtures_usage_multiplier_choices"
+        ]
+        window_u_factor_multiplier_choices = cfg["value_choices"][
+            "window_u_factor_multiplier_choices"
+        ]
+        window_shgc_multiplier_choices = cfg["value_choices"]["window_shgc_multiplier_choices"]
+        appliance_usage_multiplier_choices = cfg["value_choices"][
+            "appliance_usage_multiplier_choices"
+        ]
+        lighting_load_multiplier_choices = cfg["value_choices"]["lighting_load_multiplier_choices"]
+
+        def evaluate(individual):
+            try:
+                (
+                    misc_load_multiplier,
+                    heating_setpoint_offset,
+                    cooling_setpoint_offset,
+                    air_leakage_multiplier,
+                    heating_efficiency_multiplier,
+                    cooling_efficiency_multiplier,
+                    roof_r_value_multiplier,
+                    ceiling_r_value_multiplier,
+                    above_ground_walls_r_value_multiplier,
+                    below_ground_walls_r_value_multiplier,
+                    slab_r_value_multiplier,
+                    floor_r_value_multiplier,
+                    water_heater_efficiency_multiplier,
+                    water_fixtures_usage_multiplier,
+                    window_u_factor_multiplier,
+                    window_shgc_multiplier,
+                    appliance_usage_multiplier,
+                    lighting_load_multiplier,
+                ) = individual
+                temp_output_dir = Path(
+                    tempfile.mkdtemp(prefix=f"calib_test_{uuid.uuid4().hex[:6]}_")
+                )
+                mod_hpxml_path = temp_output_dir / "modified.xml"
+                arguments = {
+                    "xml_file_path": str(self.hpxml_filepath),
+                    "save_file_path": str(mod_hpxml_path),
+                    "heating_setpoint_offset": heating_setpoint_offset,
+                    "cooling_setpoint_offset": cooling_setpoint_offset,
+                    "misc_load_multiplier": misc_load_multiplier,
+                    "air_leakage_multiplier": air_leakage_multiplier,
+                    "heating_efficiency_multiplier": heating_efficiency_multiplier,
+                    "cooling_efficiency_multiplier": cooling_efficiency_multiplier,
+                    "roof_r_value_multiplier": roof_r_value_multiplier,
+                    "ceiling_r_value_multiplier": ceiling_r_value_multiplier,
+                    "above_ground_walls_r_value_multiplier": above_ground_walls_r_value_multiplier,
+                    "below_ground_walls_r_value_multiplier": below_ground_walls_r_value_multiplier,
+                    "slab_r_value_multiplier": slab_r_value_multiplier,
+                    "floor_r_value_multiplier": floor_r_value_multiplier,
+                    "water_heater_efficiency_multiplier": water_heater_efficiency_multiplier,
+                    "water_fixtures_usage_multiplier": water_fixtures_usage_multiplier,
+                    "window_u_factor_multiplier": window_u_factor_multiplier,
+                    "window_shgc_multiplier": window_shgc_multiplier,
+                    "appliance_usage_multiplier": appliance_usage_multiplier,
+                    "lighting_load_multiplier": lighting_load_multiplier,
+                }
+
+                temp_osw = Path(temp_output_dir / "modify_hpxml.osw")
+                create_measure_input_file(arguments, temp_osw)
+
+                app(["modify-xml", str(temp_osw)])
+                app(
+                    [
+                        "run-sim",
+                        str(mod_hpxml_path),
+                        "--output-dir",
+                        str(temp_output_dir),
+                        "--output-format",
+                        "json",
+                    ]
+                )
+
+                output_file = temp_output_dir / "run" / "results_annual.json"
+                simulation_results = self.get_model_results(json_results_path=output_file)
+                consumptions = self.hpxml.get_consumptions()
+                comparison = {}
+                delivered_fuels = (
+                    FuelType.FUEL_OIL.value,
+                    FuelType.PROPANE.value,
+                    FuelType.WOOD.value,
+                    FuelType.WOOD_PELLETS.value,
+                )
+                for consumption in consumptions:
+                    for fuel_info in consumption.ConsumptionDetails.ConsumptionInfo:
+                        fuel = fuel_info.ConsumptionType.Energy.FuelType
+                        if fuel in delivered_fuels:
+                            simplified_calibration_results = self.simplified_annual_usage(
+                                simulation_results, fuel_info, fuel
+                            )
+                            # Merge results, prefer later sections if duplicate fuel keys
+                            comparison[fuel] = simplified_calibration_results.get(fuel, {})
+                        else:
+                            normalized_consumption = self.get_normalized_consumption_per_bill()
+                            # Merge results, prefer later sections if duplicate fuel keys
+                            comparison.update(
+                                self.compare_results(normalized_consumption, simulation_results)
+                            )
+                for model_fuel_type, result in comparison.items():
+                    bias_error_criteria = self.ga_config["genetic_algorithm"][
+                        "bias_error_threshold"
+                    ]
+                    if model_fuel_type == "electricity":
+                        absolute_error_criteria = self.ga_config["genetic_algorithm"][
+                            "abs_error_elec_threshold"
+                        ]
+                    else:
+                        absolute_error_criteria = self.ga_config["genetic_algorithm"][
+                            "abs_error_fuel_threshold"
+                        ]
+                    for load_type in result["Bias Error"]:
+                        if abs(result["Bias Error"][load_type]) > bias_error_criteria:
+                            logger.info(
+                                f"Bias error for {model_fuel_type} {load_type} is {result['Bias Error'][load_type]} but the limit is +/- {bias_error_criteria}"
+                            )
+                        if abs(result["Absolute Error"][load_type]) > absolute_error_criteria:
+                            logger.info(
+                                f"Absolute error for {model_fuel_type} {load_type} is {result['Absolute Error'][load_type]} but the limit is +/- {absolute_error_criteria}"
+                            )
+
+                combined_error_penalties = []
+                for fuel_type, metrics in comparison.items():
+                    for end_use, bias_error in metrics["Bias Error"].items():
+                        if math.isnan(bias_error) or math.isnan(metrics["Absolute Error"][end_use]):
+                            continue  # Skip NaN values
+
+                        bias_err = abs(bias_error)
+                        abs_err = abs(metrics["Absolute Error"][end_use])
+
+                        log_bias_err = math.log1p(bias_err)  # log1p to avoid log(0)
+                        log_abs_err = math.log1p(abs_err)
+
+                        bias_error_penalty = max(0, log_bias_err) ** 2
+                        abs_error_penalty = max(0, log_abs_err) ** 2
+                        combined_error_penalty = bias_error_penalty + abs_error_penalty
+
+                        combined_error_penalties.append(combined_error_penalty)
+
+                total_score = sum(combined_error_penalties)
+
+                return (
+                    (total_score,),
+                    comparison,
+                    temp_output_dir,
+                    simulation_results,
+                )
+
+            except Exception as e:
+                logger.error(f"Error evaluating individual {individual}: {e}")
+                return (float("inf"),), {}, None
+
+        def abs_error_within_threshold(
+            fuel_type: str, abs_error: float, elec_threshold: float, fuel_threshold: float
+        ) -> bool:
+            if fuel_type == "electricity":
+                return abs(abs_error) <= elec_threshold
+            else:
+                return abs(abs_error) <= fuel_threshold
+
+        def create_measure_input_file(arguments: dict, output_file_path: str):
+            data = {
+                "run_directory": str(Path(arguments["save_file_path"]).parent),
+                "measure_paths": [str(Path(__file__).resolve().parent.parent / "measures")],
+                "steps": [{"measure_dir_name": "ModifyXML", "arguments": arguments}],
+            }
+            Path(output_file_path).parent.mkdir(parents=True, exist_ok=True)
+            with open(output_file_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2)
+
+        def diversity(pop):
+            return len({tuple(ind) for ind in pop}) / len(pop)
+
+        toolbox = base.Toolbox()
+        toolbox.register("attr_misc_load_multiplier", random.choice, misc_load_multiplier_choices)
+        toolbox.register("attr_heating_setpoint_offset", random.choice, heating_setpoint_choices)
+        toolbox.register("attr_cooling_setpoint_offset", random.choice, cooling_setpoint_choices)
+        toolbox.register(
+            "attr_air_leakage_multiplier", random.choice, air_leakage_multiplier_choices
+        )
+        toolbox.register(
+            "attr_heating_efficiency_multiplier", random.choice, hvac_eff_multiplier_choices
+        )
+        toolbox.register(
+            "attr_cooling_efficiency_multiplier", random.choice, hvac_eff_multiplier_choices
+        )
+        toolbox.register(
+            "attr_roof_r_value_multiplier", random.choice, roof_r_value_multiplier_choices
+        )
+        toolbox.register(
+            "attr_ceiling_r_value_multiplier", random.choice, ceiling_r_value_multiplier_choices
+        )
+        toolbox.register(
+            "attr_above_ground_walls_r_value_multiplier",
+            random.choice,
+            above_ground_walls_r_value_multiplier_choices,
+        )
+        toolbox.register(
+            "attr_below_ground_walls_r_value_multiplier",
+            random.choice,
+            below_ground_walls_r_value_multiplier_choices,
+        )
+        toolbox.register(
+            "attr_slab_r_value_multiplier", random.choice, slab_r_value_multiplier_choices
+        )
+        toolbox.register(
+            "attr_floor_r_value_multiplier", random.choice, floor_r_value_multiplier_choices
+        )
+        toolbox.register(
+            "attr_water_heater_efficiency_multiplier",
+            random.choice,
+            water_heater_efficiency_multiplier_choices,
+        )
+        toolbox.register(
+            "attr_water_fixtures_usage_multiplier",
+            random.choice,
+            water_fixtures_usage_multiplier_choices,
+        )
+        toolbox.register(
+            "attr_window_u_factor_multiplier", random.choice, window_u_factor_multiplier_choices
+        )
+        toolbox.register(
+            "attr_window_shgc_multiplier", random.choice, window_shgc_multiplier_choices
+        )
+        toolbox.register(
+            "attr_appliance_usage_multiplier", random.choice, appliance_usage_multiplier_choices
+        )
+        toolbox.register(
+            "attr_lighting_load_multiplier", random.choice, lighting_load_multiplier_choices
+        )
+        toolbox.register(
+            "individual",
+            tools.initRepeat,
+            creator.Individual,
+            (
+                toolbox.attr_misc_load_multiplier,
+                toolbox.attr_heating_setpoint_offset,
+                toolbox.attr_cooling_setpoint_offset,
+                toolbox.attr_air_leakage_multiplier,
+                toolbox.attr_heating_efficiency_multiplier,
+                toolbox.attr_cooling_efficiency_multiplier,
+                toolbox.attr_roof_r_value_multiplier,
+                toolbox.attr_ceiling_r_value_multiplier,
+                toolbox.attr_above_ground_walls_r_value_multiplier,
+                toolbox.attr_below_ground_walls_r_value_multiplier,
+                toolbox.attr_slab_r_value_multiplier,
+                toolbox.attr_floor_r_value_multiplier,
+                toolbox.attr_water_heater_efficiency_multiplier,
+                toolbox.attr_water_fixtures_usage_multiplier,
+                toolbox.attr_window_u_factor_multiplier,
+                toolbox.attr_window_shgc_multiplier,
+                toolbox.attr_appliance_usage_multiplier,
+                toolbox.attr_lighting_load_multiplier,
+            ),
+            n=18,
+        )
+
+        def generate_random_individual():
+            return creator.Individual(
+                [
+                    random.choice(misc_load_multiplier_choices),
+                    random.choice(heating_setpoint_choices),
+                    random.choice(cooling_setpoint_choices),
+                    random.choice(air_leakage_multiplier_choices),
+                    random.choice(hvac_eff_multiplier_choices),
+                    random.choice(hvac_eff_multiplier_choices),
+                    random.choice(roof_r_value_multiplier_choices),
+                    random.choice(ceiling_r_value_multiplier_choices),
+                    random.choice(above_ground_walls_r_value_multiplier_choices),
+                    random.choice(below_ground_walls_r_value_multiplier_choices),
+                    random.choice(slab_r_value_multiplier_choices),
+                    random.choice(floor_r_value_multiplier_choices),
+                    random.choice(water_heater_efficiency_multiplier_choices),
+                    random.choice(water_fixtures_usage_multiplier_choices),
+                    random.choice(window_u_factor_multiplier_choices),
+                    random.choice(window_shgc_multiplier_choices),
+                    random.choice(appliance_usage_multiplier_choices),
+                    random.choice(lighting_load_multiplier_choices),
+                ]
+            )
+
+        toolbox.register("individual", generate_random_individual)
+        toolbox.register("population", tools.initRepeat, list, toolbox.individual)
+        toolbox.register("evaluate", evaluate)
+        toolbox.register("mate", tools.cxUniform, indpb=cxpb)
+
+        # Define parameter-to-choices mapping for mutation
+        param_choices_map = {
+            "misc_load_multiplier": misc_load_multiplier_choices,
+            "heating_setpoint_offset": heating_setpoint_choices,
+            "cooling_setpoint_offset": cooling_setpoint_choices,
+            "air_leakage_multiplier": air_leakage_multiplier_choices,
+            "heating_hvac_eff_multiplier": hvac_eff_multiplier_choices,
+            "cooling_hvac_eff_multiplier": hvac_eff_multiplier_choices,
+            "roof_r_value_multiplier": roof_r_value_multiplier_choices,
+            "ceiling_r_value_multiplier": ceiling_r_value_multiplier_choices,
+            "above_ground_walls_r_value_multiplier": above_ground_walls_r_value_multiplier_choices,
+            "below_ground_walls_r_value_multiplier": below_ground_walls_r_value_multiplier_choices,
+            "slab_r_value_multiplier": slab_r_value_multiplier_choices,
+            "floor_r_value_multiplier": floor_r_value_multiplier_choices,
+            "water_heater_efficiency_multiplier": water_heater_efficiency_multiplier_choices,
+            "water_fixtures_usage_multiplier": water_fixtures_usage_multiplier_choices,
+            "window_u_factor_multiplier": window_u_factor_multiplier_choices,
+            "window_shgc_multiplier": window_shgc_multiplier_choices,
+            "appliance_usage_multiplier": appliance_usage_multiplier_choices,
+            "lighting_load_multiplier": lighting_load_multiplier_choices,
+        }
+
+        worst_end_uses_by_gen = []
+
+        end_use_param_map = {
+            "electricity_heating": [
+                "heating_setpoint_offset",
+                "air_leakage_multiplier",
+                "heating_hvac_eff_multiplier",
+                "roof_r_value_multiplier",
+                "ceiling_r_value_multiplier",
+                "above_ground_walls_r_value_multiplier",
+                "slab_r_value_multiplier",
+                "window_u_factor_multiplier",
+                "window_shgc_multiplier",
+            ],
+            "electricity_cooling": [
+                "cooling_setpoint_offset",
+                "air_leakage_multiplier",
+                "cooling_hvac_eff_multiplier",
+                "roof_r_value_multiplier",
+                "ceiling_r_value_multiplier",
+                "above_ground_walls_r_value_multiplier",
+                "slab_r_value_multiplier",
+                "window_u_factor_multiplier",
+                "window_shgc_multiplier",
+            ],
+            "electricity_baseload": [
+                "misc_load_multiplier",
+                "appliance_usage_multiplier",
+                "lighting_load_multiplier",
+            ],
+            "natural_gas_heating": [
+                "heating_setpoint_offset",
+                "air_leakage_multiplier",
+                "heating_hvac_eff_multiplier",
+                "roof_r_value_multiplier",
+                "ceiling_r_value_multiplier",
+                "above_ground_walls_r_value_multiplier",
+                "slab_r_value_multiplier",
+                "window_u_factor_multiplier",
+                "window_shgc_multiplier",
+            ],
+            "natural_gas_baseload": [
+                "water_heater_efficiency_multiplier",
+                "water_fixtures_usage_multiplier",
+            ],
+        }
+
+        param_names = list(param_choices_map.keys())
+        name_to_index = {name: idx for idx, name in enumerate(param_names)}
+        index_to_name = {idx: name for name, idx in name_to_index.items()}
+
+        def get_worst_abs_err_end_use(comparison):
+            max_abs_err = -float("inf")
+            worst_end_use_key = None
+            for fuel_type, metrics in comparison.items():
+                for end_use, abs_err in metrics["Absolute Error"].items():
+                    key = f"{fuel_type}_{end_use}"
+                    if abs(abs_err) > max_abs_err:
+                        max_abs_err = abs(abs_err)
+                        worst_end_use_key = key
+            return worst_end_use_key
+
+        def adaptive_mutation(individual):
+            mutation_indices = set()
+
+            if worst_end_uses_by_gen:
+                worst_end_use = worst_end_uses_by_gen[-1]
+                impacted_param_names = end_use_param_map.get(worst_end_use, [])
+                if impacted_param_names:
+                    impacted_indices = [
+                        name_to_index[n] for n in impacted_param_names if n in name_to_index
+                    ]
+                    if impacted_indices:
+                        mutation_indices.update(
+                            random.sample(impacted_indices, min(len(impacted_indices), 2))
                         )
-                    if (end_date - start_date).days < shortest_bill_period:
-                        raise ValueError(
-                            f"Electricity consumption bill period {start_date} - {end_date} cannot be shorter than {shortest_bill_period} days."
-                        )
+
+            while len(mutation_indices) < random.randint(3, 6):
+                mutation_indices.add(random.randint(0, len(individual) - 1))
+
+            for i in mutation_indices:
+                current_val = individual[i]
+                param_name = index_to_name[i]
+                choices = [val for val in param_choices_map[param_name] if val != current_val]
+                if choices:
+                    individual[i] = random.choice(choices)
+            return (individual,)
+
+        toolbox.register("mutate", adaptive_mutation)
+        toolbox.register("select", tools.selTournament, tournsize=2)
+
+        terminated_early = False
+
+        if num_proc is None:
+            num_proc = multiprocessing.cpu_count() - 1
+
+        with Pool(processes=num_proc, maxtasksperchild=15) as pool:
+            toolbox.register("map", pool.map)
+            pop = toolbox.population(n=population_size)
+            hall_of_fame = tools.HallOfFame(1)
+            stats = tools.Statistics(lambda ind: ind.fitness.values[0])  # noqa: PD011
+            stats.register("min", min)
+            stats.register("avg", lambda x: sum(x) / len(x))
+
+            logbook = tools.Logbook()
+            logbook.header = ["gen", "nevals", "min", "avg", "diversity"]
+
+            best_bias_series = {}
+            best_abs_series = {}
+
+            # Initial evaluation
+            invalid_ind = [ind for ind in pop if not ind.fitness.valid]
+            fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
+            for ind, (fit, comp, temp_dir, sim_results) in zip(invalid_ind, fitnesses):
+                ind.fitness.values = fit
+                ind.comparison = comp
+                ind.temp_output_dir = temp_dir
+                ind.sim_results = sim_results
+                if temp_dir is not None:
+                    all_temp_dirs.add(temp_dir)
+
+            hall_of_fame.update(pop)
+            best_ind = tools.selBest(pop, 1)[0]
+            best_dirs_by_gen.append(getattr(best_ind, "temp_output_dir", None))
+
+            # Save best individual bias/abs errors
+            best_comp = best_ind.comparison
+            for end_use, metrics in best_comp.items():
+                for fuel_type, bias_error in metrics["Bias Error"].items():
+                    key = f"{end_use}_{fuel_type}"
+                    best_bias_series.setdefault(key, []).append(bias_error)
+                for fuel_type, abs_error in metrics["Absolute Error"].items():
+                    key = f"{end_use}_{fuel_type}"
+                    best_abs_series.setdefault(key, []).append(abs_error)
+
+            # Log generation 0
+            record = stats.compile(pop)
+            record.update({f"bias_error_{k}": v[-1] for k, v in best_bias_series.items()})
+            record.update({f"abs_error_{k}": v[-1] for k, v in best_abs_series.items()})
+            record["best_individual"] = json.dumps(dict(zip(param_choices_map.keys(), best_ind)))
+            record["best_individual_sim_results"] = json.dumps(best_ind.sim_results)
+            record["diversity"] = diversity(pop)
+            logbook.record(gen=0, nevals=len(invalid_ind), **record)
+            print(logbook.stream)
+
+            for gen in range(1, generations + 1):
+                # Elitism: Copy the best individuals
+                elite = [copy.deepcopy(ind) for ind in tools.selBest(pop, k=1)]
+
+                # Generate offspring
+                offspring = algorithms.varAnd(pop, toolbox, cxpb=cxpb, mutpb=mutpb)
+
+                # Evaluate offspring
+                invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+                fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
+                for ind, (fit, comp, temp_dir, sim_results) in zip(invalid_ind, fitnesses):
+                    ind.fitness.values = fit
+                    ind.comparison = comp
+                    ind.temp_output_dir = temp_dir
+                    ind.sim_results = sim_results
+                    all_temp_dirs.add(temp_dir)
+
+                # Select next generation (excluding elites), then add elites
+                if invalid_ind:
+                    worst_key = get_worst_abs_err_end_use(invalid_ind[0].comparison)
+                    worst_end_uses_by_gen.append(worst_key)
+
+                pop = toolbox.select(offspring, population_size - len(elite))
+                pop.extend(elite)
+
+                # Update Hall of Fame and stats
+                hall_of_fame.update(pop)
+                best_ind = tools.selBest(pop, 1)[0]
+                best_dirs_by_gen.append(getattr(best_ind, "temp_output_dir", None))
+
+                # Save hall of fame bias/abs errors
+                best_comp = best_ind.comparison
+                for end_use, metrics in best_comp.items():
+                    for fuel_type, bias_error in metrics["Bias Error"].items():
+                        key = f"{end_use}_{fuel_type}"
+                        best_bias_series.setdefault(key, []).append(bias_error)
+                    for fuel_type, abs_error in metrics["Absolute Error"].items():
+                        key = f"{end_use}_{fuel_type}"
+                        best_abs_series.setdefault(key, []).append(abs_error)
+
+                record = stats.compile(pop)
+                record.update(
+                    {f"bias_error_{k}": best_bias_series[k][-1] for k in best_bias_series}
+                )
+                record.update({f"abs_error_{k}": best_abs_series[k][-1] for k in best_abs_series})
+                record["best_individual"] = json.dumps(
+                    dict(zip(param_choices_map.keys(), best_ind))
+                )
+                record["best_individual_sim_results"] = json.dumps(best_ind.sim_results)
+                record["diversity"] = diversity(pop)
+                logbook.record(gen=gen, nevals=len(invalid_ind), **record)
+                print(logbook.stream)
+
+                # Early termination conditions
+                def meets_termination_criteria(comparison):
+                    all_bias_err_limit_met = True
+                    all_abs_err_limit_met = True
+                    for fuel_type, metrics in comparison.items():
+                        for end_use in metrics["Bias Error"]:
+                            bias_err = metrics["Bias Error"][end_use]
+                            abs_err = metrics["Absolute Error"][end_use]
+
+                            # Check bias error
+                            if abs(bias_err) > bias_error_threshold:
+                                all_bias_err_limit_met = False
+
+                            # Check absolute error
+                            if not abs_error_within_threshold(
+                                fuel_type,
+                                abs_err,
+                                abs_error_elec_threshold,
+                                abs_error_fuel_threshold,
+                            ):
+                                all_abs_err_limit_met = False
+
+                    return all_bias_err_limit_met or all_abs_err_limit_met
+
+                if meets_termination_criteria(best_comp):
+                    print(f"Early stopping: termination criteria met at generation {gen}")
+                    terminated_early = True
+                    break
+
+        best_individual = hall_of_fame[0]
+        best_individual_dict = dict(zip(param_choices_map.keys(), best_individual))
+
+        best_individual_hpxml = best_individual.temp_output_dir / "modified.xml"
+        if best_individual_hpxml.exists():
+            shutil.copy(best_individual_hpxml, output_filepath / "best_individual.xml")
+
+        # Cleanup
+        time.sleep(0.5)
+        for temp_dir in all_temp_dirs:
+            if temp_dir and Path(temp_dir).exists():
+                shutil.rmtree(temp_dir, ignore_errors=True)
+
+        if terminated_early:
+            print(
+                "GA search has completed early: A solution satisfying error thresholds was found."
+            )
+        else:
+            print(
+                "GA search has completed. However, no solution was found that satisfies the bias error "
+                "and absolute error thresholds before reaching the maximum number of generations."
+            )
+
+        return best_individual_dict, pop, logbook, best_bias_series, best_abs_series

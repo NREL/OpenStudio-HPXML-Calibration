@@ -250,7 +250,7 @@ class FiveParameter(UtilityBillRegressionModel):
             bounds=bounds,
             # constraints=constraints,
             options={
-                "verbose": 1,
+                "verbose": 0,
                 "maxiter": 20000,
             },
         )
@@ -285,18 +285,18 @@ class Bpi2400ModelFitError(Exception):
     pass
 
 
-def fit_model(bills_temps: pd.DataFrame, bpi2400=True) -> UtilityBillRegressionModel:
+def fit_model(bills_temps: pd.DataFrame, cvrmse_requirement: float) -> UtilityBillRegressionModel:
     """Fit a regression model to the utility bills
 
-    The ``bills_data`` dataframe should be in the format returned by the
+    The ``bills_temps`` dataframe should be in the format returned by the
     ``utility_data.join_bills_weather`` function. At a minimum this should
     include the columns "daily_consumption" and "avg_temp" in degF. The index is
     ignored.
 
     :param bills_temps: dataframe of utility bills and temperatures.
     :type bills_temps: pd.DataFrame
-    :param bpi2400: Use BPI-2400 criteria for model selection, defaults to True
-    :type bpi2400: bool, optional
+    :param cvrmse_requirement: CVRMSE requirement for model selection.
+    :type cvrmse_requirement: float
     :raises Bpi2400ModelFitError: Error thrown if model doesn't meet BPI-2400
         criteria
     :return: An instance of a model class, fit to your data.
@@ -319,6 +319,8 @@ def fit_model(bills_temps: pd.DataFrame, bpi2400=True) -> UtilityBillRegressionM
             else:
                 raise
     best_model = min(models, key=lambda x: x.calc_cvrmse(bills_temps))
-    if bpi2400 and (cvrmse := best_model.calc_cvrmse(bills_temps)) > 0.2:
-        raise Bpi2400ModelFitError(f"CVRMSE = {cvrmse:0.1%}, which is greater than 20%")
+    if (cvrmse := best_model.calc_cvrmse(bills_temps)) > cvrmse_requirement:
+        raise Bpi2400ModelFitError(
+            f"CVRMSE = {cvrmse:0.1%}, which is greater than {cvrmse_requirement:0.1%}"
+        )
     return best_model
