@@ -945,15 +945,15 @@ class Calibrate:
                                 self.compare_results(normalized_consumption, simulation_results)
                             )
                 for model_fuel_type, result in comparison.items():
-                    bias_error_criteria = self.ga_config["genetic_algorithm"][
+                    bias_error_criteria = self.ga_config["acceptance_criteria"][
                         "bias_error_threshold"
                     ]
                     if model_fuel_type == "electricity":
-                        absolute_error_criteria = self.ga_config["genetic_algorithm"][
+                        absolute_error_criteria = self.ga_config["acceptance_criteria"][
                             "abs_error_elec_threshold"
                         ]
                     else:
-                        absolute_error_criteria = self.ga_config["genetic_algorithm"][
+                        absolute_error_criteria = self.ga_config["acceptance_criteria"][
                             "abs_error_fuel_threshold"
                         ]
                     for load_type in result["Bias Error"]:
