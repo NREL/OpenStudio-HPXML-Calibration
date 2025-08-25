@@ -172,11 +172,11 @@ class HpxmlDoc:
             try:
                 heating_fuels.add(hvac_system.HeatingSystem.HeatingSystemFuel.text.strip())
                 cooling_fuels.add(hvac_system.CoolingSystem.CoolingSystemFuel.text.strip())
-                heating_fuels.add(hvac_system.HeatPump.HeatPumpFuel.text.strip())
                 heating_fuels.add(
-                    hvac_system.HeatPump.BackupSystemFuel.text.strip()
-                )  # TODO: Need to capture fuel used for integrated AC?
-
+                    hvac_system.CoolingSystem.IntegratedHeatingSystemFuel.text.strip()
+                )
+                heating_fuels.add(hvac_system.HeatPump.HeatPumpFuel.text.strip())
+                heating_fuels.add(hvac_system.HeatPump.BackupSystemFuel.text.strip())
                 cooling_fuels.add(hvac_system.HeatPump.HeatPumpFuel.text.strip())
             except AttributeError:
                 continue

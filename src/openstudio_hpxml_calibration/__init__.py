@@ -2,6 +2,7 @@ import contextlib
 import json
 import shutil
 import subprocess
+import sys
 import time
 import zipfile
 from importlib.metadata import version
@@ -17,6 +18,9 @@ from tqdm import tqdm
 from openstudio_hpxml_calibration.utils import OS_HPXML_PATH, calculate_sha256, get_cache_dir
 
 from .enums import Format, Granularity
+
+logger.remove()
+logger.add(sys.stderr, level="INFO")
 
 app = App(
     version=version("openstudio-hpxml-calibration"),
