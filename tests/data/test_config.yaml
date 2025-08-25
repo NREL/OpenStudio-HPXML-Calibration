@@ -10,3 +10,4 @@ weather_normalization:
 
 utility_bill_criteria:
   max_days_since_newest_bill: 10_000  # A big number, not something specific. Happens to be 27.4 years.
+  min_days_of_consumption_data: 300  # IHMH5.xml has 303 days of nat gas consumption
