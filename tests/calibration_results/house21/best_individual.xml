@@ -137,7 +137,7 @@
             <HousePressure>50.0</HousePressure>
             <BuildingAirLeakage>
               <UnitofMeasure>CFM</UnitofMeasure>
-              <AirLeakage>1273.0</AirLeakage>
+              <AirLeakage>2291.4</AirLeakage>
             </BuildingAirLeakage>
             <InfiltrationVolume dataSource='software'>25343.0</InfiltrationVolume>
             <InfiltrationHeight dataSource='software'>20.65</InfiltrationHeight>
@@ -264,7 +264,7 @@
             <Emittance dataSource='software'>0.9</Emittance>
             <Insulation>
               <SystemIdentifier id='insul38'/>
-              <AssemblyEffectiveRValue>13.9</AssemblyEffectiveRValue>
+              <AssemblyEffectiveRValue>11.6</AssemblyEffectiveRValue>
             </Insulation>
           </RimJoist>
           <RimJoist>
@@ -278,7 +278,7 @@
             <Emittance dataSource='software'>0.9</Emittance>
             <Insulation>
               <SystemIdentifier id='insul40'/>
-              <AssemblyEffectiveRValue>12.2</AssemblyEffectiveRValue>
+              <AssemblyEffectiveRValue>10.2</AssemblyEffectiveRValue>
             </Insulation>
           </RimJoist>
           <RimJoist>
@@ -288,7 +288,7 @@
             <Area>93.5</Area>
             <Insulation>
               <SystemIdentifier id='insul42'/>
-              <AssemblyEffectiveRValue>18.6</AssemblyEffectiveRValue>
+              <AssemblyEffectiveRValue>15.5</AssemblyEffectiveRValue>
             </Insulation>
           </RimJoist>
         </RimJoists>
@@ -311,7 +311,7 @@
             </InteriorFinish>
             <Insulation>
               <SystemIdentifier id='insul44'/>
-              <AssemblyEffectiveRValue>10.1</AssemblyEffectiveRValue>
+              <AssemblyEffectiveRValue>8.4</AssemblyEffectiveRValue>
             </Insulation>
           </Wall>
           <Wall>
@@ -332,7 +332,7 @@
             </InteriorFinish>
             <Insulation>
               <SystemIdentifier id='insul46'/>
-              <AssemblyEffectiveRValue>16.7</AssemblyEffectiveRValue>
+              <AssemblyEffectiveRValue>13.9</AssemblyEffectiveRValue>
             </Insulation>
           </Wall>
           <Wall>
@@ -351,7 +351,7 @@
             <RadiantBarrier dataSource='software'>false</RadiantBarrier>
             <Insulation>
               <SystemIdentifier id='insul48'/>
-              <AssemblyEffectiveRValue>11.7</AssemblyEffectiveRValue>
+              <AssemblyEffectiveRValue>9.7</AssemblyEffectiveRValue>
             </Insulation>
           </Wall>
           <Wall>
@@ -370,7 +370,7 @@
             <RadiantBarrier dataSource='software'>false</RadiantBarrier>
             <Insulation>
               <SystemIdentifier id='insul50'/>
-              <AssemblyEffectiveRValue>11.7</AssemblyEffectiveRValue>
+              <AssemblyEffectiveRValue>9.7</AssemblyEffectiveRValue>
             </Insulation>
           </Wall>
         </Walls>
@@ -483,7 +483,7 @@
             <RadiantBarrier dataSource='software'>false</RadiantBarrier>
             <Insulation>
               <SystemIdentifier id='insul5'/>
-              <AssemblyEffectiveRValue>32.4</AssemblyEffectiveRValue>
+              <AssemblyEffectiveRValue>26.5</AssemblyEffectiveRValue>
             </Insulation>
           </Floor>
           <Floor>
@@ -502,7 +502,7 @@
             <RadiantBarrier dataSource='software'>false</RadiantBarrier>
             <Insulation>
               <SystemIdentifier id='insul8'/>
-              <AssemblyEffectiveRValue>14.1</AssemblyEffectiveRValue>
+              <AssemblyEffectiveRValue>11.5</AssemblyEffectiveRValue>
             </Insulation>
           </Floor>
         </Floors>
@@ -553,8 +553,8 @@
             </FrameType>
             <GlassLayers>single-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
-            <UFactor dataSource='software'>0.8</UFactor>
-            <SHGC dataSource='software'>0.51</SHGC>
+            <UFactor dataSource='software'>0.71</UFactor>
+            <SHGC dataSource='software'>0.58</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window51ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -582,8 +582,8 @@
             </FrameType>
             <GlassLayers>single-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
-            <UFactor dataSource='software'>0.8</UFactor>
-            <SHGC dataSource='software'>0.51</SHGC>
+            <UFactor dataSource='software'>0.71</UFactor>
+            <SHGC dataSource='software'>0.58</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window52ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -612,8 +612,8 @@
             <GlassLayers>double-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
             <GasFill dataSource='software'>air</GasFill>
-            <UFactor dataSource='software'>0.46</UFactor>
-            <SHGC dataSource='software'>0.45</SHGC>
+            <UFactor dataSource='software'>0.41</UFactor>
+            <SHGC dataSource='software'>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window53ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -642,8 +642,8 @@
             <GlassLayers>double-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
             <GasFill dataSource='software'>air</GasFill>
-            <UFactor dataSource='software'>0.46</UFactor>
-            <SHGC dataSource='software'>0.45</SHGC>
+            <UFactor dataSource='software'>0.41</UFactor>
+            <SHGC dataSource='software'>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window54ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -672,8 +672,8 @@
             <GlassLayers>double-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
             <GasFill dataSource='software'>air</GasFill>
-            <UFactor dataSource='software'>0.46</UFactor>
-            <SHGC dataSource='software'>0.45</SHGC>
+            <UFactor dataSource='software'>0.41</UFactor>
+            <SHGC dataSource='software'>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window55ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -701,8 +701,8 @@
             </FrameType>
             <GlassLayers>single-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
-            <UFactor dataSource='software'>0.8</UFactor>
-            <SHGC dataSource='software'>0.51</SHGC>
+            <UFactor dataSource='software'>0.71</UFactor>
+            <SHGC dataSource='software'>0.58</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window56ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -730,8 +730,8 @@
             </FrameType>
             <GlassLayers>single-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
-            <UFactor dataSource='software'>0.8</UFactor>
-            <SHGC dataSource='software'>0.51</SHGC>
+            <UFactor dataSource='software'>0.71</UFactor>
+            <SHGC dataSource='software'>0.58</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window57ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -759,8 +759,8 @@
             </FrameType>
             <GlassLayers>single-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
-            <UFactor dataSource='software'>0.8</UFactor>
-            <SHGC dataSource='software'>0.51</SHGC>
+            <UFactor dataSource='software'>0.71</UFactor>
+            <SHGC dataSource='software'>0.58</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window58ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -789,8 +789,8 @@
             <GlassLayers>double-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
             <GasFill dataSource='software'>air</GasFill>
-            <UFactor dataSource='software'>0.46</UFactor>
-            <SHGC dataSource='software'>0.45</SHGC>
+            <UFactor dataSource='software'>0.41</UFactor>
+            <SHGC dataSource='software'>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window59ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -819,8 +819,8 @@
             <GlassLayers>double-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
             <GasFill dataSource='software'>air</GasFill>
-            <UFactor dataSource='software'>0.46</UFactor>
-            <SHGC dataSource='software'>0.45</SHGC>
+            <UFactor dataSource='software'>0.41</UFactor>
+            <SHGC dataSource='software'>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window60ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -849,8 +849,8 @@
             <GlassLayers>double-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
             <GasFill dataSource='software'>air</GasFill>
-            <UFactor dataSource='software'>0.46</UFactor>
-            <SHGC dataSource='software'>0.45</SHGC>
+            <UFactor dataSource='software'>0.41</UFactor>
+            <SHGC dataSource='software'>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window61ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -884,8 +884,8 @@
             <GlassLayers>double-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
             <GasFill dataSource='software'>air</GasFill>
-            <UFactor dataSource='software'>0.46</UFactor>
-            <SHGC dataSource='software'>0.45</SHGC>
+            <UFactor dataSource='software'>0.41</UFactor>
+            <SHGC dataSource='software'>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window62ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -919,8 +919,8 @@
             <GlassLayers>double-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
             <GasFill dataSource='software'>air</GasFill>
-            <UFactor dataSource='software'>0.46</UFactor>
-            <SHGC dataSource='software'>0.45</SHGC>
+            <UFactor dataSource='software'>0.41</UFactor>
+            <SHGC dataSource='software'>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window63ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -954,8 +954,8 @@
             <GlassLayers>double-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
             <GasFill dataSource='software'>air</GasFill>
-            <UFactor dataSource='software'>0.46</UFactor>
-            <SHGC dataSource='software'>0.45</SHGC>
+            <UFactor dataSource='software'>0.41</UFactor>
+            <SHGC dataSource='software'>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window64ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -984,8 +984,8 @@
             <GlassLayers>double-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
             <GasFill dataSource='software'>air</GasFill>
-            <UFactor dataSource='software'>0.46</UFactor>
-            <SHGC dataSource='software'>0.45</SHGC>
+            <UFactor dataSource='software'>0.41</UFactor>
+            <SHGC dataSource='software'>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window65ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -1019,8 +1019,8 @@
             <GlassLayers>double-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
             <GasFill dataSource='software'>air</GasFill>
-            <UFactor dataSource='software'>0.46</UFactor>
-            <SHGC dataSource='software'>0.45</SHGC>
+            <UFactor dataSource='software'>0.41</UFactor>
+            <SHGC dataSource='software'>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window66ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -1049,8 +1049,8 @@
             <GlassLayers>double-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
             <GasFill dataSource='software'>air</GasFill>
-            <UFactor dataSource='software'>0.46</UFactor>
-            <SHGC dataSource='software'>0.45</SHGC>
+            <UFactor dataSource='software'>0.41</UFactor>
+            <SHGC dataSource='software'>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window67ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -1078,8 +1078,8 @@
             </FrameType>
             <GlassLayers>single-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
-            <UFactor dataSource='software'>0.8</UFactor>
-            <SHGC dataSource='software'>0.51</SHGC>
+            <UFactor dataSource='software'>0.71</UFactor>
+            <SHGC dataSource='software'>0.58</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window68ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -1110,8 +1110,8 @@
             <GlassLayers>double-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
             <GasFill dataSource='software'>air</GasFill>
-            <UFactor dataSource='software'>0.54</UFactor>
-            <SHGC dataSource='software'>0.54</SHGC>
+            <UFactor dataSource='software'>0.48</UFactor>
+            <SHGC dataSource='software'>0.6</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window69ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -1145,8 +1145,8 @@
             <GlassLayers>double-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
             <GasFill dataSource='software'>air</GasFill>
-            <UFactor dataSource='software'>0.46</UFactor>
-            <SHGC dataSource='software'>0.45</SHGC>
+            <UFactor dataSource='software'>0.41</UFactor>
+            <SHGC dataSource='software'>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window70ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -1174,8 +1174,8 @@
             </FrameType>
             <GlassLayers>single-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
-            <UFactor dataSource='software'>0.8</UFactor>
-            <SHGC dataSource='software'>0.51</SHGC>
+            <UFactor dataSource='software'>0.71</UFactor>
+            <SHGC dataSource='software'>0.58</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window71ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -1203,8 +1203,8 @@
             </FrameType>
             <GlassLayers>single-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
-            <UFactor dataSource='software'>0.8</UFactor>
-            <SHGC dataSource='software'>0.51</SHGC>
+            <UFactor dataSource='software'>0.71</UFactor>
+            <SHGC dataSource='software'>0.58</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window72ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -1232,8 +1232,8 @@
             </FrameType>
             <GlassLayers>single-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
-            <UFactor dataSource='software'>0.8</UFactor>
-            <SHGC dataSource='software'>0.51</SHGC>
+            <UFactor dataSource='software'>0.71</UFactor>
+            <SHGC dataSource='software'>0.58</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window73ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -1266,8 +1266,8 @@
             </FrameType>
             <GlassLayers>single-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
-            <UFactor dataSource='software'>0.8</UFactor>
-            <SHGC dataSource='software'>0.51</SHGC>
+            <UFactor dataSource='software'>0.71</UFactor>
+            <SHGC dataSource='software'>0.58</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window74ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -1301,8 +1301,8 @@
             <GlassLayers>double-pane</GlassLayers>
             <GlassType dataSource='software'>clear</GlassType>
             <GasFill dataSource='software'>air</GasFill>
-            <UFactor dataSource='software'>0.46</UFactor>
-            <SHGC dataSource='software'>0.45</SHGC>
+            <UFactor dataSource='software'>0.41</UFactor>
+            <SHGC dataSource='software'>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='window75ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -1401,7 +1401,7 @@
               <HeatingCapacity>70000.0</HeatingCapacity>
               <AnnualHeatingEfficiency>
                 <Units>AFUE</Units>
-                <Value>1.0</Value>
+                <Value>0.74</Value>
               </AnnualHeatingEfficiency>
               <FractionHeatLoadServed>1.0</FractionHeatLoadServed>
               <extension>
@@ -1423,7 +1423,7 @@
               <FractionCoolLoadServed>1.0</FractionCoolLoadServed>
               <AnnualCoolingEfficiency>
                 <Units>SEER2</Units>
-                <Value dataSource='software'>9.5</Value>
+                <Value dataSource='software'>7.6</Value>
               </AnnualCoolingEfficiency>
               <AnnualCoolingEfficiency>
                 <Units>EER2</Units>
@@ -1613,7 +1613,7 @@
             <TankVolume>40.0</TankVolume>
             <FractionDHWLoadServed>1.0</FractionDHWLoadServed>
             <HeatingCapacity dataSource='software'>36000.0</HeatingCapacity>
-            <EnergyFactor>0.5</EnergyFactor>
+            <EnergyFactor>0.62</EnergyFactor>
             <WaterHeaterInsulation>
               <Jacket>
                 <JacketRValue>0.0</JacketRValue>
@@ -1646,7 +1646,7 @@
             <LowFlow>false</LowFlow>
           </WaterFixture>
           <extension>
-            <WaterFixturesUsageMultiplier dataSource='software'>0.9</WaterFixturesUsageMultiplier>
+            <WaterFixturesUsageMultiplier dataSource='software'>1.6</WaterFixturesUsageMultiplier>
             <WaterFixturesWeekdayScheduleFractions dataSource='software'>0.012, 0.006, 0.004, 0.005, 0.010, 0.034, 0.078, 0.086, 0.080, 0.067, 0.056, 0.047, 0.040, 0.035, 0.033, 0.031, 0.038, 0.051, 0.060, 0.060, 0.055, 0.048, 0.038, 0.026</WaterFixturesWeekdayScheduleFractions>
             <WaterFixturesWeekendScheduleFractions dataSource='software'>0.012, 0.006, 0.004, 0.005, 0.010, 0.034, 0.078, 0.086, 0.080, 0.067, 0.056, 0.047, 0.040, 0.035, 0.033, 0.031, 0.038, 0.051, 0.060, 0.060, 0.055, 0.048, 0.038, 0.026</WaterFixturesWeekendScheduleFractions>
             <WaterFixturesMonthlyScheduleMultipliers dataSource='software'>1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0</WaterFixturesMonthlyScheduleMultipliers>
@@ -1666,7 +1666,7 @@
           <LabelUsage dataSource='software'>6.0</LabelUsage>
           <Capacity dataSource='software'>3.0</Capacity>
           <extension>
-            <UsageMultiplier dataSource='software'>0.2</UsageMultiplier>
+            <UsageMultiplier dataSource='software'>1.8</UsageMultiplier>
             <WeekdayScheduleFractions dataSource='software'>0.009, 0.007, 0.004, 0.004, 0.007, 0.011, 0.022, 0.049, 0.073, 0.086, 0.084, 0.075, 0.067, 0.060, 0.049, 0.051, 0.050, 0.049, 0.049, 0.049, 0.049, 0.047, 0.032, 0.017</WeekdayScheduleFractions>
             <WeekendScheduleFractions dataSource='software'>0.009, 0.007, 0.004, 0.004, 0.007, 0.011, 0.022, 0.049, 0.073, 0.086, 0.084, 0.075, 0.067, 0.060, 0.049, 0.051, 0.050, 0.049, 0.049, 0.049, 0.049, 0.047, 0.032, 0.017</WeekendScheduleFractions>
             <MonthlyScheduleMultipliers dataSource='software'>1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0</MonthlyScheduleMultipliers>
@@ -1682,7 +1682,7 @@
           <Vented dataSource='software'>true</Vented>
           <VentedFlowRate dataSource='software'>100.0</VentedFlowRate>
           <extension>
-            <UsageMultiplier dataSource='software'>0.2</UsageMultiplier>
+            <UsageMultiplier dataSource='software'>1.8</UsageMultiplier>
             <WeekdayScheduleFractions dataSource='software'>0.010, 0.006, 0.004, 0.002, 0.004, 0.006, 0.016, 0.032, 0.048, 0.068, 0.078, 0.081, 0.074, 0.067, 0.058, 0.061, 0.055, 0.054, 0.051, 0.051, 0.052, 0.054, 0.044, 0.024</WeekdayScheduleFractions>
             <WeekendScheduleFractions dataSource='software'>0.010, 0.006, 0.004, 0.002, 0.004, 0.006, 0.016, 0.032, 0.048, 0.068, 0.078, 0.081, 0.074, 0.067, 0.058, 0.061, 0.055, 0.054, 0.051, 0.051, 0.052, 0.054, 0.044, 0.024</WeekendScheduleFractions>
             <MonthlyScheduleMultipliers dataSource='software'>1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0</MonthlyScheduleMultipliers>
@@ -1699,7 +1699,7 @@
           <LabelAnnualGasCost dataSource='software'>33.12</LabelAnnualGasCost>
           <LabelUsage dataSource='software'>4.0</LabelUsage>
           <extension>
-            <UsageMultiplier dataSource='software'>0.2</UsageMultiplier>
+            <UsageMultiplier dataSource='software'>1.8</UsageMultiplier>
             <WeekdayScheduleFractions dataSource='software'>0.015, 0.007, 0.005, 0.003, 0.003, 0.010, 0.020, 0.031, 0.058, 0.065, 0.056, 0.048, 0.042, 0.046, 0.036, 0.038, 0.038, 0.049, 0.087, 0.111, 0.090, 0.067, 0.044, 0.031</WeekdayScheduleFractions>
             <WeekendScheduleFractions dataSource='software'>0.015, 0.007, 0.005, 0.003, 0.003, 0.010, 0.020, 0.031, 0.058, 0.065, 0.056, 0.048, 0.042, 0.046, 0.036, 0.038, 0.038, 0.049, 0.087, 0.111, 0.090, 0.067, 0.044, 0.031</WeekendScheduleFractions>
             <MonthlyScheduleMultipliers dataSource='software'>1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0</MonthlyScheduleMultipliers>
@@ -1711,7 +1711,7 @@
           <RatedAnnualkWh dataSource='software'>691.0</RatedAnnualkWh>
           <PrimaryIndicator dataSource='software'>true</PrimaryIndicator>
           <extension>
-            <UsageMultiplier dataSource='software'>0.2</UsageMultiplier>
+            <UsageMultiplier dataSource='software'>1.8</UsageMultiplier>
             <ConstantScheduleCoefficients dataSource='software'>-0.487, -0.340, -0.370, -0.361, -0.515, -0.684, -0.471, -0.159, -0.079, -0.417, -0.411, -0.386, -0.240, -0.314, -0.160, -0.121, -0.469, -0.412, -0.091, 0.077, -0.118, -0.247, -0.445, -0.544</ConstantScheduleCoefficients>
             <TemperatureScheduleCoefficients dataSource='software'>0.019, 0.016, 0.017, 0.016, 0.018, 0.021, 0.019, 0.015, 0.015, 0.019, 0.018, 0.018, 0.016, 0.017, 0.015, 0.015, 0.020, 0.020, 0.017, 0.014, 0.016, 0.017, 0.019, 0.020</TemperatureScheduleCoefficients>
           </extension>
@@ -1722,7 +1722,7 @@
           <FuelType>natural gas</FuelType>
           <IsInduction dataSource='software'>false</IsInduction>
           <extension>
-            <UsageMultiplier dataSource='software'>0.2</UsageMultiplier>
+            <UsageMultiplier dataSource='software'>1.8</UsageMultiplier>
             <WeekdayScheduleFractions dataSource='software'>0.008, 0.008, 0.008, 0.008, 0.008, 0.015, 0.023, 0.039, 0.046, 0.046, 0.046, 0.054, 0.062, 0.046, 0.039, 0.054, 0.076, 0.134, 0.114, 0.058, 0.039, 0.031, 0.023, 0.015</WeekdayScheduleFractions>
             <WeekendScheduleFractions dataSource='software'>0.008, 0.008, 0.008, 0.008, 0.008, 0.015, 0.023, 0.039, 0.046, 0.046, 0.046, 0.054, 0.062, 0.046, 0.039, 0.054, 0.076, 0.134, 0.114, 0.058, 0.039, 0.031, 0.023, 0.015</WeekendScheduleFractions>
             <MonthlyScheduleMultipliers dataSource='software'>1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0</MonthlyScheduleMultipliers>
@@ -1807,7 +1807,7 @@
           </LightingType>
         </LightingGroup>
         <extension>
-          <InteriorUsageMultiplier dataSource='software'>1.5</InteriorUsageMultiplier>
+          <InteriorUsageMultiplier dataSource='software'>1.3</InteriorUsageMultiplier>
           <GarageUsageMultiplier dataSource='software'>1.0</GarageUsageMultiplier>
           <ExteriorUsageMultiplier dataSource='software'>1.0</ExteriorUsageMultiplier>
           <InteriorWeekdayScheduleFractions dataSource='software'>0.012, 0.010, 0.010, 0.010, 0.011, 0.018, 0.030, 0.038, 0.041, 0.041, 0.039, 0.037, 0.036, 0.035, 0.037, 0.041, 0.050, 0.065, 0.086, 0.106, 0.110, 0.079, 0.040, 0.018</InteriorWeekdayScheduleFractions>
@@ -1829,7 +1829,7 @@
           <extension>
             <FracSensible dataSource='software'>0.855</FracSensible>
             <FracLatent dataSource='software'>0.04500000000000001</FracLatent>
-            <UsageMultiplier dataSource='software'>0.4</UsageMultiplier>
+            <UsageMultiplier dataSource='software'>0.2</UsageMultiplier>
             <WeekdayScheduleFractions dataSource='software'>0.036, 0.036, 0.036, 0.036, 0.036, 0.036, 0.038, 0.041, 0.042, 0.042, 0.042, 0.042, 0.042, 0.042, 0.042, 0.044, 0.047, 0.050, 0.051, 0.050, 0.048, 0.044, 0.040, 0.037</WeekdayScheduleFractions>
             <WeekendScheduleFractions dataSource='software'>0.036, 0.036, 0.036, 0.036, 0.036, 0.036, 0.038, 0.041, 0.042, 0.042, 0.042, 0.042, 0.042, 0.042, 0.042, 0.044, 0.047, 0.050, 0.051, 0.050, 0.048, 0.044, 0.040, 0.037</WeekendScheduleFractions>
             <MonthlyScheduleMultipliers dataSource='software'>1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0</MonthlyScheduleMultipliers>
@@ -1845,7 +1845,7 @@
           <extension>
             <FracSensible dataSource='software'>1.0</FracSensible>
             <FracLatent dataSource='software'>0.0</FracLatent>
-            <UsageMultiplier dataSource='software'>0.4</UsageMultiplier>
+            <UsageMultiplier dataSource='software'>0.2</UsageMultiplier>
             <WeekdayScheduleFractions dataSource='software'>0.014, 0.007, 0.004, 0.003, 0.004, 0.006, 0.010, 0.015, 0.020, 0.025, 0.028, 0.031, 0.033, 0.038, 0.042, 0.046, 0.054, 0.062, 0.080, 0.110, 0.132, 0.125, 0.077, 0.034</WeekdayScheduleFractions>
             <WeekendScheduleFractions dataSource='software'>0.014, 0.007, 0.004, 0.003, 0.004, 0.006, 0.010, 0.015, 0.020, 0.025, 0.028, 0.031, 0.033, 0.038, 0.042, 0.046, 0.054, 0.062, 0.080, 0.110, 0.132, 0.125, 0.077, 0.034</WeekendScheduleFractions>
             <MonthlyScheduleMultipliers dataSource='software'>1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0</MonthlyScheduleMultipliers>
