@@ -755,7 +755,7 @@ class Calibrate:
                 }
 
                 temp_osw = Path(temp_output_dir / "modify_hpxml.osw")
-                self.create_measure_input_file(arguments, temp_osw)
+                create_measure_input_file(arguments, temp_osw)
 
                 app(["modify-xml", str(temp_osw)])
                 app(
