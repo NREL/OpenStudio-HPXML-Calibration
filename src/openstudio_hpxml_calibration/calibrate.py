@@ -31,6 +31,18 @@ if "FitnessMin" not in creator.__dict__:
 if "Individual" not in creator.__dict__:
     creator.create("Individual", list, fitness=creator.FitnessMin)
 
+global_seed = 2025
+random.seed(global_seed)
+
+
+def init_worker(seed):
+    worker_id = (
+        multiprocessing.current_process()._identity[0]
+        if multiprocessing.current_process()._identity
+        else 0
+    )
+    random.seed(seed + worker_id)
+
 
 class Calibrate:
     def __init__(
@@ -1287,7 +1299,12 @@ class Calibrate:
         if num_proc is None:
             num_proc = multiprocessing.cpu_count() - 1
 
-        with Pool(processes=num_proc, maxtasksperchild=15) as pool:
+        with Pool(
+            processes=num_proc,
+            maxtasksperchild=15,
+            initializer=init_worker,
+            initargs=(global_seed,),
+        ) as pool:
             toolbox.register("map", pool.map)
             pop = toolbox.population(n=population_size - 1)
             pop.append(create_seed_individual())  # Add existing model as seed individual
