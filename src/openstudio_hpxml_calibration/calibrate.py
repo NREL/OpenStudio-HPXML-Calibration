@@ -855,6 +855,16 @@ class Calibrate:
             else:
                 return abs(abs_error) <= fuel_threshold
 
+        def create_measure_input_file(arguments: dict, output_file_path: str):
+            data = {
+                "run_directory": str(Path(arguments["save_file_path"]).parent),
+                "measure_paths": [str(Path(__file__).resolve().parent.parent / "measures")],
+                "steps": [{"measure_dir_name": "ModifyXML", "arguments": arguments}],
+            }
+            Path(output_file_path).parent.mkdir(parents=True, exist_ok=True)
+            with open(output_file_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2)
+
         def diversity(pop):
             return len({tuple(ind) for ind in pop}) / len(pop)
 
