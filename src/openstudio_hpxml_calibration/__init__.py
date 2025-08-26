@@ -4,6 +4,7 @@ import shutil
 import subprocess
 import time
 import zipfile
+import numpy as np
 from importlib.metadata import version
 from pathlib import Path
 
@@ -202,12 +203,13 @@ def calibrate(
 
     start = time.time()
     (
-        best_individual_pop,
+        best_individual_dict,
         pop,
         logbook,
         best_bias_series,
         best_abs_series,
         weather_norm_reg_models,
+        inv_model,
         existing_home_results,
     ) = cal.run_search(num_proc=num_proc, output_filepath=output_filepath)
     logger.info(f"Calibration took {time.time() - start:.2f} seconds")
@@ -343,6 +345,52 @@ def calibrate(
     plt.tight_layout()
     plt.savefig(str(output_filepath / "absolute_error_plot.png"), bbox_inches="tight")
     plt.close()
+
+    for fuel_type, bills in inv_model.bills_by_fuel_type.items():
+        model = inv_model.get_model(fuel_type)
+        bills_temps = inv_model.bills_weather_by_fuel_type_in_btu[fuel_type]
+        temps_range = np.linspace(bills_temps["avg_temp"].min(), bills_temps["avg_temp"].max(), 500)
+        fig = plt.figure(figsize=(8, 6))
+        daily_consumption_pred = model(temps_range)
+        cvrmse = model.calc_cvrmse(bills_temps)
+        num_params = len(model.parameters)
+        if num_params == 5:
+            plt.plot(
+                temps_range,
+                daily_consumption_pred,
+                label=(
+                    f"{model.MODEL_NAME}, CVRMSE = {cvrmse:.1%}\n Model parameters:\n"
+                    f"1) Baseload value: {model.parameters[0]:.3f}\n"
+                    f"2) Slopes: {model.parameters[1]:.3f}, {model.parameters[2]:.3f}\n"
+                    f"3) Inflection points: {model.parameters[-2]:.1f}, {model.parameters[-1]:.1f}"
+                ),
+            )
+        elif num_params == 3:
+            plt.plot(
+                temps_range,
+                daily_consumption_pred,
+                label=(
+                    f"{model.MODEL_NAME}, CVRMSE = {cvrmse:.1%}\n Model parameters:\n"
+                    f"1) Baseload value: {model.parameters[0]:.3f}\n"
+                    f"2) Slope: {model.parameters[1]:.3f}\n"
+                    f"3) Inflection point: {model.parameters[-1]:.1f}"
+                ),
+            )
+        plt.scatter(
+            bills_temps["avg_temp"],
+            bills_temps["daily_consumption"],
+            label="data",
+            color="darkgreen",
+        )
+        plt.title(f"{filename} {fuel_type.value}")
+        plt.xlabel("Avg Daily Temperature [degF]")
+        plt.ylabel("Daily Consumption [BTU]")
+        plt.legend()
+        fig.savefig(
+            output_filepath / f"curve_fit_{fuel_type.value}.png",
+            dpi=200,
+        )
+        plt.close(fig)
 
 
 if __name__ == "__main__":

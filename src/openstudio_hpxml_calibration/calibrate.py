@@ -1535,5 +1535,6 @@ class Calibrate:
             best_bias_series,
             best_abs_series,
             weather_norm_regression_models,
+            inv_model,
             existing_home_results,
         )
