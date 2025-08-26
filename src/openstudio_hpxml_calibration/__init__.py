@@ -2,6 +2,7 @@ import contextlib
 import json
 import shutil
 import subprocess
+import sys
 import time
 import zipfile
 from importlib.metadata import version
@@ -12,9 +13,21 @@ from cyclopts import App
 from loguru import logger
 from tqdm import tqdm
 
-from openstudio_hpxml_calibration.utils import OS_HPXML_PATH, calculate_sha256, get_cache_dir, plot_fuel_type_curve_fits, plot_min_penalty, plot_avg_penalty, plot_bias_error_series, plot_absolute_error_series
+from openstudio_hpxml_calibration.utils import (
+    OS_HPXML_PATH,
+    calculate_sha256,
+    get_cache_dir,
+    plot_absolute_error_series,
+    plot_avg_penalty,
+    plot_bias_error_series,
+    plot_fuel_type_curve_fits,
+    plot_min_penalty,
+)
 
 from .enums import Format, Granularity
+
+logger.remove()
+logger.add(sys.stderr, level="INFO")
 
 app = App(
     version=version("openstudio-hpxml-calibration"),
@@ -163,6 +176,7 @@ def download_weather() -> None:
 @app.command
 def calibrate(
     hpxml_filepath: str,
+    csv_bills_filepath: str | None = None,
     config_filepath: str | None = None,
     output_dir: str | None = None,
     num_proc: int | None = None,
@@ -174,6 +188,8 @@ def calibrate(
     ----------
     hpxml_filepath: str
         Path to the HPXML file
+    csv_bills_filepath: str
+        Optional path to utility bill CSV file
     config_filepath: str
         Optional path to calibration config file
     output_dir: str
@@ -185,6 +201,7 @@ def calibrate(
     from openstudio_hpxml_calibration.calibrate import Calibrate
 
     filename = Path(hpxml_filepath).stem
+
     if output_dir is None:
         output_filepath = (
             Path(__file__).resolve().parent.parent / "tests" / "calibration_results" / filename
@@ -196,7 +213,11 @@ def calibrate(
         shutil.rmtree(output_filepath)
     output_filepath.mkdir(parents=True, exist_ok=True)
 
-    cal = Calibrate(original_hpxml_filepath=hpxml_filepath, config_filepath=config_filepath)
+    cal = Calibrate(
+        original_hpxml_filepath=hpxml_filepath,
+        config_filepath=config_filepath,
+        csv_bills_filepath=csv_bills_filepath,
+    )
 
     start = time.time()
     (
