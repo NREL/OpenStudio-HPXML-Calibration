@@ -43,7 +43,7 @@ class Calibrate:
         self.ga_config = _load_config(config_filepath)
 
         if csv_bills_filepath:
-            logger.info(f"Adding utility data from {csv_bills_filepath} to hpxml")
+            logger.debug(f"Adding utility data from {csv_bills_filepath} to hpxml")
             self.hpxml = set_consumption_on_hpxml(self.hpxml, csv_bills_filepath)
 
         self.hpxml_data_error_checking()
@@ -149,140 +149,6 @@ class Calibrate:
                     number=(model_output[fuel_type].get("baseload", 0) + consumption), ndigits=3
                 )
 
-        # TODO: Use bill date parts of this code to handle calibration by bill-period
-        # Most of it can be scrapped. Adapt bill dates to the above style.
-
-        # results = json.loads(json_results_path.read_text())
-        # # if "Time" in results:
-        # #     daily_results = results
-        # model_output = {}
-        # for fuel_type, bills in self.inv_model.bills_by_fuel_type.items():
-        #     bill_dates = list(zip(bills["start_day_of_year"], bills["end_day_of_year"]))
-        #     model_output[fuel_type.value] = {}
-        #     for bill in bill_dates:
-        #         # bill is a tuple of start_day_of_year and end_day_of_year of utility bill
-        #         model_output[fuel_type.value][f"{bill}"] = {}
-        #         for end_use, consumption_list in daily_results["End Use"].items():
-        #             if "Heating" in end_use:
-        #                 # if end_use.lower().startswith(fuel_type.value):
-        #                 if "heating_energy" in model_output[fuel_type.value][f"{bill}"]:
-        #                     if bill[0] > bill[1]:
-        #                         # handle bills that wrap around the end of the year
-        #                         model_output[fuel_type.value][f"{bill}"]["heating_energy"] += sum(
-        #                             consumption_list[bill[0] : len(consumption_list)]
-        #                         )
-        #                         model_output[fuel_type.value][f"{bill}"]["heating_energy"] += sum(
-        #                             consumption_list[0 : bill[1]]
-        #                         )
-        #                     else:
-        #                         model_output[fuel_type.value][f"{bill}"]["heating_energy"] += sum(
-        #                             consumption_list[bill[0] : bill[1]]
-        #                         )
-        #                 else:
-        #                     if bill[0] > bill[1]:
-        #                         # handle bills that wrap around the end of the year
-        #                         model_output[fuel_type.value][f"{bill}"]["heating_energy"] = sum(
-        #                             consumption_list[bill[0] : len(consumption_list)]
-        #                         ) + sum(consumption_list[0 : bill[1]])
-        #                     else:
-        #                         model_output[fuel_type.value][f"{bill}"]["heating_energy"] = sum(
-        #                             consumption_list[bill[0] : bill[1]]
-        #                         )
-        #             elif "Cooling" in end_use:
-        #                 if "cooling_energy" in model_output[fuel_type.value][f"{bill}"]:
-        #                     if bill[0] > bill[1]:
-        #                         # handle bills that wrap around the end of the year
-        #                         model_output[fuel_type.value][f"{bill}"]["cooling_energy"] += sum(
-        #                             consumption_list[bill[0] : len(consumption_list)]
-        #                         )
-        #                         model_output[fuel_type.value][f"{bill}"]["cooling_energy"] += sum(
-        #                             consumption_list[0 : bill[1]]
-        #                         )
-        #                     else:
-        #                         model_output[fuel_type.value][f"{bill}"]["cooling_energy"] += sum(
-        #                             consumption_list[bill[0] : bill[1]]
-        #                         )
-        #                 else:
-        #                     if bill[0] > bill[1]:
-        #                         # handle bills that wrap around the end of the year
-        #                         model_output[fuel_type.value][f"{bill}"]["cooling_energy"] = sum(
-        #                             consumption_list[bill[0] : len(consumption_list)]
-        #                         ) + sum(consumption_list[0 : bill[1]])
-        #                     else:
-        #                         model_output[fuel_type.value][f"{bill}"]["cooling_energy"] = sum(
-        #                             consumption_list[bill[0] : bill[1]]
-        #                         )
-        #             # elif "Hot Water" in end_use:
-        #             #     if "hot_water_energy" in model_output[fuel_type.value][f"{bill}"]:
-        #             #         model_output[fuel_type.value][f"{bill}"]["hot_water_energy"] += sum(
-        #             #             consumption_list[bill[0] : bill[1]]
-        #             #         )
-        #             #     else:
-        #             #         model_output[fuel_type.value][f"{bill}"]["hot_water_energy"] = sum(
-        #             #             consumption_list[bill[0] : bill[1]]
-        #             #         )
-        #             # elif "Lighting" in end_use:
-        #             #     if "lighting_energy" in model_output[fuel_type.value][f"{bill}"]:
-        #             #         model_output[fuel_type.value][f"{bill}"]["lighting_energy"] += sum(
-        #             #             consumption_list[bill[0] : bill[1]]
-        #             #         )
-        #             #     else:
-        #             #         model_output[fuel_type.value][f"{bill}"]["lighting_energy"] = sum(
-        #             #             consumption_list[bill[0] : bill[1]]
-        #             #         )
-        #             else:
-        #                 if "other_energy" in model_output[fuel_type.value][f"{bill}"]:
-        #                     if bill[0] > bill[1]:
-        #                         # handle bills that wrap around the end of the year
-        #                         model_output[fuel_type.value][f"{bill}"]["other_energy"] += sum(
-        #                             consumption_list[bill[0] : len(consumption_list)]
-        #                         )
-        #                         model_output[fuel_type.value][f"{bill}"]["other_energy"] += sum(
-        #                             consumption_list[0 : bill[1]]
-        #                         )
-        #                     else:
-        #                         model_output[fuel_type.value][f"{bill}"]["other_energy"] += sum(
-        #                             consumption_list[bill[0] : bill[1]]
-        #                         )
-        #                 else:
-        #                     if bill[0] > bill[1]:
-        #                         # handle bills that wrap around the end of the year
-        #                         model_output[fuel_type.value][f"{bill}"]["other_energy"] = sum(
-        #                             consumption_list[bill[0] : len(consumption_list)]
-        #                         ) + sum(consumption_list[0 : bill[1]])
-        #                     else:
-        #                         model_output[fuel_type.value][f"{bill}"]["other_energy"] = sum(
-        #                             consumption_list[bill[0] : bill[1]]
-        #                         )
-
-        # model_output_dfs = {}
-        # for fuel_type, monthly_usage in model_output.items():
-        #     monthly_usage_df = pd.DataFrame(monthly_usage)
-        #     rows = []
-        #     for col in monthly_usage_df.columns:
-        #         # Parse the column name to get start_date and end_date
-        #         start_date, end_date = literal_eval(col)
-        #         row = {
-        #             "heating_energy": monthly_usage_df.loc["heating_energy", col],
-        #             "cooling_energy": monthly_usage_df.loc["cooling_energy", col],
-        #             "other_energy": monthly_usage_df.loc["other_energy", col],
-        #             "start_date": start_date,
-        #             "end_date": end_date,
-        #         }
-        #         rows.append(row)
-
-        #     reshaped_df = pd.DataFrame(
-        #         rows,
-        #         columns=[
-        #             "heating_energy",
-        #             "cooling_energy",
-        #             "other_energy",
-        #             "start_date",
-        #             "end_date",
-        #         ],
-        #     ).reset_index(drop=True)
-        #     model_output_dfs[f"{fuel_type}_df"] = reshaped_df
-
         return model_output
 
     def compare_results(
@@ -309,8 +175,6 @@ class Calibrate:
                 <fuel_type>: {...}
             }"
         """
-
-        # TODO: prevent double-calculating when running multiple times in the same kernel session
 
         # Build annual normalized bill consumption dicts
         annual_normalized_bill_consumption = {}
@@ -799,14 +663,19 @@ class Calibrate:
         cfg = self.ga_config
         population_size = cfg["genetic_algorithm"]["population_size"]
         generations = cfg["genetic_algorithm"]["generations"]
-        bias_error_threshold = cfg["genetic_algorithm"]["bias_error_threshold"]
-        abs_error_elec_threshold = cfg["genetic_algorithm"]["abs_error_elec_threshold"]
-        abs_error_fuel_threshold = cfg["genetic_algorithm"]["abs_error_fuel_threshold"]
+        bias_error_threshold = cfg["acceptance_criteria"]["bias_error_threshold"]
+        abs_error_elec_threshold = cfg["acceptance_criteria"]["abs_error_elec_threshold"]
+        abs_error_fuel_threshold = cfg["acceptance_criteria"]["abs_error_fuel_threshold"]
         cxpb = cfg["genetic_algorithm"]["crossover_probability"]
         mutpb = cfg["genetic_algorithm"]["mutation_probability"]
         misc_load_multiplier_choices = cfg["value_choices"]["misc_load_multiplier_choices"]
         air_leakage_multiplier_choices = cfg["value_choices"]["air_leakage_multiplier_choices"]
-        hvac_eff_multiplier_choices = cfg["value_choices"]["hvac_eff_multiplier_choices"]
+        heating_efficiency_multiplier_choices = cfg["value_choices"][
+            "heating_efficiency_multiplier_choices"
+        ]
+        cooling_efficiency_multiplier_choices = cfg["value_choices"][
+            "cooling_efficiency_multiplier_choices"
+        ]
         roof_r_value_multiplier_choices = cfg["value_choices"]["roof_r_value_multiplier_choices"]
         ceiling_r_value_multiplier_choices = cfg["value_choices"][
             "ceiling_r_value_multiplier_choices"
@@ -819,8 +688,8 @@ class Calibrate:
         ]
         slab_r_value_multiplier_choices = cfg["value_choices"]["slab_r_value_multiplier_choices"]
         floor_r_value_multiplier_choices = cfg["value_choices"]["floor_r_value_multiplier_choices"]
-        heating_setpoint_choices = cfg["value_choices"]["heating_setpoint_choices"]
-        cooling_setpoint_choices = cfg["value_choices"]["cooling_setpoint_choices"]
+        heating_setpoint_offset_choices = cfg["value_choices"]["heating_setpoint_offset_choices"]
+        cooling_setpoint_offset_choices = cfg["value_choices"]["cooling_setpoint_offset_choices"]
         water_heater_efficiency_multiplier_choices = cfg["value_choices"][
             "water_heater_efficiency_multiplier_choices"
         ]
@@ -865,9 +734,9 @@ class Calibrate:
                 arguments = {
                     "xml_file_path": str(self.hpxml_filepath),
                     "save_file_path": str(mod_hpxml_path),
+                    "misc_load_multiplier": misc_load_multiplier,
                     "heating_setpoint_offset": heating_setpoint_offset,
                     "cooling_setpoint_offset": cooling_setpoint_offset,
-                    "misc_load_multiplier": misc_load_multiplier,
                     "air_leakage_multiplier": air_leakage_multiplier,
                     "heating_efficiency_multiplier": heating_efficiency_multiplier,
                     "cooling_efficiency_multiplier": cooling_efficiency_multiplier,
@@ -926,24 +795,24 @@ class Calibrate:
                                 self.compare_results(normalized_consumption, simulation_results)
                             )
                 for model_fuel_type, result in comparison.items():
-                    bias_error_criteria = self.ga_config["genetic_algorithm"][
+                    bias_error_criteria = self.ga_config["acceptance_criteria"][
                         "bias_error_threshold"
                     ]
                     if model_fuel_type == "electricity":
-                        absolute_error_criteria = self.ga_config["genetic_algorithm"][
+                        absolute_error_criteria = self.ga_config["acceptance_criteria"][
                             "abs_error_elec_threshold"
                         ]
                     else:
-                        absolute_error_criteria = self.ga_config["genetic_algorithm"][
+                        absolute_error_criteria = self.ga_config["acceptance_criteria"][
                             "abs_error_fuel_threshold"
                         ]
                     for load_type in result["Bias Error"]:
                         if abs(result["Bias Error"][load_type]) > bias_error_criteria:
-                            logger.info(
+                            logger.debug(
                                 f"Bias error for {model_fuel_type} {load_type} is {result['Bias Error'][load_type]} but the limit is +/- {bias_error_criteria}"
                             )
                         if abs(result["Absolute Error"][load_type]) > absolute_error_criteria:
-                            logger.info(
+                            logger.debug(
                                 f"Absolute error for {model_fuel_type} {load_type} is {result['Absolute Error'][load_type]} but the limit is +/- {absolute_error_criteria}"
                             )
 
@@ -1001,16 +870,24 @@ class Calibrate:
 
         toolbox = base.Toolbox()
         toolbox.register("attr_misc_load_multiplier", random.choice, misc_load_multiplier_choices)
-        toolbox.register("attr_heating_setpoint_offset", random.choice, heating_setpoint_choices)
-        toolbox.register("attr_cooling_setpoint_offset", random.choice, cooling_setpoint_choices)
+        toolbox.register(
+            "attr_heating_setpoint_offset", random.choice, heating_setpoint_offset_choices
+        )
+        toolbox.register(
+            "attr_cooling_setpoint_offset", random.choice, cooling_setpoint_offset_choices
+        )
         toolbox.register(
             "attr_air_leakage_multiplier", random.choice, air_leakage_multiplier_choices
         )
         toolbox.register(
-            "attr_heating_efficiency_multiplier", random.choice, hvac_eff_multiplier_choices
+            "attr_heating_efficiency_multiplier",
+            random.choice,
+            heating_efficiency_multiplier_choices,
         )
         toolbox.register(
-            "attr_cooling_efficiency_multiplier", random.choice, hvac_eff_multiplier_choices
+            "attr_cooling_efficiency_multiplier",
+            random.choice,
+            cooling_efficiency_multiplier_choices,
         )
         toolbox.register(
             "attr_roof_r_value_multiplier", random.choice, roof_r_value_multiplier_choices
@@ -1087,11 +964,11 @@ class Calibrate:
             return creator.Individual(
                 [
                     random.choice(misc_load_multiplier_choices),
-                    random.choice(heating_setpoint_choices),
-                    random.choice(cooling_setpoint_choices),
+                    random.choice(heating_setpoint_offset_choices),
+                    random.choice(cooling_setpoint_offset_choices),
                     random.choice(air_leakage_multiplier_choices),
-                    random.choice(hvac_eff_multiplier_choices),
-                    random.choice(hvac_eff_multiplier_choices),
+                    random.choice(heating_efficiency_multiplier_choices),
+                    random.choice(cooling_efficiency_multiplier_choices),
                     random.choice(roof_r_value_multiplier_choices),
                     random.choice(ceiling_r_value_multiplier_choices),
                     random.choice(above_ground_walls_r_value_multiplier_choices),
@@ -1115,11 +992,11 @@ class Calibrate:
         # Define parameter-to-choices mapping for mutation
         param_choices_map = {
             "misc_load_multiplier": misc_load_multiplier_choices,
-            "heating_setpoint_offset": heating_setpoint_choices,
-            "cooling_setpoint_offset": cooling_setpoint_choices,
+            "heating_setpoint_offset": heating_setpoint_offset_choices,
+            "cooling_setpoint_offset": cooling_setpoint_offset_choices,
             "air_leakage_multiplier": air_leakage_multiplier_choices,
-            "heating_hvac_eff_multiplier": hvac_eff_multiplier_choices,
-            "cooling_hvac_eff_multiplier": hvac_eff_multiplier_choices,
+            "heating_efficiency_multiplier": heating_efficiency_multiplier_choices,
+            "cooling_efficiency_multiplier": cooling_efficiency_multiplier_choices,
             "roof_r_value_multiplier": roof_r_value_multiplier_choices,
             "ceiling_r_value_multiplier": ceiling_r_value_multiplier_choices,
             "above_ground_walls_r_value_multiplier": above_ground_walls_r_value_multiplier_choices,
@@ -1140,7 +1017,7 @@ class Calibrate:
             "electricity_heating": [
                 "heating_setpoint_offset",
                 "air_leakage_multiplier",
-                "heating_hvac_eff_multiplier",
+                "heating_efficiency_multiplier",
                 "roof_r_value_multiplier",
                 "ceiling_r_value_multiplier",
                 "above_ground_walls_r_value_multiplier",
@@ -1151,7 +1028,7 @@ class Calibrate:
             "electricity_cooling": [
                 "cooling_setpoint_offset",
                 "air_leakage_multiplier",
-                "cooling_hvac_eff_multiplier",
+                "cooling_efficiency_multiplier",
                 "roof_r_value_multiplier",
                 "ceiling_r_value_multiplier",
                 "above_ground_walls_r_value_multiplier",
@@ -1167,7 +1044,7 @@ class Calibrate:
             "natural_gas_heating": [
                 "heating_setpoint_offset",
                 "air_leakage_multiplier",
-                "heating_hvac_eff_multiplier",
+                "heating_efficiency_multiplier",
                 "roof_r_value_multiplier",
                 "ceiling_r_value_multiplier",
                 "above_ground_walls_r_value_multiplier",
@@ -1280,6 +1157,8 @@ class Calibrate:
             print(logbook.stream)
 
             for gen in range(1, generations + 1):
+                logger.info(f"Running {len(pop)} simulations for search generation {gen}...")
+
                 # Elitism: Copy the best individuals
                 elite = [copy.deepcopy(ind) for ind in tools.selBest(pop, k=1)]
 
