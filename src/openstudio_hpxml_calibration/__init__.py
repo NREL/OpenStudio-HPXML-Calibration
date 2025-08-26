@@ -7,10 +7,11 @@ import time
 import zipfile
 from importlib.metadata import version
 from pathlib import Path
+from typing import Annotated
 
 import matplotlib.pyplot as plt
 import requests
-from cyclopts import App
+from cyclopts import App, Parameter
 from loguru import logger
 from matplotlib.ticker import MaxNLocator
 from tqdm import tqdm
@@ -19,18 +20,27 @@ from openstudio_hpxml_calibration.utils import OS_HPXML_PATH, calculate_sha256, 
 
 from .enums import Format, Granularity
 
-logger.remove()
-logger.add(sys.stderr, level="INFO")
-
 app = App(
     version=version("openstudio-hpxml-calibration"),
-    version_flags=["--version", "-v"],
+    version_flags=["--version", "-V"],
     help="Calibrate an HPXML model to provided utility data using OpenStudio-HPXML",
 )
 
 
+def set_log_level(verbose: int = 0) -> None:
+    logger.remove()
+    if verbose >= 2:
+        logger.add(sys.stderr, level="DEBUG")
+    elif verbose == 1:
+        logger.add(sys.stderr, level="INFO")
+    else:
+        logger.add(sys.stderr, level="WARNING")
+
+
 @app.command
-def openstudio_version() -> None:
+def openstudio_version(
+    verbose: Annotated[list[bool], Parameter(alias="-v")] = (),
+) -> None:
     """Return the OpenStudio-HPXML, HPXML, OpenStudio, and EnergyPlus Versions"""
     resp = subprocess.run(
         [
@@ -51,6 +61,7 @@ def run_sim(
     output_dir: str | None = None,
     granularity: Granularity | None = None,
     debug: bool = False,
+    verbose: Annotated[list[bool], Parameter(alias="-v")] = (),
 ) -> None:
     """Simulate an HPXML file using the OpenStudio-HPXML workflow
 
@@ -64,7 +75,11 @@ def run_sim(
         Output directory to save simulation results dir. Default is HPXML file dir.
     granularity: str
         Granularity of simulation results. Annual results returned if not provided.
+    verbose: flag
+        Enable verbose logging. Repeat flag for more verbosity.
     """
+    verbosity = sum(verbose)
+    set_log_level(verbosity)
     run_simulation_command = [
         "openstudio",
         str(OS_HPXML_PATH / "workflow" / "run_simulation.rb"),
@@ -99,14 +114,21 @@ def run_sim(
 
 
 @app.command
-def modify_xml(workflow_file: Path) -> None:
+def modify_xml(
+    workflow_file: Path,
+    verbose: Annotated[list[bool], Parameter(alias="-v")] = (),
+) -> None:
     """Modify the XML file using the OpenStudio-HPXML workflow
 
     Parameters
     ----------
     workflow_file: Path
         Path to the workflow file (osw) that defines the modifications to be made
+    verbose: flag
+        Enable verbose logging. Repeat flag for more verbosity.
     """
+    verbosity = sum(verbose)
+    set_log_level(verbosity)
     modify_xml_command = [
         "openstudio",
         "run",
@@ -124,14 +146,19 @@ def modify_xml(workflow_file: Path) -> None:
 
 
 @app.command
-def download_weather() -> None:
+def download_weather(
+    verbose: Annotated[list[bool], Parameter(alias="-v")] = (),
+) -> None:
     # TODO: move the code for this to a separate module
     """Download TMY3 weather files from NREL
 
     Parameters
     ----------
-    None
+    verbose: flag
+        Enable verbose logging. Repeat flag for more verbosity.
     """
+    verbosity = sum(verbose)
+    set_log_level(verbosity)
     weather_files_url = "https://data.nrel.gov/system/files/128/tmy3s-cache-csv.zip"
     weather_zip_filename = weather_files_url.split("/")[-1]
     weather_zip_sha256 = "58f5d2821931e235de34a5a7874f040f7f766b46e5e6a4f85448b352de4c8846"
@@ -157,9 +184,9 @@ def download_weather() -> None:
                     pbar.update(len(chunk))
 
     # Extract weather files
-    print(f"zip saved to: {weather_zip_filepath}")
+    logger.debug(f"zip saved to: {weather_zip_filepath}")
     weather_dir = OS_HPXML_PATH / "weather"
-    print(f"Extracting weather files to {weather_dir}")
+    logger.debug(f"Extracting weather files to {weather_dir}")
     with zipfile.ZipFile(weather_zip_filepath, "r") as zf:
         for filename in tqdm(zf.namelist(), desc="Extracting epws"):
             if filename.endswith(".epw") and not (weather_dir / filename).exists():
@@ -173,6 +200,7 @@ def calibrate(
     config_filepath: str | None = None,
     output_dir: str | None = None,
     num_proc: int | None = None,
+    verbose: Annotated[list[bool], Parameter(alias="-v")] = (),
 ) -> None:
     """
     Run calibration using a genetic algorithm on an HPXML file.
@@ -189,8 +217,12 @@ def calibrate(
         Optional output directory to save results
     num_proc: int
         Optional number of processors for parallel simulations
+    verbose: flag
+        Enable verbose logging. Repeat flag for more verbosity.
     """
 
+    verbosity = sum(verbose)
+    set_log_level(verbosity)
     from openstudio_hpxml_calibration.calibrate import Calibrate
 
     filename = Path(hpxml_filepath).stem
