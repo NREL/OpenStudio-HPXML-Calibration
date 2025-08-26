@@ -40,7 +40,9 @@ class InverseModel:
             conditioning_fuels = heating_fuels | cooling_fuels
             model = fit_model(
                 bills_weather,
-                cvrmse_requirement=self.user_config["weather_normalization"]["max_cvrmse"],
+                cvrmse_requirement=self.user_config["acceptance_criteria"][
+                    "bill_regression_max_cvrmse"
+                ],
                 conditioning_fuels=conditioning_fuels,
                 fuel_type=fuel_type,
             )

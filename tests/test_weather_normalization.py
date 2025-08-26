@@ -62,6 +62,8 @@ def test_hpxml_utility_bill_read_missing_start_end_date(filename):
             assert not pd.isna(bills[f"{start_end}_date"]).all()
 
 
+# Use flaky to address intermittent tcl errors on Windows https://stackoverflow.com/questions/71443540/intermittent-pytest-failures-complaining-about-missing-tcl-files-even-though-the
+@pytest.mark.flaky(max_runs=3)
 @pytest.mark.parametrize("filename", ira_rebate_hpxmls, ids=lambda x: x.stem)
 def test_weather_retrieval(results_dir, filename):
     hpxml = HpxmlDoc(filename)
