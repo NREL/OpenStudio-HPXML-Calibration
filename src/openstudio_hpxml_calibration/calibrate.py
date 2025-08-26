@@ -856,6 +856,8 @@ class Calibrate:
                 "model_type": getattr(reg_model, "MODEL_NAME", None),
                 "cvrmse": getattr(reg_model, "cvrmse", None),
             }
+            end_use_sums = normalized_consumption_per_bill[fuel.value][["baseload", "heating", "cooling"]].sum().to_dict()
+            weather_norm_regression_models[fuel.value]["consumption"] = end_use_sums
 
         def evaluate(individual):
             try:
