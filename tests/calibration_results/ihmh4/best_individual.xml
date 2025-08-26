@@ -801,8 +801,8 @@
             <Area>10.4</Area>
             <Azimuth>67</Azimuth>
             <Orientation dataSource='software'>northeast</Orientation>
-            <UFactor>0.26</UFactor>
-            <SHGC>0.62</SHGC>
+            <UFactor>0.29</UFactor>
+            <SHGC>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='Window1ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -827,8 +827,8 @@
             <Area>10.4</Area>
             <Azimuth>67</Azimuth>
             <Orientation dataSource='software'>northeast</Orientation>
-            <UFactor>0.26</UFactor>
-            <SHGC>0.62</SHGC>
+            <UFactor>0.29</UFactor>
+            <SHGC>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='Window2ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -853,8 +853,8 @@
             <Area>10.4</Area>
             <Azimuth>67</Azimuth>
             <Orientation dataSource='software'>northeast</Orientation>
-            <UFactor>0.26</UFactor>
-            <SHGC>0.62</SHGC>
+            <UFactor>0.29</UFactor>
+            <SHGC>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='Window3ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -879,8 +879,8 @@
             <Area>11.4</Area>
             <Azimuth>337</Azimuth>
             <Orientation dataSource='software'>northwest</Orientation>
-            <UFactor>0.26</UFactor>
-            <SHGC>0.62</SHGC>
+            <UFactor>0.29</UFactor>
+            <SHGC>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='Window4ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -905,8 +905,8 @@
             <Area>11.4</Area>
             <Azimuth>337</Azimuth>
             <Orientation dataSource='software'>northwest</Orientation>
-            <UFactor>0.26</UFactor>
-            <SHGC>0.62</SHGC>
+            <UFactor>0.29</UFactor>
+            <SHGC>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='Window5ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -931,8 +931,8 @@
             <Area>11.4</Area>
             <Azimuth>337</Azimuth>
             <Orientation dataSource='software'>northwest</Orientation>
-            <UFactor>0.26</UFactor>
-            <SHGC>0.62</SHGC>
+            <UFactor>0.29</UFactor>
+            <SHGC>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='Window6ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -957,8 +957,8 @@
             <Area>11.4</Area>
             <Azimuth>337</Azimuth>
             <Orientation dataSource='software'>northwest</Orientation>
-            <UFactor>0.26</UFactor>
-            <SHGC>0.62</SHGC>
+            <UFactor>0.29</UFactor>
+            <SHGC>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='Window7ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -983,8 +983,8 @@
             <Area>10.4</Area>
             <Azimuth>247</Azimuth>
             <Orientation dataSource='software'>southwest</Orientation>
-            <UFactor>0.26</UFactor>
-            <SHGC>0.62</SHGC>
+            <UFactor>0.29</UFactor>
+            <SHGC>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='Window8ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -1009,8 +1009,8 @@
             <Area>10.4</Area>
             <Azimuth>247</Azimuth>
             <Orientation dataSource='software'>southwest</Orientation>
-            <UFactor>0.26</UFactor>
-            <SHGC>0.62</SHGC>
+            <UFactor>0.29</UFactor>
+            <SHGC>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='Window9ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -1035,8 +1035,8 @@
             <Area>10.4</Area>
             <Azimuth>247</Azimuth>
             <Orientation dataSource='software'>southwest</Orientation>
-            <UFactor>0.26</UFactor>
-            <SHGC>0.62</SHGC>
+            <UFactor>0.29</UFactor>
+            <SHGC>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='Window10ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -1061,8 +1061,8 @@
             <Area>11.4</Area>
             <Azimuth>157</Azimuth>
             <Orientation dataSource='software'>southeast</Orientation>
-            <UFactor>0.26</UFactor>
-            <SHGC>0.62</SHGC>
+            <UFactor>0.29</UFactor>
+            <SHGC>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='Window11ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -1087,8 +1087,8 @@
             <Area>11.4</Area>
             <Azimuth>157</Azimuth>
             <Orientation dataSource='software'>southeast</Orientation>
-            <UFactor>0.26</UFactor>
-            <SHGC>0.62</SHGC>
+            <UFactor>0.29</UFactor>
+            <SHGC>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='Window12ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -1113,8 +1113,8 @@
             <Area>11.4</Area>
             <Azimuth>157</Azimuth>
             <Orientation dataSource='software'>southeast</Orientation>
-            <UFactor>0.26</UFactor>
-            <SHGC>0.62</SHGC>
+            <UFactor>0.29</UFactor>
+            <SHGC>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='Window13ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -1139,8 +1139,8 @@
             <Area>11.4</Area>
             <Azimuth>157</Azimuth>
             <Orientation dataSource='software'>southeast</Orientation>
-            <UFactor>0.26</UFactor>
-            <SHGC>0.62</SHGC>
+            <UFactor>0.29</UFactor>
+            <SHGC>0.5</SHGC>
             <ExteriorShading>
               <SystemIdentifier id='Window14ExteriorShading'/>
               <Type dataSource='software'>none</Type>
@@ -1222,7 +1222,7 @@
               <FractionCoolLoadServed>0.3</FractionCoolLoadServed>
               <AnnualCoolingEfficiency>
                 <Units>CEER</Units>
-                <Value>7.76</Value>
+                <Value>10.67</Value>
               </AnnualCoolingEfficiency>
               <extension>
                 <CoolingDesignAirflowCFM dataSource='software'>100.0</CoolingDesignAirflowCFM>
@@ -1277,8 +1277,8 @@
           </HVACPlant>
           <HVACControl>
             <SystemIdentifier id='HVACControl'/>
-            <SetpointTempHeatingSeason>73.0</SetpointTempHeatingSeason>
-            <SetpointTempCoolingSeason>74.0</SetpointTempCoolingSeason>
+            <SetpointTempHeatingSeason>68.0</SetpointTempHeatingSeason>
+            <SetpointTempCoolingSeason>76.0</SetpointTempCoolingSeason>
             <HeatingSeason>
               <BeginMonth>9</BeginMonth>
               <BeginDayOfMonth>1</BeginDayOfMonth>
@@ -1393,7 +1393,7 @@
             <LowFlow>false</LowFlow>
           </WaterFixture>
           <extension>
-            <WaterFixturesUsageMultiplier>1.0</WaterFixturesUsageMultiplier>
+            <WaterFixturesUsageMultiplier>1.5</WaterFixturesUsageMultiplier>
             <WaterFixturesWeekdayScheduleFractions>0.011,0.005,0.003,0.005,0.014,0.052,0.118,0.117,0.095,0.074,0.06,0.047,0.034,0.029,0.026,0.025,0.03,0.039,0.042,0.042,0.042,0.041,0.029,0.021</WaterFixturesWeekdayScheduleFractions>
             <WaterFixturesWeekendScheduleFractions>0.011,0.005,0.003,0.005,0.014,0.052,0.118,0.117,0.095,0.074,0.06,0.047,0.034,0.029,0.026,0.025,0.03,0.039,0.042,0.042,0.042,0.041,0.029,0.021</WaterFixturesWeekendScheduleFractions>
             <WaterFixturesMonthlyScheduleMultipliers>1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0</WaterFixturesMonthlyScheduleMultipliers>
@@ -1413,7 +1413,7 @@
           <LabelUsage>6.0</LabelUsage>
           <Capacity>4.2</Capacity>
           <extension>
-            <UsageMultiplier>1.3</UsageMultiplier>
+            <UsageMultiplier>0.5</UsageMultiplier>
             <WeekdayScheduleFractions>0.009,0.007,0.004,0.004,0.007,0.011,0.022,0.049,0.073,0.086,0.084,0.075,0.067,0.06,0.049,0.052,0.05,0.049,0.049,0.049,0.049,0.047,0.032,0.017</WeekdayScheduleFractions>
             <WeekendScheduleFractions>0.009,0.007,0.004,0.004,0.007,0.011,0.022,0.049,0.073,0.086,0.084,0.075,0.067,0.06,0.049,0.052,0.05,0.049,0.049,0.049,0.049,0.047,0.032,0.017</WeekendScheduleFractions>
             <MonthlyScheduleMultipliers>1.011,1.002,1.022,1.02,1.022,0.996,0.999,0.999,0.996,0.964,0.959,1.011</MonthlyScheduleMultipliers>
@@ -1429,7 +1429,7 @@
           <Vented>true</Vented>
           <VentedFlowRate>100.0</VentedFlowRate>
           <extension>
-            <UsageMultiplier>1.3</UsageMultiplier>
+            <UsageMultiplier>0.5</UsageMultiplier>
             <WeekdayScheduleFractions>0.01,0.006,0.004,0.002,0.004,0.006,0.016,0.032,0.048,0.068,0.078,0.081,0.074,0.067,0.057,0.061,0.055,0.054,0.051,0.051,0.052,0.054,0.044,0.024</WeekdayScheduleFractions>
             <WeekendScheduleFractions>0.01,0.006,0.004,0.002,0.004,0.006,0.016,0.032,0.048,0.068,0.078,0.081,0.074,0.067,0.057,0.061,0.055,0.054,0.051,0.051,0.052,0.054,0.044,0.024</WeekendScheduleFractions>
             <MonthlyScheduleMultipliers>1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0</MonthlyScheduleMultipliers>
@@ -1446,7 +1446,7 @@
           <LabelAnnualGasCost>22.32</LabelAnnualGasCost>
           <LabelUsage>4.0</LabelUsage>
           <extension>
-            <UsageMultiplier>1.3</UsageMultiplier>
+            <UsageMultiplier>0.5</UsageMultiplier>
             <WeekdayScheduleFractions>0.015,0.007,0.005,0.003,0.003,0.01,0.02,0.031,0.058,0.065,0.056,0.048,0.041,0.046,0.036,0.038,0.038,0.049,0.087,0.111,0.09,0.067,0.044,0.031</WeekdayScheduleFractions>
             <WeekendScheduleFractions>0.015,0.007,0.005,0.003,0.003,0.01,0.02,0.031,0.058,0.065,0.056,0.048,0.041,0.046,0.036,0.038,0.038,0.049,0.087,0.111,0.09,0.067,0.044,0.031</WeekendScheduleFractions>
             <MonthlyScheduleMultipliers>1.097,1.097,0.991,0.987,0.991,0.89,0.896,0.896,0.89,1.085,1.085,1.097</MonthlyScheduleMultipliers>
@@ -1458,7 +1458,7 @@
           <RatedAnnualkWh>434.0</RatedAnnualkWh>
           <PrimaryIndicator dataSource='software'>true</PrimaryIndicator>
           <extension>
-            <UsageMultiplier>1.3</UsageMultiplier>
+            <UsageMultiplier>0.5</UsageMultiplier>
             <WeekdayScheduleFractions>0.04,0.039,0.038,0.037,0.036,0.036,0.038,0.04,0.041,0.041,0.04,0.04,0.042,0.042,0.042,0.041,0.044,0.048,0.05,0.048,0.047,0.046,0.044,0.041</WeekdayScheduleFractions>
             <WeekendScheduleFractions>0.04,0.039,0.038,0.037,0.036,0.036,0.038,0.04,0.041,0.041,0.04,0.04,0.042,0.042,0.042,0.041,0.044,0.048,0.05,0.048,0.047,0.046,0.044,0.041</WeekendScheduleFractions>
             <MonthlyScheduleMultipliers>0.837,0.835,1.084,1.084,1.084,1.096,1.096,1.096,1.096,0.931,0.925,0.837</MonthlyScheduleMultipliers>
@@ -1479,7 +1479,7 @@
           <FuelType>natural gas</FuelType>
           <IsInduction dataSource='software'>false</IsInduction>
           <extension>
-            <UsageMultiplier>1.3</UsageMultiplier>
+            <UsageMultiplier>0.5</UsageMultiplier>
             <WeekdayScheduleFractions>0.007,0.007,0.004,0.004,0.007,0.011,0.025,0.042,0.046,0.048,0.042,0.05,0.057,0.046,0.057,0.044,0.092,0.15,0.117,0.06,0.035,0.025,0.016,0.011</WeekdayScheduleFractions>
             <WeekendScheduleFractions>0.007,0.007,0.004,0.004,0.007,0.011,0.025,0.042,0.046,0.048,0.042,0.05,0.057,0.046,0.057,0.044,0.092,0.15,0.117,0.06,0.035,0.025,0.016,0.011</WeekendScheduleFractions>
             <MonthlyScheduleMultipliers>1.097,1.097,0.991,0.987,0.991,0.89,0.896,0.896,0.89,1.085,1.085,1.097</MonthlyScheduleMultipliers>
@@ -1564,7 +1564,7 @@
           </LightingType>
         </LightingGroup>
         <extension>
-          <InteriorUsageMultiplier>1.0</InteriorUsageMultiplier>
+          <InteriorUsageMultiplier>0.75</InteriorUsageMultiplier>
           <GarageUsageMultiplier>1.0</GarageUsageMultiplier>
           <ExteriorUsageMultiplier>1.0</ExteriorUsageMultiplier>
           <InteriorWeekdayScheduleFractions>0.012,0.01,0.01,0.01,0.011,0.018,0.03,0.038,0.041,0.041,0.039,0.037,0.036,0.035,0.037,0.041,0.05,0.065,0.086,0.105,0.11,0.079,0.04,0.018</InteriorWeekdayScheduleFractions>
@@ -1601,7 +1601,7 @@
           <extension>
             <FracSensible dataSource='software'>0.855</FracSensible>
             <FracLatent dataSource='software'>0.04500000000000001</FracLatent>
-            <UsageMultiplier>1.42</UsageMultiplier>
+            <UsageMultiplier>1.5</UsageMultiplier>
             <WeekdayScheduleFractions>0.035,0.033,0.032,0.031,0.032,0.033,0.037,0.042,0.043,0.043,0.043,0.044,0.045,0.045,0.044,0.046,0.048,0.052,0.053,0.05,0.047,0.045,0.04,0.036</WeekdayScheduleFractions>
             <WeekendScheduleFractions>0.035,0.033,0.032,0.031,0.032,0.033,0.037,0.042,0.043,0.043,0.043,0.044,0.045,0.045,0.044,0.046,0.048,0.052,0.053,0.05,0.047,0.045,0.04,0.036</WeekendScheduleFractions>
             <MonthlyScheduleMultipliers>1.248,1.257,0.993,0.989,0.993,0.827,0.821,0.821,0.827,0.99,0.987,1.248</MonthlyScheduleMultipliers>
@@ -1617,7 +1617,7 @@
           <extension>
             <FracSensible dataSource='software'>1.0</FracSensible>
             <FracLatent dataSource='software'>0.0</FracLatent>
-            <UsageMultiplier>1.42</UsageMultiplier>
+            <UsageMultiplier>1.5</UsageMultiplier>
             <WeekdayScheduleFractions>0.035,0.033,0.032,0.031,0.032,0.033,0.037,0.042,0.043,0.043,0.043,0.044,0.045,0.045,0.044,0.046,0.048,0.052,0.053,0.05,0.047,0.045,0.04,0.036</WeekdayScheduleFractions>
             <WeekendScheduleFractions>0.035,0.033,0.032,0.031,0.032,0.033,0.037,0.042,0.043,0.043,0.043,0.044,0.045,0.045,0.044,0.046,0.048,0.052,0.053,0.05,0.047,0.045,0.04,0.036</WeekendScheduleFractions>
             <MonthlyScheduleMultipliers>1.248,1.257,0.993,0.989,0.993,0.827,0.821,0.821,0.827,0.99,0.987,1.248</MonthlyScheduleMultipliers>
