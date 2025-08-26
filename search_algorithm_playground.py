@@ -49,6 +49,7 @@ def main(filepath):
         "simulation_result_stats",
         "existing_home",
         "existing_home_sim_results",
+        "all_simulation_results",
     ]
     for record in logbook:
         rec = record.copy()

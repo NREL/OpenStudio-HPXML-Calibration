@@ -180,6 +180,7 @@ def calibrate(
     config_filepath: str | None = None,
     output_dir: str | None = None,
     num_proc: int | None = None,
+    debug: bool = False,
 ) -> None:
     """
     Run calibration using a genetic algorithm on an HPXML file.
@@ -229,7 +230,7 @@ def calibrate(
         weather_norm_reg_models,
         inv_model,
         existing_home_results,
-    ) = cal.run_search(num_proc=num_proc, output_filepath=output_filepath)
+    ) = cal.run_search(num_proc=num_proc, output_filepath=output_filepath, debug=debug)
     logger.info(f"Calibration took {time.time() - start:.2f} seconds")
 
     # Save logbook
@@ -241,6 +242,7 @@ def calibrate(
         "simulation_result_stats",
         "existing_home",
         "existing_home_sim_results",
+        "all_simulation_results",
     ]
     for record in logbook:
         rec = record.copy()

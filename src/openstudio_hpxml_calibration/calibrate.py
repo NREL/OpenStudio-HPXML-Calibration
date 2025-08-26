@@ -668,6 +668,7 @@ class Calibrate:
         mutpb=None,
         num_proc=None,
         output_filepath=None,
+        debug=False,
     ):
         print(f"Running search algorithm for '{Path(self.hpxml_filepath).name}'...")
 
@@ -1271,18 +1272,22 @@ class Calibrate:
 
             # Simulation result statistics
             sim_result_stats = {}
-            all_results = [ind.sim_results for ind in pop if hasattr(ind, "sim_results")]
+            all_results = {
+                ind.temp_output_dir.stem: ind.sim_results
+                for ind in pop
+                if hasattr(ind, "sim_results")
+            }
             if all_results:
                 fuel_enduse_keys = {
                     (fuel_type, end_use)
-                    for r in all_results
+                    for r in all_results.values()
                     for fuel_type, end_uses in r.items()
                     for end_use in end_uses
                 }
                 for fuel_type, end_use in fuel_enduse_keys:
                     vals = [
                         r[fuel_type][end_use]
-                        for r in all_results
+                        for r in all_results.values()
                         if fuel_type in r and end_use in r[fuel_type]
                     ]
                     if vals:
@@ -1297,6 +1302,8 @@ class Calibrate:
             record["diversity"] = diversity(pop)
             record["parameter_choice_stats"] = json.dumps(param_stats)
             record["simulation_result_stats"] = json.dumps(sim_result_stats)
+            if debug:
+                record["all_simulation_results"] = json.dumps(all_results)
             logbook.record(gen=0, nevals=len(invalid_ind), **record)
             print(logbook.stream)
 
@@ -1374,18 +1381,22 @@ class Calibrate:
 
                 # Simulation result statistics
                 sim_result_stats = {}
-                all_results = [ind.sim_results for ind in pop if hasattr(ind, "sim_results")]
+                all_results = {
+                    ind.temp_output_dir.stem: ind.sim_results
+                    for ind in pop
+                    if hasattr(ind, "sim_results")
+                }
                 if all_results:
                     fuel_enduse_keys = {
                         (fuel_type, end_use)
-                        for r in all_results
+                        for r in all_results.values()
                         for fuel_type, end_uses in r.items()
                         for end_use in end_uses
                     }
                     for fuel_type, end_use in fuel_enduse_keys:
                         vals = [
                             r[fuel_type][end_use]
-                            for r in all_results
+                            for r in all_results.values()
                             if fuel_type in r and end_use in r[fuel_type]
                         ]
                         if vals:
@@ -1402,6 +1413,8 @@ class Calibrate:
                 record["diversity"] = diversity(pop)
                 record["parameter_choice_stats"] = json.dumps(param_stats)
                 record["simulation_result_stats"] = json.dumps(sim_result_stats)
+                if debug:
+                    record["all_simulation_results"] = json.dumps(all_results)
                 logbook.record(gen=gen, nevals=len(invalid_ind), **record)
                 print(logbook.stream)
 
