@@ -834,7 +834,7 @@ class Calibrate:
             print(logbook.stream)
 
             for gen in range(1, generations + 1):
-                logger.info(f"Running {len(pop)} simulations for search generation {gen}...")
+                print(f"Running {len(pop)} simulations for search generation {gen}...")
 
                 # Elitism: Copy the best individuals
                 elite = [copy.deepcopy(ind) for ind in tools.selBest(pop, k=1)]
