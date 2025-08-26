@@ -4,19 +4,16 @@ import shutil
 import subprocess
 import sys
 import time
-import zipfile
 from importlib.metadata import version
 from pathlib import Path
 from typing import Annotated
 
 import matplotlib.pyplot as plt
-import requests
 from cyclopts import App, Parameter
 from loguru import logger
 from matplotlib.ticker import MaxNLocator
-from tqdm import tqdm
 
-from openstudio_hpxml_calibration.utils import OS_HPXML_PATH, calculate_sha256, get_cache_dir
+from openstudio_hpxml_calibration.utils import OS_HPXML_PATH, get_tmy3_weather
 
 from .enums import Format, Granularity
 
@@ -30,6 +27,8 @@ app = App(
 def set_log_level(verbose: int = 0) -> None:
     logger.remove()
     if verbose >= 2:
+        logger.add(sys.stderr, level="TRACE")
+    if verbose == 2:
         logger.add(sys.stderr, level="DEBUG")
     elif verbose == 1:
         logger.add(sys.stderr, level="INFO")
@@ -149,48 +148,9 @@ def modify_xml(
 def download_weather(
     verbose: Annotated[list[bool], Parameter(alias="-v")] = (),
 ) -> None:
-    # TODO: move the code for this to a separate module
-    """Download TMY3 weather files from NREL
-
-    Parameters
-    ----------
-    verbose: flag
-        Enable verbose logging. Repeat flag for more verbosity.
-    """
     verbosity = sum(verbose)
     set_log_level(verbosity)
-    weather_files_url = "https://data.nrel.gov/system/files/128/tmy3s-cache-csv.zip"
-    weather_zip_filename = weather_files_url.split("/")[-1]
-    weather_zip_sha256 = "58f5d2821931e235de34a5a7874f040f7f766b46e5e6a4f85448b352de4c8846"
-
-    # Download file
-    cache_dir = get_cache_dir()
-    weather_zip_filepath = cache_dir / weather_zip_filename
-    if not (
-        weather_zip_filepath.exists()
-        and calculate_sha256(weather_zip_filepath) == weather_zip_sha256
-    ):
-        resp = requests.get(weather_files_url, stream=True, timeout=10)
-        resp.raise_for_status()
-        total_size = int(resp.headers.get("content-length", 0))
-        block_size = 8192
-        with (
-            tqdm(total=total_size, unit="iB", unit_scale=True, desc=weather_zip_filename) as pbar,
-            open(weather_zip_filepath, "wb") as f,
-        ):
-            for chunk in resp.iter_content(chunk_size=block_size):
-                if chunk:
-                    f.write(chunk)
-                    pbar.update(len(chunk))
-
-    # Extract weather files
-    logger.debug(f"zip saved to: {weather_zip_filepath}")
-    weather_dir = OS_HPXML_PATH / "weather"
-    logger.debug(f"Extracting weather files to {weather_dir}")
-    with zipfile.ZipFile(weather_zip_filepath, "r") as zf:
-        for filename in tqdm(zf.namelist(), desc="Extracting epws"):
-            if filename.endswith(".epw") and not (weather_dir / filename).exists():
-                zf.extract(filename, path=weather_dir)
+    get_tmy3_weather()
 
 
 @app.command
