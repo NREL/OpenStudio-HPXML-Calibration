@@ -4,18 +4,15 @@ import shutil
 import subprocess
 import time
 import zipfile
-import numpy as np
 from importlib.metadata import version
 from pathlib import Path
 
-import matplotlib.pyplot as plt
 import requests
 from cyclopts import App
 from loguru import logger
-from matplotlib.ticker import MaxNLocator
 from tqdm import tqdm
 
-from openstudio_hpxml_calibration.utils import OS_HPXML_PATH, calculate_sha256, get_cache_dir
+from openstudio_hpxml_calibration.utils import OS_HPXML_PATH, calculate_sha256, get_cache_dir, plot_fuel_type_curve_fits, plot_min_penalty, plot_avg_penalty, plot_bias_error_series, plot_absolute_error_series
 
 from .enums import Format, Granularity
 
@@ -251,146 +248,14 @@ def calibrate(
     min_penalty = [entry["min"] for entry in logbook]
     avg_penalty = [entry["avg"] for entry in logbook]
 
-    # Plot Min Penalty
-    plt.figure(figsize=(10, 6))
-    plt.plot(min_penalty, label="Min Penalty")
-    plt.xlabel("Generation")
-    plt.ylabel("Penalty")
-    plt.title("Min Penalty Over Generations")
-    plt.legend()
-    plt.grid(True)
-    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
-    plt.tight_layout()
-    plt.savefig(str(output_filepath / "min_penalty_plot.png"))
-    plt.close()
+    # plot calibration results
+    plot_min_penalty(min_penalty, output_filepath)
+    plot_avg_penalty(avg_penalty, output_filepath)
+    plot_bias_error_series(logbook, output_filepath)
+    plot_absolute_error_series(logbook, output_filepath)
 
-    # Plot Avg Penalty
-    plt.figure(figsize=(10, 6))
-    plt.plot(avg_penalty, label="Avg Penalty")
-    plt.xlabel("Generation")
-    plt.ylabel("Penalty")
-    plt.title("Avg Penalty Over Generations")
-    plt.legend()
-    plt.grid(True)
-    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
-    plt.tight_layout()
-    plt.savefig(str(output_filepath / "avg_penalty_plot.png"))
-    plt.close()
-
-    # Bias error series
-    best_bias_series = {}
-    for entry in logbook:
-        for key, value in entry.items():
-            # Skip zero values to avoid cluttering the plot
-            if value == 0:
-                continue
-            if key.startswith("bias_error_"):
-                best_bias_series.setdefault(key, []).append(value)
-
-    plt.figure(figsize=(12, 6))
-    for key, values in best_bias_series.items():
-        label = key.replace("bias_error_", "")
-        plt.plot(values, label=label)
-    plt.xlabel("Generation")
-    plt.ylabel("Bias Error (%)")
-    plt.title("Per-End-Use Bias Error Over Generations")
-    plt.legend(loc="best", fontsize="small")
-    plt.grid(True)
-    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
-    plt.tight_layout()
-    plt.savefig(str(output_filepath / "bias_error_plot.png"), bbox_inches="tight")
-    plt.close()
-
-    # Absolute error series
-    best_abs_series = {}
-    for entry in logbook:
-        for key, value in entry.items():
-            # Skip zero values to avoid cluttering the plot
-            if value == 0:
-                continue
-            if key.startswith("abs_error_"):
-                best_abs_series.setdefault(key, []).append(value)
-
-    electric_keys = [k for k in best_abs_series if "electricity" in k]
-    fuel_keys = [
-        k for k in best_abs_series if "natural gas" in k or "fuel oil" in k or "propane" in k
-    ]
-
-    fig, ax1 = plt.subplots(figsize=(12, 6))
-    ax2 = ax1.twinx()
-    colors = plt.cm.tab20.colors
-
-    for i, key in enumerate(electric_keys):
-        ax1.plot(
-            best_abs_series[key],
-            label=key.replace("abs_error_", "") + " (kWh)",
-            color=colors[i % len(colors)],
-        )
-    for i, key in enumerate(fuel_keys):
-        ax2.plot(
-            best_abs_series[key],
-            label=key.replace("abs_error_", "") + " (MBtu)",
-            color=colors[(i + len(electric_keys)) % len(colors)],
-        )
-
-    ax1.set_xlabel("Generation")
-    ax1.set_ylabel("Electricity Abs Error (kWh)", color="blue")
-    ax2.set_ylabel("Fossil Fuel Abs Error (MBtu)", color="red")
-    plt.title("Per-End-Use Absolute Errors Over Generations")
-    lines1, labels1 = ax1.get_legend_handles_labels()
-    lines2, labels2 = ax2.get_legend_handles_labels()
-    ax1.legend(lines1 + lines2, labels1 + labels2, loc="best", fontsize="small")
-    ax1.grid(True)
-    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
-    plt.tight_layout()
-    plt.savefig(str(output_filepath / "absolute_error_plot.png"), bbox_inches="tight")
-    plt.close()
-
-    for fuel_type, bills in inv_model.bills_by_fuel_type.items():
-        model = inv_model.get_model(fuel_type)
-        bills_temps = inv_model.bills_weather_by_fuel_type_in_btu[fuel_type]
-        temps_range = np.linspace(bills_temps["avg_temp"].min(), bills_temps["avg_temp"].max(), 500)
-        fig = plt.figure(figsize=(8, 6))
-        daily_consumption_pred = model(temps_range)
-        cvrmse = model.calc_cvrmse(bills_temps)
-        num_params = len(model.parameters)
-        if num_params == 5:
-            plt.plot(
-                temps_range,
-                daily_consumption_pred,
-                label=(
-                    f"{model.MODEL_NAME}, CVRMSE = {cvrmse:.1%}\n Model parameters:\n"
-                    f"1) Baseload value: {model.parameters[0]:.3f}\n"
-                    f"2) Slopes: {model.parameters[1]:.3f}, {model.parameters[2]:.3f}\n"
-                    f"3) Inflection points: {model.parameters[-2]:.1f}, {model.parameters[-1]:.1f}"
-                ),
-            )
-        elif num_params == 3:
-            plt.plot(
-                temps_range,
-                daily_consumption_pred,
-                label=(
-                    f"{model.MODEL_NAME}, CVRMSE = {cvrmse:.1%}\n Model parameters:\n"
-                    f"1) Baseload value: {model.parameters[0]:.3f}\n"
-                    f"2) Slope: {model.parameters[1]:.3f}\n"
-                    f"3) Inflection point: {model.parameters[-1]:.1f}"
-                ),
-            )
-        plt.scatter(
-            bills_temps["avg_temp"],
-            bills_temps["daily_consumption"],
-            label="data",
-            color="darkgreen",
-        )
-        plt.title(f"{filename} {fuel_type.value}")
-        plt.xlabel("Avg Daily Temperature [degF]")
-        plt.ylabel("Daily Consumption [BTU]")
-        plt.legend()
-        fig.savefig(
-            output_filepath / f"curve_fit_{fuel_type.value}.png",
-            dpi=200,
-        )
-        plt.close(fig)
+    # Plot fuel type curve fits
+    plot_fuel_type_curve_fits(inv_model, output_filepath, filename)
 
 
 if __name__ == "__main__":
