@@ -169,17 +169,31 @@ class HpxmlDoc:
         heating_fuels = set()
         cooling_fuels = set()
         for hvac_system in building.BuildingDetails.Systems.HVAC.HVACPlant:
-            try:
-                heating_fuels.add(hvac_system.HeatingSystem.HeatingSystemFuel.text.strip())
-                cooling_fuels.add(hvac_system.CoolingSystem.CoolingSystemFuel.text.strip())
-                heating_fuels.add(
-                    hvac_system.CoolingSystem.IntegratedHeatingSystemFuel.text.strip()
-                )
-                heating_fuels.add(hvac_system.HeatPump.HeatPumpFuel.text.strip())
-                heating_fuels.add(hvac_system.HeatPump.BackupSystemFuel.text.strip())
-                cooling_fuels.add(hvac_system.HeatPump.HeatPumpFuel.text.strip())
-            except AttributeError:
-                continue
+            if hasattr(hvac_system, "HeatingSystem") and hasattr(
+                hvac_system.HeatingSystem, "HeatingSystemFuel"
+            ):
+                heating_fuel = hvac_system.HeatingSystem.HeatingSystemFuel.text
+                heating_fuels.add(heating_fuel.strip())
+
+            if hasattr(hvac_system, "CoolingSystem") and hasattr(
+                hvac_system.CoolingSystem, "CoolingSystemFuel"
+            ):
+                cooling_fuel = hvac_system.CoolingSystem.CoolingSystemFuel.text
+                cooling_fuels.add(cooling_fuel.strip())
+                if hasattr(hvac_system.CoolingSystem, "IntegratedHeatingSystemFuel"):
+                    integrated_heating_fuel = (
+                        hvac_system.CoolingSystem.IntegratedHeatingSystemFuel.text
+                    )
+                    heating_fuels.add(integrated_heating_fuel.strip())
+
+            if hasattr(hvac_system, "HeatPump"):
+                if hasattr(hvac_system.HeatPump, "HeatPumpFuel"):
+                    heat_pump_fuel = hvac_system.HeatPump.HeatPumpFuel.text
+                    heating_fuels.add(heat_pump_fuel.strip())
+                    cooling_fuels.add(heat_pump_fuel.strip())
+                if hasattr(hvac_system.HeatPump, "BackupSystemFuel"):
+                    backup_fuel = hvac_system.HeatPump.BackupSystemFuel.text
+                    heating_fuels.add(backup_fuel.strip())
 
         return heating_fuels, cooling_fuels
 

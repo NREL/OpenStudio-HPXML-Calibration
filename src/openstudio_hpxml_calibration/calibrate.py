@@ -553,10 +553,16 @@ class Calibrate:
 
             # Total covered span must meet min_days
             if (last_end - first_start).days < min_days:
+                logger.debug(
+                    f"Found {(last_end - first_start).days} days of consumption data between {first_start} and {last_end}"
+                )
                 return False
 
             # Most recent bill must be within allowed age
             if (now - last_end).days > recent_bill_max_age_days:
+                logger.debug(
+                    f"Found {(now - last_end).days} days since most recent bill, {last_end}"
+                )
                 return False
 
             # No future dates
@@ -565,6 +571,9 @@ class Calibrate:
                     _parse_dt(bill_info.StartDateTime) > now
                     or _parse_dt(bill_info.EndDateTime) > now
                 ):
+                    logger.debug(
+                        f"Found future date in bill info: {bill_info.StartDateTime} - {bill_info.EndDateTime}"
+                    )
                     return False
             return True
 
