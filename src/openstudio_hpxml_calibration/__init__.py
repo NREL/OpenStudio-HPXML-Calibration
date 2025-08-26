@@ -148,6 +148,7 @@ def modify_xml(
 def download_weather(
     verbose: Annotated[list[bool], Parameter(alias="-v")] = (),
 ) -> None:
+    """Download TMY3 weather files from NREL"""
     verbosity = sum(verbose)
     set_log_level(verbosity)
     get_tmy3_weather()
