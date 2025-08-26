@@ -180,6 +180,11 @@ class HpxmlDoc:
             ):
                 cooling_fuel = hvac_system.CoolingSystem.CoolingSystemFuel.text
                 cooling_fuels.add(cooling_fuel.strip())
+                if hasattr(hvac_system.CoolingSystem, "IntegratedHeatingSystemFuel"):
+                    integrated_heating_fuel = (
+                        hvac_system.CoolingSystem.IntegratedHeatingSystemFuel.text
+                    )
+                    heating_fuels.add(integrated_heating_fuel.strip())
 
             if hasattr(hvac_system, "HeatPump"):
                 if hasattr(hvac_system.HeatPump, "HeatPumpFuel"):

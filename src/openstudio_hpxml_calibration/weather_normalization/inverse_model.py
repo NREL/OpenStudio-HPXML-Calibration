@@ -38,7 +38,9 @@ class InverseModel:
             bills_weather = self.bills_weather_by_fuel_type_in_btu[fuel_type]
             model = fit_model(
                 bills_weather,
-                cvrmse_requirement=self.user_config["weather_normalization"]["max_cvrmse"],
+                cvrmse_requirement=self.user_config["acceptance_criteria"][
+                    "bill_regression_max_cvrmse"
+                ],
             )
             self.regression_models[fuel_type] = model
             return model
