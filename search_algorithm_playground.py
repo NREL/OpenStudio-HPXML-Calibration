@@ -6,7 +6,13 @@ import time
 from pathlib import Path
 
 from openstudio_hpxml_calibration.calibrate import Calibrate
-from openstudio_hpxml_calibration.utils import plot_fuel_type_curve_fits, plot_min_penalty, plot_avg_penalty, plot_bias_error_series, plot_absolute_error_series
+from openstudio_hpxml_calibration.utils import (
+    plot_absolute_error_series,
+    plot_avg_penalty,
+    plot_bias_error_series,
+    plot_fuel_type_curve_fits,
+    plot_min_penalty,
+)
 
 
 def main(filepath):

@@ -1,13 +1,13 @@
 import hashlib
 import os
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.ticker import MaxNLocator
 from pathlib import Path
 
+import matplotlib.pyplot as plt
+import numpy as np
 import platformdirs
 import yaml
 from loguru import logger
+from matplotlib.ticker import MaxNLocator
 
 OS_HPXML_PATH = Path(__file__).resolve().parent.parent / "OpenStudio-HPXML"
 
