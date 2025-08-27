@@ -37,7 +37,7 @@
         "enclosure_air_leakage": "10 ACH50",
         "hvac_heating_system": "Electric Resistance",
         "hvac_heating_system_fuel": "Electricity",
-        "hvac_cooling_system": "Central AC, SEER 14",
+        "hvac_cooling_system": "Central AC, SEER 14.0",
         "hvac_heat_pump": "None",
         "hvac_control_heating_weekday_setpoint": "66",
         "hvac_control_heating_weekend_setpoint": "66",
