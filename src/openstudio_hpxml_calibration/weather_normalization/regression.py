@@ -331,6 +331,6 @@ def fit_model(
         and (cvrmse := best_model.calc_cvrmse(bills_temps)) > cvrmse_requirement
     ):
         raise Bpi2400ModelFitError(
-            f"CVRMSE = {cvrmse:0.1%}, which is greater than {cvrmse_requirement:0.1%}"
+            f"CVRMSE = {cvrmse:0.1%} for {fuel_type.value}, which is greater than {cvrmse_requirement:0.1%}"
         )
     return best_model
