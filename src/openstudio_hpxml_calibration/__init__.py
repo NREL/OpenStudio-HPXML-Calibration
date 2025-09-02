@@ -59,7 +59,7 @@ def run_sim(
     output_format: Format | None = None,
     output_dir: str | None = None,
     granularity: Granularity | None = None,
-    debug: bool = False,
+    validate: bool = False,
     verbose: Annotated[list[bool], Parameter(alias="-v")] = (),
 ) -> None:
     """Simulate an HPXML file using the OpenStudio-HPXML workflow
@@ -74,6 +74,8 @@ def run_sim(
         Output directory to save simulation results dir. Default is HPXML file dir.
     granularity: str
         Granularity of simulation results. Annual results returned if not provided.
+    validate: flag
+        Enable validation of the HPXML file before simulation.
     verbose: flag
         Enable verbose logging. Repeat flag for more verbosity.
     """
@@ -94,7 +96,7 @@ def run_sim(
     if output_dir is not None:
         output_dir = ["--output-dir", output_dir]
         run_simulation_command.extend(output_dir)
-    if debug:
+    if validate:
         # the run_simulation.rb script sets skip-validation to false by default.
         # By not including it here, we perform the validation.
         # We also add the --debug flag to enable debug mode for run_simulation.rb.
