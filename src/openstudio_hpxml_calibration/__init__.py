@@ -180,7 +180,7 @@ def calibrate(
     config_filepath: str | None = None,
     output_dir: str | None = None,
     num_proc: int | None = None,
-    debug: bool = False,
+    save_all_results: bool = False,
 ) -> None:
     """
     Run calibration using a genetic algorithm on an HPXML file.
@@ -197,6 +197,8 @@ def calibrate(
         Optional output directory to save results
     num_proc: int
         Optional number of processors for parallel simulations
+    save_all_results: bool
+        Whether to save all simulation results. Default is False.
     """
 
     from openstudio_hpxml_calibration.calibrate import Calibrate
@@ -230,7 +232,9 @@ def calibrate(
         weather_norm_reg_models,
         inv_model,
         existing_home_results,
-    ) = cal.run_search(num_proc=num_proc, output_filepath=output_filepath, debug=debug)
+    ) = cal.run_search(
+        num_proc=num_proc, output_filepath=output_filepath, save_all_results=save_all_results
+    )
     logger.info(f"Calibration took {time.time() - start:.2f} seconds")
 
     # Save logbook

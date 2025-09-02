@@ -668,7 +668,7 @@ class Calibrate:
         mutpb=None,
         num_proc=None,
         output_filepath=None,
-        debug=False,
+        save_all_results=False,
     ):
         print(f"Running search algorithm for '{Path(self.hpxml_filepath).name}'...")
 
@@ -1302,7 +1302,7 @@ class Calibrate:
             record["diversity"] = diversity(pop)
             record["parameter_choice_stats"] = json.dumps(param_stats)
             record["simulation_result_stats"] = json.dumps(sim_result_stats)
-            if debug:
+            if save_all_results:
                 record["all_simulation_results"] = json.dumps(all_results)
             logbook.record(gen=0, nevals=len(invalid_ind), **record)
             print(logbook.stream)
@@ -1413,7 +1413,7 @@ class Calibrate:
                 record["diversity"] = diversity(pop)
                 record["parameter_choice_stats"] = json.dumps(param_stats)
                 record["simulation_result_stats"] = json.dumps(sim_result_stats)
-                if debug:
+                if save_all_results:
                     record["all_simulation_results"] = json.dumps(all_results)
                 logbook.record(gen=gen, nevals=len(invalid_ind), **record)
                 print(logbook.stream)
