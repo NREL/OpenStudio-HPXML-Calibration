@@ -2,7 +2,6 @@ import json
 import pathlib
 import sys
 
-import numpy as np
 import pandas as pd
 import pytest
 from matplotlib import pyplot as plt
@@ -10,7 +9,7 @@ from matplotlib import pyplot as plt
 import openstudio_hpxml_calibration.weather_normalization.utility_data as ud
 from openstudio_hpxml_calibration.hpxml import HpxmlDoc
 from openstudio_hpxml_calibration.units import convert_units
-from openstudio_hpxml_calibration.utils import _load_config
+from openstudio_hpxml_calibration.utils import _load_config, plot_fuel_type_curve_fits
 from openstudio_hpxml_calibration.weather_normalization.inverse_model import InverseModel
 
 test_config = _load_config("tests/data/test_config.yaml")
@@ -104,60 +103,18 @@ def test_curve_fit(results_dir, filename):
     hpxml = HpxmlDoc(filename)
     inv_model = InverseModel(hpxml, user_config=test_config)
     successful_fits = 0  # Track number of successful fits
+    output_filepath = results_dir / "weather_normalization"
+
+    plot_fuel_type_curve_fits(inv_model, output_filepath, filename.stem)
 
     for fuel_type, bills in inv_model.bills_by_fuel_type.items():
         model = inv_model.get_model(fuel_type)
         bills_temps = inv_model.bills_weather_by_fuel_type_in_btu[fuel_type]
-        temps_range = np.linspace(bills_temps["avg_temp"].min(), bills_temps["avg_temp"].max(), 500)
-        fig = plt.figure(figsize=(8, 6))
-        daily_consumption_pred = model(temps_range)
         cvrmse = model.calc_cvrmse(bills_temps)
-        num_params = len(model.parameters)
-        if num_params == 5:
-            plt.plot(
-                temps_range,
-                daily_consumption_pred,
-                label=(
-                    f"{model.MODEL_NAME}, CVRMSE = {cvrmse:.1%}\n Model parameters:\n"
-                    f"1) Baseload value: {model.parameters[0]:.3f}\n"
-                    f"2) Slopes: {model.parameters[1]:.3f}, {model.parameters[2]:.3f}\n"
-                    f"3) Inflection points: {model.parameters[-2]:.1f}, {model.parameters[-1]:.1f}"
-                ),
-            )
-        elif num_params == 3:
-            plt.plot(
-                temps_range,
-                daily_consumption_pred,
-                label=(
-                    f"{model.MODEL_NAME}, CVRMSE = {cvrmse:.1%}\n Model parameters:\n"
-                    f"1) Baseload value: {model.parameters[0]:.3f}\n"
-                    f"2) Slope: {model.parameters[1]:.3f}\n"
-                    f"3) Inflection point: {model.parameters[-1]:.1f}"
-                ),
-            )
-        plt.scatter(
-            bills_temps["avg_temp"],
-            bills_temps["daily_consumption"],
-            label="data",
-            color="darkgreen",
-        )
-        plt.title(f"{filename.stem} {fuel_type.value}")
-        plt.xlabel("Avg Daily Temperature [degF]")
-        plt.ylabel("Daily Consumption [BTU]")
-        plt.legend()
-        fig.savefig(
-            results_dir / "weather_normalization" / f"{filename.stem}_{fuel_type.value}_fit.png",
-            dpi=200,
-        )
-        plt.close(fig)
-        # TODO: reinstate this check, but for now some are coming in with larger CVRMSE
-        # assert cvrmse <= 0.2
 
         # Save CVRMSE result per test
         individual_result = {f"{filename.stem}_{fuel_type}": cvrmse}
-        json_path = (
-            results_dir / "weather_normalization" / f"{filename.stem}_{fuel_type.value}.json"
-        )
+        json_path = output_filepath / f"{filename.stem}_{fuel_type.value}.json"
         with open(json_path, "w") as f:
             json.dump(individual_result, f, indent=2)
 

@@ -111,11 +111,11 @@ def plot_fuel_type_curve_fits(inv_model, output_filepath, filename: str) -> None
         plt.xlabel("Avg Daily Temperature [degF]")
         plt.ylabel("Daily Consumption [BTU]")
         plt.legend()
-        fig.savefig(output_filepath / f"curve_fit_{fuel_type.value}.png", dpi=200)
+        fig.savefig(output_filepath / f"{filename}_{fuel_type.value}_curve_fit.png", dpi=200)
         plt.close(fig)
 
 
-def plot_min_penalty(min_penalty, output_filepath):
+def plot_min_penalty(min_penalty, output_filepath, filename):
     plt.figure(figsize=(10, 6))
     plt.plot(min_penalty, label="Min Penalty")
     plt.xlabel("Generation")
@@ -125,11 +125,11 @@ def plot_min_penalty(min_penalty, output_filepath):
     plt.grid(True)
     plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
     plt.tight_layout()
-    plt.savefig(str(output_filepath / "min_penalty_plot.png"))
+    plt.savefig(str(output_filepath / f"{filename}_min_penalty_plot.png"))
     plt.close()
 
 
-def plot_avg_penalty(avg_penalty, output_filepath):
+def plot_avg_penalty(avg_penalty, output_filepath, filename):
     plt.figure(figsize=(10, 6))
     plt.plot(avg_penalty, label="Avg Penalty")
     plt.xlabel("Generation")
@@ -139,11 +139,11 @@ def plot_avg_penalty(avg_penalty, output_filepath):
     plt.grid(True)
     plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
     plt.tight_layout()
-    plt.savefig(str(output_filepath / "avg_penalty_plot.png"))
+    plt.savefig(str(output_filepath / f"{filename}_avg_penalty_plot.png"))
     plt.close()
 
 
-def plot_bias_error_series(logbook, output_filepath):
+def plot_bias_error_series(logbook, output_filepath, filename):
     best_bias_series = {}
     for entry in logbook:
         for key, value in entry.items():
@@ -163,11 +163,11 @@ def plot_bias_error_series(logbook, output_filepath):
     plt.grid(True)
     plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
     plt.tight_layout()
-    plt.savefig(str(output_filepath / "bias_error_plot.png"), bbox_inches="tight")
+    plt.savefig(str(output_filepath / f"{filename}_bias_error_plot.png"), bbox_inches="tight")
     plt.close()
 
 
-def plot_absolute_error_series(logbook, output_filepath):
+def plot_absolute_error_series(logbook, output_filepath, filename):
     best_abs_series = {}
     for entry in logbook:
         for key, value in entry.items():
@@ -208,7 +208,7 @@ def plot_absolute_error_series(logbook, output_filepath):
     ax1.grid(True)
     plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
     plt.tight_layout()
-    plt.savefig(str(output_filepath / "absolute_error_plot.png"), bbox_inches="tight")
+    plt.savefig(str(output_filepath / f"{filename}_absolute_error_plot.png"), bbox_inches="tight")
     plt.close()
 
 

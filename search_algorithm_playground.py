@@ -79,10 +79,10 @@ def main(filepath):
     avg_penalty = [entry["avg"] for entry in logbook]
 
     # plot calibration results
-    plot_min_penalty(min_penalty, output_filepath)
-    plot_avg_penalty(avg_penalty, output_filepath)
-    plot_bias_error_series(logbook, output_filepath)
-    plot_absolute_error_series(logbook, output_filepath)
+    plot_min_penalty(min_penalty, output_filepath, filename)
+    plot_avg_penalty(avg_penalty, output_filepath, filename)
+    plot_bias_error_series(logbook, output_filepath, filename)
+    plot_absolute_error_series(logbook, output_filepath, filename)
 
     # Plot fuel type curve fits
     plot_fuel_type_curve_fits(inv_model, output_filepath, filename)
