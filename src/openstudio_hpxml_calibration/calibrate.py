@@ -25,6 +25,7 @@ from openstudio_hpxml_calibration.weather_normalization.degree_days import (
     calculate_annual_degree_days,
 )
 from openstudio_hpxml_calibration.weather_normalization.inverse_model import InverseModel
+from openstudio_hpxml_calibration.weather_normalization.regression import Bpi2400ModelFitError
 
 # Ensure the creator is only created once
 if "FitnessMin" not in creator.__dict__:
@@ -89,11 +90,10 @@ class Calibrate:
 
                 return subset
 
-            epw_daily = convert_units(
-                x=self.inv_model.predict_epw_daily(fuel_type=fuel_type), from_="btu", to_="kbtu"
-            )
+            predicted_daily_btu = self.inv_model.predict_epw_daily(fuel_type=fuel_type)
+            epw_daily_kbtu = convert_units(x=predicted_daily_btu, from_="btu", to_="kbtu")
 
-            epw_daily_mbtu = convert_units(epw_daily, from_="kbtu", to_="mbtu")
+            epw_daily_mbtu = convert_units(epw_daily_kbtu, from_="kbtu", to_="mbtu")
 
             normalized_consumption[fuel_type.value] = pd.DataFrame(
                 data=bills.apply(_calculate_wrapped_total, axis=1)
@@ -466,11 +466,22 @@ class Calibrate:
                             # Merge results, prefer later sections if duplicate fuel keys
                             comparison[fuel] = simplified_calibration_results.get(fuel, {})
                         else:
-                            normalized_consumption = self.get_normalized_consumption_per_bill()
-                            # Merge results, prefer later sections if duplicate fuel keys
-                            comparison.update(
-                                self.compare_results(normalized_consumption, simulation_results)
-                            )
+                            try:
+                                normalized_consumption = self.get_normalized_consumption_per_bill()
+                                # Merge results, prefer later sections if duplicate fuel keys
+                                comparison.update(
+                                    self.compare_results(normalized_consumption, simulation_results)
+                                )
+                            except Bpi2400ModelFitError:
+                                logger.warning(
+                                    "Could not normalize consumption to weather with sufficient accuracy. "
+                                    "Switching to simplified calibration technique."
+                                )
+                                simplified_calibration_results = self.simplified_annual_usage(
+                                    simulation_results, fuel_info, fuel
+                                )
+                                # Merge results, prefer later sections if duplicate fuel keys
+                                comparison[fuel] = simplified_calibration_results.get(fuel, {})
                 for model_fuel_type, result in comparison.items():
                     bias_error_criteria = self.ga_config["acceptance_criteria"][
                         "bias_error_threshold"
