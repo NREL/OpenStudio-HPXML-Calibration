@@ -170,7 +170,7 @@ def test_curve_fit(results_dir, filename):
 
 
 # Use flaky to address intermittent tcl errors on Windows https://stackoverflow.com/questions/71443540/intermittent-pytest-failures-complaining-about-missing-tcl-files-even-though-the
-# @pytest.mark.flaky(max_runs=3)
+@pytest.mark.flaky(max_runs=3)
 # Skipping because of this bug in Python https://github.com/python/cpython/issues/125235#issuecomment-2412948604
 @pytest.mark.skipif(
     sys.platform == "win32"
