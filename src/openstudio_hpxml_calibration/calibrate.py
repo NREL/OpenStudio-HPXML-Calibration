@@ -473,7 +473,7 @@ class Calibrate:
                                     self.compare_results(normalized_consumption, simulation_results)
                                 )
                             except Bpi2400ModelFitError:
-                                logger.warning(
+                                logger.info(
                                     "Could not normalize consumption to weather with sufficient accuracy. "
                                     "Switching to simplified calibration technique."
                                 )
