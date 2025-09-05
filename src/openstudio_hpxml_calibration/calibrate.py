@@ -396,9 +396,9 @@ class Calibrate:
         ]
         lighting_load_multiplier_choices = cfg["value_choices"]["lighting_load_multiplier_choices"]
 
-        normalized_consumption_per_bill, inv_model = self.get_normalized_consumption_per_bill()
+        normalized_consumption_per_bill = self.get_normalized_consumption_per_bill()
         weather_norm_regression_models = {}
-        for fuel, reg_model in inv_model.regression_models.items():
+        for fuel, reg_model in self.inv_model.regression_models.items():
             weather_norm_regression_models[fuel.value] = {
                 "model_type": getattr(reg_model, "MODEL_NAME", None),
                 "cvrmse": getattr(reg_model, "cvrmse", None),
