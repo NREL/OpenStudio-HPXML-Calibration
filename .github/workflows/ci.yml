@@ -88,7 +88,8 @@ jobs:
         run: |
           for x in test_hpxmls/**/*.xml; do
             output_dir=all_calibration_outputs/$(basename "$x" .xml)
-            uv run openstudio-hpxml-calibration calibrate --hpxml-filepath $x --config-filepath tests/data/test_config.yaml --output-dir $output_dir --verbose --save-all-results
+            # TODO: Add --save-all-results
+            uv run openstudio-hpxml-calibration calibrate --hpxml-filepath $x --config-filepath tests/data/test_config.yaml --output-dir $output_dir --verbose
           done
 
       - name: Save calibration results
