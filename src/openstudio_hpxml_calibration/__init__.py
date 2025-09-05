@@ -26,9 +26,9 @@ app = App(
 
 def set_log_level(verbose: int = 0) -> None:
     logger.remove()
-    if verbose >= 2:
+    if verbose > 2:
         logger.add(sys.stderr, level="TRACE")
-    if verbose == 2:
+    elif verbose == 2:
         logger.add(sys.stderr, level="DEBUG")
     elif verbose == 1:
         logger.add(sys.stderr, level="INFO")
