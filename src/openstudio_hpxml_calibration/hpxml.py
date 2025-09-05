@@ -11,7 +11,7 @@ from loguru import logger
 from lxml import etree, isoschematron, objectify
 from pvlib.iotools import read_epw
 
-from openstudio_hpxml_calibration import OS_HPXML_PATH
+from openstudio_hpxml_calibration.utils import OS_HPXML_PATH
 
 
 class FuelType(Enum):

@@ -12,6 +12,7 @@ from openstudio_hpxml_calibration.hpxml import HpxmlDoc
 from openstudio_hpxml_calibration.units import convert_units
 from openstudio_hpxml_calibration.utils import _load_config
 from openstudio_hpxml_calibration.weather_normalization.inverse_model import InverseModel
+from openstudio_hpxml_calibration.weather_normalization.regression import fit_model
 
 test_config = _load_config("tests/data/test_config.yaml")
 
@@ -166,6 +167,40 @@ def test_curve_fit(results_dir, filename):
     assert successful_fits > 0, (
         f"No successful regression fits for {filename.stem}_{fuel_type.value}"
     )
+
+
+# Use flaky to address intermittent tcl errors on Windows https://stackoverflow.com/questions/71443540/intermittent-pytest-failures-complaining-about-missing-tcl-files-even-though-the
+@pytest.mark.flaky(max_runs=3)
+# Skipping because of this bug in Python https://github.com/python/cpython/issues/125235#issuecomment-2412948604
+@pytest.mark.skipif(
+    sys.platform == "win32"
+    and sys.version_info.major == 3
+    and sys.version_info.minor == 13
+    and sys.version_info.micro <= 2,
+    reason="Skipping Windows and Python <= 3.13.2 due to known bug",
+)
+@pytest.mark.parametrize(
+    "filename", ira_rebate_hpxmls + real_home_hpxmls + ihmh_home_hpxmls, ids=lambda x: x.stem
+)
+def test_fit_model(filename):
+    if filename.name in SKIP_FILENAMES:
+        pytest.skip(f"Skipping test for {filename.name}")
+    hpxml = HpxmlDoc(filename)
+    inv_model = InverseModel(hpxml, user_config=test_config)
+    heating_fuels, cooling_fuels = hpxml.get_fuel_types()
+    conditioning_fuels = heating_fuels | cooling_fuels
+
+    for fuel_type, bills in inv_model.bills_by_fuel_type.items():
+        bills_temps = inv_model.bills_weather_by_fuel_type_in_btu[fuel_type]
+
+        best_fitting_model = fit_model(
+            bills_temps,
+            test_config["acceptance_criteria"]["bill_regression_max_cvrmse"],
+            conditioning_fuels,
+            fuel_type,
+        )
+
+        assert best_fitting_model is not None
 
 
 def test_normalize_consumption_to_epw():
