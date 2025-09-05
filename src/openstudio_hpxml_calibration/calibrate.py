@@ -477,6 +477,7 @@ class Calibrate:
                                     "Could not normalize consumption to weather with sufficient accuracy. "
                                     "Switching to simplified calibration technique."
                                 )
+                                # TODO: Report calibration type in the logbook
                                 simplified_calibration_results = self.simplified_annual_usage(
                                     simulation_results, fuel_info, fuel
                                 )
