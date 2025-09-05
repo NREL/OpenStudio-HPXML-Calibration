@@ -25,24 +25,30 @@ jobs:
     permissions: write-all
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+
       - name: Install uv
         uses: astral-sh/setup-uv@v5
+
       - name: Install the package & dependencies
         run: |
           uv version
           uv sync
+
       - name: Lint & format
         run: uv run pre-commit run --all-files
+
       - name: Install OpenStudio on Linux
         if: runner.os == 'Linux'
         run: |
           wget -q -O OpenStudio.deb https://github.com/NREL/OpenStudio/releases/download/v${OS_VERSION}/OpenStudio-${OS_VERSION}+${OS_SHA}-Ubuntu-24.04-x86_64.deb
           sudo dpkg -i OpenStudio.deb
           rm OpenStudio.deb
+
       - name: Install OpenStudio on Windows
         if: runner.os == 'Windows'
         shell: pwsh
@@ -58,17 +64,36 @@ jobs:
           # Add the bin directory to PATH
           $OpenStudioBinPath = Join-Path $ExtractPath "bin"
           echo $OpenStudioBinPath >> $env:GITHUB_PATH
+
       - name: Download Weather
         run: uv run openstudio-hpxml-calibration download-weather
+
       - name: Measure unit tests
         run: |
           cd src/measures/ModifyXML/tests
           openstudio modify_xml_test.rb
+
       - name: Unit tests
         run: uv run pytest -v
+
       - name: Save test results
         uses: actions/upload-artifact@v4
         if: ${{ runner.os == 'Linux' && matrix.python-version == '3.13' }}
         with:
           name: test_results
           path: tests/results/*
+
+      - name: Calibrate test files
+        if: ${{ runner.os == 'Linux' && matrix.python-version == '3.13' }}
+        run: |
+          for x in test_hpxmls/**/*.xml; do
+            output_dir=all_calibration_outputs/$(basename "$x" .xml)
+            uv run openstudio-hpxml-calibration calibrate --hpxml-filepath $x --config-filepath tests/data/test_config.yaml --output-dir $output_dir --verbose --save-all-results
+          done
+
+      - name: Save calibration results
+        uses: actions/upload-artifact@v4
+        if: ${{ runner.os == 'Linux' && matrix.python-version == '3.13' }}
+        with:
+          name: calibration_results
+          path: all_calibration_outputs/*
