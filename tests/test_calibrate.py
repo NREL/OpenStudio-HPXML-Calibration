@@ -165,3 +165,18 @@ def test_calibrate_runs_successfully():
     )
     output_file = TEST_DIR / "calibration_results/ihmh4_test/logbook.json"
     assert output_file.exists()
+
+
+def test_calibrate_switches_to_simplified_correctly():
+    app(
+        [
+            "calibrate",
+            "test_hpxmls/ihmh_homes/ihmh5.xml",
+            "--config-filepath",
+            str(TEST_DATA_DIR / "test_config_no_cvrmse.yaml"),
+            "--output-dir",
+            "tests/ga_search_results/ihmh5_test",
+        ]
+    )
+    output_file = TEST_DIR / "ga_search_results/ihmh5_test/logbook.json"
+    assert output_file.exists()

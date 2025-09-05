@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import Bounds, curve_fit, minimize
 
+from openstudio_hpxml_calibration.hpxml import FuelType
+
 
 class UtilityBillRegressionModel:
     """Utility Bill Regression Model Base Class
@@ -287,7 +289,12 @@ class Bpi2400ModelFitError(Exception):
     pass
 
 
-def fit_model(bills_temps: pd.DataFrame, cvrmse_requirement: float) -> UtilityBillRegressionModel:
+def fit_model(
+    bills_temps: pd.DataFrame,
+    cvrmse_requirement: float,
+    conditioning_fuels: set,
+    fuel_type: FuelType,
+) -> UtilityBillRegressionModel:
     """Fit a regression model to the utility bills
 
     The ``bills_temps`` dataframe should be in the format returned by the
@@ -321,8 +328,8 @@ def fit_model(bills_temps: pd.DataFrame, cvrmse_requirement: float) -> UtilityBi
             else:
                 raise
     best_model = min(models, key=lambda x: x.cvrmse)
-    if (cvrmse := best_model.cvrmse) > cvrmse_requirement:
+    if fuel_type.value in conditioning_fuels and (cvrmse := best_model.cvrmse) > cvrmse_requirement:
         raise Bpi2400ModelFitError(
-            f"CVRMSE = {cvrmse:0.1%}, which is greater than {cvrmse_requirement:0.1%}"
+            f"CVRMSE = {cvrmse:0.1%} for {fuel_type.value}, which is greater than {cvrmse_requirement:0.1%}"
         )
     return best_model

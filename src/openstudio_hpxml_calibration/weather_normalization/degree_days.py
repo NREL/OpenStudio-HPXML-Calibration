@@ -3,7 +3,7 @@ from collections import namedtuple
 import pandas as pd
 
 import openstudio_hpxml_calibration.weather_normalization.utility_data as ud
-from openstudio_hpxml_calibration.hpxml import FuelType, HpxmlDoc
+from openstudio_hpxml_calibration.hpxml import HpxmlDoc
 from openstudio_hpxml_calibration.units import convert_units
 
 
@@ -72,13 +72,6 @@ def calculate_annual_degree_days(hpxml: HpxmlDoc) -> dict[str, float]:
     tmy_temp_index_doy = tmy_dry_bulb_temps_f.index.dayofyear
 
     for fuel_type, bills in bills_by_fuel_type.items():
-        if fuel_type not in (
-            FuelType.FUEL_OIL,
-            FuelType.PROPANE,
-            FuelType.WOOD,
-            FuelType.WOOD_PELLETS,
-        ):
-            continue  # Skip fuels that are not delivered fuels
         # format fuel type for dictionary keys
         fuel_type_name = fuel_type.name.lower().replace("_", " ")
         # Get degree days of actual weather during bill periods
