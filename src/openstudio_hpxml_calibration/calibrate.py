@@ -114,7 +114,7 @@ class Calibrate:
             normalized_consumption[fuel_type.value]["start_date"] = bills["start_date"]
             normalized_consumption[fuel_type.value]["end_date"] = bills["end_date"]
 
-        return normalized_consumption, self.inv_model
+        return normalized_consumption
 
     def get_model_results(self, json_results_path: Path) -> dict[str, dict[str, float]]:
         """
@@ -1129,6 +1129,5 @@ class Calibrate:
             best_bias_series,
             best_abs_series,
             weather_norm_regression_models,
-            inv_model,
             existing_home_results,
         )

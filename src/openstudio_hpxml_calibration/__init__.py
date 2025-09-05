@@ -224,7 +224,6 @@ def calibrate(
         best_bias_series,
         best_abs_series,
         weather_norm_reg_models,
-        inv_model,
         existing_home_results,
     ) = cal.run_search(
         num_proc=num_proc, output_filepath=output_filepath, save_all_results=save_all_results
@@ -276,7 +275,7 @@ def calibrate(
     plot_absolute_error_series(logbook, output_filepath, filename)
 
     # Plot fuel type curve fits
-    plot_fuel_type_curve_fits(inv_model, output_filepath, filename)
+    plot_fuel_type_curve_fits(cal.inv_model, output_filepath, filename)
 
 
 if __name__ == "__main__":
