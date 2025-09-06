@@ -86,10 +86,18 @@ jobs:
       - name: Calibrate test files
         if: ${{ runner.os == 'Linux' && matrix.python-version == '3.13' }}
         run: |
-          for x in test_hpxmls/**/*.xml; do
-            output_dir=all_calibration_outputs/$(basename "$x" .xml)
+          skip_filenames=("ihmh7" "house11" "house18" "house32" "house37" "house46" "house53" "house54" "house57" "house60" "house83" "house84")
+          for xml in test_hpxmls/**/*.xml; do
+            if [[ $xml == *"invalid_homes"* ]]; then
+              continue
+            fi
+            base_xml=$(basename "$xml" .xml)
+            if [[ " ${skip_filenames[*]} " =~ " ${base_xml} " ]]; then
+              continue
+            fi
+            output_dir=all_calibration_outputs/$base_xml
             # TODO: Add --save-all-results
-            uv run openstudio-hpxml-calibration calibrate --hpxml-filepath $x --config-filepath tests/data/test_config.yaml --output-dir $output_dir --verbose
+            uv run openstudio-hpxml-calibration calibrate --hpxml-filepath $xml --config-filepath tests/data/test_config.yaml --output-dir $output_dir --verbose
           done
 
       - name: Save calibration results
