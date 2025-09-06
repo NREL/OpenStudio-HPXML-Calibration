@@ -2,11 +2,11 @@
   "weather_normalization_results": {
     "electricity": {
       "model_type": "5-parameter",
-      "cvrmse": 0.11759996307252202,
+      "cvrmse": 0.11760913231363931,
       "consumption": {
-        "baseload": 21.36269953453442,
-        "heating": 11.282761516846687,
-        "cooling": 2.5428640180396997
+        "baseload": 21.42287841963837,
+        "heating": 11.243948762484248,
+        "cooling": 2.536551368037472
       }
     },
     "natural gas": {
@@ -247,43 +247,7 @@
         }
       },
       "simulation_result_stats": {
-        "electricity_cooling": {
-          "min": 9.33,
-          "max": 12.883,
-          "median": 11.477,
-          "std": 1.1696993801827884
-        },
-        "electricity_baseload": {
-          "min": 21.894,
-          "max": 47.537,
-          "median": 26.67,
-          "std": 9.769843671216034
-        },
-        "coal_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "coal_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "wood cord_heating": {
+        "fuel oil_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -295,7 +259,49 @@
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_heating": {
+        "electricity_cooling": {
+          "min": 9.33,
+          "max": 12.883,
+          "median": 11.477,
+          "std": 1.1696993801827884
+        },
+        "natural gas_baseload": {
+          "min": 23.421,
+          "max": 46.725,
+          "median": 35.021,
+          "std": 9.126263296662003
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 21.894,
+          "max": 47.537,
+          "median": 26.67,
+          "std": 9.769843671216034
+        },
+        "propane_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -307,25 +313,19 @@
           "median": 164.071,
           "std": 18.57097453124095
         },
-        "fuel oil_baseload": {
+        "wood cord_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_baseload": {
+        "propane_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "natural gas_baseload": {
-          "min": 23.421,
-          "max": 46.725,
-          "median": 35.021,
-          "std": 9.126263296662003
-        },
-        "fuel oil_heating": {
+        "wood pellets_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -508,43 +508,7 @@
         }
       },
       "simulation_result_stats": {
-        "electricity_cooling": {
-          "min": 9.33,
-          "max": 11.492,
-          "median": 11.103,
-          "std": 0.8797354716049595
-        },
-        "electricity_baseload": {
-          "min": 21.894,
-          "max": 26.67,
-          "median": 24.089,
-          "std": 1.7558555606882942
-        },
-        "coal_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "coal_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "wood cord_heating": {
+        "fuel oil_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -556,7 +520,49 @@
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_heating": {
+        "electricity_cooling": {
+          "min": 9.33,
+          "max": 11.492,
+          "median": 11.103,
+          "std": 0.8797354716049595
+        },
+        "natural gas_baseload": {
+          "min": 23.44,
+          "max": 43.37,
+          "median": 30.685000000000002,
+          "std": 7.803887524817357
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 21.894,
+          "max": 26.67,
+          "median": 24.089,
+          "std": 1.7558555606882942
+        },
+        "propane_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -568,25 +574,19 @@
           "median": 172.2265,
           "std": 18.935284040317427
         },
-        "fuel oil_baseload": {
+        "wood cord_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_baseload": {
+        "propane_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "natural gas_baseload": {
-          "min": 23.44,
-          "max": 43.37,
-          "median": 30.685000000000002,
-          "std": 7.803887524817357
-        },
-        "fuel oil_heating": {
+        "wood pellets_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -769,43 +769,7 @@
         }
       },
       "simulation_result_stats": {
-        "electricity_cooling": {
-          "min": 8.469,
-          "max": 11.569,
-          "median": 10.411000000000001,
-          "std": 1.350535634479891
-        },
-        "electricity_baseload": {
-          "min": 21.904,
-          "max": 26.67,
-          "median": 23.422,
-          "std": 1.7396553537985626
-        },
-        "coal_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "coal_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "wood cord_heating": {
+        "fuel oil_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -817,7 +781,49 @@
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_heating": {
+        "electricity_cooling": {
+          "min": 8.469,
+          "max": 11.569,
+          "median": 10.411000000000001,
+          "std": 1.350535634479891
+        },
+        "natural gas_baseload": {
+          "min": 22.459,
+          "max": 26.349,
+          "median": 23.439500000000002,
+          "std": 1.4574215887998916
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 21.904,
+          "max": 26.67,
+          "median": 23.422,
+          "std": 1.7396553537985626
+        },
+        "propane_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -829,25 +835,19 @@
           "median": 160.7475,
           "std": 11.794449987176165
         },
-        "fuel oil_baseload": {
+        "wood cord_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_baseload": {
+        "propane_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "natural gas_baseload": {
-          "min": 22.459,
-          "max": 26.349,
-          "median": 23.439500000000002,
-          "std": 1.4574215887998916
-        },
-        "fuel oil_heating": {
+        "wood pellets_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -1030,43 +1030,7 @@
         }
       },
       "simulation_result_stats": {
-        "electricity_cooling": {
-          "min": 8.469,
-          "max": 11.492,
-          "median": 8.471,
-          "std": 1.4245846958168396
-        },
-        "electricity_baseload": {
-          "min": 21.904,
-          "max": 23.422,
-          "median": 21.911,
-          "std": 0.7139478661327839
-        },
-        "coal_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "coal_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "wood cord_heating": {
+        "fuel oil_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -1078,7 +1042,49 @@
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_heating": {
+        "electricity_cooling": {
+          "min": 8.469,
+          "max": 11.492,
+          "median": 8.471,
+          "std": 1.4245846958168396
+        },
+        "natural gas_baseload": {
+          "min": 22.425,
+          "max": 23.44,
+          "median": 22.459,
+          "std": 0.47066643059484214
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 21.904,
+          "max": 23.422,
+          "median": 21.911,
+          "std": 0.7139478661327839
+        },
+        "propane_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -1090,25 +1096,19 @@
           "median": 161.013,
           "std": 11.803237248973494
         },
-        "fuel oil_baseload": {
+        "wood cord_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_baseload": {
+        "propane_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "natural gas_baseload": {
-          "min": 22.425,
-          "max": 23.44,
-          "median": 22.459,
-          "std": 0.47066643059484214
-        },
-        "fuel oil_heating": {
+        "wood pellets_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -1291,43 +1291,7 @@
         }
       },
       "simulation_result_stats": {
-        "electricity_cooling": {
-          "min": 8.471,
-          "max": 11.35,
-          "median": 8.487,
-          "std": 1.3534181418418574
-        },
-        "electricity_baseload": {
-          "min": 21.911,
-          "max": 23.477,
-          "median": 21.913,
-          "std": 0.7377485268632453
-        },
-        "coal_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "coal_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "wood cord_heating": {
+        "fuel oil_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -1339,7 +1303,49 @@
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_heating": {
+        "electricity_cooling": {
+          "min": 8.471,
+          "max": 11.35,
+          "median": 8.487,
+          "std": 1.3534181418418574
+        },
+        "natural gas_baseload": {
+          "min": 22.411,
+          "max": 23.289,
+          "median": 22.425,
+          "std": 0.4106331155125652
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 21.911,
+          "max": 23.477,
+          "median": 21.913,
+          "std": 0.7377485268632453
+        },
+        "propane_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -1351,25 +1357,19 @@
           "median": 156.656,
           "std": 12.709026354874274
         },
-        "fuel oil_baseload": {
+        "wood cord_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_baseload": {
+        "propane_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "natural gas_baseload": {
-          "min": 22.411,
-          "max": 23.289,
-          "median": 22.425,
-          "std": 0.4106331155125652
-        },
-        "fuel oil_heating": {
+        "wood pellets_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -1552,43 +1552,7 @@
         }
       },
       "simulation_result_stats": {
-        "electricity_cooling": {
-          "min": 8.403,
-          "max": 8.487,
-          "median": 8.471,
-          "std": 0.03641733408999359
-        },
-        "electricity_baseload": {
-          "min": 21.888,
-          "max": 21.913,
-          "median": 21.911,
-          "std": 0.011343133018115263
-        },
-        "coal_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "coal_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "wood cord_heating": {
+        "fuel oil_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -1600,7 +1564,49 @@
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_heating": {
+        "electricity_cooling": {
+          "min": 8.403,
+          "max": 8.487,
+          "median": 8.471,
+          "std": 0.03641733408999359
+        },
+        "natural gas_baseload": {
+          "min": 22.411,
+          "max": 22.548,
+          "median": 22.425,
+          "std": 0.06154853550022177
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 21.888,
+          "max": 21.913,
+          "median": 21.911,
+          "std": 0.011343133018115263
+        },
+        "propane_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -1612,25 +1618,19 @@
           "median": 139.819,
           "std": 10.192705637965926
         },
-        "fuel oil_baseload": {
+        "wood cord_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_baseload": {
+        "propane_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "natural gas_baseload": {
-          "min": 22.411,
-          "max": 22.548,
-          "median": 22.425,
-          "std": 0.06154853550022177
-        },
-        "fuel oil_heating": {
+        "wood pellets_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -1813,43 +1813,7 @@
         }
       },
       "simulation_result_stats": {
-        "electricity_cooling": {
-          "min": 8.403,
-          "max": 9.034,
-          "median": 8.479,
-          "std": 0.25326307962275135
-        },
-        "electricity_baseload": {
-          "min": 21.887,
-          "max": 21.913,
-          "median": 21.899500000000003,
-          "std": 0.01227548369719078
-        },
-        "coal_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "coal_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "wood cord_heating": {
+        "fuel oil_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -1861,7 +1825,49 @@
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_heating": {
+        "electricity_cooling": {
+          "min": 8.403,
+          "max": 9.034,
+          "median": 8.479,
+          "std": 0.25326307962275135
+        },
+        "natural gas_baseload": {
+          "min": 22.411,
+          "max": 22.554,
+          "median": 22.4865,
+          "std": 0.06671768880888952
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 21.887,
+          "max": 21.913,
+          "median": 21.899500000000003,
+          "std": 0.01227548369719078
+        },
+        "propane_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -1873,25 +1879,19 @@
           "median": 137.6345,
           "std": 9.400477098929613
         },
-        "fuel oil_baseload": {
+        "wood cord_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_baseload": {
+        "propane_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "natural gas_baseload": {
-          "min": 22.411,
-          "max": 22.554,
-          "median": 22.4865,
-          "std": 0.06671768880888952
-        },
-        "fuel oil_heating": {
+        "wood pellets_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -2074,43 +2074,7 @@
         }
       },
       "simulation_result_stats": {
-        "electricity_cooling": {
-          "min": 8.403,
-          "max": 8.878,
-          "median": 8.487,
-          "std": 0.20697879655226084
-        },
-        "electricity_baseload": {
-          "min": 21.888,
-          "max": 21.914,
-          "median": 21.913,
-          "std": 0.012027745701778779
-        },
-        "coal_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "coal_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "wood cord_heating": {
+        "fuel oil_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -2122,7 +2086,49 @@
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_heating": {
+        "electricity_cooling": {
+          "min": 8.403,
+          "max": 8.878,
+          "median": 8.487,
+          "std": 0.20697879655226084
+        },
+        "natural gas_baseload": {
+          "min": 22.407,
+          "max": 22.548,
+          "median": 22.411,
+          "std": 0.06554557362798859
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 21.888,
+          "max": 21.914,
+          "median": 21.913,
+          "std": 0.012027745701778779
+        },
+        "propane_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -2134,25 +2140,19 @@
           "median": 139.819,
           "std": 3.6359631766867797
         },
-        "fuel oil_baseload": {
+        "wood cord_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_baseload": {
+        "propane_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "natural gas_baseload": {
-          "min": 22.407,
-          "max": 22.548,
-          "median": 22.411,
-          "std": 0.06554557362798859
-        },
-        "fuel oil_heating": {
+        "wood pellets_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -2335,43 +2335,7 @@
         }
       },
       "simulation_result_stats": {
-        "electricity_cooling": {
-          "min": 8.3,
-          "max": 8.403,
-          "median": 8.359,
-          "std": 0.04219794623754403
-        },
-        "electricity_baseload": {
-          "min": 19.401,
-          "max": 21.888,
-          "median": 21.888,
-          "std": 1.1723830432072966
-        },
-        "coal_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "coal_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "wood cord_heating": {
+        "fuel oil_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -2383,7 +2347,49 @@
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_heating": {
+        "electricity_cooling": {
+          "min": 8.3,
+          "max": 8.403,
+          "median": 8.359,
+          "std": 0.04219794623754403
+        },
+        "natural gas_baseload": {
+          "min": 22.425,
+          "max": 22.548,
+          "median": 22.547,
+          "std": 0.05774849685393394
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 19.401,
+          "max": 21.888,
+          "median": 21.888,
+          "std": 1.1723830432072966
+        },
+        "propane_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -2395,25 +2401,19 @@
           "median": 132.272,
           "std": 19.066696136340866
         },
-        "fuel oil_baseload": {
+        "wood cord_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_baseload": {
+        "propane_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "natural gas_baseload": {
-          "min": 22.425,
-          "max": 22.548,
-          "median": 22.547,
-          "std": 0.05774849685393394
-        },
-        "fuel oil_heating": {
+        "wood pellets_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -2596,43 +2596,7 @@
         }
       },
       "simulation_result_stats": {
-        "electricity_cooling": {
-          "min": 8.3,
-          "max": 8.359,
-          "median": 8.322,
-          "std": 0.024344746182013405
-        },
-        "electricity_baseload": {
-          "min": 19.401,
-          "max": 21.888,
-          "median": 21.888,
-          "std": 1.1723830432072966
-        },
-        "coal_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "coal_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "wood cord_heating": {
+        "fuel oil_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -2644,7 +2608,49 @@
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_heating": {
+        "electricity_cooling": {
+          "min": 8.3,
+          "max": 8.359,
+          "median": 8.322,
+          "std": 0.024344746182013405
+        },
+        "natural gas_baseload": {
+          "min": 22.425,
+          "max": 22.547,
+          "median": 22.547,
+          "std": 0.057511351536505814
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 19.401,
+          "max": 21.888,
+          "median": 21.888,
+          "std": 1.1723830432072966
+        },
+        "propane_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -2656,25 +2662,19 @@
           "median": 129.696,
           "std": 19.837788233570794
         },
-        "fuel oil_baseload": {
+        "wood cord_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_baseload": {
+        "propane_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "natural gas_baseload": {
-          "min": 22.425,
-          "max": 22.547,
-          "median": 22.547,
-          "std": 0.057511351536505814
-        },
-        "fuel oil_heating": {
+        "wood pellets_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -2857,43 +2857,7 @@
         }
       },
       "simulation_result_stats": {
-        "electricity_cooling": {
-          "min": 8.3,
-          "max": 10.529,
-          "median": 8.327,
-          "std": 0.9574610631769835
-        },
-        "electricity_baseload": {
-          "min": 19.401,
-          "max": 21.888,
-          "median": 21.8825,
-          "std": 1.0753242534231249
-        },
-        "coal_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "coal_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "wood cord_heating": {
+        "fuel oil_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -2905,7 +2869,49 @@
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_heating": {
+        "electricity_cooling": {
+          "min": 8.3,
+          "max": 10.529,
+          "median": 8.327,
+          "std": 0.9574610631769835
+        },
+        "natural gas_baseload": {
+          "min": 16.295,
+          "max": 22.61,
+          "median": 22.486,
+          "std": 2.6994988771066373
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 19.401,
+          "max": 21.888,
+          "median": 21.8825,
+          "std": 1.0753242534231249
+        },
+        "propane_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -2917,25 +2923,19 @@
           "median": 130.894,
           "std": 17.875179180920114
         },
-        "fuel oil_baseload": {
+        "wood cord_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_baseload": {
+        "propane_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "natural gas_baseload": {
-          "min": 16.295,
-          "max": 22.61,
-          "median": 22.486,
-          "std": 2.6994988771066373
-        },
-        "fuel oil_heating": {
+        "wood pellets_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -3118,43 +3118,7 @@
         }
       },
       "simulation_result_stats": {
-        "electricity_cooling": {
-          "min": 8.322,
-          "max": 10.529,
-          "median": 9.4255,
-          "std": 1.1035000000000004
-        },
-        "electricity_baseload": {
-          "min": 21.877,
-          "max": 21.888,
-          "median": 21.8825,
-          "std": 0.005500000000001393
-        },
-        "coal_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "coal_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "wood cord_heating": {
+        "fuel oil_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -3166,7 +3130,49 @@
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_heating": {
+        "electricity_cooling": {
+          "min": 8.322,
+          "max": 10.529,
+          "median": 9.4255,
+          "std": 1.1035000000000004
+        },
+        "natural gas_baseload": {
+          "min": 22.547,
+          "max": 22.61,
+          "median": 22.5785,
+          "std": 0.03149999999999942
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 21.877,
+          "max": 21.888,
+          "median": 21.8825,
+          "std": 0.005500000000001393
+        },
+        "propane_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -3178,25 +3184,19 @@
           "median": 130.745,
           "std": 1.8559999999999945
         },
-        "fuel oil_baseload": {
+        "wood cord_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_baseload": {
+        "propane_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "natural gas_baseload": {
-          "min": 22.547,
-          "max": 22.61,
-          "median": 22.5785,
-          "std": 0.03149999999999942
-        },
-        "fuel oil_heating": {
+        "wood pellets_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -3379,43 +3379,7 @@
         }
       },
       "simulation_result_stats": {
-        "electricity_cooling": {
-          "min": 8.322,
-          "max": 10.529,
-          "median": 8.617999999999999,
-          "std": 0.8857260792705611
-        },
-        "electricity_baseload": {
-          "min": 21.877,
-          "max": 21.913,
-          "median": 21.8885,
-          "std": 0.013141061600951753
-        },
-        "coal_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "coal_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "wood cord_heating": {
+        "fuel oil_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -3427,7 +3391,49 @@
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_heating": {
+        "electricity_cooling": {
+          "min": 8.322,
+          "max": 10.529,
+          "median": 8.617999999999999,
+          "std": 0.8857260792705611
+        },
+        "natural gas_baseload": {
+          "min": 22.411,
+          "max": 22.61,
+          "median": 22.545,
+          "std": 0.07245472724398248
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 21.877,
+          "max": 21.913,
+          "median": 21.8885,
+          "std": 0.013141061600951753
+        },
+        "propane_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -3439,25 +3445,19 @@
           "median": 131.716,
           "std": 4.534446245132914
         },
-        "fuel oil_baseload": {
+        "wood cord_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_baseload": {
+        "propane_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "natural gas_baseload": {
-          "min": 22.411,
-          "max": 22.61,
-          "median": 22.545,
-          "std": 0.07245472724398248
-        },
-        "fuel oil_heating": {
+        "wood pellets_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -3640,43 +3640,7 @@
         }
       },
       "simulation_result_stats": {
-        "electricity_cooling": {
-          "min": 6.468,
-          "max": 8.777,
-          "median": 8.3625,
-          "std": 0.8967470379097997
-        },
-        "electricity_baseload": {
-          "min": 21.888,
-          "max": 21.916,
-          "median": 21.8885,
-          "std": 0.01198697209473659
-        },
-        "coal_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "coal_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "wood cord_heating": {
+        "fuel oil_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -3688,7 +3652,49 @@
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_heating": {
+        "electricity_cooling": {
+          "min": 6.468,
+          "max": 8.777,
+          "median": 8.3625,
+          "std": 0.8967470379097997
+        },
+        "natural gas_baseload": {
+          "min": 22.396,
+          "max": 22.548,
+          "median": 22.545,
+          "std": 0.06497884271053093
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 21.888,
+          "max": 21.916,
+          "median": 21.8885,
+          "std": 0.01198697209473659
+        },
+        "propane_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -3700,25 +3706,19 @@
           "median": 131.55149999999998,
           "std": 19.43261836449221
         },
-        "fuel oil_baseload": {
+        "wood cord_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_baseload": {
+        "propane_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "natural gas_baseload": {
-          "min": 22.396,
-          "max": 22.548,
-          "median": 22.545,
-          "std": 0.06497884271053093
-        },
-        "fuel oil_heating": {
+        "wood pellets_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -3901,43 +3901,7 @@
         }
       },
       "simulation_result_stats": {
-        "electricity_cooling": {
-          "min": 6.584,
-          "max": 8.775,
-          "median": 8.322,
-          "std": 0.9443595125209939
-        },
-        "electricity_baseload": {
-          "min": 21.882,
-          "max": 21.923,
-          "median": 21.888,
-          "std": 0.018080068829759297
-        },
-        "coal_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "coal_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "wood cord_heating": {
+        "fuel oil_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -3949,7 +3913,49 @@
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_heating": {
+        "electricity_cooling": {
+          "min": 6.584,
+          "max": 8.775,
+          "median": 8.322,
+          "std": 0.9443595125209939
+        },
+        "natural gas_baseload": {
+          "min": 22.355,
+          "max": 22.577,
+          "median": 22.547,
+          "std": 0.09834632682515437
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 21.882,
+          "max": 21.923,
+          "median": 21.888,
+          "std": 0.018080068829759297
+        },
+        "propane_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -3961,25 +3967,19 @@
           "median": 141.322,
           "std": 13.947125733362492
         },
-        "fuel oil_baseload": {
+        "wood cord_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_baseload": {
+        "propane_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "natural gas_baseload": {
-          "min": 22.355,
-          "max": 22.577,
-          "median": 22.547,
-          "std": 0.09834632682515437
-        },
-        "fuel oil_heating": {
+        "wood pellets_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -4162,43 +4162,7 @@
         }
       },
       "simulation_result_stats": {
-        "electricity_cooling": {
-          "min": 6.584,
-          "max": 8.759,
-          "median": 8.405999999999999,
-          "std": 0.8542415861452779
-        },
-        "electricity_baseload": {
-          "min": 16.87,
-          "max": 21.923,
-          "median": 21.9005,
-          "std": 2.1815552365227884
-        },
-        "coal_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "coal_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "wood cord_heating": {
+        "fuel oil_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -4210,7 +4174,49 @@
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_heating": {
+        "electricity_cooling": {
+          "min": 6.584,
+          "max": 8.759,
+          "median": 8.405999999999999,
+          "std": 0.8542415861452779
+        },
+        "natural gas_baseload": {
+          "min": 22.355,
+          "max": 22.547,
+          "median": 22.477,
+          "std": 0.08339664261827293
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 16.87,
+          "max": 21.923,
+          "median": 21.9005,
+          "std": 2.1815552365227884
+        },
+        "propane_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -4222,25 +4228,19 @@
           "median": 136.053,
           "std": 5.8076420936125155
         },
-        "fuel oil_baseload": {
+        "wood cord_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_baseload": {
+        "propane_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "natural gas_baseload": {
-          "min": 22.355,
-          "max": 22.547,
-          "median": 22.477,
-          "std": 0.08339664261827293
-        },
-        "fuel oil_heating": {
+        "wood pellets_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -4423,43 +4423,7 @@
         }
       },
       "simulation_result_stats": {
-        "electricity_cooling": {
-          "min": 6.171,
-          "max": 9.125,
-          "median": 7.537,
-          "std": 1.2441660861798156
-        },
-        "electricity_baseload": {
-          "min": 16.878,
-          "max": 28.188,
-          "median": 21.918,
-          "std": 4.010496384489081
-        },
-        "coal_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "coal_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "wood cord_heating": {
+        "fuel oil_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -4471,7 +4435,49 @@
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_heating": {
+        "electricity_cooling": {
+          "min": 6.171,
+          "max": 9.125,
+          "median": 7.537,
+          "std": 1.2441660861798156
+        },
+        "natural gas_baseload": {
+          "min": 22.355,
+          "max": 30.41,
+          "median": 22.455,
+          "std": 3.4594306160840977
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 16.878,
+          "max": 28.188,
+          "median": 21.918,
+          "std": 4.010496384489081
+        },
+        "propane_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -4483,25 +4489,19 @@
           "median": 137.4245,
           "std": 6.559701993993323
         },
-        "fuel oil_baseload": {
+        "wood cord_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_baseload": {
+        "propane_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "natural gas_baseload": {
-          "min": 22.355,
-          "max": 30.41,
-          "median": 22.455,
-          "std": 3.4594306160840977
-        },
-        "fuel oil_heating": {
+        "wood pellets_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -4684,43 +4684,7 @@
         }
       },
       "simulation_result_stats": {
-        "electricity_cooling": {
-          "min": 6.584,
-          "max": 9.003,
-          "median": 8.554,
-          "std": 1.0506115679292072
-        },
-        "electricity_baseload": {
-          "min": 21.923,
-          "max": 25.092,
-          "median": 24.097,
-          "std": 1.323247772213
-        },
-        "coal_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "coal_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "wood cord_heating": {
+        "fuel oil_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -4732,7 +4696,49 @@
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_heating": {
+        "electricity_cooling": {
+          "min": 6.584,
+          "max": 9.003,
+          "median": 8.554,
+          "std": 1.0506115679292072
+        },
+        "natural gas_baseload": {
+          "min": 22.355,
+          "max": 30.279,
+          "median": 26.52,
+          "std": 3.236374549124718
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 21.923,
+          "max": 25.092,
+          "median": 24.097,
+          "std": 1.323247772213
+        },
+        "propane_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -4744,25 +4750,19 @@
           "median": 141.322,
           "std": 11.583306004763916
         },
-        "fuel oil_baseload": {
+        "wood cord_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_baseload": {
+        "propane_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "natural gas_baseload": {
-          "min": 22.355,
-          "max": 30.279,
-          "median": 26.52,
-          "std": 3.236374549124718
-        },
-        "fuel oil_heating": {
+        "wood pellets_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -4945,43 +4945,7 @@
         }
       },
       "simulation_result_stats": {
-        "electricity_cooling": {
-          "min": 6.584,
-          "max": 8.554,
-          "median": 7.973,
-          "std": 0.8264907070795711
-        },
-        "electricity_baseload": {
-          "min": 19.37,
-          "max": 24.097,
-          "median": 21.923,
-          "std": 1.9318561598168282
-        },
-        "coal_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "coal_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "wood cord_heating": {
+        "fuel oil_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -4993,7 +4957,49 @@
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_heating": {
+        "electricity_cooling": {
+          "min": 6.584,
+          "max": 8.554,
+          "median": 7.973,
+          "std": 0.8264907070795711
+        },
+        "natural gas_baseload": {
+          "min": 20.466,
+          "max": 26.52,
+          "median": 22.355,
+          "std": 2.529085517643789
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 19.37,
+          "max": 24.097,
+          "median": 21.923,
+          "std": 1.9318561598168282
+        },
+        "propane_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -5005,25 +5011,19 @@
           "median": 164.611,
           "std": 11.883727370746191
         },
-        "fuel oil_baseload": {
+        "wood cord_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_baseload": {
+        "propane_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "natural gas_baseload": {
-          "min": 20.466,
-          "max": 26.52,
-          "median": 22.355,
-          "std": 2.529085517643789
-        },
-        "fuel oil_heating": {
+        "wood pellets_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -5206,43 +5206,7 @@
         }
       },
       "simulation_result_stats": {
-        "electricity_cooling": {
-          "min": 6.584,
-          "max": 8.554,
-          "median": 7.569,
-          "std": 0.9850000000000003
-        },
-        "electricity_baseload": {
-          "min": 21.923,
-          "max": 24.097,
-          "median": 23.009999999999998,
-          "std": 1.0870000000000015
-        },
-        "coal_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "coal_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "wood cord_heating": {
+        "fuel oil_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -5254,7 +5218,49 @@
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_heating": {
+        "electricity_cooling": {
+          "min": 6.584,
+          "max": 8.554,
+          "median": 7.569,
+          "std": 0.9850000000000003
+        },
+        "natural gas_baseload": {
+          "min": 22.355,
+          "max": 26.52,
+          "median": 24.4375,
+          "std": 2.0824999999999996
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 21.923,
+          "max": 24.097,
+          "median": 23.009999999999998,
+          "std": 1.0870000000000015
+        },
+        "propane_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -5266,25 +5272,19 @@
           "median": 152.9665,
           "std": 11.644499999999994
         },
-        "fuel oil_baseload": {
+        "wood cord_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_baseload": {
+        "propane_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "natural gas_baseload": {
-          "min": 22.355,
-          "max": 26.52,
-          "median": 24.4375,
-          "std": 2.0824999999999996
-        },
-        "fuel oil_heating": {
+        "wood pellets_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -5467,43 +5467,7 @@
         }
       },
       "simulation_result_stats": {
-        "electricity_cooling": {
-          "min": 6.584,
-          "max": 8.695,
-          "median": 7.6395,
-          "std": 1.0555000000000003
-        },
-        "electricity_baseload": {
-          "min": 21.923,
-          "max": 24.099,
-          "median": 23.011,
-          "std": 1.088000000000001
-        },
-        "coal_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_heating": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "coal_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "propane_baseload": {
-          "min": 0.0,
-          "max": 0.0,
-          "median": 0.0,
-          "std": 0.0
-        },
-        "wood cord_heating": {
+        "fuel oil_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -5515,7 +5479,49 @@
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_heating": {
+        "electricity_cooling": {
+          "min": 6.584,
+          "max": 8.695,
+          "median": 7.6395,
+          "std": 1.0555000000000003
+        },
+        "natural gas_baseload": {
+          "min": 22.355,
+          "max": 23.387,
+          "median": 22.871000000000002,
+          "std": 0.516
+        },
+        "wood pellets_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_baseload": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "coal_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "fuel oil_heating": {
+          "min": 0.0,
+          "max": 0.0,
+          "median": 0.0,
+          "std": 0.0
+        },
+        "electricity_baseload": {
+          "min": 21.923,
+          "max": 24.099,
+          "median": 23.011,
+          "std": 1.088000000000001
+        },
+        "propane_baseload": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
@@ -5527,25 +5533,19 @@
           "median": 151.062,
           "std": 9.739999999999995
         },
-        "fuel oil_baseload": {
+        "wood cord_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "wood pellets_baseload": {
+        "propane_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
           "std": 0.0
         },
-        "natural gas_baseload": {
-          "min": 22.355,
-          "max": 23.387,
-          "median": 22.871000000000002,
-          "std": 0.516
-        },
-        "fuel oil_heating": {
+        "wood pellets_heating": {
           "min": 0.0,
           "max": 0.0,
           "median": 0.0,
