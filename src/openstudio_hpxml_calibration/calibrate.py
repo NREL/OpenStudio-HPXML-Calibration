@@ -147,8 +147,7 @@ class Calibrate:
             if (
                 fuel_type == "electricity"
                 and "Heating" in end_use
-                and FuelType.ELECTRICITY.value
-                not in self.hpxml.get_fuel_types()[0]  # heating fuels
+                and FuelType.ELECTRICITY.value not in self.hpxml.get_fuel_types()["heating"]
             ):
                 continue
             if "Heating" in end_use:

@@ -159,46 +159,74 @@ class HpxmlDoc:
                 0
             ]
 
-    def get_fuel_types(self, building_id: str | None = None) -> tuple[set[str], set[str]]:
-        """Get fuel types providing heating or cooling
+    def get_fuel_types(self, building_id: str | None = None) -> tuple[str, set[str]]:
+        """Get fuel types providing heating, cooling, water heating, and clothes drying
 
         :param building_id: The id of the Building to retrieve, gets first one if missing
         :type building_id: str
-        :return: sets of fuel types provide heating and cooling
-        :rtype: tuple[set[str], set[str]]
+        :return: fuel types for heating, cooling, water heating, and clothes drying
+        :rtype: tuple[str, set[str]]
         """
 
         building = self.get_building(building_id)
-        heating_fuels = set()
-        cooling_fuels = set()
-        for hvac_system in building.BuildingDetails.Systems.HVAC.HVACPlant:
-            if hasattr(hvac_system, "HeatingSystem") and hasattr(
-                hvac_system.HeatingSystem, "HeatingSystemFuel"
-            ):
-                heating_fuel = hvac_system.HeatingSystem.HeatingSystemFuel.text
-                heating_fuels.add(heating_fuel.strip())
-
-            if hasattr(hvac_system, "CoolingSystem") and hasattr(
-                hvac_system.CoolingSystem, "CoolingSystemFuel"
-            ):
-                cooling_fuel = hvac_system.CoolingSystem.CoolingSystemFuel.text
-                cooling_fuels.add(cooling_fuel.strip())
-                if hasattr(hvac_system.CoolingSystem, "IntegratedHeatingSystemFuel"):
-                    integrated_heating_fuel = (
-                        hvac_system.CoolingSystem.IntegratedHeatingSystemFuel.text
+        fuel_types = {
+            "heating": set(),
+            "cooling": set(),
+            "water_heating": set(),
+            "clothes_drying": set(),
+        }
+        if (
+            hasattr(building.BuildingDetails, "Systems")
+            and hasattr(building.BuildingDetails.Systems, "HVAC")
+            and hasattr(building.BuildingDetails.Systems.HVAC, "HVACPlant")
+        ):
+            for hvac_system in building.BuildingDetails.Systems.HVAC.HVACPlant:
+                if hasattr(hvac_system, "HeatingSystem") and hasattr(
+                    hvac_system.HeatingSystem, "HeatingSystemFuel"
+                ):
+                    fuel_types["heating"].add(
+                        hvac_system.HeatingSystem.HeatingSystemFuel.text.strip()
                     )
-                    heating_fuels.add(integrated_heating_fuel.strip())
 
-            if hasattr(hvac_system, "HeatPump"):
-                if hasattr(hvac_system.HeatPump, "HeatPumpFuel"):
-                    heat_pump_fuel = hvac_system.HeatPump.HeatPumpFuel.text
-                    heating_fuels.add(heat_pump_fuel.strip())
-                    cooling_fuels.add(heat_pump_fuel.strip())
-                if hasattr(hvac_system.HeatPump, "BackupSystemFuel"):
-                    backup_fuel = hvac_system.HeatPump.BackupSystemFuel.text
-                    heating_fuels.add(backup_fuel.strip())
+                if hasattr(hvac_system, "CoolingSystem"):
+                    if hasattr(hvac_system.CoolingSystem, "CoolingSystemFuel"):
+                        fuel_types["cooling"].add(
+                            hvac_system.CoolingSystem.CoolingSystemFuel.text.strip()
+                        )
+                    if hasattr(hvac_system.CoolingSystem, "IntegratedHeatingSystemFuel"):
+                        fuel_types["heating"].add(
+                            hvac_system.CoolingSystem.IntegratedHeatingSystemFuel.text.strip()
+                        )
 
-        return heating_fuels, cooling_fuels
+                if hasattr(hvac_system, "HeatPump"):
+                    if hasattr(hvac_system.HeatPump, "HeatPumpFuel"):
+                        fuel_types["heating"].add(hvac_system.HeatPump.HeatPumpFuel.text.strip())
+                        fuel_types["cooling"].add(hvac_system.HeatPump.HeatPumpFuel.text.strip())
+                    if hasattr(hvac_system.HeatPump, "BackupSystemFuel"):
+                        fuel_types["heating"].add(
+                            hvac_system.HeatPump.BackupSystemFuel.text.strip()
+                        )
+
+        if (
+            hasattr(building.BuildingDetails, "Systems")
+            and hasattr(building.BuildingDetails.Systems, "WaterHeating")
+            and hasattr(building.BuildingDetails.Systems.WaterHeating, "WaterHeatingSystem")
+        ):
+            for water_heater in building.BuildingDetails.Systems.WaterHeating.WaterHeatingSystem:
+                if hasattr(water_heater, "FuelType"):
+                    fuel_types["water_heating"].add(water_heater.FuelType.text.strip())
+                elif hasattr(water_heater, "RelatedHVACSystem"):
+                    # No need to retrieve, we already have the fuel type for the heating system
+                    pass
+
+        if hasattr(building.BuildingDetails, "Appliances") and hasattr(
+            building.BuildingDetails.Appliances, "ClothesDryer"
+        ):
+            for clothes_dryer in building.BuildingDetails.Appliances.ClothesDryer:
+                if hasattr(clothes_dryer, "FuelType"):
+                    fuel_types["clothes_drying"].add(clothes_dryer.FuelType.text.strip())
+
+        return fuel_types
 
     def get_consumptions(
         self, building_id: str | None = None
@@ -520,41 +548,11 @@ class HpxmlDoc:
                 for _, fuel in all_fuels
             )
 
-        try:
-            heating_fuel_type = (
-                building.BuildingDetails.Systems.HVAC.HVACPlant.HeatingSystem.HeatingSystemFuel
-            )
-            if not fuel_type_in_any(heating_fuel_type):
-                raise ValueError(
-                    f"Heating equipment fuel type {heating_fuel_type} does not match any consumption fuel type."
-                )
-        except AttributeError:
-            raise ValueError(
-                "Heating system fuel type is missing in the HPXML file. "
-                "Please provide the heating system fuel type in the HPXML file."
-            )
-        try:
-            water_heating_fuel_type = (
-                building.BuildingDetails.Systems.WaterHeating.WaterHeatingSystem.FuelType
-            )
-            if not fuel_type_in_any(water_heating_fuel_type):
-                raise ValueError(
-                    f"Water heating equipment fuel type {water_heating_fuel_type} does not match any consumption fuel type."
-                )
-        except AttributeError:
-            raise ValueError(
-                "Water heating system fuel type is missing in the HPXML file. "
-                "Please provide the water heating system fuel type in the HPXML file."
-            )
-        try:
-            clothes_dryer_fuel_type = building.BuildingDetails.Appliances.ClothesDryer.FuelType
-            if not fuel_type_in_any(clothes_dryer_fuel_type):
-                raise ValueError(
-                    f"Clothes dryer fuel type {clothes_dryer_fuel_type} does not match any consumption fuel type."
-                )
-        except AttributeError:
-            if hasattr(building.BuildingDetails.Appliances, "ClothesDryer"):
-                raise ValueError(
-                    "Clothes dryer fuel type is missing in the HPXML file. "
-                    "Please provide the clothes dryer fuel type in the HPXML"
-                )
+        fuel_types = self.get_fuel_types()
+
+        for component, fuels in fuel_types.items():
+            for fuel in fuels:
+                if not fuel_type_in_any(fuel):
+                    raise ValueError(
+                        f"{component.capitalize()} fuel type ({fuel}) does not match any consumption fuel type."
+                    )
