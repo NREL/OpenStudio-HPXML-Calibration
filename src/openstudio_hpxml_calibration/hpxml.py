@@ -160,11 +160,11 @@ class HpxmlDoc:
             ]
 
     def get_fuel_types(self, building_id: str | None = None) -> tuple[str, set[str]]:
-        """Get fuel types providing heating, cooling, water heating, and clothes drying
+        """Get fuel types providing heating, cooling, water heating, clothes drying, and cooking
 
         :param building_id: The id of the Building to retrieve, gets first one if missing
         :type building_id: str
-        :return: fuel types for heating, cooling, water heating, and clothes drying
+        :return: fuel types for heating, cooling, water heaters, clothes dryers, and cooking
         :rtype: tuple[str, set[str]]
         """
 
@@ -172,8 +172,9 @@ class HpxmlDoc:
         fuel_types = {
             "heating": set(),
             "cooling": set(),
-            "water_heating": set(),
-            "clothes_drying": set(),
+            "water heater": set(),
+            "clothes dryer": set(),
+            "cooking": set(),
         }
         if (
             hasattr(building.BuildingDetails, "Systems")
@@ -214,7 +215,7 @@ class HpxmlDoc:
         ):
             for water_heater in building.BuildingDetails.Systems.WaterHeating.WaterHeatingSystem:
                 if hasattr(water_heater, "FuelType"):
-                    fuel_types["water_heating"].add(water_heater.FuelType.text.strip())
+                    fuel_types["water heater"].add(water_heater.FuelType.text.strip())
                 elif hasattr(water_heater, "RelatedHVACSystem"):
                     # No need to retrieve, we already have the fuel type for the heating system
                     pass
@@ -224,7 +225,14 @@ class HpxmlDoc:
         ):
             for clothes_dryer in building.BuildingDetails.Appliances.ClothesDryer:
                 if hasattr(clothes_dryer, "FuelType"):
-                    fuel_types["clothes_drying"].add(clothes_dryer.FuelType.text.strip())
+                    fuel_types["clothes dryer"].add(clothes_dryer.FuelType.text.strip())
+
+        if hasattr(building.BuildingDetails, "Appliances") and hasattr(
+            building.BuildingDetails.Appliances, "CookingRange"
+        ):
+            for cooking_range in building.BuildingDetails.Appliances.CookingRange:
+                if hasattr(cooking_range, "FuelType"):
+                    fuel_types["cooking"].add(cooking_range.FuelType.text.strip())
 
         return fuel_types
 
@@ -554,5 +562,5 @@ class HpxmlDoc:
             for fuel in fuels:
                 if not fuel_type_in_any(fuel):
                     raise ValueError(
-                        f"{component.capitalize()} fuel type ({fuel}) does not match any consumption fuel type."
+                        f"HPXML consumption data missing for {component} fuel type ({fuel})."
                     )
