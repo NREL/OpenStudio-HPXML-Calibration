@@ -940,9 +940,7 @@ class Calibrate:
                 shutil.rmtree(temp_dir, ignore_errors=True)
 
         if terminated_early:
-            print(
-                "GA search completed successfully."
-            )
+            print("GA search completed successfully.")
         else:
             print(
                 "GA search completed unsuccessfully. No solution found before reaching the maximum number of generations."
