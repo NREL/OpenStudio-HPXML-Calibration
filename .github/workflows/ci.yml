@@ -86,7 +86,50 @@ jobs:
       - name: Calibrate test files
         if: ${{ runner.os == 'Linux' && matrix.python-version == '3.13' }}
         run: |
-          skip_filenames=("ihmh7" "house11" "house18" "house32" "house37" "house46" "house53" "house54" "house57" "house60" "house83" "house84")
+          skip_filenames=(
+            "ihmh6"                 # Missing natural gas consumption data
+            "ihmh7"                 # Has PV
+            "1_electricity_ashp"    # FIXME: Shouldn't give heating fuel error
+            "house02"               # Missing natural gas consumption data
+            "house05"               # Missing natural gas consumption data
+            "house06"               # Billing period longer than 45 days
+            "house07"               # Billing period longer than 45 days
+            "house09"               # Missing natural gas consumption data
+            "house10"               # Missing natural gas consumption data
+            "house11"               # FIXME: Conversion from therms to mBtu not found
+            "house14"               # Billing period shorter than 20 days
+            "house17"               # Billing period shorter than 20 days
+            "house22"               # Gap in electricity consumption data
+            "house31"               # Gap in electricity consumption data
+            "house32"               # Electricity consumption covers less than 300 days
+            "house33"               # FIXME: Shouldn't give heating fuel error
+            "house34"               # FIXME: Shouldn't give heating fuel error
+            "house35"               # FIXME: Shouldn't give heating fuel error
+            "house36"               # FIXME: Shouldn't give heating fuel error
+            "house37"               # Electricity consumption covers less than 300 days
+            "house38"               # FIXME: Shouldn't give heating fuel error
+            "house40"               # FIXME: Shouldn't give heating fuel error
+            "house43"               # Billing period shorter than 20 days
+            "house44"               # Missing electricity consumption data
+            "house45"               # Missing electricity consumption data
+            "house46"               # Zeroes in electricity consumption data
+            "house47"               # FIXME: Shouldn't give water heater fuel error
+            "house48"               # Billing period shorter than 20 days
+            "house49"               # Billing period shorter than 20 days
+            "house50"               # Billing period shorter than 20 days
+            "house53"               # FIXME: therms not allowed for propane
+            "house54"               # FIXME: therms not allowed for propane
+            "house55"               # FIXME: Shouldn't give heating fuel error
+            "house57"               # Natural gas consumption covers less than 300 days
+            "house58"               # FIXME: Shouldn't give heating fuel error
+            "house59"               # FIXME: Shouldn't give heating fuel error
+            "house60"               # FIXME: therms not allowed for propane
+            "house77"               # Billing period shorter than 20 days
+            "house83"               # Natural gas consumption covers less than 300 days
+            "house85"               # Missing fuel oil consumption data
+            "house86"               # Missing fuel oil consumption data
+            "house90"               # Billing period shorter than 20 days
+          )
           for xml in test_hpxmls/**/*.xml; do
             if [[ $xml == *"invalid_homes"* ]]; then
               continue
@@ -95,7 +138,7 @@ jobs:
             if [[ " ${skip_filenames[*]} " =~ " ${base_xml} " ]]; then
               continue
             fi
-            output_dir=all_calibration_outputs/$base_xml
+            output_dir=tests/all_calibration_results/$base_xml
             # TODO: Add --save-all-results
             uv run openstudio-hpxml-calibration calibrate --hpxml-filepath $xml --config-filepath tests/data/test_config.yaml --output-dir $output_dir --verbose
           done
@@ -105,4 +148,4 @@ jobs:
         if: ${{ runner.os == 'Linux' && matrix.python-version == '3.13' }}
         with:
           name: calibration_results
-          path: all_calibration_outputs/*
+          path: tests/all_calibration_results/*

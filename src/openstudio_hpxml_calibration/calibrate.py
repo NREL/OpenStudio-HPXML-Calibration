@@ -846,8 +846,6 @@ class Calibrate:
             print(logbook.stream)
 
             for gen in range(1, generations + 1):
-                print(f"Running {len(pop)} simulations for search generation {gen}...")
-
                 # Elitism: Copy the best individuals
                 elite = [copy.deepcopy(ind) for ind in tools.selBest(pop, k=1)]
 
@@ -925,7 +923,6 @@ class Calibrate:
                     return all_bias_err_limit_met or all_abs_err_limit_met
 
                 if meets_termination_criteria(best_comp):
-                    print(f"Early stopping: termination criteria met at generation {gen}")
                     terminated_early = True
                     break
 
@@ -944,12 +941,11 @@ class Calibrate:
 
         if terminated_early:
             print(
-                "GA search has completed early: A solution satisfying error thresholds was found."
+                "GA search completed successfully."
             )
         else:
             print(
-                "GA search has completed. However, no solution was found that satisfies the bias error "
-                "and absolute error thresholds before reaching the maximum number of generations."
+                "GA search completed unsuccessfully. No solution found before reaching the maximum number of generations."
             )
 
         return best_individual_dict, pop, logbook, best_bias_series, best_abs_series
