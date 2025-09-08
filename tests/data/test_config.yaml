@@ -1,6 +1,6 @@
 genetic_algorithm:
   population_size: 5
-  generations: 20
+  generations: 5
 
 acceptance_criteria:
   bias_error_threshold: 10  # Bias error threshold in percent for all end uses
