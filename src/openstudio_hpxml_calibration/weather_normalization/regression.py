@@ -249,7 +249,7 @@ class FiveParameter(UtilityBillRegressionModel):
         result = minimize(
             objective,
             self.INITIAL_GUESSES,
-            method="POWELL",  # trust-constr supports both bounds and constraints
+            method="L-BFGS-B",  # trust-constr supports both bounds and constraints
             bounds=bounds,
             # constraints=constraints,
             options={
