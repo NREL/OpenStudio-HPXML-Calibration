@@ -103,16 +103,19 @@ class Calibrate:
 
                 return subset
 
-            predicted_daily_btu = self.inv_model.predict_epw_daily(fuel_type=fuel_type)
-            epw_daily_kbtu = convert_units(x=predicted_daily_btu, from_="btu", to_="kbtu")
+            try:
+                predicted_daily_btu = self.inv_model.predict_epw_daily(fuel_type=fuel_type)
+                epw_daily_kbtu = convert_units(x=predicted_daily_btu, from_="btu", to_="kbtu")
 
-            epw_daily_mbtu = convert_units(epw_daily_kbtu, from_="kbtu", to_="mbtu")
+                epw_daily_mbtu = convert_units(epw_daily_kbtu, from_="kbtu", to_="mbtu")
 
-            normalized_consumption[fuel_type.value] = pd.DataFrame(
-                data=bills.apply(_calculate_wrapped_total, axis=1)
-            )
-            normalized_consumption[fuel_type.value]["start_date"] = bills["start_date"]
-            normalized_consumption[fuel_type.value]["end_date"] = bills["end_date"]
+                normalized_consumption[fuel_type.value] = pd.DataFrame(
+                    data=bills.apply(_calculate_wrapped_total, axis=1)
+                )
+                normalized_consumption[fuel_type.value]["start_date"] = bills["start_date"]
+                normalized_consumption[fuel_type.value]["end_date"] = bills["end_date"]
+            except Bpi2400ModelFitError:
+                continue
 
         return normalized_consumption
 
@@ -344,7 +347,9 @@ class Calibrate:
         }
         return comparison_results, normalized_annual_end_uses
 
-    def _process_calibration_results(self, simulation_results, for_summary=False):
+    def _process_calibration_results(
+        self, simulation_results, normalized_consumption_per_bill, for_summary=False
+    ):
         """
         Processes calibration results based on simulation data and consumption data.
         This function handles both the evaluation of a single individual and
@@ -376,7 +381,6 @@ class Calibrate:
                         }
                 else:
                     try:
-                        normalized_consumption_per_bill = self.get_normalized_consumption_per_bill()
                         # detailed calibration logic
                         if for_summary:
                             for (
@@ -478,6 +482,8 @@ class Calibrate:
         ]
         lighting_load_multiplier_choices = cfg["value_choices"]["lighting_load_multiplier_choices"]
 
+        normalized_consumption_per_bill = self.get_normalized_consumption_per_bill()
+
         def evaluate(individual):
             try:
                 (
@@ -544,7 +550,9 @@ class Calibrate:
 
                 output_file = temp_output_dir / "run" / "results_annual.json"
                 simulation_results = self.get_model_results(json_results_path=output_file)
-                comparison, _ = self._process_calibration_results(simulation_results)
+                comparison, _ = self._process_calibration_results(
+                    simulation_results, normalized_consumption_per_bill
+                )
 
                 for model_fuel_type, result in comparison.items():
                     bias_error_criteria = self.ga_config["acceptance_criteria"][
@@ -1042,7 +1050,9 @@ class Calibrate:
 
             # Construct weather-normalized regression model summary
             _, weather_norm_regression_models = self._process_calibration_results(
-                existing_home_results["existing_home_sim_results"], for_summary=True
+                existing_home_results["existing_home_sim_results"],
+                normalized_consumption_per_bill,
+                for_summary=True,
             )
 
             for gen in range(1, generations + 1):
