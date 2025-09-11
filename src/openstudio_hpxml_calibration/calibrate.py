@@ -4,6 +4,7 @@ import math
 import multiprocessing
 import random
 import shutil
+import statistics
 import tempfile
 import time
 import uuid
@@ -32,6 +33,18 @@ if "FitnessMin" not in creator.__dict__:
     creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 if "Individual" not in creator.__dict__:
     creator.create("Individual", list, fitness=creator.FitnessMin)
+
+global_seed = 2025
+random.seed(global_seed)
+
+
+def init_worker(seed):
+    worker_id = (
+        multiprocessing.current_process()._identity[0]
+        if multiprocessing.current_process()._identity
+        else 0
+    )
+    random.seed(seed + worker_id)
 
 
 class Calibrate:
@@ -90,16 +103,19 @@ class Calibrate:
 
                 return subset
 
-            predicted_daily_btu = self.inv_model.predict_epw_daily(fuel_type=fuel_type)
-            epw_daily_kbtu = convert_units(x=predicted_daily_btu, from_="btu", to_="kbtu")
+            try:
+                predicted_daily_btu = self.inv_model.predict_epw_daily(fuel_type=fuel_type)
+                epw_daily_kbtu = convert_units(x=predicted_daily_btu, from_="btu", to_="kbtu")
 
-            epw_daily_mbtu = convert_units(epw_daily_kbtu, from_="kbtu", to_="mbtu")
+                epw_daily_mbtu = convert_units(epw_daily_kbtu, from_="kbtu", to_="mbtu")
 
-            normalized_consumption[fuel_type.value] = pd.DataFrame(
-                data=bills.apply(_calculate_wrapped_total, axis=1)
-            )
-            normalized_consumption[fuel_type.value]["start_date"] = bills["start_date"]
-            normalized_consumption[fuel_type.value]["end_date"] = bills["end_date"]
+                normalized_consumption[fuel_type.value] = pd.DataFrame(
+                    data=bills.apply(_calculate_wrapped_total, axis=1)
+                )
+                normalized_consumption[fuel_type.value]["start_date"] = bills["start_date"]
+                normalized_consumption[fuel_type.value]["end_date"] = bills["end_date"]
+            except Bpi2400ModelFitError:
+                continue
 
         return normalized_consumption
 
@@ -246,6 +262,8 @@ class Calibrate:
         total_period_tmy_dd, total_period_actual_dd = calculate_annual_degree_days(self.hpxml)
 
         comparison_results = {}
+        if isinstance(model_results, str):
+            model_results = json.loads(model_results)
 
         measured_consumption = 0.0
         fuel_unit_type = delivered_consumption.ConsumptionType.Energy.UnitofMeasure
@@ -322,9 +340,90 @@ class Calibrate:
                 "cooling": round(cooling_absolute_error, 2),
             },
         }
-        return comparison_results
+        normalized_annual_end_uses = {
+            "baseload": round(normalized_annual_baseload, 2),
+            "heating": round(normalized_annual_heating, 2),
+            "cooling": round(normalized_annual_cooling, 2),
+        }
+        return comparison_results, normalized_annual_end_uses
 
-    def run_ga_search(
+    def _process_calibration_results(
+        self, simulation_results, normalized_consumption_per_bill, for_summary=False
+    ):
+        """
+        Processes calibration results based on simulation data and consumption data.
+        This function handles both the evaluation of a single individual and
+        the construction of the regression model summary.
+        """
+        comparison = {}
+        summary = {}
+        delivered_fuels = (
+            FuelType.FUEL_OIL.value,
+            FuelType.PROPANE.value,
+            FuelType.WOOD.value,
+            FuelType.WOOD_PELLETS.value,
+        )
+        consumptions = self.hpxml.get_consumptions()
+
+        for consumption in consumptions:
+            for fuel_info in consumption.ConsumptionDetails.ConsumptionInfo:
+                fuel = fuel_info.ConsumptionType.Energy.FuelType.text
+
+                if fuel in delivered_fuels:
+                    simplified_results, normalized_annual_end_uses = self.simplified_annual_usage(
+                        simulation_results, fuel_info, fuel
+                    )
+                    comparison[fuel] = simplified_results.get(fuel, {})
+                    if for_summary:
+                        summary[fuel] = {
+                            "calibration_type": "simplified",
+                            "consumption": normalized_annual_end_uses,
+                        }
+                else:
+                    try:
+                        # detailed calibration logic
+                        if for_summary:
+                            for (
+                                reg_model_fuel,
+                                reg_model,
+                            ) in self.inv_model.regression_models.items():
+                                if fuel == reg_model_fuel.value:
+                                    end_use_sums = (
+                                        normalized_consumption_per_bill[fuel]
+                                        .get(["baseload", "heating", "cooling"], 0)
+                                        .sum()
+                                        .to_dict()
+                                    )
+                                    summary[fuel] = {
+                                        "calibration_type": "detailed",
+                                        "model_type": getattr(reg_model, "MODEL_NAME", None),
+                                        "cvrmse": getattr(reg_model, "cvrmse", None),
+                                        "consumption": end_use_sums,
+                                    }
+                        else:
+                            comparison.update(
+                                self.compare_results(
+                                    normalized_consumption_per_bill, simulation_results
+                                )
+                            )
+
+                    except Bpi2400ModelFitError:
+                        logger.info(
+                            "Could not normalize consumption to weather with sufficient accuracy. Switching to simplified calibration technique."
+                        )
+                        simplified_results, normalized_annual_end_uses = (
+                            self.simplified_annual_usage(simulation_results, fuel_info, fuel)
+                        )
+                        comparison[fuel] = simplified_results.get(fuel, {})
+                        if for_summary:
+                            summary[fuel] = {
+                                "calibration_type": "simplified",
+                                "consumption": normalized_annual_end_uses,
+                            }
+
+        return comparison, summary
+
+    def run_search(
         self,
         population_size=None,
         generations=None,
@@ -332,8 +431,9 @@ class Calibrate:
         mutpb=None,
         num_proc=None,
         output_filepath=None,
+        save_all_results=False,
     ):
-        print(f"Running GA search algorithm for '{Path(self.hpxml_filepath).name}'...")
+        print(f"Running search algorithm for '{Path(self.hpxml_filepath).name}'...")
 
         all_temp_dirs = set()
         best_dirs_by_gen = []
@@ -381,6 +481,8 @@ class Calibrate:
             "appliance_usage_multiplier_choices"
         ]
         lighting_load_multiplier_choices = cfg["value_choices"]["lighting_load_multiplier_choices"]
+
+        normalized_consumption_per_bill = self.get_normalized_consumption_per_bill()
 
         def evaluate(individual):
             try:
@@ -448,41 +550,10 @@ class Calibrate:
 
                 output_file = temp_output_dir / "run" / "results_annual.json"
                 simulation_results = self.get_model_results(json_results_path=output_file)
-                consumptions = self.hpxml.get_consumptions()
-                comparison = {}
-                delivered_fuels = (
-                    FuelType.FUEL_OIL.value,
-                    FuelType.PROPANE.value,
-                    FuelType.WOOD.value,
-                    FuelType.WOOD_PELLETS.value,
+                comparison, _ = self._process_calibration_results(
+                    simulation_results, normalized_consumption_per_bill
                 )
-                for consumption in consumptions:
-                    for fuel_info in consumption.ConsumptionDetails.ConsumptionInfo:
-                        fuel = fuel_info.ConsumptionType.Energy.FuelType
-                        if fuel in delivered_fuels:
-                            simplified_calibration_results = self.simplified_annual_usage(
-                                simulation_results, fuel_info, fuel
-                            )
-                            # Merge results, prefer later sections if duplicate fuel keys
-                            comparison[fuel] = simplified_calibration_results.get(fuel, {})
-                        else:
-                            try:
-                                normalized_consumption = self.get_normalized_consumption_per_bill()
-                                # Merge results, prefer later sections if duplicate fuel keys
-                                comparison.update(
-                                    self.compare_results(normalized_consumption, simulation_results)
-                                )
-                            except Bpi2400ModelFitError:
-                                logger.info(
-                                    "Could not normalize consumption to weather with sufficient accuracy. "
-                                    "Switching to simplified calibration technique."
-                                )
-                                # TODO: Report calibration type in the logbook
-                                simplified_calibration_results = self.simplified_annual_usage(
-                                    simulation_results, fuel_info, fuel
-                                )
-                                # Merge results, prefer later sections if duplicate fuel keys
-                                comparison[fuel] = simplified_calibration_results.get(fuel, {})
+
                 for model_fuel_type, result in comparison.items():
                     bias_error_criteria = self.ga_config["acceptance_criteria"][
                         "bias_error_threshold"
@@ -556,6 +627,39 @@ class Calibrate:
 
         def diversity(pop):
             return len({tuple(ind) for ind in pop}) / len(pop)
+
+        def calc_stats(values):
+            if not values:
+                return {"min": None, "max": None, "median": None, "std": None}
+            return {
+                "min": min(values),
+                "max": max(values),
+                "median": statistics.median(values),
+                "std": statistics.pstdev(values) if len(values) > 1 else 0.0,
+            }
+
+        def meets_termination_criteria(comparison):
+            all_bias_err_limit_met = True
+            all_abs_err_limit_met = True
+            for fuel_type, metrics in comparison.items():
+                for end_use in metrics["Bias Error"]:
+                    bias_err = metrics["Bias Error"][end_use]
+                    abs_err = metrics["Absolute Error"][end_use]
+
+                    # Check bias error
+                    if abs(bias_err) > bias_error_threshold:
+                        all_bias_err_limit_met = False
+
+                    # Check absolute error
+                    if not abs_error_within_threshold(
+                        fuel_type,
+                        abs_err,
+                        abs_error_elec_threshold,
+                        abs_error_fuel_threshold,
+                    ):
+                        all_abs_err_limit_met = False
+
+            return all_bias_err_limit_met or all_abs_err_limit_met
 
         toolbox = base.Toolbox()
         toolbox.register("attr_misc_load_multiplier", random.choice, misc_load_multiplier_choices)
@@ -649,6 +753,30 @@ class Calibrate:
             n=18,
         )
 
+        def create_seed_individual():
+            return creator.Individual(
+                [
+                    1,  # misc_load_multiplier
+                    0,  # heating_setpoint_offset
+                    0,  # cooling_setpoint_offset
+                    1,  # air_leakage_multiplier
+                    1,  # heating_efficiency_multiplier
+                    1,  # cooling_efficiency_multiplier
+                    1,  # roof_r_value_multiplier
+                    1,  # ceiling_r_value_multiplier
+                    1,  # above_ground_walls_r_value_multiplier
+                    1,  # below_ground_walls_r_value_multiplier
+                    1,  # slab_r_value_multiplier
+                    1,  # floor_r_value_multiplier
+                    1,  # water_heater_efficiency_multiplier
+                    1,  # water_fixtures_usage_multiplier
+                    1,  # window_u_factor_multiplier
+                    1,  # window_shgc_multiplier
+                    1,  # appliance_usage_multiplier
+                    1,  # lighting_load_multiplier
+                ]
+            )
+
         def generate_random_individual():
             return creator.Individual(
                 [
@@ -671,6 +799,17 @@ class Calibrate:
                     random.choice(appliance_usage_multiplier_choices),
                     random.choice(lighting_load_multiplier_choices),
                 ]
+            )
+
+        def is_existing_home(individual, param_choices_map):
+            return all(
+                val == 1
+                for key, val in zip(param_choices_map.keys(), individual)
+                if "multiplier" in key
+            ) and all(
+                val == 0
+                for key, val in zip(param_choices_map.keys(), individual)
+                if "offset" in key
             )
 
         toolbox.register("individual", generate_random_individual)
@@ -796,9 +935,15 @@ class Calibrate:
         if num_proc is None:
             num_proc = multiprocessing.cpu_count() - 1
 
-        with Pool(processes=num_proc, maxtasksperchild=15) as pool:
+        with Pool(
+            processes=num_proc,
+            maxtasksperchild=15,
+            initializer=init_worker,
+            initargs=(global_seed,),
+        ) as pool:
             toolbox.register("map", pool.map)
-            pop = toolbox.population(n=population_size)
+            pop = toolbox.population(n=population_size - 1)
+            pop.append(create_seed_individual())  # Add existing model as seed individual
             hall_of_fame = tools.HallOfFame(1)
             stats = tools.Statistics(lambda ind: ind.fitness.values[0])  # noqa: PD011
             stats.register("min", min)
@@ -821,6 +966,16 @@ class Calibrate:
                 if temp_dir is not None:
                     all_temp_dirs.add(temp_dir)
 
+            # Save all individual hpxmls
+            if temp_dir is not None and Path(temp_dir).exists():
+                gen_dir = output_filepath / "gen_0"
+                gen_dir.mkdir(parents=True, exist_ok=True)
+                shutil.copy(
+                    temp_dir / "modified.xml",
+                    gen_dir / f"ind_{uuid.uuid4().hex[:6]}.xml",
+                )
+
+            # Update Hall of Fame and stats
             hall_of_fame.update(pop)
             best_ind = tools.selBest(pop, 1)[0]
             best_dirs_by_gen.append(getattr(best_ind, "temp_output_dir", None))
@@ -835,6 +990,40 @@ class Calibrate:
                     key = f"{end_use}_{fuel_type}"
                     best_abs_series.setdefault(key, []).append(abs_error)
 
+            # Parameter statistics
+            param_stats = {
+                pname: {
+                    "min": min(values := [ind[i] for ind in pop]),
+                    "max": max(values),
+                    "median": statistics.median(values),
+                    "std": statistics.pstdev(values) if len(values) > 1 else 0.0,
+                }
+                for i, pname in index_to_name.items()
+            }
+
+            # Simulation result statistics
+            sim_result_stats = {}
+            all_results = {
+                ind.temp_output_dir.stem: ind.sim_results
+                for ind in pop
+                if hasattr(ind, "sim_results")
+            }
+            if all_results:
+                fuel_enduse_keys = {
+                    (fuel_type, end_use)
+                    for r in all_results.values()
+                    for fuel_type, end_uses in r.items()
+                    for end_use in end_uses
+                }
+                for fuel_type, end_use in fuel_enduse_keys:
+                    vals = [
+                        r[fuel_type][end_use]
+                        for r in all_results.values()
+                        if fuel_type in r and end_use in r[fuel_type]
+                    ]
+                    if vals:
+                        sim_result_stats[f"{fuel_type}_{end_use}"] = calc_stats(vals)
+
             # Log generation 0
             record = stats.compile(pop)
             record.update({f"bias_error_{k}": v[-1] for k, v in best_bias_series.items()})
@@ -842,8 +1031,29 @@ class Calibrate:
             record["best_individual"] = json.dumps(dict(zip(param_choices_map.keys(), best_ind)))
             record["best_individual_sim_results"] = json.dumps(best_ind.sim_results)
             record["diversity"] = diversity(pop)
+            record["parameter_choice_stats"] = json.dumps(param_stats)
+            record["simulation_result_stats"] = json.dumps(sim_result_stats)
+            if save_all_results:
+                record["all_simulation_results"] = json.dumps(all_results)
             logbook.record(gen=0, nevals=len(invalid_ind), **record)
             print(logbook.stream)
+
+            # Store existing home (seed individual) results
+            existing_home_results = {}
+            for ind in pop:
+                if is_existing_home(ind, param_choices_map):
+                    existing_home_results["existing_home"] = json.dumps(
+                        dict(zip(param_choices_map.keys(), ind))
+                    )
+                    existing_home_results["existing_home_sim_results"] = json.dumps(ind.sim_results)
+                    break
+
+            # Construct weather-normalized regression model summary
+            _, weather_norm_regression_models = self._process_calibration_results(
+                existing_home_results["existing_home_sim_results"],
+                normalized_consumption_per_bill,
+                for_summary=True,
+            )
 
             for gen in range(1, generations + 1):
                 # Elitism: Copy the best individuals
@@ -870,6 +1080,15 @@ class Calibrate:
                 pop = toolbox.select(offspring, population_size - len(elite))
                 pop.extend(elite)
 
+                # Save all individual hpxmls
+                if temp_dir is not None and Path(temp_dir).exists():
+                    gen_dir = output_filepath / f"gen_{gen}"
+                    gen_dir.mkdir(parents=True, exist_ok=True)
+                    shutil.copy(
+                        temp_dir / "modified.xml",
+                        gen_dir / f"ind_{uuid.uuid4().hex[:6]}.xml",
+                    )
+
                 # Update Hall of Fame and stats
                 hall_of_fame.update(pop)
                 best_ind = tools.selBest(pop, 1)[0]
@@ -885,43 +1104,57 @@ class Calibrate:
                         key = f"{end_use}_{fuel_type}"
                         best_abs_series.setdefault(key, []).append(abs_error)
 
+                # Parameter statistics
+                param_stats = {
+                    pname: {
+                        "min": min(values := [ind[i] for ind in pop]),
+                        "max": max(values),
+                        "median": statistics.median(values),
+                        "std": statistics.pstdev(values) if len(values) > 1 else 0.0,
+                    }
+                    for i, pname in index_to_name.items()
+                }
+
+                # Simulation result statistics
+                sim_result_stats = {}
+                all_results = {
+                    ind.temp_output_dir.stem: ind.sim_results
+                    for ind in pop
+                    if hasattr(ind, "sim_results")
+                }
+                if all_results:
+                    fuel_enduse_keys = {
+                        (fuel_type, end_use)
+                        for r in all_results.values()
+                        for fuel_type, end_uses in r.items()
+                        for end_use in end_uses
+                    }
+                    for fuel_type, end_use in fuel_enduse_keys:
+                        vals = [
+                            r[fuel_type][end_use]
+                            for r in all_results.values()
+                            if fuel_type in r and end_use in r[fuel_type]
+                        ]
+                        if vals:
+                            sim_result_stats[f"{fuel_type}_{end_use}"] = calc_stats(vals)
+
+                # Log the current generation
                 record = stats.compile(pop)
-                record.update(
-                    {f"bias_error_{k}": best_bias_series[k][-1] for k in best_bias_series}
-                )
-                record.update({f"abs_error_{k}": best_abs_series[k][-1] for k in best_abs_series})
+                record.update({f"bias_error_{k}": v[-1] for k, v in best_bias_series.items()})
+                record.update({f"abs_error_{k}": v[-1] for k, v in best_abs_series.items()})
                 record["best_individual"] = json.dumps(
                     dict(zip(param_choices_map.keys(), best_ind))
                 )
                 record["best_individual_sim_results"] = json.dumps(best_ind.sim_results)
                 record["diversity"] = diversity(pop)
+                record["parameter_choice_stats"] = json.dumps(param_stats)
+                record["simulation_result_stats"] = json.dumps(sim_result_stats)
+                if save_all_results:
+                    record["all_simulation_results"] = json.dumps(all_results)
                 logbook.record(gen=gen, nevals=len(invalid_ind), **record)
                 print(logbook.stream)
 
                 # Early termination conditions
-                def meets_termination_criteria(comparison):
-                    all_bias_err_limit_met = True
-                    all_abs_err_limit_met = True
-                    for fuel_type, metrics in comparison.items():
-                        for end_use in metrics["Bias Error"]:
-                            bias_err = metrics["Bias Error"][end_use]
-                            abs_err = metrics["Absolute Error"][end_use]
-
-                            # Check bias error
-                            if abs(bias_err) > bias_error_threshold:
-                                all_bias_err_limit_met = False
-
-                            # Check absolute error
-                            if not abs_error_within_threshold(
-                                fuel_type,
-                                abs_err,
-                                abs_error_elec_threshold,
-                                abs_error_fuel_threshold,
-                            ):
-                                all_abs_err_limit_met = False
-
-                    return all_bias_err_limit_met or all_abs_err_limit_met
-
                 if meets_termination_criteria(best_comp):
                     terminated_early = True
                     break
@@ -946,4 +1179,12 @@ class Calibrate:
                 "GA search completed unsuccessfully. No solution found before reaching the maximum number of generations."
             )
 
-        return best_individual_dict, pop, logbook, best_bias_series, best_abs_series
+        return (
+            best_individual_dict,
+            pop,
+            logbook,
+            best_bias_series,
+            best_abs_series,
+            weather_norm_regression_models,
+            existing_home_results,
+        )

@@ -160,10 +160,10 @@ def test_calibrate_runs_successfully():
             "--config-filepath",
             str(TEST_CONFIG),
             "--output-dir",
-            "tests/ga_search_results/ihmh4_test",
+            "tests/calibration_results/ihmh4_test",
         ]
     )
-    output_file = TEST_DIR / "ga_search_results/ihmh4_test/logbook.json"
+    output_file = TEST_DIR / "calibration_results/ihmh4_test/logbook.json"
     assert output_file.exists()
 
 
