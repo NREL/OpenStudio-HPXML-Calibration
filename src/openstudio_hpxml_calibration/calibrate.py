@@ -344,6 +344,81 @@ class Calibrate:
         }
         return comparison_results, normalized_annual_end_uses
 
+    def _process_calibration_results(self, simulation_results, for_summary=False):
+        """
+        Processes calibration results based on simulation data and consumption data.
+        This function handles both the evaluation of a single individual and
+        the construction of the regression model summary.
+        """
+        comparison = {}
+        summary = {}
+        delivered_fuels = (
+            FuelType.FUEL_OIL.value,
+            FuelType.PROPANE.value,
+            FuelType.WOOD.value,
+            FuelType.WOOD_PELLETS.value,
+        )
+        consumptions = self.hpxml.get_consumptions()
+
+        for consumption in consumptions:
+            for fuel_info in consumption.ConsumptionDetails.ConsumptionInfo:
+                fuel = fuel_info.ConsumptionType.Energy.FuelType.text
+
+                if fuel in delivered_fuels:
+                    simplified_results, normalized_annual_end_uses = self.simplified_annual_usage(
+                        simulation_results, fuel_info, fuel
+                    )
+                    comparison[fuel] = simplified_results.get(fuel, {})
+                    if for_summary:
+                        summary[fuel] = {
+                            "calibration_type": "simplified",
+                            "consumption": normalized_annual_end_uses,
+                        }
+                else:
+                    try:
+                        normalized_consumption_per_bill = self.get_normalized_consumption_per_bill()
+                        # detailed calibration logic
+                        if for_summary:
+                            for (
+                                reg_model_fuel,
+                                reg_model,
+                            ) in self.inv_model.regression_models.items():
+                                if fuel == reg_model_fuel.value:
+                                    end_use_sums = (
+                                        normalized_consumption_per_bill[fuel]
+                                        .get(["baseload", "heating", "cooling"], 0)
+                                        .sum()
+                                        .to_dict()
+                                    )
+                                    summary[fuel] = {
+                                        "calibration_type": "detailed",
+                                        "model_type": getattr(reg_model, "MODEL_NAME", None),
+                                        "cvrmse": getattr(reg_model, "cvrmse", None),
+                                        "consumption": end_use_sums,
+                                    }
+                        else:
+                            comparison.update(
+                                self.compare_results(
+                                    normalized_consumption_per_bill, simulation_results
+                                )
+                            )
+
+                    except Bpi2400ModelFitError:
+                        logger.info(
+                            "Could not normalize consumption to weather with sufficient accuracy. Switching to simplified calibration technique."
+                        )
+                        simplified_results, normalized_annual_end_uses = (
+                            self.simplified_annual_usage(simulation_results, fuel_info, fuel)
+                        )
+                        comparison[fuel] = simplified_results.get(fuel, {})
+                        if for_summary:
+                            summary[fuel] = {
+                                "calibration_type": "simplified",
+                                "consumption": normalized_annual_end_uses,
+                            }
+
+        return comparison, summary
+
     def run_search(
         self,
         population_size=None,
@@ -469,46 +544,8 @@ class Calibrate:
 
                 output_file = temp_output_dir / "run" / "results_annual.json"
                 simulation_results = self.get_model_results(json_results_path=output_file)
-                consumptions = self.hpxml.get_consumptions()
-                comparison = {}
-                delivered_fuels = (
-                    FuelType.FUEL_OIL.value,
-                    FuelType.PROPANE.value,
-                    FuelType.WOOD.value,
-                    FuelType.WOOD_PELLETS.value,
-                )
-                for consumption in consumptions:
-                    for fuel_info in consumption.ConsumptionDetails.ConsumptionInfo:
-                        fuel = fuel_info.ConsumptionType.Energy.FuelType.text
-                        if fuel in delivered_fuels:
-                            simplified_calibration_results, _ = self.simplified_annual_usage(
-                                simulation_results, fuel_info, fuel
-                            )
-                            # Merge results, prefer later sections if duplicate fuel keys
-                            comparison[fuel] = simplified_calibration_results.get(fuel, {})
-                        else:
-                            try:
-                                normalized_consumption_per_bill = (
-                                    self.get_normalized_consumption_per_bill()
-                                )
+                comparison, _ = self._process_calibration_results(simulation_results)
 
-                                # Merge results, prefer later sections if duplicate fuel keys
-                                comparison.update(
-                                    self.compare_results(
-                                        normalized_consumption_per_bill, simulation_results
-                                    )
-                                )
-                            except Bpi2400ModelFitError:
-                                logger.info(
-                                    "Could not normalize consumption to weather with sufficient accuracy. "
-                                    "Switching to simplified calibration technique."
-                                )
-                                # TODO: Report calibration type in the logbook
-                                simplified_calibration_results, _ = self.simplified_annual_usage(
-                                    simulation_results, fuel_info, fuel
-                                )
-                                # Merge results, prefer later sections if duplicate fuel keys
-                                comparison[fuel] = simplified_calibration_results.get(fuel, {})
                 for model_fuel_type, result in comparison.items():
                     bias_error_criteria = self.ga_config["acceptance_criteria"][
                         "bias_error_threshold"
@@ -1004,68 +1041,9 @@ class Calibrate:
                     break
 
             # Construct weather-normalized regression model summary
-            weather_norm_regression_models = {}
-            consumptions = self.hpxml.get_consumptions()
-            delivered_fuels = (
-                FuelType.FUEL_OIL.value,
-                FuelType.PROPANE.value,
-                FuelType.WOOD.value,
-                FuelType.WOOD_PELLETS.value,
+            _, weather_norm_regression_models = self._process_calibration_results(
+                existing_home_results["existing_home_sim_results"], for_summary=True
             )
-            for consumption in consumptions:
-                for fuel_info in consumption.ConsumptionDetails.ConsumptionInfo:
-                    fuel = fuel_info.ConsumptionType.Energy.FuelType.text
-                    if fuel in delivered_fuels:
-                        existing_home_sim_results = existing_home_results[
-                            "existing_home_sim_results"
-                        ]
-                        _, normalized_annual_end_uses = self.simplified_annual_usage(
-                            existing_home_sim_results, fuel_info, fuel
-                        )
-                        weather_norm_regression_models[fuel] = {
-                            "calibration_type": "simplified",
-                        }
-                        weather_norm_regression_models[fuel]["consumption"] = (
-                            normalized_annual_end_uses
-                        )
-                    else:
-                        try:
-                            normalized_consumption_per_bill = (
-                                self.get_normalized_consumption_per_bill()
-                            )
-                            for (
-                                reg_model_fuel,
-                                reg_model,
-                            ) in self.inv_model.regression_models.items():
-                                if fuel == reg_model_fuel.value:
-                                    weather_norm_regression_models[fuel] = {
-                                        "calibration_type": "detailed",
-                                        "model_type": getattr(reg_model, "MODEL_NAME", None),
-                                        "cvrmse": getattr(reg_model, "cvrmse", None),
-                                    }
-                                    end_use_sums = (
-                                        normalized_consumption_per_bill[fuel][
-                                            ["baseload", "heating", "cooling"]
-                                        ]
-                                        .sum()
-                                        .to_dict()
-                                    )
-                                    weather_norm_regression_models[fuel]["consumption"] = (
-                                        end_use_sums
-                                    )
-                        except Bpi2400ModelFitError:
-                            existing_home_sim_results = existing_home_results[
-                                "existing_home_sim_results"
-                            ]
-                            _, normalized_annual_end_uses = self.simplified_annual_usage(
-                                existing_home_sim_results, fuel_info, fuel
-                            )
-                            weather_norm_regression_models[fuel] = {
-                                "calibration_type": "simplified",
-                            }
-                            weather_norm_regression_models[fuel]["consumption"] = (
-                                normalized_annual_end_uses
-                            )
 
             for gen in range(1, generations + 1):
                 print(f"Running {len(pop)} simulations for search generation {gen}...")
