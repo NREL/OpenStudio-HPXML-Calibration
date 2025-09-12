@@ -344,7 +344,7 @@ class HpxmlDoc:
                 case FuelType.NATURAL_GAS.value:
                     return unit in ("therms", "Btu", "kBtu", "MBtu", "ccf", "kcf", "Mcf")
                 case FuelType.FUEL_OIL.value | FuelType.PROPANE.value:
-                    return unit in ("gal", "Btu", "kBtu", "MBtu")
+                    return unit in ("gal", "Btu", "kBtu", "MBtu", "therms")
                 case _:
                     return False
 
