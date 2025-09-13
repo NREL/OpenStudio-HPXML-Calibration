@@ -1,5 +1,5 @@
 genetic_algorithm:
-  population_size: 5
+  population_size: 8
   generations: 5
 
 acceptance_criteria:
