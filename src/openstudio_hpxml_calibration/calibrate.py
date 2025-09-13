@@ -282,6 +282,8 @@ class Calibrate:
                 fuel_unit_type = f"{fuel_unit_type}_fuel_oil"
             elif fuel_unit_type == "gal" and fuel_type == FuelType.PROPANE.value:
                 fuel_unit_type = f"{fuel_unit_type}_propane"
+            elif fuel_unit_type == "therms":
+                fuel_unit_type = "therm"
         measured_consumption = convert_units(measured_consumption, str(fuel_unit_type), "mBtu")
 
         modeled_baseload = model_results[fuel_type].get("baseload", 0)
