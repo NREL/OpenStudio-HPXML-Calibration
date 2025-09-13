@@ -116,8 +116,8 @@ def test_curve_fit(results_dir, filename):
 def test_fit_model(filename):
     hpxml = HpxmlDoc(filename)
     inv_model = InverseModel(hpxml, user_config=test_config)
-    heating_fuels, cooling_fuels = hpxml.get_fuel_types()
-    conditioning_fuels = heating_fuels | cooling_fuels
+    fuel_types = hpxml.get_fuel_types()
+    conditioning_fuels = fuel_types["heating"] | fuel_types["cooling"]
 
     for fuel_type, bills in inv_model.bills_by_fuel_type.items():
         bills_temps = inv_model.bills_weather_by_fuel_type_in_btu[fuel_type]
