@@ -179,10 +179,10 @@ def test_calibrate_switches_to_simplified_correctly():
             "--config-filepath",
             str(TEST_DATA_DIR / "test_config_no_cvrmse.yaml"),
             "--output-dir",
-            "tests/ga_search_results/ihmh5_test",
+            "tests/calibration_results/ihmh5_test",
         ]
     )
-    output_file = TEST_DIR / "ga_search_results/ihmh5_test/logbook.json"
+    output_file = TEST_DIR / "calibration_results/ihmh5_test/logbook.json"
     assert output_file.exists()
 
 
@@ -204,25 +204,10 @@ def test_workflow_with_upgrade():
     existing_hpxml_filepath = TEST_DIR / "data/uncalibrated_existing/ihmh3.xml"
     assert existing_hpxml_filepath.exists()
 
-    # Run existing home simulation
-    existing_run_dir = TEST_DIR / "data/uncalibrated_existing"
-    app(
-        [
-            "run-sim",
-            str(existing_hpxml_filepath),
-            "--output-dir",
-            str(existing_run_dir),
-            "--output-format",
-            "json",
-        ]
-    )
-    existing_json_filepath = existing_run_dir / "run/results_annual.json"
-    assert existing_json_filepath.exists()
-
     # Run calibration
     csv_bills_filepath = TEST_DIR / "data/ihmh3_existing_bills.csv"
     config_filepath = TEST_DIR / "data/test_config.yaml"
-    cal_output_dir = TEST_DIR / "data/uncalibrated_existing/ga_search_results"
+    cal_output_dir = TEST_DIR / "data/uncalibrated_existing/calibration_results"
     app(
         [
             "calibrate",
@@ -305,7 +290,7 @@ def test_workflow_with_upgrade():
     assert cal_upgrade_json_filepath.exists()
 
     # Gather simulation results
-    uncal_existing_results = cal.get_model_results(json_results_path=existing_json_filepath)
+    uncal_existing_results = cal_results["existing_home_results"]["existing_home_sim_results"]
     uncal_upgrade_results = cal.get_model_results(json_results_path=upgrade_json_filepath)
     cal_existing_results = cal_results["calibration_results"][-1]["best_individual_sim_results"]
     cal_upgrade_results = cal.get_model_results(json_results_path=cal_upgrade_json_filepath)
