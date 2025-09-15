@@ -63,13 +63,13 @@ def plot_fuel_type_curve_fits(inv_model, output_filepath, filename: str) -> None
     Parameters
     ----------
     inv_model: object
-        Inverse model with bills_by_fuel_type, bills_weather_by_fuel_type_in_btu, get_model
+        Inverse model with regression_models, bills_weather_by_fuel_type_in_btu, get_model
     output_filepath: Path
         Directory where plots should be saved
     filename: str
         Base filename used in plot titles and file naming
     """
-    for fuel_type, bills in inv_model.bills_by_fuel_type.items():
+    for fuel_type, _ in inv_model.regression_models.items():
         model = inv_model.get_model(fuel_type)
         bills_temps = inv_model.bills_weather_by_fuel_type_in_btu[fuel_type]
         temps_range = np.linspace(bills_temps["avg_temp"].min(), bills_temps["avg_temp"].max(), 500)
