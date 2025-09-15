@@ -20,8 +20,10 @@ def set_consumption_on_hpxml(hpxml_object: HpxmlDoc, csv_bills_filepath: Path) -
 
     bills = pd.read_csv(csv_bills_filepath)
     # Convert to datetimes, and include the final day of the bill period
-    bills["StartDateTime"] = pd.to_datetime(bills["StartDateTime"])
-    bills["EndDateTime"] = pd.to_datetime(bills["EndDateTime"]) + pd.Timedelta(days=1)
+    bills["StartDateTime"] = pd.to_datetime(bills["StartDateTime"], format="mixed")
+    bills["EndDateTime"] = pd.to_datetime(bills["EndDateTime"], format="mixed") + pd.Timedelta(
+        days=1
+    )
     bills["StartDateTime"] = bills["StartDateTime"].dt.strftime("%Y-%m-%dT%H:%M:%S")
     bills["EndDateTime"] = bills["EndDateTime"].dt.strftime("%Y-%m-%dT%H:%M:%S")
 
