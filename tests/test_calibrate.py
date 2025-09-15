@@ -239,7 +239,7 @@ def test_workflow_with_upgrade():
     cal_output_filepath = cal_output_dir / "logbook.json"
     assert cal_output_filepath.exists()
     cal_results = json.loads(cal_output_filepath.read_text())
-    cal_adjustments = cal_results[-1]["best_individual"]
+    cal_adjustments = cal_results["calibration_results"][-1]["best_individual"]
 
     # Create HPXML file for upgrade scenario (R-60 attic insulation)
     subprocess.run(
@@ -307,7 +307,7 @@ def test_workflow_with_upgrade():
     # Gather simulation results
     uncal_existing_results = cal.get_model_results(json_results_path=existing_json_filepath)
     uncal_upgrade_results = cal.get_model_results(json_results_path=upgrade_json_filepath)
-    cal_existing_results = cal_results[-1]["best_individual_sim_results"]
+    cal_existing_results = cal_results["calibration_results"][-1]["best_individual_sim_results"]
     cal_upgrade_results = cal.get_model_results(json_results_path=cal_upgrade_json_filepath)
 
     # Check calibrated savings is similar to, but not identical to, uncalibrated savings
