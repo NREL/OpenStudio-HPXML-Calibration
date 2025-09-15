@@ -49,84 +49,110 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('heating_setpoint_offset', false)
     arg.setDisplayName('Heating setpoint offset')
-    arg.setDescription('Degrees to change heating setpoint')
+    arg.setDescription('Degrees to change heating setpoint. Positive increases, negative decreases.')
     arg.setUnits('F')
     args << arg
 
     arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('cooling_setpoint_offset', false)
     arg.setDisplayName('Cooling setpoint offset')
-    arg.setDescription('Degrees to change cooling setpoint')
+    arg.setDescription('Degrees to change cooling setpoint. Positive increases, negative decreases.')
     arg.setUnits('F')
     args << arg
 
-    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('air_leakage_pct_change', false)
-    arg.setDisplayName('Air leakage percent change')
-    arg.setDescription('Percentage to change the air leakage rate.
-      Positive value increases air leakage, negative value decreases air leakage.
-      Expressed as a decimal, -1 - 1.')
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('air_leakage_multiplier', false)
+    arg.setDisplayName('Air leakage multiplier')
+    arg.setDescription('Multiplier on the air leakage rate.
+      Value > 1 increases air leakage, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
-    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('heating_efficiency_pct_change', false)
-    arg.setDisplayName('Heating efficiency percent change')
-    arg.setDescription('Percentage to change the heating equipment efficiency.
-      Positive value increases efficiency, negative value decreases efficiency.
-      Expressed as a decimal, -1 - 1.')
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('heating_efficiency_multiplier', false)
+    arg.setDisplayName('Heating efficiency multiplier')
+    arg.setDescription('Multiplier on heating equipment efficiency.
+      Value > 1 increases efficiency, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
-    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('cooling_efficiency_pct_change', false)
-    arg.setDisplayName('Cooling efficiency percent change')
-    arg.setDescription('Percentage to change the cooling equipment efficiency.
-      Positive value increases efficiency, negative value decreases efficiency.
-      Expressed as a decimal, -1 - 1.')
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('cooling_efficiency_multiplier', false)
+    arg.setDisplayName('Cooling efficiency multiplier')
+    arg.setDescription('Multiplier on cooling equipment efficiency.
+      Value > 1 increases efficiency, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
-    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('plug_load_pct_change', false)
-    arg.setDisplayName('Plug load percent change')
-    arg.setDescription('Percentage to change the plug load usage multiplier.
-      Positive value increases load, negative value decreases load.
-      Expressed as a decimal, -1 - 1.')
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('misc_load_multiplier', false)
+    arg.setDisplayName('Miscellaneous load multiplier')
+    arg.setDescription('Multiplier on miscellaneous load usage.
+      Value > 1 increases load, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
-    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('roof_r_value_pct_change', false)
-    arg.setDisplayName('Roof R-Value percent change')
-    arg.setDescription('Percentage to change the Roof R-value.
-      Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a decimal, -1 - 1.')
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('roof_r_value_multiplier', false)
+    arg.setDisplayName('Roof R-Value multiplier')
+    arg.setDescription('Multiplier on roof R-value.
+      Value > 1 increases R-value, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
-    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('ceiling_r_value_pct_change', false)
-    arg.setDisplayName('Ceiling R-Value percent change')
-    arg.setDescription('Percentage to change the ceiling (attic floor) R-value.
-      Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a decimal, -1 - 1.')
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('ceiling_r_value_multiplier', false)
+    arg.setDisplayName('Ceiling R-Value multiplier')
+    arg.setDescription('Multiplier on ceiling (attic floor) R-value.
+      Value > 1 increases R-value, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
-    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('floor_r_value_pct_change', false)
-    arg.setDisplayName('Floor R-Value percent change')
-    arg.setDescription('Percentage to change the floor R-value.
-      Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a decimal, -1 - 1.')
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('floor_r_value_multiplier', false)
+    arg.setDisplayName('Floor R-Value multiplier')
+    arg.setDescription('Multiplier on floor R-value.
+      Value > 1 increases R-value, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
-    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('above_ground_walls_r_value_pct_change', false)
-    arg.setDisplayName('Above-ground wall R-Value percent change')
-    arg.setDescription('Percentage to change the above-ground wall R-value.
-      Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a decimal, -1 - 1.')
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('above_ground_walls_r_value_multiplier', false)
+    arg.setDisplayName('Above-ground wall R-Value multiplier')
+    arg.setDescription('Multiplier on above-ground wall R-value.
+      Value > 1 increases R-value, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
-    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('below_ground_walls_r_value_pct_change', false)
-    arg.setDisplayName('Below-ground wall R-Value percent change')
-    arg.setDescription('Percentage to change the below-ground wall R-value.
-      Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a decimal, -1 - 1.')
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('below_ground_walls_r_value_multiplier', false)
+    arg.setDisplayName('Below-ground wall R-Value multiplier')
+    arg.setDescription('Multiplier on below-ground wall R-value.
+      Value > 1 increases R-value, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
-    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('slab_r_value_pct_change', false)
-    arg.setDisplayName('Slab R-Value percent change')
-    arg.setDescription('Percentage to change the foundation slab R-value.
-      Positive value increases R-Value, negative value decreases R-value.
-      Expressed as a decimal, -1 - 1.')
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('slab_r_value_multiplier', false)
+    arg.setDisplayName('Slab R-Value multiplier')
+    arg.setDescription('Multiplier on foundation slab R-value.
+      Value > 1 increases R-value, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
+    args << arg
+
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('water_heater_efficiency_multiplier', false)
+    arg.setDisplayName('Water heater efficiency multiplier')
+    arg.setDescription('Multiplier on water heater efficiency (EF/UEF).
+      Value > 1 increases efficiency, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
+    args << arg
+
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('water_fixtures_usage_multiplier', false)
+    arg.setDisplayName('Water fixtures usage multiplier')
+    arg.setDescription('Multiplier on water fixtures usage.
+      Value > 1 increases usage, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
+    args << arg
+
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('lighting_load_multiplier', false)
+    arg.setDisplayName('Lighting load multiplier')
+    arg.setDescription('Multiplier on lighting load.
+      Value > 1 increases load, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
+    args << arg
+
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('window_u_factor_multiplier', false)
+    arg.setDisplayName('Window U-factor multiplier')
+    arg.setDescription('Multiplier on window U-factor.
+      Value > 1 increases U-factor, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
+    args << arg
+
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('window_shgc_multiplier', false)
+    arg.setDisplayName('Window SHGC multiplier')
+    arg.setDescription('Multiplier on window SHGC.
+      Value > 1 increases SHGC, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
+    args << arg
+
+    arg = OpenStudio::Measure::OSArgument.makeDoubleArgument('appliance_usage_multiplier', false)
+    arg.setDisplayName('Appliance usage multiplier')
+    arg.setDescription('Multiplier on usage_multiplier of all appliances.
+      Value > 1 increases usage, < 1 decreases. Examples: 0.1 = 10x reduction, 10 = 10x increase.')
     args << arg
 
     return args
@@ -153,19 +179,30 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     hpxml = HPXML.new(hpxml_path: xml_file)
     hpxml_bldg = hpxml.buildings[0] # FIXME: This requires that each XML file contain only a single building
 
+    # Apply OS-HPXML defaults to any un-populated fields
+    epw_path = Location.get_epw_path(hpxml_bldg, xml_file)
+    weather = WeatherFile.new(epw_path: epw_path, runner: runner)
+    Defaults.apply(runner, hpxml, hpxml_bldg, weather)
+
     # Modify XML fields
     modify_heating_setpoint(hpxml_bldg, runner, args)
     modify_cooling_setpoint(hpxml_bldg, runner, args)
     modify_air_leakage(hpxml_bldg, runner, args)
     modify_heating_efficiency(hpxml_bldg, runner, args)
     modify_cooling_efficiency(hpxml_bldg, runner, args)
-    modify_plug_loads(hpxml_bldg, runner, args)
+    modify_misc_loads(hpxml_bldg, runner, args)
     modify_roof_r_values(hpxml_bldg, runner, args)
     modify_ceiling_r_values(hpxml_bldg, runner, args)
     modify_floor_r_values(hpxml_bldg, runner, args)
     modify_above_ground_wall_r_values(hpxml_bldg, runner, args)
     modify_below_ground_wall_r_values(hpxml_bldg, runner, args)
     modify_slab_r_values(hpxml_bldg, runner, args)
+    modify_water_heater_efficiency(hpxml_bldg, runner, args)
+    modify_water_fixtures_usage_multiplier(hpxml_bldg, runner, args)
+    modify_lighting_loads(hpxml_bldg, runner, args)
+    modify_window_u_factor(hpxml_bldg, runner, args)
+    modify_window_shgc(hpxml_bldg, runner, args)
+    modify_appliance_usage(hpxml_bldg, runner, args)
 
     # Save new file
     XMLHelper.write_file(hpxml.to_doc(), args[:save_file_path])
@@ -236,11 +273,11 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_air_leakage(hpxml_bldg, runner, args)
-    if not args[:air_leakage_pct_change]
+    if not args[:air_leakage_multiplier]
       runner.registerInfo('No modifier for air leakage provided. Not modifying air leakage.')
       return
     end
-    multiplier = 1 + args[:air_leakage_pct_change]
+    multiplier = args[:air_leakage_multiplier]
 
     hpxml_bldg.air_infiltration_measurements.each do |air_infiltration_measurement|
       if air_infiltration_measurement.air_leakage
@@ -260,11 +297,11 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_heating_efficiency(hpxml_bldg, runner, args)
-    if not args[:heating_efficiency_pct_change]
+    if not args[:heating_efficiency_multiplier]
       runner.registerInfo('No modifier for heating efficiency provided. Not modifying heating efficiency.')
       return
     end
-    multiplier = 1 + args[:heating_efficiency_pct_change]
+    multiplier = args[:heating_efficiency_multiplier]
     hpxml_bldg.heating_systems.each do |heating_system|
       if heating_system.heating_efficiency_afue
         new_afue = [heating_system.heating_efficiency_afue * multiplier, 1.0].min
@@ -297,11 +334,11 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_cooling_efficiency(hpxml_bldg, runner, args)
-    if not args[:cooling_efficiency_pct_change]
+    if not args[:cooling_efficiency_multiplier]
       runner.registerInfo('No modifier for cooling efficiency provided. Not modifying cooling efficiency.')
       return
     end
-    multiplier = 1 + args[:cooling_efficiency_pct_change]
+    multiplier = args[:cooling_efficiency_multiplier]
     hpxml_bldg.cooling_systems.each do |cooling_system|
       if cooling_system.cooling_efficiency_seer
         new_seer = cooling_system.cooling_efficiency_seer * multiplier
@@ -348,28 +385,55 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
     end
   end
 
-  def modify_plug_loads(hpxml_bldg, runner, args)
-    if not args[:plug_load_pct_change]
-      runner.registerInfo('No modifier for plug loads provided. Not modifying plug loads.')
+  def modify_misc_loads(hpxml_bldg, runner, args)
+    if not args[:misc_load_multiplier]
+      runner.registerInfo('No modifier for misc loads provided. Not modifying misc loads.')
       return
     end
-    multiplier = 1 + args[:plug_load_pct_change]
+    multiplier = args[:misc_load_multiplier]
     hpxml_bldg.plug_loads.each do |plug_load|
-      if plug_load.usage_multiplier.nil?
-        plug_load.usage_multiplier = 1.0
-      end
+      plug_load.usage_multiplier ||= 1.0
       new_multiplier = plug_load.usage_multiplier * multiplier
       plug_load.usage_multiplier = new_multiplier.round(2)
       # puts "New plug load multiplier: #{plug_load.usage_multiplier}"
     end
+    # FuelLoads Pools PermanentSpas
+    hpxml_bldg.fuel_loads.each do |fuel_load|
+      fuel_load.usage_multiplier ||= 1.0
+      new_multiplier = fuel_load.usage_multiplier * multiplier
+      fuel_load.usage_multiplier = new_multiplier.round(2)
+      # puts "New fuel load multiplier: #{fuel_load.usage_multiplier}"
+    end
+    hpxml_bldg.pools.each do |pool|
+      next if pool.type == 'none'
+      pool.pump_usage_multiplier ||= 1.0
+      pool.heater_usage_multiplier ||= 1.0
+      new_pump_multiplier = pool.pump_usage_multiplier * multiplier
+      new_heater_multiplier = pool.heater_usage_multiplier * multiplier
+      pool.pump_usage_multiplier = new_pump_multiplier.round(2)
+      pool.heater_usage_multiplier = new_heater_multiplier.round(2)
+      # puts "New pool pump usage multiplier: #{pool.pump_usage_multiplier}"
+      # puts "New pool heater usage multiplier: #{pool.heater_usage_multiplier}"
+    end
+    hpxml_bldg.permanent_spas.each do |permanent_spa|
+      next if permanent_spa.type == 'none'
+      permanent_spa.pump_usage_multiplier ||= 1.0
+      permanent_spa.heater_usage_multiplier ||= 1.0
+      new_pump_multiplier = permanent_spa.pump_usage_multiplier * multiplier
+      new_heater_multiplier = permanent_spa.heater_usage_multiplier * multiplier
+      permanent_spa.pump_usage_multiplier = new_pump_multiplier.round(2)
+      permanent_spa.heater_usage_multiplier = new_heater_multiplier.round(2)
+      # puts "New permanent_spa pump usage multiplier: #{permanent_spa.pump_usage_multiplier}"
+      # puts "New permanent_spa heater usage multiplier: #{permanent_spa.heater_usage_multiplier}"
+    end
   end
 
   def modify_roof_r_values(hpxml_bldg, runner, args)
-    if not args[:roof_r_value_pct_change]
+    if not args[:roof_r_value_multiplier]
       runner.registerInfo('No modifier for roof provided. Not modifying roof.')
       return
     end
-    multiplier = 1 + args[:roof_r_value_pct_change]
+    multiplier = args[:roof_r_value_multiplier]
     hpxml_bldg.roofs.each do |roof|
       if roof.insulation_assembly_r_value > @@estimated_uninsulated_r_value
         # puts "Original #{roof.insulation_id} R-value: #{roof.insulation_assembly_r_value}"
@@ -381,11 +445,11 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_ceiling_r_values(hpxml_bldg, runner, args)
-    if not args[:ceiling_r_value_pct_change]
+    if not args[:ceiling_r_value_multiplier]
       runner.registerInfo('No modifier for ceiling (attic floor) provided. Not modifying ceiling.')
       return
     end
-    multiplier = 1 + args[:ceiling_r_value_pct_change]
+    multiplier = args[:ceiling_r_value_multiplier]
     hpxml_bldg.floors.each do |floor|
       # Check if this floor surface is a ceiling
       next unless floor.is_ceiling
@@ -399,11 +463,11 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_floor_r_values(hpxml_bldg, runner, args)
-    if not args[:floor_r_value_pct_change]
+    if not args[:floor_r_value_multiplier]
       runner.registerInfo('No modifier for floor provided. Not modifying floor.')
       return
     end
-    multiplier = 1 + args[:floor_r_value_pct_change]
+    multiplier = args[:floor_r_value_multiplier]
     hpxml_bldg.floors.each do |floor|
       # Check if this floor surface is a ceiling
       next if floor.is_ceiling
@@ -417,11 +481,11 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_above_ground_wall_r_values(hpxml_bldg, runner, args)
-    if not args[:above_ground_walls_r_value_pct_change]
+    if not args[:above_ground_walls_r_value_multiplier]
       runner.registerInfo('No modifier for above-ground walls provided. Not modifying above-ground walls.')
       return
     end
-    multiplier = 1 + args[:above_ground_walls_r_value_pct_change]
+    multiplier = args[:above_ground_walls_r_value_multiplier]
     (hpxml_bldg.rim_joists + hpxml_bldg.walls).each do |surface|
       if surface.insulation_assembly_r_value > @@estimated_uninsulated_r_value
         # puts "Original #{surface.insulation_id} R-value: #{surface.insulation_assembly_r_value}"
@@ -433,11 +497,11 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_below_ground_wall_r_values(hpxml_bldg, runner, args)
-    if not args[:below_ground_walls_r_value_pct_change]
+    if not args[:below_ground_walls_r_value_multiplier]
       runner.registerInfo('No modifier for below-ground walls provided. Not modifying below-ground walls.')
       return
     end
-    multiplier = 1 + args[:below_ground_walls_r_value_pct_change]
+    multiplier = args[:below_ground_walls_r_value_multiplier]
     hpxml_bldg.foundation_walls.each do |foundation_wall|
       if foundation_wall.insulation_exterior_r_value && foundation_wall.insulation_exterior_r_value > @@estimated_uninsulated_r_value
         # puts "Original #{foundation_wall.insulation_id} R-value: #{foundation_wall.insulation_exterior_r_value}"
@@ -461,11 +525,11 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
   end
 
   def modify_slab_r_values(hpxml_bldg, runner, args)
-    if not args[:slab_r_value_pct_change]
+    if not args[:slab_r_value_multiplier]
       runner.registerInfo('No modifier for slab provided. Not modifying slab.')
       return
     end
-    multiplier = 1 + args[:slab_r_value_pct_change]
+    multiplier = args[:slab_r_value_multiplier]
     hpxml_bldg.slabs.each do |slab|
       if slab.under_slab_insulation_r_value && slab.under_slab_insulation_r_value > @@estimated_uninsulated_r_value
         # puts "Original #{slab.under_slab_insulation_id} R-value: #{slab.under_slab_insulation_r_value}"
@@ -490,6 +554,122 @@ class ModifyXML < OpenStudio::Measure::ModelMeasure
         new_r_value = slab.gap_insulation_r_value * multiplier
         slab.gap_insulation_r_value = new_r_value.round(1)
         # puts "New #{slab.id} R-value: #{slab.gap_insulation_r_value}"
+      end
+    end
+  end
+
+  def modify_water_heater_efficiency(hpxml_bldg, runner, args)
+    if not args[:water_heater_efficiency_multiplier]
+      runner.registerInfo('No modifier for water heater efficiency provided. Not modifying water heater efficiency.')
+      return
+    end
+    multiplier = args[:water_heater_efficiency_multiplier]
+    hpxml_bldg.water_heating_systems.each do |water_heating_system|
+      if water_heating_system.energy_factor
+        if water_heating_system.water_heater_type == HPXML::WaterHeaterTypeHeatPump
+          # Apply HPXML bounds https://openstudio-hpxml.readthedocs.io/en/latest/workflow_inputs.html#heat-pump
+          new_ef = [[water_heating_system.energy_factor * multiplier, 1.01].max, 5.0].min
+        else
+          new_ef = [water_heating_system.energy_factor * multiplier, 0.99].min
+        end
+        if new_ef != water_heating_system.energy_factor
+          water_heating_system.recovery_efficiency = nil
+        end
+        water_heating_system.energy_factor = new_ef.round(2)
+        # puts "New EF: #{water_heating_system.energy_factor}"
+      end
+      if water_heating_system.uniform_energy_factor
+        if water_heating_system.water_heater_type == HPXML::WaterHeaterTypeHeatPump
+          # Apply HPXML bounds https://openstudio-hpxml.readthedocs.io/en/latest/workflow_inputs.html#heat-pump
+          new_uef = [[water_heating_system.uniform_energy_factor * multiplier, 1.01].max, 5.0].min
+        else
+          new_uef = [water_heating_system.uniform_energy_factor * multiplier, 0.99].min
+        end
+        if new_uef != water_heating_system.uniform_energy_factor
+          water_heating_system.recovery_efficiency = nil
+        end
+        water_heating_system.uniform_energy_factor = new_uef.round(2)
+        # puts "New UEF: #{water_heating_system.uniform_energy_factor}"
+      end
+    end
+  end
+
+  def modify_water_fixtures_usage_multiplier(hpxml_bldg, runner, args)
+    if not args[:water_fixtures_usage_multiplier]
+      runner.registerInfo('No modifier for water heater usage provided. Not modifying water heater usage.')
+      return
+    end
+    multiplier = args[:water_fixtures_usage_multiplier]
+    hpxml_bldg.water_heating.water_fixtures_usage_multiplier ||= 1.0
+    new_multiplier = hpxml_bldg.water_heating.water_fixtures_usage_multiplier * multiplier
+    hpxml_bldg.water_heating.water_fixtures_usage_multiplier = new_multiplier.round(2)
+    # puts "New water fixture usage multiplier: #{hpxml_bldg.water_heating.water_fixtures_usage_multiplier}"
+  end
+
+  def modify_lighting_loads(hpxml_bldg, runner, args)
+    if not args[:lighting_load_multiplier]
+      runner.registerInfo('No modifier for lighting loads provided. Not modifying lighting loads.')
+      return
+    end
+    multiplier = args[:lighting_load_multiplier]
+    hpxml_bldg.lighting.interior_usage_multiplier ||= 1.0
+    new_multiplier = hpxml_bldg.lighting.interior_usage_multiplier * multiplier
+    hpxml_bldg.lighting.interior_usage_multiplier = new_multiplier.round(2)
+    # puts "New lighting load multiplier: #{hpxml_bldg.lighting.interior_usage_multiplier}"
+  end
+
+  def modify_window_u_factor(hpxml_bldg, runner, args)
+    if not args[:window_u_factor_multiplier]
+      runner.registerInfo('No modifier for window U-factor provided. Not modifying window U-factor.')
+      return
+    end
+    multiplier = args[:window_u_factor_multiplier]
+    hpxml_bldg.windows.each do |window|
+      if window.ufactor
+        new_uf = window.ufactor * multiplier
+        window.ufactor = new_uf.round(2)
+        # puts "New U-Factor: #{window.ufactor}"
+      end
+    end
+  end
+
+  def modify_window_shgc(hpxml_bldg, runner, args)
+    if not args[:window_shgc_multiplier]
+      runner.registerInfo('No modifier for window SHGC provided. Not modifying window SHGC.')
+      return
+    end
+    multiplier = args[:window_shgc_multiplier]
+    hpxml_bldg.windows.each do |window|
+      if window.shgc
+        new_shgc = [window.shgc * multiplier, 0.99].min
+        window.shgc = new_shgc.round(2)
+        # puts "New SHGC: #{window.shgc}"
+      end
+    end
+  end
+
+  def modify_appliance_usage(hpxml_bldg, runner, args)
+    if not args[:appliance_usage_multiplier]
+      runner.registerInfo('No modifier for appliace usage provided. Not modifying appliance usage.')
+      return
+    end
+    multiplier = args[:appliance_usage_multiplier]
+
+    { hpxml_bldg.refrigerators => 'fridge',
+      hpxml_bldg.clothes_washers => 'clothes washer',
+      hpxml_bldg.clothes_dryers => 'clothes dryer',
+      hpxml_bldg.dishwashers => 'dishwasher',
+      hpxml_bldg.freezers => 'freezer',
+      hpxml_bldg.cooking_ranges => 'range'
+    }.each do |appliances, appliance_name|
+      if appliances.empty?
+        runner.registerInfo("No #{appliance_name} found. Not modifying #{appliance_name}.")
+      end
+      appliances.each do |appliance|
+        appliance.usage_multiplier ||= 1.0
+        new_appliance_usage_multiplier = appliance.usage_multiplier * multiplier
+        appliance.usage_multiplier = new_appliance_usage_multiplier.round(2)
+        # puts "New #{appliance_name} usage multiplier: #{appliance.usage_multiplier}"
       end
     end
   end

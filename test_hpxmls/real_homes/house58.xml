@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<HPXML xmlns='http://hpxmlonline.com/2023/09' schemaVersion='4.0'>
+<HPXML xmlns='http://hpxmlonline.com/2023/09' schemaVersion='4.2'>
   <XMLTransactionHeaderInformation>
     <XMLType>HPXML</XMLType>
     <XMLGeneratedBy>redacted</XMLGeneratedBy>
@@ -323,6 +323,7 @@
               <HeatPumpFuel>electricity</HeatPumpFuel>
               <HeatingCapacity>42000.0</HeatingCapacity>
               <CoolingCapacity>42000.0</CoolingCapacity>
+              <CompressorType>single stage</CompressorType>
               <BackupType>integrated</BackupType>
               <BackupSystemFuel>electricity</BackupSystemFuel>
               <BackupAnnualHeatingEfficiency>
@@ -581,7 +582,7 @@
     </BuildingDetails>
   </Building>
   <Consumption>
-    <BuildingID idref='Building1'/>
+    <BuildingID idref='bldg1'/>
     <CustomerID/>
     <ConsumptionDetails>
       <ConsumptionInfo>

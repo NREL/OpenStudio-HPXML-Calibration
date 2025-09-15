@@ -1,6 +1,13 @@
-# OpenStudio-HPXML calibration
+# OpenStudio™ HPXML Calibration
 
-A package to automatically calibrate an OS-HPXML model to provided utilities bills
+A package to automatically calibrate an [OpenStudio-HPXML](https://github.com/NREL/OpenStudio-HPXML) residential building model against utility bills.
+
+The implementation relies heavily on [BPI-2400-S-2015 v.2 Standard Practice for Standardized Qualification of Whole-House Energy Savings Predictions by Calibration to Energy Use](https://www.bpi.org/__cms/docs/20240523_BPI-2400-S-2015_Delta_Standard_v2.pdf).
+However, it is not currently a complete implementation of BPI-2400.
+
+## Usage
+
+TODO
 
 ## Documentation
 
@@ -10,11 +17,12 @@ Available at <https://NREL.github.io/OpenStudio-HPXML-Calibration>
 
 - Clone the repository: `git clone https://github.com/NREL/OpenStudio-HPXML-Calibration.git`
 - Move into the repository: `cd OpenStudio-HPXML-Calibration`
-- Install [OpenStudio 3.9.0](https://github.com/NREL/OpenStudio/releases)
+- Install [OpenStudio 3.10.0](https://github.com/NREL/OpenStudio/releases/tag/v3.10.0)
 
 - [Uv](https://docs.astral.sh/uv/) is used to manage the project & dependencies (and may also be used to [manage Python](https://docs.astral.sh/uv/guides/install-python/) if you want). After cloning, ensure you have
 [uv installed](https://docs.astral.sh/uv/getting-started/installation/), then run `uv sync` to install the package and all development dependencies.
   - Some Windows developers have reported version conflicts using the default strategy. If this occurs, consider changing the [resolution strategy](https://docs.astral.sh/uv/concepts/resolution/#resolution-strategy) using `uv sync --resolution=lowest-direct`
+- Download all weather files using `uv run openstudio-hpxml-calibration download-weather`
 - Developers can then call `uv run pytest` to confirm all dev dependencies have been installed and everything is working as expected. (If you need to restrict the number of concurrent workers, you can use e.g. `uv run pytest -n <NUM>`.)
 - Activate [pre-commit](https://pre-commit.com/) (only required once, after cloning the repo) with: `uv run pre-commit install`. On your first commit it will install the pre-commit environments, then run pre-commit hooks at every commit.
 - Before pushing to Github, run pre-commit on all files with `uv run pre-commit run -a` to highlight any linting/formatting errors that will cause CI to fail.
@@ -32,7 +40,9 @@ There's a Dev Container configuration in this repo which installs all the necess
 
 ## Testing
 
-Can be run with `uv run pytest` from the repo root.
+Project tests can be run with `uv run pytest` from the repo root. (If you need to restrict the number of concurrent workers, you can use e.g. `uv run pytest -n <NUM>`.)
+
+Ruby Measure tests can be run with `openstudio src/measures/ModifyXML/tests/modify_xml_test.rb`
 
 ## Developing documentation
 
@@ -44,3 +54,7 @@ During development we can serve docs locally and view updates as they are made.
 
 - To deploy, push a commit in the `docs` folder to the `main` branch
 - Wait a few minutes, then verify the new documentation on the [docs website](https://NREL.github.io/OpenStudio-HPXML-Calibration)
+
+## License
+
+This project is available under a BSD-3-like license, which is a free, open-source, and permissive license. For more information, check out the [license file](https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/LICENSE.md).

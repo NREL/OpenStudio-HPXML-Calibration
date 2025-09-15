@@ -66,7 +66,6 @@ ignore = [
     "RUF012",  # mutable-class-default
     "S106",    # hardcoded-password-func-arg
     "S311",    # suspicious-non-cryptographic-random-usage
-    "S320",    # suspicious-xmle-tree-usage
     "S603",    # subprocess-without-shell-equals-true
     "S607",    # start-process-with-partial-path
     "S701",    # jinja2-autoescape-false
@@ -75,5 +74,11 @@ ignore = [
 
 [lint.per-file-ignores]
 "tests/*" = ["S101", "S607", "S603"] # assert statements are allowed in tests, and paths are safe
+"*_playground.py" = [
+    "N803", # allow non-lowercase variable in function name
+    "PLC0415", # imports aren't at the top of the file in a marimo notebook
+    ]
+"__init__.py" = ["PLC0415"]
+"test_calibrate.py" = ["PD011"] # allow fitness.values
 
 # [lint.pylint]

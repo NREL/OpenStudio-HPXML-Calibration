@@ -4,9 +4,16 @@ import warnings
 import eeweather
 import numpy as np
 import pandas as pd
+import yaml
 from lxml import objectify
 
-from openstudio_hpxml_calibration.hpxml import HpxmlDoc
+from openstudio_hpxml_calibration.hpxml import EnergyUnitType, FuelType, HpxmlDoc
+from openstudio_hpxml_calibration.units import convert_units
+
+
+def read_yaml_file(config_path: str):
+    with open(config_path) as file:
+        return yaml.safe_load(file)
 
 
 def get_datetime_subel(el: objectify.ObjectifiedElement, subel_name: str) -> pd.Timestamp | None:
@@ -19,7 +26,7 @@ def get_datetime_subel(el: objectify.ObjectifiedElement, subel_name: str) -> pd.
 
 def get_bills_from_hpxml(
     hpxml: HpxmlDoc, building_id: str | None = None
-) -> tuple[dict[str, pd.DataFrame], dict[str, str], dt.timezone]:
+) -> tuple[dict[FuelType, pd.DataFrame], dict[FuelType, EnergyUnitType], dt.timezone]:
     """Get utility bills from an HPXML file.
 
     :param hpxml: The HPXML file
@@ -31,7 +38,7 @@ def get_bills_from_hpxml(
           dataframe as the values with columns `start_date`, `end_date`, and `consumption`
         * `bill_units`, a dictionary with a map of fuel type to units in the HPXML file.
         * `local_standard_tz`, the timezone (standard, no DST) of the location.
-    :rtype: tuple[dict[str, pd.DataFrame], dict[str, str], dt.timezone]
+    :rtype: tuple[dict[FuelType, pd.DataFrame], dict[FuelType, EnergyUnitType], dt.timezone]
     """
     if building_id is None:
         building_id = hpxml.get_first_building_id()
@@ -46,59 +53,52 @@ def get_bills_from_hpxml(
 
     bills_by_fuel_type = {}
     bill_units = {}
-    for cons_info in hpxml.xpath(
-        "h:Consumption[h:BuildingID/@idref=$building_id]/h:ConsumptionDetails/h:ConsumptionInfo",
+
+    consumptions = hpxml.xpath(
+        "h:Consumption[h:BuildingID/@idref=$building_id]",
         building_id=building_id,
-    ):
-        fuel_type = str(cons_info.ConsumptionType.Energy.FuelType)
-        bill_units[fuel_type] = str(cons_info.ConsumptionType.Energy.UnitofMeasure)
-        rows = []
-        for el in cons_info.ConsumptionDetail:
-            rows.append(
-                [
-                    get_datetime_subel(el, "StartDateTime"),
-                    get_datetime_subel(el, "EndDateTime"),
-                    float(el.Consumption),
-                ]
+    )
+    if not consumptions:
+        raise ValueError(
+            f"No matching Consumption/BuildingID/@idref equal to Building/BuildingID/@id={building_id} was found in HPXML."
+        )
+    for consumption in consumptions:
+        cons_infos = consumption.xpath(
+            "h:ConsumptionDetails/h:ConsumptionInfo", namespaces=hpxml.ns
+        )
+        for cons_info in cons_infos:
+            fuel_type = FuelType(cons_info.ConsumptionType.Energy.FuelType)
+            bill_units[fuel_type] = EnergyUnitType(cons_info.ConsumptionType.Energy.UnitofMeasure)
+            rows = []
+            for el in cons_info.ConsumptionDetail:
+                rows.append(
+                    [
+                        get_datetime_subel(el, "StartDateTime"),
+                        get_datetime_subel(el, "EndDateTime"),
+                        float(el.Consumption),
+                    ]
+                )
+            bills = pd.DataFrame.from_records(
+                rows, columns=["start_date", "end_date", "consumption"]
             )
-        bills = pd.DataFrame.from_records(rows, columns=["start_date", "end_date", "consumption"])
-        if pd.isna(bills["end_date"]).all():
-            bills["end_date"] = bills["start_date"].shift(-1)
-        if pd.isna(bills["start_date"]).all():
-            bills["start_date"] = bills["end_date"].shift(1)
-        bills["start_date"] = bills["start_date"].dt.tz_localize(local_standard_tz)
-        bills["end_date"] = bills["end_date"].dt.tz_localize(local_standard_tz)
-        bills_by_fuel_type[fuel_type] = bills
+            if pd.isna(bills["end_date"]).all():
+                bills["end_date"] = bills["start_date"].shift(-1)
+            if pd.isna(bills["start_date"]).all():
+                bills["start_date"] = bills["end_date"].shift(1)
+
+            bills["start_day_of_year"] = bills["start_date"].dt.dayofyear
+            # Subtract 1 from end day because the bill shows it at hour 00:00 of the end date
+            bills["end_day_of_year"] = bills["end_date"].dt.dayofyear - 1
+
+            bills["start_date"] = bills["start_date"].dt.tz_localize(local_standard_tz)
+            bills["end_date"] = bills["end_date"].dt.tz_localize(local_standard_tz)
+            bills_by_fuel_type[fuel_type] = bills
 
     return bills_by_fuel_type, bill_units, local_standard_tz
 
 
-def get_lat_lon_from_hpxml(hpxml: HpxmlDoc, building_id: str | None = None) -> tuple[float, float]:
-    """Get latitude, longitude from hpxml file
-
-    :param hpxml: _description_
-    :type hpxml: HpxmlDoc
-    :param building_id: Optional building_id of the building you want to get location for.
-    :type building_id: str | None
-    :return: _description_
-    :rtype: tuple[float, float]
-    """
-    building = hpxml.get_building(building_id)
-    try:
-        # Option 1: Get directly from HPXML
-        geolocation = building.Site.GeoLocation
-        lat = float(geolocation.Latitude)
-        lon = float(geolocation.Longitude)
-    except AttributeError:
-        _, epw_metadata = hpxml.get_epw_data(building_id)
-        lat = epw_metadata["latitude"]
-        lon = epw_metadata["longitude"]
-
-    return lat, lon
-
-
 def join_bills_weather(bills_orig: pd.DataFrame, lat: float, lon: float, **kw) -> pd.DataFrame:
-    """Join the bills dataframe with an average daily temperatue
+    """Join the bills dataframe with an average daily temperature
 
     :param bills_orig: Dataframe with columns `start_date`, `end_date`, and `consumption` representing each bill period.
     :type bills_orig: pd.DataFrame
@@ -120,8 +120,7 @@ def join_bills_weather(bills_orig: pd.DataFrame, lat: float, lon: float, **kw) -
         )
         tempC, _ = isd_station.load_isd_hourly_temp_data(start_date, end_date)
     tempC = tempC.tz_convert(bills_orig["start_date"].dt.tz)
-    tempF = tempC * 1.8 + 32
-
+    tempF = convert_units(tempC, "c", "f")
     bills = bills_orig.copy()
     bills["n_days"] = (
         (bills_orig["end_date"] - bills_orig["start_date"]).dt.total_seconds() / 60 / 60 / 24
@@ -138,4 +137,4 @@ def join_bills_weather(bills_orig: pd.DataFrame, lat: float, lon: float, **kw) -
         else:
             bill_avg_temps.append(bill_temps.mean())
     bills["avg_temp"] = bill_avg_temps
-    return bills
+    return bills, tempF

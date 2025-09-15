@@ -1,4 +1,0 @@
-{
-  "sample_xml_file": "src/OpenStudio-HPXML/workflow/sample_files/base.xml",
-  "test_workflow": "tests/data/test_modify_xml_workflow.osw"
-}

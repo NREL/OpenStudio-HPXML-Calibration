@@ -3,9 +3,16 @@ name: CI
 on:
   push:
 
+# Cancel in-progress jobs when a new commit is pushed to the PR
+# This avoids CI jobs "stacking up" for the same PR
+# This won't stop existing job if new commit is pushed with [ci skip].
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 env:
-  OS_VERSION: "3.9.0"
-  OS_SHA: c77fbb9569
+  OS_VERSION: "3.10.0"
+  OS_SHA: 86d7e215a1
 
 jobs:
   test:
