@@ -10,9 +10,9 @@ def generate_cvrmse_comparison_plot():
         Path(__file__).resolve().parent.parent / "tests" / "results" / "weather_normalization"
     )
     summary_file = results_dir / "cvrmse_summary.json"
-    if not summary_file.exists():
-        return
     all_jsons = list(results_dir.glob("*.json"))
+    if len(all_jsons) == 0:
+        return
 
     model_cvrmses = {}
 
