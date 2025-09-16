@@ -7,7 +7,12 @@ However, it is not currently a complete implementation of BPI-2400.
 
 ## Usage
 
-TODO
+Run `uv run openstudio-hpxml-calibration calibrate --hpxml-filepath hpxml.xml`.
+
+The expectation is that the user will create a custom config file (based on `src\openstudio_hpxml_calibration\default_calibration_config.yaml`) that is specific to the home being calibrated, and used as:
+`uv run openstudio-hpxml-calibration calibrate --hpxml-filepath hpxml.xml --config-filepath my_config.yaml`
+
+See `uv run openstudio-hpxml-calibration calibrate --help` or `uv run openstudio-hpxml-calibration --help` for more options.
 
 ## Developer installation & usage
 
