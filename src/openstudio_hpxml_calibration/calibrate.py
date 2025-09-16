@@ -1047,9 +1047,6 @@ class Calibrate:
             existing_home_results = {}
             for ind in pop:
                 if is_existing_home(ind, param_choices_map):
-                    existing_home_results["existing_home"] = json.dumps(
-                        dict(zip(param_choices_map.keys(), ind))
-                    )
                     existing_home_results["existing_home_sim_results"] = json.dumps(ind.sim_results)
                     break
 
