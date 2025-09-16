@@ -218,7 +218,7 @@ def test_workflow_with_upgrade():
             "--config-filepath",
             str(config_filepath),
             "--num-proc",
-            "14",
+            "8",
         ]
     )
     cal_output_filepath = cal_output_dir / "logbook.json"
