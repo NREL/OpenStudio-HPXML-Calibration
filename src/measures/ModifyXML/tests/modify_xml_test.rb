@@ -398,9 +398,9 @@ class ModifyXMLTest < Minitest::Test
 
   def test_water_heater_efficiency_and_usage
     files_to_test = [
-      'base-dhw-tank-gas-uef.xml',
+      'base-dhw-tank-gas-ef.xml',
       'base-appliances-modified.xml',
-      'base-dhw-tank-heat-pump-uef.xml',
+      'base-dhw-tank-heat-pump-ef.xml',
     ]
 
     files_to_test.each do |file|

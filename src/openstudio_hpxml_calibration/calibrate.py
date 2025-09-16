@@ -424,6 +424,20 @@ class Calibrate:
 
         return comparison, summary
 
+    def create_measure_input_file(
+        self, arguments: dict, output_file_path: str, measure_path: str | None = None
+    ):
+        if measure_path is None:
+            measure_path = str(Path(__file__).resolve().parent.parent / "measures")
+        data = {
+            "run_directory": str(Path(arguments["save_file_path"]).parent),
+            "measure_paths": [measure_path],
+            "steps": [{"measure_dir_name": "ModifyXML", "arguments": arguments}],
+        }
+        Path(output_file_path).parent.mkdir(parents=True, exist_ok=True)
+        with open(output_file_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2)
+
     def run_search(
         self,
         population_size=None,
@@ -535,7 +549,7 @@ class Calibrate:
                 }
 
                 temp_osw = Path(temp_output_dir / "modify_hpxml.osw")
-                create_measure_input_file(arguments, temp_osw)
+                self.create_measure_input_file(arguments, temp_osw)
 
                 app(["modify-xml", str(temp_osw)])
                 app(
@@ -615,16 +629,6 @@ class Calibrate:
                 return abs(abs_error) <= elec_threshold
             else:
                 return abs(abs_error) <= fuel_threshold
-
-        def create_measure_input_file(arguments: dict, output_file_path: str):
-            data = {
-                "run_directory": str(Path(arguments["save_file_path"]).parent),
-                "measure_paths": [str(Path(__file__).resolve().parent.parent / "measures")],
-                "steps": [{"measure_dir_name": "ModifyXML", "arguments": arguments}],
-            }
-            Path(output_file_path).parent.mkdir(parents=True, exist_ok=True)
-            with open(output_file_path, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2)
 
         def diversity(pop):
             return len({tuple(ind) for ind in pop}) / len(pop)
