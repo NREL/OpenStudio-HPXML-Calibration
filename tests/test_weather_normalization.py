@@ -17,6 +17,22 @@ test_config = _load_config("tests/data/test_config.yaml")
 
 repo_root = pathlib.Path(__file__).resolve().parent.parent
 ira_rebate_hpxmls = list((repo_root / "test_hpxmls" / "ira_rebates").glob("*.xml"))
+real_home_hpxmls = list((repo_root / "test_hpxmls" / "real_homes").glob("*.xml"))
+ihmh_home_hpxmls = list((repo_root / "test_hpxmls" / "ihmh_homes").glob("*.xml"))
+SKIP_FILENAMES = {
+    "ihmh7.xml",
+    "house11.xml",
+    "house18.xml",
+    "house32.xml",
+    "house37.xml",
+    "house46.xml",
+    "house53.xml",
+    "house54.xml",
+    "house57.xml",
+    "house60.xml",
+    "house83.xml",
+    "house84.xml",
+}
 
 
 @pytest.mark.parametrize("filename", ira_rebate_hpxmls, ids=lambda x: x.stem)
@@ -78,8 +94,16 @@ def test_weather_retrieval(results_dir, filename):
     and sys.version_info.micro <= 2,
     reason="Skipping Windows and Python <= 3.13.2 due to known bug",
 )
-@pytest.mark.parametrize("filename", ira_rebate_hpxmls, ids=lambda x: x.stem)
+@pytest.mark.parametrize(
+    "filename", ira_rebate_hpxmls + real_home_hpxmls + ihmh_home_hpxmls, ids=lambda x: x.stem
+)
 def test_curve_fit(results_dir, filename):
+    # Files that do not meet the utility bill criteria are skipped for now.
+    # They will be included in the tests again once simplified calibration is added.
+    # See https://github.com/NREL/OpenStudio-HPXML-Calibration/issues/43
+    if filename.name in SKIP_FILENAMES:
+        pytest.skip(f"Skipping test for {filename.name}")
+
     hpxml = HpxmlDoc(filename)
     inv_model = InverseModel(hpxml, user_config=test_config)
     successful_fits = 0  # Track number of successful fits
@@ -118,8 +142,12 @@ def test_curve_fit(results_dir, filename):
     and sys.version_info.micro <= 2,
     reason="Skipping Windows and Python <= 3.13.2 due to known bug",
 )
-@pytest.mark.parametrize("filename", ira_rebate_hpxmls, ids=lambda x: x.stem)
+@pytest.mark.parametrize(
+    "filename", ira_rebate_hpxmls + real_home_hpxmls + ihmh_home_hpxmls, ids=lambda x: x.stem
+)
 def test_fit_model(filename):
+    if filename.name in SKIP_FILENAMES:
+        pytest.skip(f"Skipping test for {filename.name}")
     hpxml = HpxmlDoc(filename)
     inv_model = InverseModel(hpxml, user_config=test_config)
     fuel_types = hpxml.get_fuel_types()

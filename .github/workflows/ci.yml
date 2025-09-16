@@ -91,29 +91,21 @@ jobs:
             "ihmh7"                 # Has PV
             "house02"               # Missing natural gas consumption data
             "house05"               # Missing natural gas consumption data
-            "house06"               # Billing period longer than 45 days
-            "house07"               # Billing period longer than 45 days
             "house09"               # Missing natural gas consumption data
             "house10"               # Missing natural gas consumption data
-            "house14"               # Billing period shorter than 20 days
-            "house17"               # Billing period shorter than 20 days
             "house22"               # Gap in electricity consumption data
             "house31"               # Gap in electricity consumption data
             "house32"               # Electricity consumption covers less than 300 days
             "house37"               # Electricity consumption covers less than 300 days
-            "house43"               # Billing period shorter than 20 days
             "house44"               # Missing electricity consumption data
             "house45"               # Missing electricity consumption data
             "house46"               # Zeroes in electricity consumption data
-            "house48"               # Billing period shorter than 20 days
-            "house49"               # Billing period shorter than 20 days
             "house50"               # Billing period shorter than 20 days
             "house57"               # Natural gas consumption covers less than 300 days
             "house77"               # Billing period shorter than 20 days
             "house83"               # Natural gas consumption covers less than 300 days
             "house85"               # Missing fuel oil consumption data
             "house86"               # Missing fuel oil consumption data
-            "house90"               # Billing period shorter than 20 days
           )
           for xml in test_hpxmls/**/*.xml; do
             if [[ $xml == *"invalid_homes"* ]]; then
