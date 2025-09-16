@@ -1,5 +1,7 @@
 # OpenStudio™ HPXML Calibration
 
+[![ci](https://github.com/NREL/OpenStudio-HPXML-Calibration/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/NREL/OpenStudio-HPXML-Calibration/actions/workflows/ci.yml)
+
 A package to automatically calibrate an [OpenStudio-HPXML](https://github.com/NREL/OpenStudio-HPXML) residential building model against utility bills.
 
 The implementation relies heavily on [BPI-2400-S-2015 v.2 Standard Practice for Standardized Qualification of Whole-House Energy Savings Predictions by Calibration to Energy Use](https://www.bpi.org/__cms/docs/20240523_BPI-2400-S-2015_Delta_Standard_v2.pdf).
