@@ -88,9 +88,6 @@ def test_curve_fit_and_fit_model(results_dir, filename):
     if filename.name in {
         "ihmh7.xml",  # CVRMSE > 81%
         "house11.xml",  # CVRMSE > 81%
-        "house53.xml",  # zero-size array to reduction operation maximum which has no identity
-        "house54.xml",  # zero-size array to reduction operation maximum which has no identity
-        "house60.xml",  # zero-size array to reduction operation maximum which has no identity
         "house83.xml",  # CVRMSE > 81%
     }:
         pytest.skip(f"Skipping test for {filename.name}")
