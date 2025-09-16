@@ -226,9 +226,10 @@ def test_workflow_with_upgrade():
     cal_results = json.loads(cal_output_filepath.read_text())
     cal_adjustments = cal_results["calibration_results"][-1]["best_individual"]
 
-    # FIXME: assert that calibration succeeded once
+    # FIXME: switch to success assert once
     # https://github.com/NREL/OpenStudio-HPXML-Calibration/issues/91#issuecomment-3261124309
     # is addressed
+    assert cal_results["calibration_results"][-1]["gen"] < 20
 
     # Create HPXML file for upgrade scenario (R-60 attic insulation)
     subprocess.run(
