@@ -95,7 +95,7 @@ class HpxmlDoc:
             hpxml_schema_filename = (
                 OS_HPXML_PATH / "HPXMLtoOpenStudio" / "resources" / "hpxml_schema" / "HPXML.xsd"
             )
-            schema_doc = etree.parse(str(hpxml_schema_filename))  # noqa: S320
+            schema_doc = etree.parse(str(hpxml_schema_filename))
             schema = etree.XMLSchema(schema_doc)
             schema.assertValid(self.tree)
 
@@ -107,7 +107,7 @@ class HpxmlDoc:
                 / "hpxml_schematron"
                 / "EPvalidator.sch"
             )
-            schematron_doc = etree.parse(str(hpxml_schematron_filename))  # noqa: S320
+            schematron_doc = etree.parse(str(hpxml_schematron_filename))
             schematron = isoschematron.Schematron(schematron_doc)
             schematron.assertValid(self.tree)
 
