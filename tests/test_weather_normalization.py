@@ -19,20 +19,6 @@ repo_root = pathlib.Path(__file__).resolve().parent.parent
 ira_rebate_hpxmls = list((repo_root / "test_hpxmls" / "ira_rebates").glob("*.xml"))
 real_home_hpxmls = list((repo_root / "test_hpxmls" / "real_homes").glob("*.xml"))
 ihmh_home_hpxmls = list((repo_root / "test_hpxmls" / "ihmh_homes").glob("*.xml"))
-SKIP_FILENAMES = {
-    "ihmh7.xml",
-    "house11.xml",
-    "house18.xml",
-    "house32.xml",
-    "house37.xml",
-    "house46.xml",
-    "house53.xml",
-    "house54.xml",
-    "house57.xml",
-    "house60.xml",
-    "house83.xml",
-    "house84.xml",
-}
 
 
 @pytest.mark.parametrize("filename", ira_rebate_hpxmls, ids=lambda x: x.stem)
@@ -97,17 +83,25 @@ def test_weather_retrieval(results_dir, filename):
 @pytest.mark.parametrize(
     "filename", ira_rebate_hpxmls + real_home_hpxmls + ihmh_home_hpxmls, ids=lambda x: x.stem
 )
-def test_curve_fit(results_dir, filename):
-    # Files that do not meet the utility bill criteria are skipped for now.
-    # They will be included in the tests again once simplified calibration is added.
-    # See https://github.com/NREL/OpenStudio-HPXML-Calibration/issues/43
-    if filename.name in SKIP_FILENAMES:
+def test_curve_fit_and_fit_model(results_dir, filename):
+    # Files that do not run successfully are skipped for now.
+    if filename.name in {
+        "ihmh7.xml",  # CVRMSE > 81%
+        "house11.xml",  # CVRMSE > 81%
+        "house53.xml",  # zero-size array to reduction operation maximum which has no identity
+        "house54.xml",  # zero-size array to reduction operation maximum which has no identity
+        "house60.xml",  # zero-size array to reduction operation maximum which has no identity
+        "house83.xml",
+    }:  # CVRMSE > 81%
         pytest.skip(f"Skipping test for {filename.name}")
 
     hpxml = HpxmlDoc(filename)
     inv_model = InverseModel(hpxml, user_config=test_config)
     successful_fits = 0  # Track number of successful fits
     output_filepath = results_dir / "weather_normalization"
+
+    fuel_types = hpxml.get_fuel_types()
+    conditioning_fuels = fuel_types["heating"] | fuel_types["cooling"]
 
     plot_fuel_type_curve_fits(inv_model, output_filepath, filename.stem)
 
@@ -122,48 +116,19 @@ def test_curve_fit(results_dir, filename):
         with open(json_path, "w") as f:
             json.dump(individual_result, f, indent=2)
 
-        successful_fits += 1
-
-    assert successful_fits > 0, (
-        f"No successful regression fits for {filename.stem}_{fuel_type.value}"
-    )
-
-
-# Use flaky to address intermittent tcl errors on Windows https://stackoverflow.com/questions/71443540/intermittent-pytest-failures-complaining-about-missing-tcl-files-even-though-the
-@pytest.mark.flaky(max_runs=3)
-# Suppress warning ("invalid value encountered in sqrt") that is only emitted during testing, not during normal use
-# See discussion in https://github.com/NREL/OpenStudio-HPXML-Calibration/issues/75
-@pytest.mark.filterwarnings("ignore:invalid value encountered in sqrt:RuntimeWarning")
-# Skipping because of this bug in Python https://github.com/python/cpython/issues/125235#issuecomment-2412948604
-@pytest.mark.skipif(
-    sys.platform == "win32"
-    and sys.version_info.major == 3
-    and sys.version_info.minor == 13
-    and sys.version_info.micro <= 2,
-    reason="Skipping Windows and Python <= 3.13.2 due to known bug",
-)
-@pytest.mark.parametrize(
-    "filename", ira_rebate_hpxmls + real_home_hpxmls + ihmh_home_hpxmls, ids=lambda x: x.stem
-)
-def test_fit_model(filename):
-    if filename.name in SKIP_FILENAMES:
-        pytest.skip(f"Skipping test for {filename.name}")
-    hpxml = HpxmlDoc(filename)
-    inv_model = InverseModel(hpxml, user_config=test_config)
-    fuel_types = hpxml.get_fuel_types()
-    conditioning_fuels = fuel_types["heating"] | fuel_types["cooling"]
-
-    for fuel_type, bills in inv_model.bills_by_fuel_type.items():
-        bills_temps = inv_model.bills_weather_by_fuel_type_in_btu[fuel_type]
-
         best_fitting_model = fit_model(
             bills_temps,
             test_config["acceptance_criteria"]["bill_regression_max_cvrmse"],
             conditioning_fuels,
             fuel_type,
         )
-
         assert best_fitting_model is not None
+
+        successful_fits += 1
+
+    assert successful_fits > 0, (
+        f"No successful regression fits for {filename.stem}_{fuel_type.value}"
+    )
 
 
 def test_normalize_consumption_to_epw():
