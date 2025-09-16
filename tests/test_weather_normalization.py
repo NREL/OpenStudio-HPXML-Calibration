@@ -11,7 +11,10 @@ from openstudio_hpxml_calibration.hpxml import HpxmlDoc
 from openstudio_hpxml_calibration.units import convert_units
 from openstudio_hpxml_calibration.utils import _load_config, plot_fuel_type_curve_fits
 from openstudio_hpxml_calibration.weather_normalization.inverse_model import InverseModel
-from openstudio_hpxml_calibration.weather_normalization.regression import fit_model
+from openstudio_hpxml_calibration.weather_normalization.regression import (
+    Bpi2400ModelFitError,
+    fit_model,
+)
 
 test_config = _load_config("tests/data/test_config.yaml")
 
@@ -84,48 +87,44 @@ def test_weather_retrieval(results_dir, filename):
     "filename", ira_rebate_hpxmls + real_home_hpxmls + ihmh_home_hpxmls, ids=lambda x: x.stem
 )
 def test_curve_fit_and_fit_model(results_dir, filename):
-    # Files that do not run successfully are skipped for now.
-    if filename.name in {
-        "ihmh7.xml",  # CVRMSE > 81%
-        "house11.xml",  # CVRMSE > 81%
-        "house83.xml",  # CVRMSE > 81%
-    }:
-        pytest.skip(f"Skipping test for {filename.name}")
+    try:
+        hpxml = HpxmlDoc(filename)
+        inv_model = InverseModel(hpxml, user_config=test_config)
+        successful_fits = 0  # Track number of successful fits
+        output_filepath = results_dir / "weather_normalization"
 
-    hpxml = HpxmlDoc(filename)
-    inv_model = InverseModel(hpxml, user_config=test_config)
-    successful_fits = 0  # Track number of successful fits
-    output_filepath = results_dir / "weather_normalization"
+        fuel_types = hpxml.get_fuel_types()
+        conditioning_fuels = fuel_types["heating"] | fuel_types["cooling"]
 
-    fuel_types = hpxml.get_fuel_types()
-    conditioning_fuels = fuel_types["heating"] | fuel_types["cooling"]
+        plot_fuel_type_curve_fits(inv_model, output_filepath, filename.stem)
 
-    plot_fuel_type_curve_fits(inv_model, output_filepath, filename.stem)
+        for fuel_type, bills in inv_model.bills_by_fuel_type.items():
+            model = inv_model.get_model(fuel_type)
+            bills_temps = inv_model.bills_weather_by_fuel_type_in_btu[fuel_type]
+            cvrmse = model.calc_cvrmse(bills_temps)
 
-    for fuel_type, bills in inv_model.bills_by_fuel_type.items():
-        model = inv_model.get_model(fuel_type)
-        bills_temps = inv_model.bills_weather_by_fuel_type_in_btu[fuel_type]
-        cvrmse = model.calc_cvrmse(bills_temps)
+            # Save CVRMSE result per test
+            individual_result = {f"{filename.stem}_{fuel_type}": cvrmse}
+            json_path = output_filepath / f"{filename.stem}_{fuel_type.value}.json"
+            with open(json_path, "w") as f:
+                json.dump(individual_result, f, indent=2)
 
-        # Save CVRMSE result per test
-        individual_result = {f"{filename.stem}_{fuel_type}": cvrmse}
-        json_path = output_filepath / f"{filename.stem}_{fuel_type.value}.json"
-        with open(json_path, "w") as f:
-            json.dump(individual_result, f, indent=2)
+            best_fitting_model = fit_model(
+                bills_temps,
+                test_config["acceptance_criteria"]["bill_regression_max_cvrmse"],
+                conditioning_fuels,
+                fuel_type,
+            )
+            assert best_fitting_model is not None
 
-        best_fitting_model = fit_model(
-            bills_temps,
-            test_config["acceptance_criteria"]["bill_regression_max_cvrmse"],
-            conditioning_fuels,
-            fuel_type,
+            successful_fits += 1
+
+        assert successful_fits > 0, (
+            f"No successful regression fits for {filename.stem}_{fuel_type.value}"
         )
-        assert best_fitting_model is not None
-
-        successful_fits += 1
-
-    assert successful_fits > 0, (
-        f"No successful regression fits for {filename.stem}_{fuel_type.value}"
-    )
+    except Bpi2400ModelFitError:
+        # Only these files should raise this error
+        assert filename.name in {"ihmh7.xml", "house11.xml", "house83.xml"}
 
 
 def test_normalize_consumption_to_epw():
