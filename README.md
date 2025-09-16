@@ -7,7 +7,9 @@ However, it is not currently a complete implementation of BPI-2400.
 
 ## Usage
 
-TODO
+Run `uv run openstudio-hpxml-calibration calibrate --hpxml-filepath hpxml.xml`.
+
+See `uv run openstudio-hpxml-calibration calibrate --help` or `uv run openstudio-hpxml-calibration --help` for more options.
 
 ## Developer installation & usage
 
