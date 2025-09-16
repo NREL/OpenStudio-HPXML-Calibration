@@ -48,3 +48,5 @@ Ruby Measure tests can be run with `openstudio src/measures/ModifyXML/tests/modi
 ## License
 
 This project is available under a BSD-3-like license, which is a free, open-source, and permissive license. For more information, check out the [license file](https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/LICENSE.md).
+
+This project is NREL Software Record `SWR-25-94`
