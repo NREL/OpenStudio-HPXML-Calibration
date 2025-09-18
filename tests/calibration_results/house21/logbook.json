@@ -3,11 +3,11 @@
     "electricity": {
       "calibration_type": "detailed",
       "model_type": "5-parameter",
-      "cvrmse": 0.11759996307252202,
+      "cvrmse": 0.11759996337731209,
       "consumption": {
-        "baseload": 21.36269953453442,
-        "heating": 11.282761516846687,
-        "cooling": 2.5428640180396997
+        "baseload": 21.36405450907143,
+        "heating": 11.281612854975895,
+        "cooling": 2.542296458051763
       }
     },
     "natural gas": {
