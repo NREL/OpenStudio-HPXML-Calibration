@@ -935,7 +935,7 @@ class Calibrate:
         toolbox.register("mutate", adaptive_mutation)
         toolbox.register("select", tools.selTournament, tournsize=2)
 
-        terminated_early = False
+        calibration_success = False
 
         if num_proc is None:
             num_proc = multiprocessing.cpu_count() - 1
@@ -1158,7 +1158,7 @@ class Calibrate:
 
                 # Early termination conditions
                 if meets_termination_criteria(best_comp):
-                    terminated_early = True
+                    calibration_success = True
                     break
 
         best_individual = hall_of_fame[0]
@@ -1174,7 +1174,7 @@ class Calibrate:
             if temp_dir and Path(temp_dir).exists():
                 shutil.rmtree(temp_dir, ignore_errors=True)
 
-        if terminated_early:
+        if calibration_success:
             print("GA search completed successfully.")
         else:
             print(
@@ -1189,4 +1189,5 @@ class Calibrate:
             best_abs_series,
             weather_norm_regression_models,
             existing_home_results,
+            calibration_success,
         )
