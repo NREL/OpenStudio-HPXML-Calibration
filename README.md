@@ -7,7 +7,7 @@ A package to automatically calibrate an [OpenStudio-HPXML](https://github.com/NR
 The implementation relies heavily on [BPI-2400-S-2015 v.2 Standard Practice for Standardized Qualification of Whole-House Energy Savings Predictions by Calibration to Energy Use](https://www.bpi.org/__cms/docs/20240523_BPI-2400-S-2015_Delta_Standard_v2.pdf).
 However, it is not currently a complete implementation of BPI-2400.
 
-## Documentation
+## Documentation & usage
 
 Full documentation is available at <https://NREL.github.io/OpenStudio-HPXML-Calibration>
 
@@ -26,7 +26,7 @@ See `uv run openstudio-hpxml-calibration calibrate --help` or `uv run openstudio
 
 - [Uv](https://docs.astral.sh/uv/) is used to manage the project & dependencies (and may also be used to [manage Python](https://docs.astral.sh/uv/guides/install-python/) if you want). After cloning, ensure you have
 [uv installed](https://docs.astral.sh/uv/getting-started/installation/), then run `uv sync` to install the package and all development dependencies.
-  - Some Windows developers have reported version conflicts using the default strategy. If this occurs, consider changing the [resolution strategy](https://docs.astral.sh/uv/concepts/resolution/#resolution-strategy) using `uv sync --resolution=lowest-direct`
+    - Some Windows developers have reported version conflicts using the default strategy. If this occurs, consider changing the [resolution strategy](https://docs.astral.sh/uv/concepts/resolution/#resolution-strategy) using `uv sync --resolution=lowest-direct`
 - Download all weather files using `uv run openstudio-hpxml-calibration download-weather`
 - Developers can then call `uv run pytest` to confirm all dev dependencies have been installed and everything is working as expected. (If you need to restrict the number of concurrent workers, you can use e.g. `uv run pytest -n <NUM>`.)
 - Activate [pre-commit](https://pre-commit.com/) (only required once, after cloning the repo) with: `uv run pre-commit install`. On your first commit it will install the pre-commit environments, then run pre-commit hooks at every commit.
