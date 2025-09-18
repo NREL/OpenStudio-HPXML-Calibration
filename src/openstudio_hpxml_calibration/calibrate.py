@@ -1058,8 +1058,6 @@ class Calibrate:
             )
 
             for gen in range(1, generations + 1):
-                print(f"Running {len(pop)} simulations for search generation {gen}...")
-
                 # Elitism: Copy the best individuals
                 elite = [copy.deepcopy(ind) for ind in tools.selBest(pop, k=1)]
 
@@ -1161,8 +1159,6 @@ class Calibrate:
                 # Early termination conditions
                 if meets_termination_criteria(best_comp):
                     calibration_success = True
-                    if gen < generations:
-                        print(f"Early stopping: termination criteria met at generation {gen}")
                     break
 
         best_individual = hall_of_fame[0]
@@ -1179,13 +1175,10 @@ class Calibrate:
                 shutil.rmtree(temp_dir, ignore_errors=True)
 
         if calibration_success:
-            print(
-                "Search has completed successfully: A solution satisfying error thresholds was found."
-            )
+            print("GA search completed successfully.")
         else:
             print(
-                "Search has completed. However, no solution was found that satisfies the bias error "
-                "and absolute error thresholds before reaching the maximum number of generations."
+                "GA search completed unsuccessfully. No solution found before reaching the maximum number of generations."
             )
 
         return (
