@@ -1,0 +1,72 @@
+{
+  "measure_paths": [
+    "../../src/OpenStudio-HPXML"
+  ],
+  "run_directory": "uncalibrated_existing",
+  "steps": [
+    {
+      "arguments": {
+        "hpxml_path": "../ihmh3.xml",
+        "location_epw_path": "USA_CT_Bridgeport-Sikorsky.Mem.AP.725040_TMY3.epw",
+        "location_site_type": "Suburban, Normal",
+        "geometry_unit_type": "Single-Family Detached, 2 Stories",
+        "geometry_unit_conditioned_floor_area": "1848",
+        "geometry_unit_aspect_ratio": "1.5",
+        "geometry_unit_direction": "East",
+        "geometry_unit_num_bedrooms": "3",
+        "geometry_unit_num_bathrooms": "2",
+        "geometry_unit_num_occupants": "2",
+        "geometry_garage_type": "1 Car, Left, Fully Inset",
+        "geometry_foundation_type": "Slab-on-Grade",
+        "geometry_attic_type": "Attic, Vented, Gable",
+        "geometry_roof_pitch": "6:12",
+        "geometry_eaves": "1 ft",
+        "geometry_neighbor_buildings": "Left/Right at 25ft",
+        "geometry_window_areas_or_wwrs": "0.12, 0.12, 0.12, 0.12",
+        "geometry_door_area": "20",
+        "enclosure_floor_over_garage": "Wood Frame, R-19",
+        "enclosure_slab": "Uninsulated",
+        "enclosure_ceiling": "R-7",
+        "enclosure_roof": "Uninsulated",
+        "enclosure_roof_material": "Asphalt/Fiberglass Shingles, Medium",
+        "enclosure_wall": "Wood Stud, R-13",
+        "enclosure_wall_siding": "Vinyl, Light",
+        "enclosure_window": "Double, Low-E, Insulated, Gas, Low Gain",
+        "enclosure_window_interior_shading": "Summer 0.7, Winter 0.9",
+        "enclosure_door": "Insulated Fiberglass/Steel, R-5",
+        "enclosure_air_leakage": "10 ACH50",
+        "hvac_heating_system": "Electric Resistance",
+        "hvac_heating_system_fuel": "Electricity",
+        "hvac_cooling_system": "Central AC, SEER 14.0",
+        "hvac_heat_pump": "None",
+        "hvac_control_heating_weekday_setpoint": "66",
+        "hvac_control_heating_weekend_setpoint": "66",
+        "hvac_control_cooling_weekday_setpoint": "75",
+        "hvac_control_cooling_weekend_setpoint": "75",
+        "hvac_control_heating_season_period": "Sep 1 - Apr 30",
+        "hvac_control_cooling_season_period": "Mar 1 - Oct 31",
+        "hvac_ducts": "30% Leakage, R-8",
+        "hvac_ducts_supply_location": "Attic",
+        "hvac_ducts_return_location": "Attic",
+        "dhw_water_heater": "Electricity, Tank, UEF 0.94",
+        "dhw_distribution": "Insulated, Standard",
+        "dhw_fixtures": "Standard, 50% Usage",
+        "appliance_clothes_washer": "Standard, 2008-2017, 100% Usage",
+        "appliance_clothes_dryer": "Electricity, Standard, 100% Usage",
+        "appliance_dishwasher": "Federal Minimum, Standard, 100% Usage",
+        "appliance_refrigerator": "384 kWh/yr, 100% Usage",
+        "appliance_cooking_range_oven": "Electricity, Standard, Non-Convection, 100% Usage",
+        "appliance_dehumidifier": "Portable, 20 pints/day",
+        "appliance_dehumidifier_setpoint": "50% RH",
+        "lighting": "100% LED, 100% Usage",
+        "misc_television": "50% Usage",
+        "misc_plug_loads": "50% Usage",
+        "utility_bill_scenario": "None"
+      },
+      "measure_dir_name": "BuildResidentialHPXML"
+    }
+  ],
+  "run_options": {
+    "fast": true
+  }
+}

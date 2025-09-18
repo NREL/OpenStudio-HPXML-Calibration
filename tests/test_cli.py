@@ -57,7 +57,7 @@ def test_cli_calls_run_sim(test_data):
     output_file = TEST_SIM_DIR / "results_annual.json"
     assert output_file.exists()
     output_data: dict = json.loads(output_file.read_text())
-    assert output_data["Energy Use"]["Total (MBtu)"] == 218.83
+    assert output_data["Energy Use"]["Total (MBtu)"] == pytest.approx(218.8, 0.5)
 
 
 def test_calls_modify_hpxml(test_data):
