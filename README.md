@@ -1,5 +1,7 @@
 # OpenStudio™ HPXML Calibration
 
+[![ci](https://github.com/NREL/OpenStudio-HPXML-Calibration/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/NREL/OpenStudio-HPXML-Calibration/actions/workflows/ci.yml)
+
 A package to automatically calibrate an [OpenStudio-HPXML](https://github.com/NREL/OpenStudio-HPXML) residential building model against utility bills.
 
 The implementation relies heavily on [BPI-2400-S-2015 v.2 Standard Practice for Standardized Qualification of Whole-House Energy Savings Predictions by Calibration to Energy Use](https://www.bpi.org/__cms/docs/20240523_BPI-2400-S-2015_Delta_Standard_v2.pdf).
@@ -7,7 +9,14 @@ However, it is not currently a complete implementation of BPI-2400.
 
 ## Documentation
 
-Available at <https://NREL.github.io/OpenStudio-HPXML-Calibration>
+Full documentation is available at <https://NREL.github.io/OpenStudio-HPXML-Calibration>
+
+Create a custom config file (based on [`default_calibration_config.yaml`](https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/src/openstudio_hpxml_calibration/default_calibration_config.yaml)) that is specific to the home being calibrated.
+
+Then run:
+`uv run openstudio-hpxml-calibration calibrate --hpxml-filepath hpxml.xml --config-filepath my_config.yaml`
+
+See `uv run openstudio-hpxml-calibration calibrate --help` or `uv run openstudio-hpxml-calibration --help` for more options.
 
 ## Developer installation
 
@@ -54,3 +63,5 @@ During development we can serve docs locally and view updates as they are made.
 ## License
 
 This project is available under a BSD-3-like license, which is a free, open-source, and permissive license. For more information, check out the [license file](https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/LICENSE.md).
+
+This project is NREL Software Record `SWR-25-94`

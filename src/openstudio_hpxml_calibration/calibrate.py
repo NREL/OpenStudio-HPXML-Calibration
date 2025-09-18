@@ -446,6 +446,20 @@ class Calibrate:
 
         return comparison, summary
 
+    def create_measure_input_file(
+        self, arguments: dict, output_file_path: str, measure_path: str | None = None
+    ):
+        if measure_path is None:
+            measure_path = str(Path(__file__).resolve().parent.parent / "measures")
+        data = {
+            "run_directory": str(Path(arguments["save_file_path"]).parent),
+            "measure_paths": [measure_path],
+            "steps": [{"measure_dir_name": "ModifyXML", "arguments": arguments}],
+        }
+        Path(output_file_path).parent.mkdir(parents=True, exist_ok=True)
+        with open(output_file_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2)
+
     def run_search(
         self,
         population_size=None,
@@ -576,7 +590,7 @@ class Calibrate:
                 }
 
                 temp_osw = Path(temp_output_dir / "modify_hpxml.osw")
-                create_measure_input_file(arguments, temp_osw)
+                self.create_measure_input_file(arguments, temp_osw)
 
                 app(["modify-xml", str(temp_osw)])
                 app(
@@ -656,16 +670,6 @@ class Calibrate:
                 return abs(abs_error) <= elec_threshold
             else:
                 return abs(abs_error) <= fuel_threshold
-
-        def create_measure_input_file(arguments: dict, output_file_path: str):
-            data = {
-                "run_directory": str(Path(arguments["save_file_path"]).parent),
-                "measure_paths": [str(Path(__file__).resolve().parent.parent / "measures")],
-                "steps": [{"measure_dir_name": "ModifyXML", "arguments": arguments}],
-            }
-            Path(output_file_path).parent.mkdir(parents=True, exist_ok=True)
-            with open(output_file_path, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2)
 
         def diversity(pop):
             return len({tuple(ind) for ind in pop}) / len(pop)
@@ -972,7 +976,7 @@ class Calibrate:
         toolbox.register("mutate", adaptive_mutation)
         toolbox.register("select", tools.selTournament, tournsize=2)
 
-        terminated_early = False
+        calibration_success = False
 
         if num_proc is None:
             num_proc = multiprocessing.cpu_count() - 1
@@ -1084,9 +1088,6 @@ class Calibrate:
             existing_home_results = {}
             for ind in pop:
                 if is_existing_home(ind, param_choices_map):
-                    existing_home_results["existing_home"] = json.dumps(
-                        dict(zip(param_choices_map.keys(), ind))
-                    )
                     existing_home_results["existing_home_sim_results"] = json.dumps(ind.sim_results)
                     break
 
@@ -1200,8 +1201,9 @@ class Calibrate:
 
                 # Early termination conditions
                 if meets_termination_criteria(best_comp):
-                    print(f"Early stopping: termination criteria met at generation {gen}")
-                    terminated_early = True
+                    calibration_success = True
+                    if gen < generations:
+                        print(f"Early stopping: termination criteria met at generation {gen}")
                     break
 
         best_individual = hall_of_fame[0]
@@ -1217,8 +1219,10 @@ class Calibrate:
             if temp_dir and Path(temp_dir).exists():
                 shutil.rmtree(temp_dir, ignore_errors=True)
 
-        if terminated_early:
-            print("Search has completed early: A solution satisfying error thresholds was found.")
+        if calibration_success:
+            print(
+                "Search has completed successfully: A solution satisfying error thresholds was found."
+            )
         else:
             print(
                 "Search has completed. However, no solution was found that satisfies the bias error "
@@ -1233,4 +1237,5 @@ class Calibrate:
             best_abs_series,
             weather_norm_regression_models,
             existing_home_results,
+            calibration_success,
         )

@@ -146,7 +146,7 @@ def estimate_initial_guesses_5param(bills_temps: pd.DataFrame) -> list[float]:
     b1 = np.percentile(usage, 10)  # TODO: There might be a better way to estimate baseload
 
     # Heating slope (b2) and balance temperature (b4)
-    select_cold_temps = temps < np.median(temps)
+    select_cold_temps = temps <= np.median(temps)
     cold_temps = temps[select_cold_temps]
     cold_usage = usage[select_cold_temps]
     b4 = 55  # TODO: There might be a better way to estimate balance point
@@ -154,7 +154,7 @@ def estimate_initial_guesses_5param(bills_temps: pd.DataFrame) -> list[float]:
     b2 = heating_slope
 
     # Cooling slope (b3) and balance temperature
-    select_hot_temps = temps > np.median(temps)
+    select_hot_temps = temps >= np.median(temps)
     hot_temps = temps[select_hot_temps]
     hot_usage = usage[select_hot_temps]
     b5 = 65  # TODO: There might be a better way to estimate balance point

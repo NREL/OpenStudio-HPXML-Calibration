@@ -564,7 +564,7 @@ module HVAC
     geothermal_loop.loop_flow *= unit_multiplier
     geothermal_loop.num_bore_holes *= unit_multiplier
 
-    if [HPXML::AdvancedResearchGroundToAirHeatPumpModelTypeStandard].include? hpxml_header.ground_to_air_heat_pump_model_type
+    if [HPXML::GroundToAirHeatPumpModelTypeStandard].include? hpxml_header.ground_to_air_heat_pump_model_type
       # Cooling Coil
       clg_total_cap_curve = Model.add_curve_quad_linear(
         model,
@@ -614,7 +614,7 @@ module HVAC
       htg_coil.setRatedEnteringAirDryBulbTemperature(UnitConversions.convert(70, 'F', 'C'))
       # TODO: Add net to gross conversion after RESNET PR: https://github.com/NREL/OpenStudio-HPXML/pull/1879
       htg_coil.setRatedHeatingCapacity(UnitConversions.convert(heat_pump.heating_capacity, 'Btu/hr', 'W'))
-    elsif [HPXML::AdvancedResearchGroundToAirHeatPumpModelTypeExperimental].include? hpxml_header.ground_to_air_heat_pump_model_type
+    elsif [HPXML::GroundToAirHeatPumpModelTypeExperimental].include? hpxml_header.ground_to_air_heat_pump_model_type
       num_speeds = hp_ap.cool_capacity_ratios.size
       if heat_pump.compressor_type == HPXML::HVACCompressorTypeVariableSpeed
         plf_fplr_curve = Model.add_curve_quadratic(
@@ -825,6 +825,11 @@ module HVAC
     plant_loop.addDemandBranchForComponent(htg_coil)
     plant_loop.addDemandBranchForComponent(clg_coil)
 
+    # FIXME: Workaround for https://github.com/NREL/OpenStudio/issues/5458
+    # Set the fluid type again because plant_loop.addSupplyBranchForComponent(ground_heat_exch_vert) resets it to Water
+    # Remove the following line if the above issue is addressed
+    plant_loop.setFluidType(hp_ap.fluid_type)
+
     sizing_plant = plant_loop.sizingPlant
     sizing_plant.setLoopType('Condenser')
     sizing_plant.setDesignLoopExitTemperature(UnitConversions.convert(hp_ap.design_chw, 'F', 'C'))
@@ -839,10 +844,9 @@ module HVAC
     setpoint_mgr_follow_ground_temp.addToNode(plant_loop.supplyOutletNode)
 
     # Pump
-    if heat_pump.cooling_capacity > 1.0
-      pump_w = heat_pump.pump_watts_per_ton * UnitConversions.convert(heat_pump.cooling_capacity, 'Btu/hr', 'ton')
-    else
-      pump_w = heat_pump.pump_watts_per_ton * UnitConversions.convert(heat_pump.heating_capacity, 'Btu/hr', 'ton')
+    pump_w = get_pump_power_watts(heat_pump)
+    if heat_pump.is_shared_system
+      pump_w += heat_pump.shared_loop_watts / heat_pump.number_of_units_served.to_f
     end
     pump_w = [pump_w, 1.0].max # prevent error if zero
     pump = Model.add_pump_variable_speed(
@@ -879,26 +883,8 @@ module HVAC
     # Unitary System
     air_loop_unitary = create_air_loop_unitary_system(model, obj_name, fan, htg_coil, clg_coil, htg_supp_coil, htg_cfm, clg_cfm, 40.0)
     add_pump_power_ems_program(model, pump, air_loop_unitary, heat_pump)
-    if (heat_pump.compressor_type == HPXML::HVACCompressorTypeVariableSpeed) && (hpxml_header.ground_to_air_heat_pump_model_type == HPXML::AdvancedResearchGroundToAirHeatPumpModelTypeExperimental)
+    if (heat_pump.compressor_type == HPXML::HVACCompressorTypeVariableSpeed) && (hpxml_header.ground_to_air_heat_pump_model_type == HPXML::GroundToAirHeatPumpModelTypeExperimental)
       add_ghp_pump_mass_flow_rate_ems_program(model, pump, control_zone, htg_coil, clg_coil)
-    end
-
-    if heat_pump.is_shared_system
-      # Shared pump power per ANSI/RESNET/ICC 301-2022 Section 4.4.5.1 (pump runs 8760)
-      design_level = heat_pump.shared_loop_watts / heat_pump.number_of_units_served.to_f
-
-      equip = Model.add_electric_equipment(
-        model,
-        name: Constants::ObjectTypeGSHPSharedPump,
-        end_use: Constants::ObjectTypeGSHPSharedPump,
-        space: control_zone.spaces[0], # no heat gain, so assign the equipment to an arbitrary space
-        design_level: design_level,
-        frac_radiant: 0,
-        frac_latent: 0,
-        frac_lost: 1,
-        schedule: model.alwaysOnDiscreteSchedule
-      )
-      equip.additionalProperties.setFeature('HPXML_ID', heat_pump.id) # Used by reporting measure
     end
 
     # Air Loop
@@ -993,14 +979,22 @@ module HVAC
     return fan_watts_per_cfm * airflow_cfm
   end
 
-  # Get the boiler pump power (W).
+  # Get the boiler or GHP pump power (W).
   #
-  # @param electric_auxiliary_energy [Double] Boiler electric auxiliary energy [kWh/yr]
-  # @return [Double] Boiler pump power [W]
-  def self.get_pump_power_watts(electric_auxiliary_energy)
-    return 0.0 if electric_auxiliary_energy.nil?
+  # @param hvac_system [HPXML::HeatingSystem or HPXML::HeatPump] The HPXML HVAC system of interest
+  # @return [Double] Pump power [W]
+  def self.get_pump_power_watts(hvac_system)
+    if hvac_system.is_a?(HPXML::HeatingSystem) && (not hvac_system.electric_auxiliary_energy.nil?)
+      return hvac_system.electric_auxiliary_energy / 2.08
+    elsif hvac_system.is_a?(HPXML::HeatPump) && (not hvac_system.pump_watts_per_ton.nil?)
+      if hvac_system.cooling_capacity > 1.0
+        return hvac_system.pump_watts_per_ton * UnitConversions.convert(hvac_system.cooling_capacity, 'Btu/hr', 'ton')
+      else
+        return hvac_system.pump_watts_per_ton * UnitConversions.convert(hvac_system.heating_capacity, 'Btu/hr', 'ton')
+      end
+    end
 
-    return electric_auxiliary_energy / 2.08
+    return 0.0
   end
 
   # Returns the heating input capacity, calculated as the heating rated (output) capacity divided by the rated efficiency.
@@ -1057,7 +1051,7 @@ module HVAC
     loop_sizing.setLoopDesignTemperatureDifference(UnitConversions.convert(20.0, 'deltaF', 'deltaC'))
 
     # Pump
-    pump_w = get_pump_power_watts(heating_system.electric_auxiliary_energy)
+    pump_w = get_pump_power_watts(heating_system)
     pump_w = [pump_w, 1.0].max # prevent error if zero
     pump = Model.add_pump_variable_speed(
       model,
@@ -2091,9 +2085,9 @@ module HVAC
     sys_id = hpxml_object.id
 
     if fan_or_pump.is_a? OpenStudio::Model::FanSystemModel
-      var = "Fan #{EPlus::FuelTypeElectricity} Energy"
+      var = 'Fan Electricity Energy'
     elsif fan_or_pump.is_a? OpenStudio::Model::PumpVariableSpeed
-      var = "Pump #{EPlus::FuelTypeElectricity} Energy"
+      var = 'Pump Electricity Energy'
     else
       fail "Unexpected fan/pump object '#{fan_or_pump.name}'."
     end
@@ -2254,7 +2248,7 @@ module HVAC
     dehumidifier_power = Model.add_ems_sensor(
       model,
       name: "#{dehumidifier.name} power htg",
-      output_var_or_meter_name: "Zone Dehumidifier #{EPlus::FuelTypeElectricity} Rate",
+      output_var_or_meter_name: 'Zone Dehumidifier Electricity Rate',
       key_name: dehumidifier.name
     )
 
@@ -4312,9 +4306,10 @@ module HVAC
       # Program
       temp_override_program = Model.add_ems_program(
         model,
-        name: "#{heating_sch.name} program"
+        name: "#{heating_sch.name} max heating temp program"
       )
-      temp_override_program.addLine("If #{tout_db_sensor.name} > #{UnitConversions.convert(max_heating_temp, 'F', 'C')}")
+      temp_override_program.addLine("Set max_heating_temp = #{UnitConversions.convert(max_heating_temp, 'F', 'C')}")
+      temp_override_program.addLine("If #{tout_db_sensor.name} > max_heating_temp")
       temp_override_program.addLine("  Set #{actuator.name} = 0")
       temp_override_program.addLine('Else')
       temp_override_program.addLine("  Set #{actuator.name} = NULL") # Allow normal operation
