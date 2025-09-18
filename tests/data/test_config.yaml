@@ -1,6 +1,6 @@
 genetic_algorithm:
-  population_size: 8
-  generations: 5
+  population_size: 5
+  generations: 20
 
 acceptance_criteria:
   bill_regression_max_cvrmse: 0.81 # Coefficient of Variation of the Root Mean Square Error (CVRMSE) of the regression result

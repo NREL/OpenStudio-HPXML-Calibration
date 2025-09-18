@@ -224,13 +224,8 @@ def test_workflow_with_upgrade():
     cal_output_filepath = cal_output_dir / "logbook.json"
     assert cal_output_filepath.exists()
     cal_results = json.loads(cal_output_filepath.read_text())
+    assert cal_results["calibration_success"]
     cal_adjustments = cal_results["calibration_results"][-1]["best_individual"]
-
-    # FIXME: switch to success assert once
-    # https://github.com/NREL/OpenStudio-HPXML-Calibration/issues/91#issuecomment-3261124309
-    # is addressed
-    # FIXME: CI currently hits 20 gens even though we hit 9 gens locally
-    # assert cal_results["calibration_results"][-1]["gen"] < 20
 
     # Create HPXML file for upgrade scenario (R-60 attic insulation)
     subprocess.run(
