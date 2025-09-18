@@ -11,6 +11,16 @@ from openstudio_hpxml_calibration.weather_normalization.regression import (
 
 class InverseModel:
     def __init__(self, hpxml: HpxmlDoc, user_config: dict, building_id: str | None = None):
+        """
+        Initialize the InverseModel for weather normalization.
+
+        Sets up regression models and bill data for each fuel type based on the HPXML document.
+
+        :param hpxml: HPXML document object.
+        :type hpxml: HpxmlDoc
+        :param user_config: Optional user configuration dictionary.
+        :type user_config: dict, optional
+        """
         self.user_config = user_config
         self.hpxml = hpxml
         self.building_id = building_id
@@ -32,6 +42,17 @@ class InverseModel:
             self.bills_weather_by_fuel_type_in_btu[fuel_type] = bills_weather
 
     def get_model(self, fuel_type: FuelType) -> UtilityBillRegressionModel:
+        """
+        Retrieve or fit the regression model for a given fuel type.
+
+        This method returns the regression model for the specified fuel type, fitting it if necessary
+        using the bill and weather data from the HPXML document.
+
+        :param fuel_type: The fuel type for which to retrieve or fit the regression model.
+        :type fuel_type: FuelType
+        :return: The fitted regression model for the specified fuel type.
+        :rtype: UtilityBillRegressionModel
+        """
         try:
             return self.regression_models[fuel_type]
         except KeyError:
@@ -51,12 +72,14 @@ class InverseModel:
 
     def predict_epw_daily(self, fuel_type: FuelType) -> pd.Series:
         """
-        Predict the annual energy consumption for a given fuel type using the regression model.
+        Predict daily energy consumption using the regression model for a given fuel type.
 
-        :param fuel_type: The fuel type to predict for.
+        Uses the fitted regression model to estimate daily consumption for each day in the EPW weather file.
+
+        :param fuel_type: The fuel type for which to predict daily consumption.
         :type fuel_type: FuelType
-        :return: The predicted annual energy consumption in BTU for baseload, heating, and cooling.
-        :rtype: pd.Series
+        :return: Array of predicted daily consumption values.
+        :rtype: np.ndarray
         """
         model = self.get_model(fuel_type)
         epw, _ = self.hpxml.get_epw_data(coerce_year=2007)
