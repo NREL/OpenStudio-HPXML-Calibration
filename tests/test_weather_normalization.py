@@ -7,7 +7,7 @@ import pytest
 from matplotlib import pyplot as plt
 
 import openstudio_hpxml_calibration.weather_normalization.utility_data as ud
-from openstudio_hpxml_calibration.hpxml import HpxmlDoc
+from openstudio_hpxml_calibration.hpxml import FuelType, HpxmlDoc
 from openstudio_hpxml_calibration.units import convert_units
 from openstudio_hpxml_calibration.utils import _load_config, plot_fuel_type_curve_fits
 from openstudio_hpxml_calibration.weather_normalization.inverse_model import InverseModel
@@ -95,13 +95,21 @@ def test_curve_fit_and_fit_model(results_dir, filename):
 
         fuel_types = hpxml.get_fuel_types()
         conditioning_fuels = fuel_types["heating"] | fuel_types["cooling"]
-
-        plot_fuel_type_curve_fits(inv_model, output_filepath, filename.stem)
+        delivered_fuels = (
+            FuelType.FUEL_OIL.value,
+            FuelType.PROPANE.value,
+            FuelType.WOOD.value,
+            FuelType.WOOD_PELLETS.value,
+        )
 
         for fuel_type, bills in inv_model.bills_by_fuel_type.items():
+            if fuel_type.value in delivered_fuels:
+                continue  # Skip delivered fuels
+
             model = inv_model.get_model(fuel_type)
             bills_temps = inv_model.bills_weather_by_fuel_type_in_btu[fuel_type]
             cvrmse = model.calc_cvrmse(bills_temps)
+            plot_fuel_type_curve_fits(inv_model, output_filepath, filename.stem)
 
             # Save CVRMSE result per test
             individual_result = {f"{filename.stem}_{fuel_type}": cvrmse}
