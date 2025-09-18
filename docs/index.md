@@ -1,5 +1,9 @@
 # Home
 
-Update an existing HPXML model with measured data
+Generate an HPXML model of home energy use, calibrated to utility data
 
-Provide a valid HPXML model and sufficient usage data. This package will weather-normalize the measured data and modify model inputs to output usage closer to measured values.
+## Required inputs
+
+- A CSV file of utility data
+- An OSW (JSON) for the `BuildResidentialHPXML` measure
+- A config file specific to the home being calibrated

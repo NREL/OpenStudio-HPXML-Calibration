@@ -2,4 +2,7 @@
 
 ## CLI help text
 
-- `openstudio-hpxml-calibration -h`
+- `openstudio-hpxml-calibration --help`
+- Or the short version `oshc -h`
+
+##
