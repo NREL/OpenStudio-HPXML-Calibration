@@ -1175,10 +1175,10 @@ class Calibrate:
                 shutil.rmtree(temp_dir, ignore_errors=True)
 
         if calibration_success:
-            print("GA search completed successfully.")
+            print("Search completed successfully.")
         else:
             print(
-                "GA search completed unsuccessfully. No solution found before reaching the maximum number of generations."
+                "Search completed unsuccessfully. No solution found before reaching the maximum number of generations."
             )
 
         return (
