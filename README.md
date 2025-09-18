@@ -5,15 +5,11 @@ A package to automatically calibrate an [OpenStudio-HPXML](https://github.com/NR
 The implementation relies heavily on [BPI-2400-S-2015 v.2 Standard Practice for Standardized Qualification of Whole-House Energy Savings Predictions by Calibration to Energy Use](https://www.bpi.org/__cms/docs/20240523_BPI-2400-S-2015_Delta_Standard_v2.pdf).
 However, it is not currently a complete implementation of BPI-2400.
 
-## Usage
-
-TODO
-
 ## Documentation
 
 Available at <https://NREL.github.io/OpenStudio-HPXML-Calibration>
 
-## Developer installation & usage
+## Developer installation
 
 - Clone the repository: `git clone https://github.com/NREL/OpenStudio-HPXML-Calibration.git`
 - Move into the repository: `cd OpenStudio-HPXML-Calibration`
