@@ -16,6 +16,7 @@ Generate an HPXML model of home energy use, calibrated to utility data
 1. Write an [OSW file](inputs.md#osw-json-file-defining-the-home) that defines the existing home
 1. Create an HPXML model from that osw file: `openstudio run --workflow <existing_home.osw> --measures_only`
 1. Write a [utility consumption file](inputs.md#utility-consumption-csv-file) in csv format
+1. Define a [custom configuration file](inputs.md#config-file) accounting for what is known about this home
 1. Calibrate that model to the utility consumption data: `oshc calibrate -h`
 1. Write an [OSW file](inputs.md#osw-json-file-defining-the-home) with an upgrade to the home
 1. Create an HPXML model from the upgrade osw file: `openstudio run --workflow <upgraded_home.osw> --measures_only`
