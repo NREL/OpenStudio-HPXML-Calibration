@@ -201,7 +201,10 @@ def calibrate(
 
     if output_dir is None:
         output_filepath = (
-            Path(__file__).resolve().parent.parent / "tests" / "calibration_results" / filename
+            Path(__file__).resolve().parent.parent.parent
+            / "tests"
+            / "calibration_results"
+            / filename
         )
     else:
         output_filepath = Path(output_dir)
@@ -225,6 +228,7 @@ def calibrate(
         best_abs_series,
         weather_norm_reg_models,
         existing_home_results,
+        calibration_success,
     ) = cal.run_search(
         num_proc=num_proc, output_filepath=output_filepath, save_all_results=save_all_results
     )
@@ -257,6 +261,7 @@ def calibrate(
     output_data = {
         "weather_normalization_results": weather_norm_reg_models,
         "existing_home_results": parsed_existing_home,
+        "calibration_success": calibration_success,
         "calibration_results": log_data,
     }
 

@@ -935,7 +935,7 @@ class Calibrate:
         toolbox.register("mutate", adaptive_mutation)
         toolbox.register("select", tools.selTournament, tournsize=2)
 
-        terminated_early = False
+        calibration_success = False
 
         if num_proc is None:
             num_proc = multiprocessing.cpu_count() - 1
@@ -1160,8 +1160,9 @@ class Calibrate:
 
                 # Early termination conditions
                 if meets_termination_criteria(best_comp):
-                    print(f"Early stopping: termination criteria met at generation {gen}")
-                    terminated_early = True
+                    calibration_success = True
+                    if gen < generations:
+                        print(f"Early stopping: termination criteria met at generation {gen}")
                     break
 
         best_individual = hall_of_fame[0]
@@ -1177,8 +1178,10 @@ class Calibrate:
             if temp_dir and Path(temp_dir).exists():
                 shutil.rmtree(temp_dir, ignore_errors=True)
 
-        if terminated_early:
-            print("Search has completed early: A solution satisfying error thresholds was found.")
+        if calibration_success:
+            print(
+                "Search has completed successfully: A solution satisfying error thresholds was found."
+            )
         else:
             print(
                 "Search has completed. However, no solution was found that satisfies the bias error "
@@ -1193,4 +1196,5 @@ class Calibrate:
             best_abs_series,
             weather_norm_regression_models,
             existing_home_results,
+            calibration_success,
         )
