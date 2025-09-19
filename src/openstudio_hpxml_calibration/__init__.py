@@ -221,11 +221,11 @@ def calibrate(
 
     start = time.time()
     (
-        best_individual_dict,
-        pop,
+        _best_individual_dict,
+        _pop,
         logbook,
-        best_bias_series,
-        best_abs_series,
+        _best_bias_series,
+        _best_abs_series,
         weather_norm_reg_models,
         existing_home_results,
         calibration_success,

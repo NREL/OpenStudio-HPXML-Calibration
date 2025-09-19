@@ -180,7 +180,7 @@ def plot_absolute_error_series(logbook, output_filepath, filename):
         k for k in best_abs_series if "natural gas" in k or "fuel oil" in k or "propane" in k
     ]
 
-    fig, ax1 = plt.subplots(figsize=(12, 6))
+    _fig, ax1 = plt.subplots(figsize=(12, 6))
     ax2 = ax1.twinx()
     colors = plt.cm.tab20.colors
 

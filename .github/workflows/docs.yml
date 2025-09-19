@@ -1,0 +1,29 @@
+name: Documentation
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - docs/**
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: 3.13
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+      - name: Install the package & dependencies
+        run: |
+          uv version
+          uv sync
+      - name: Deploy the docs to GitHub Pages
+        run: uv run mkdocs gh-deploy

@@ -308,11 +308,9 @@ class HpxmlDoc:
     def get_lat_lon(self, building_id: str | None = None) -> tuple[float, float]:
         """Get latitude, longitude from hpxml file
 
-        :param hpxml: _description_
-        :type hpxml: HpxmlDoc
         :param building_id: Optional building_id of the building you want to get location for.
         :type building_id: str | None
-        :return: _description_
+        :return: Latitude and longitude
         :rtype: tuple[float, float]
         """
         building = self.get_building(building_id)
@@ -330,6 +328,9 @@ class HpxmlDoc:
 
     def hpxml_data_error_checking(self, config: dict) -> None:
         """Check for common HPXML errors
+
+        :param config: Configuration dictionary, combination of default and user config
+        :type config: dict
 
         :raises ValueError: If an error is found
         """

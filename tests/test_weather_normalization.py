@@ -27,7 +27,7 @@ ihmh_home_hpxmls = list((repo_root / "test_hpxmls" / "ihmh_homes").glob("*.xml")
 @pytest.mark.parametrize("filename", ira_rebate_hpxmls, ids=lambda x: x.stem)
 def test_hpxml_utility_bill_read(filename):
     hpxml = HpxmlDoc(filename)
-    bills, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
+    bills, _bill_units, _tz = ud.get_bills_from_hpxml(hpxml)
     assert any("electricity" in fuel_type.value for fuel_type in bills)
 
     for fuel_type, df in bills.items():
@@ -43,7 +43,7 @@ def test_hpxml_utility_bill_read_missing_start_end_date(filename):
             el.getparent().remove(el)
 
         # Load the bills
-        bills_by_fuel_type, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
+        bills_by_fuel_type, _bill_units, _tz = ud.get_bills_from_hpxml(hpxml)
         assert any("electricity" in fuel_type.value for fuel_type in bills_by_fuel_type)
 
         # Ensure the dates got filled in
@@ -57,7 +57,7 @@ def test_hpxml_utility_bill_read_missing_start_end_date(filename):
 def test_weather_retrieval(results_dir, filename):
     hpxml = HpxmlDoc(filename)
     lat, lon = hpxml.get_lat_lon()
-    bills_by_fuel_type, bill_units, tz = ud.get_bills_from_hpxml(hpxml)
+    bills_by_fuel_type, _bill_units, _tz = ud.get_bills_from_hpxml(hpxml)
     for fuel_type, bills in bills_by_fuel_type.items():
         bills_temps, _ = ud.join_bills_weather(bills, lat, lon)
         fig = plt.figure(figsize=(8, 6))

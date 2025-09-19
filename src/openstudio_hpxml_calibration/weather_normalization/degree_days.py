@@ -9,15 +9,15 @@ from openstudio_hpxml_calibration.units import convert_units
 
 def calc_daily_dbs(hpxml: HpxmlDoc) -> namedtuple:
     """
-    Calculates daily average dry bulb temperatures from EPW weather data in both Celsius and Fahrenheit.
+    Calculate daily average dry bulb temperatures from EPW weather data.
 
-    Args:
-        hpxml (HpxmlDoc): An HPXML document object containing weather data.
+    This function computes daily average dry bulb temperatures in both Celsius and Fahrenheit
+    from the EPW weather data contained in the provided HPXML document.
 
-    Returns:
-        DailyTemps: A namedtuple with two fields:
-            - c (pd.Series): Daily average dry bulb temperatures in Celsius.
-            - f (pd.Series): Daily average dry bulb temperatures in Fahrenheit.
+    :param hpxml: HPXML document object containing weather data.
+    :type hpxml: HpxmlDoc
+    :return: Named tuple with fields 'c' (Celsius) and 'f' (Fahrenheit), each as a pandas Series.
+    :rtype: namedtuple
     """
     DailyTemps = namedtuple("DailyTemps", ["c", "f"])
     epw, _ = hpxml.get_epw_data(coerce_year=2007)
@@ -27,8 +27,21 @@ def calc_daily_dbs(hpxml: HpxmlDoc) -> namedtuple:
 
 
 def calc_degree_days(daily_dbs: pd.Series, base_temp_f: float, is_heating: bool) -> float:
-    """Calculate degree days from daily temperature data.
-    Adapted from methods in https://github.com/NREL/OpenStudio-HPXML/blob/master/HPXMLtoOpenStudio/resources/weather.rb"""
+    """
+    Calculate degree days from daily temperature data.
+
+    This function computes the total heating or cooling degree days for a given base temperature
+    using daily average dry bulb temperatures.
+
+    :param daily_dbs: Series of daily average dry bulb temperatures (°F).
+    :type daily_dbs: pd.Series
+    :param base_temp_f: Base temperature in Fahrenheit for degree day calculation.
+    :type base_temp_f: float
+    :param is_heating: If True, calculates heating degree days; if False, cooling degree days.
+    :type is_heating: bool
+    :return: Total degree days for the specified base temperature and mode.
+    :rtype: float
+    """
 
     deg_days = []
     for temp in daily_dbs:
@@ -45,8 +58,17 @@ def calc_degree_days(daily_dbs: pd.Series, base_temp_f: float, is_heating: bool)
 
 
 def calc_heat_cool_degree_days(dailydbs: pd.Series) -> dict:
-    """Calculate heating and cooling degree days from daily temperature data.
-    Adapted from methods in https://github.com/NREL/OpenStudio-HPXML/blob/master/HPXMLtoOpenStudio/resources/weather.rb"""
+    """
+    Calculate heating and cooling degree days from daily temperature data.
+
+    This function returns a dictionary containing heating and cooling degree days (HDD65F, CDD65F)
+    for the provided daily average dry bulb temperatures.
+
+    :param dailydbs: Series of daily average dry bulb temperatures (°F).
+    :type dailydbs: pd.Series
+    :return: Dictionary with keys 'HDD65F' and 'CDD65F' and their respective degree day values.
+    :rtype: dict
+    """
     degree_days = {}
     degree_days["HDD65F"] = calc_degree_days(dailydbs, 65, True)
     # degree_days["HDD50F"] = calc_degree_days(dailydbs, 50, True)
@@ -55,12 +77,17 @@ def calc_heat_cool_degree_days(dailydbs: pd.Series) -> dict:
     return degree_days
 
 
-def calculate_annual_degree_days(hpxml: HpxmlDoc) -> dict[str, float]:
-    """Calculate annual heating and cooling degree days from TMY data and actual weather data.
+def calculate_annual_degree_days(hpxml: HpxmlDoc) -> tuple[dict, dict]:
+    """
+    Calculate annual heating and cooling degree days for each fuel type.
 
-    Returns:
-        dict: A dictionary containing annual heating and cooling degree days for TMY weather data.
-        dict: A dictionary containing annual heating and cooling degree days for actual weather data.
+    This function computes the total heating degree days (HDD) and cooling degree days (CDD)
+    for the actual period and the TMY period, for each fuel type present in the HPXML document.
+
+    :param hpxml: HPXML document object containing weather and fuel information.
+    :type hpxml: HpxmlDoc
+    :return: Tuple containing dictionaries of total period TMY degree days and actual degree days by fuel type.
+    :rtype: tuple[dict, dict]
     """
     tmy_dry_bulb_temps_f = calc_daily_dbs(hpxml).f
     bills_by_fuel_type, _, _ = ud.get_bills_from_hpxml(hpxml)
@@ -112,3 +139,26 @@ def calculate_annual_degree_days(hpxml: HpxmlDoc) -> dict[str, float]:
         total_period_tmy_dd[fuel] = {"HDD65F": hdd_total, "CDD65F": cdd_total}
 
     return total_period_tmy_dd, total_period_actual_dd
+
+
+def _get_degree_days_for_period(weather_data, start_date, end_date):
+    """
+    Get degree days for a specified period from weather data.
+
+    This function extracts the heating and cooling degree days between the given start and end dates.
+
+    :param weather_data: Weather data containing degree days information.
+    :type weather_data: pd.DataFrame
+    :param start_date: Start date of the period.
+    :type start_date: datetime
+    :param end_date: End date of the period.
+    :type end_date: datetime
+    :return: Dictionary with HDD and CDD values for the period.
+    :rtype: dict
+    """
+    period_data = weather_data[
+        (weather_data["date"] >= start_date) & (weather_data["date"] <= end_date)
+    ]
+    hdd = period_data["HDD65F"].sum()
+    cdd = period_data["CDD65F"].sum()
+    return {"HDD65F": hdd, "CDD65F": cdd}

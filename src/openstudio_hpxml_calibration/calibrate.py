@@ -39,6 +39,11 @@ random.seed(global_seed)
 
 
 def init_worker(seed):
+    """Initialize the random seed for a worker process.
+
+    :param seed: The base seed to use for randomization.
+    :type seed: int
+    """
     worker_id = (
         multiprocessing.current_process()._identity[0]
         if multiprocessing.current_process()._identity
@@ -54,6 +59,15 @@ class Calibrate:
         csv_bills_filepath: Path | None = None,
         config_filepath: Path | None = None,
     ):
+        """Initialize the Calibrate class.
+
+        :param original_hpxml_filepath: Path to the original HPXML file.
+        :type original_hpxml_filepath: Path
+        :param csv_bills_filepath: Optional path to the utility bills CSV file.
+        :type csv_bills_filepath: Path | None, optional
+        :param config_filepath: Optional path to the configuration file.
+        :type config_filepath: Path | None, optional
+        """
         self.hpxml_filepath = Path(original_hpxml_filepath).resolve()
         self.hpxml = HpxmlDoc(Path(original_hpxml_filepath).resolve())
         self.ga_config = _load_config(config_filepath)
@@ -65,11 +79,10 @@ class Calibrate:
         self.hpxml.hpxml_data_error_checking(self.ga_config)
 
     def get_normalized_consumption_per_bill(self) -> dict[FuelType, pd.DataFrame]:
-        """
-        Get the normalized consumption for the building.
+        """Get the normalized consumption for the building.
 
-        Returns:
-            dict: A dictionary containing dataframes for the normalized consumption by end use and fuel type, in mbtu.
+        :return: Dictionary containing dataframes for the normalized consumption by end use and fuel type, in mbtu.
+        :rtype: dict[FuelType, pd.DataFrame]
         """
 
         normalized_consumption = {}
@@ -120,14 +133,12 @@ class Calibrate:
         return normalized_consumption
 
     def get_model_results(self, json_results_path: Path) -> dict[str, dict[str, float]]:
-        """
-        Retrieve annual energy usage from the HPXML model.
+        """Retrieve annual energy usage from the HPXML model.
 
-        Args:
-            annual_json_results_path (Path): Path to the JSON file containing annual results from the HPXML model
-
-        Returns:
-            dict[str, dict[str, float]]: A dict of dicts containing the model results for each fuel type by end use in mbtu (because the annual results are in mbtu).
+        :param json_results_path: Path to the JSON file containing annual results from the HPXML model.
+        :type json_results_path: Path
+        :return: Model results for each fuel type by end use in mbtu.
+        :rtype: dict[str, dict[str, float]]
         """
 
         results = json.loads(json_results_path.read_text())
@@ -171,26 +182,14 @@ class Calibrate:
     def compare_results(
         self, normalized_consumption: dict[str, pd.DataFrame], annual_model_results
     ) -> dict[str, dict[str, dict[str, float]]]:
-        """
-        Compare the normalized consumption with the model results.
+        """Compare the normalized consumption with the model results.
 
-        Args:
-            normalized_consumption (dict): Normalized consumption data (mbtu)
-            annual_model_results (dict): Model results data (mbtu)
-
-        Returns:
-            dict: A dictionary containing the comparison results:
-            "{
-                <fuel_type>: {
-                    "Bias Error": {
-                        <load_type - heating/cooling/baseline>: <percentage error>
-                    },
-                    "Absolute Error": {
-                        <load_type - heating/cooling/baseline>: <error in mbtu or kWh>
-                    }
-                },
-                <fuel_type>: {...}
-            }"
+        :param normalized_consumption: Normalized consumption data (mbtu).
+        :type normalized_consumption: dict[str, pd.DataFrame]
+        :param annual_model_results: Model results data (mbtu).
+        :type annual_model_results: dict
+        :return: Comparison results containing bias and absolute errors for each fuel type and end use.
+        :rtype: dict[str, dict[str, dict[str, float]]]
         """
 
         # Build annual normalized bill consumption dicts
@@ -258,6 +257,21 @@ class Calibrate:
     def simplified_annual_usage(
         self, model_results: dict, delivered_consumption, fuel_type: str
     ) -> dict:
+        """Perform simplified annual usage calibration for delivered fuels.
+
+        Estimates annual fuel usage and compares measured consumption with modeled results
+        for fuels that cannot be weather-normalized (e.g., fuel oil, propane, wood).
+        Calculates bias and absolute errors for baseload, heating, and cooling end uses.
+
+        :param model_results: Annual model results by fuel type and end use.
+        :type model_results: dict
+        :param delivered_consumption: Consumption data object for the delivered fuel.
+        :type delivered_consumption: object
+        :param fuel_type: The fuel type being calibrated.
+        :type fuel_type: str
+        :return: Tuple containing bias and absolute error metrics for each end use, and weather-normalized annual consumption by end use.
+        :rtype: tuple[dict, dict]
+        """
         total_period_tmy_dd, total_period_actual_dd = calculate_annual_degree_days(self.hpxml)
 
         comparison_results = {}
@@ -351,10 +365,18 @@ class Calibrate:
     def _process_calibration_results(
         self, simulation_results, normalized_consumption_per_bill, for_summary=False
     ):
-        """
-        Processes calibration results based on simulation data and consumption data.
-        This function handles both the evaluation of a single individual and
-        the construction of the regression model summary.
+        """Process calibration results based on simulation data and consumption data.
+
+        Handles both the evaluation of a single individual and the construction of the regression model summary.
+
+        :param simulation_results: Simulation results from the HPXML model.
+        :type simulation_results: dict
+        :param normalized_consumption_per_bill: Weather-normalized consumption data.
+        :type normalized_consumption_per_bill: dict
+        :param for_summary: If True, returns summary information for documentation.
+        :type for_summary: bool, optional
+        :return: Tuple containing comparison error metrics and regression model summary details.
+        :rtype: tuple
         """
         comparison = {}
         summary = {}
@@ -448,6 +470,25 @@ class Calibrate:
         output_filepath=None,
         save_all_results=False,
     ):
+        """Run the genetic algorithm search for calibration.
+
+        :param population_size: Number of individuals in the population.
+        :type population_size: int, optional
+        :param generations: Number of generations to run.
+        :type generations: int, optional
+        :param cxpb: Crossover probability.
+        :type cxpb: float, optional
+        :param mutpb: Mutation probability.
+        :type mutpb: float, optional
+        :param num_proc: Number of parallel processes to use.
+        :type num_proc: int, optional
+        :param output_filepath: Directory to save output files.
+        :type output_filepath: Path, optional
+        :param save_all_results: If True, saves all simulation results.
+        :type save_all_results: bool, optional
+        :return: Tuple containing best individual, population, logbook, error series, regression models, and results.
+        :rtype: tuple
+        """
         print(f"Running search algorithm for '{Path(self.hpxml_filepath).name}'...")
 
         all_temp_dirs = set()
