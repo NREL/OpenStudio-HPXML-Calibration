@@ -48,8 +48,7 @@ def _load_config(config_filepath: Path | None = None) -> dict:
     with open(default_config_filepath) as f:
         default_config = yaml.safe_load(f)
     if not config_filepath or not Path(config_filepath).exists():
-        logger.info(f"Config file {config_filepath} not found. Using default configuration.")
-        return default_config
+        raise FileNotFoundError(f"Config file {config_filepath} not found.")
     else:
         with open(config_filepath) as f:
             config = yaml.safe_load(f)
