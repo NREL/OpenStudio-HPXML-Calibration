@@ -2,9 +2,12 @@
 
 ## OSW (json) file defining the home
 
-An example file can be found in `tests/data/ihmh3_existing_hpxml.osw`
+An example file can be found at `tests/data/ihmh3_existing_hpxml.osw`
 
 ## Utility consumption csv file
+
+- An example file can be found at `tests/data/test_bills.csv`
+- It has this format:
 
 | Consumption | StartDateTime | EndDateTime | UnitofMeasure | FuelType  |
 |:-----------:|:-------------:|:-----------:|:-------------:|:---------:|
