@@ -16,7 +16,7 @@ OS_HPXML_PATH = Path(__file__).resolve().parent.parent / "OpenStudio-HPXML"
 
 
 def get_cache_dir() -> Path:
-    cache_dir = Path(platformdirs.user_cache_dir("oshit"))
+    cache_dir = Path(platformdirs.user_cache_dir("oshc"))
     cache_dir.mkdir(parents=True, exist_ok=True)
     return cache_dir
 

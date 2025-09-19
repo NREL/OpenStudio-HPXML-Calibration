@@ -33,5 +33,5 @@ value_choices:  # Genetic algorithm working space. Set multipliers to 1 if you a
 utility_bill_criteria:
   min_days_of_consumption_data: 330  # BPI-2400 requirement is 330 or 183 plus sufficient HDD & CDD (not implemented as of 2025-08-19)
   max_days_since_newest_bill: 365  # BPI-2400 requirement is 365
-  min_electrical_bill_days: 20
-  max_electrical_bill_days: 45
+  min_electrical_bill_days: 10
+  max_electrical_bill_days: 65
