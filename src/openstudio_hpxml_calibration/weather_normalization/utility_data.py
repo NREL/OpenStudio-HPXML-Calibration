@@ -115,9 +115,7 @@ def join_bills_weather(bills_orig: pd.DataFrame, lat: float, lon: float, **kw) -
     rank_stations_kw.update(kw)
     with warnings.catch_warnings():
         ranked_stations = eeweather.rank_stations(lat, lon, **rank_stations_kw)
-        isd_station, _ = eeweather.select_station(
-            ranked_stations, coverage_range=(start_date, end_date)
-        )
+        isd_station, _ = eeweather.select_station(ranked_stations)
         tempC, _ = isd_station.load_isd_hourly_temp_data(start_date, end_date)
     tempC = tempC.tz_convert(bills_orig["start_date"].dt.tz)
     tempF = convert_units(tempC, "c", "f")
