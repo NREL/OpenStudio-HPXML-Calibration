@@ -4,11 +4,23 @@ import warnings
 import eeweather
 import numpy as np
 import pandas as pd
+import requests
 import yaml
 from lxml import objectify
 
 from openstudio_hpxml_calibration.hpxml import EnergyUnitType, FuelType, HpxmlDoc
 from openstudio_hpxml_calibration.units import convert_units
+
+# To bypass SSL verification when making requests to NOAA API
+old_init = requests.Session.__init__
+
+
+def new_init(self, *args, **kwargs):
+    old_init(self, *args, **kwargs)
+    self.verify = False  # Force all sessions to ignore SSL
+
+
+requests.Session.__init__ = new_init
 
 
 def read_yaml_file(config_path: str):
