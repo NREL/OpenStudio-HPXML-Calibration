@@ -218,9 +218,9 @@ def get_tmy3_weather():
     ----------
     None
     """
-    weather_files_url = "https://data.nrel.gov/system/files/128/tmy3s-cache-csv.zip"
+    weather_files_url = "https://data.nlr.gov/system/files/128/1774980365-USA-TMY3-EPW.zip"
     weather_zip_filename = weather_files_url.split("/")[-1]
-    weather_zip_sha256 = "58f5d2821931e235de34a5a7874f040f7f766b46e5e6a4f85448b352de4c8846"
+    weather_zip_sha256 = "a0d03eea64818280c740e0fda3f1bc4d8605c989facce169ded3d08fb53a135e"
 
     # Download file
     cache_dir = get_cache_dir()
