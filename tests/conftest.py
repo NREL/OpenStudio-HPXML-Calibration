@@ -2,7 +2,10 @@ import sys
 from pathlib import Path
 
 import eeweather.cache as ec
+import matplotlib as mpl
 import pytest
+
+mpl.use("Agg")  # Use non-interactive backend for testing
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from utils.post_process import generate_cvrmse_comparison_plot
