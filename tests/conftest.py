@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 
+import eeweather.cache as ec
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -32,3 +33,9 @@ def results_dir(worker_id):
 def pytest_sessionfinish(session, exitstatus):
     """Hook to run after all tests finish."""
     generate_cvrmse_comparison_plot()
+
+
+@pytest.fixture(autouse=True)
+def isolate_eeweather_cache(tmp_path, monkeypatch):
+    """Isolate the eeweather cache directory per worker"""
+    monkeypatch.setattr(ec.KeyValueStore, "_get_url", lambda _: f"sqlite:///{tmp_path}/cache.db")
