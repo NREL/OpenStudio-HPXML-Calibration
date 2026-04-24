@@ -5,8 +5,8 @@ description = "Calibrates a residential building energy model to utility bills."
 readme = "README.md"
 authors = [
     { name = "Nathan Moore", email = "nate.moore@pearlscore.com" },
-    { name = "Benjamin Park", email = "benjamin.park@nrel.gov" },
-    { name = "Scott Horowitz", email = "scott.horowitz@nrel.gov" },
+    { name = "Benjamin Park", email = "benjamin.park@nlr.gov" },
+    { name = "Scott Horowitz", email = "scott.horowitz@nlr.gov" },
     { name = "Noel Merket", email = "noel.merket@pearlscore.com" },
 ]
 requires-python = ">=3.12, < 3.14"
