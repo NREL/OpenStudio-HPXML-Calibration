@@ -1,25 +1,12 @@
 # `logbook.json` Output Documentation
 
-The `logbook.json` file is generated after each calibration run. It records weather-normalized utility targets, baseline simulation results, genetic algorithm calibration progress across generations, and final calibration status. This file is intended for calibration diagnostics, debugging, and post-processing analysis.
-
-## File Structure
-
-```json
-{
-  "weather_normalization_results": {...},
-  "existing_home_results": {...},
-  "calibration_success": false,
-  "calibration_results": [...]
-}
-```
+The `logbook.json` file is a comprehensive diagnostic report generated after each calibration run. It archives weather-normalized utility targets, baseline simulation results, and the step-by-step progress of the Genetic Algorithm (GA). This file is the primary resource for **calibration diagnostics, debugging, and post-processing analysis.**
 
 ---
 
 ## 1. `weather_normalization_results`
 
-This section contains utility consumption targets derived from weather normalization.
-
-### Structure
+This section contains the energy consumption targets derived from the weather-normalization of actual utility bills. These values serve as the targets for the calibration process.
 
 ```json
 "weather_normalization_results": {
@@ -36,29 +23,19 @@ This section contains utility consumption targets derived from weather normaliza
 }
 ```
 
-### Fields
-
-| Field | Description |
-|--------|-------------|
-| `fuel_type` | Utility fuel type (e.g., electricity, natural gas) |
-| `calibration_type` | Type of weather normalization method (e.g., detailed) |
-| `model_type` | Regression model used (e.g., 5-parameter, 3-parameter heating, or 3-parameter cooling) |
-| `cvrmse` | Coefficient of Variation of Root Mean Square Error, indicating goodness-of-fit |
-| `consumption.baseload` | Non-weather-dependent usage |
-| `consumption.heating` | Heating-related consumption |
-| `consumption.cooling` | Cooling-related consumption |
-
-### Purpose
-
-These values serve as the targets for the calibration process.
+* `fuel_type`: Utility fuel type (e.g., electricity, natural gas)
+* `calibration_type`: Type of weather normalization method (e.g., detailed)
+* `model_type`: Regression model used (e.g., 5-parameter, 3-parameter heating, or 3-parameter cooling)
+* `cvrmse`: Coefficient of Variation of Root Mean Square Error, indicating goodness-of-fit
+* `consumption.baseload`: Non-weather-dependent usage
+* `consumption.heating`: Heating-related consumption
+* `consumption.cooling`: Cooling-related consumption
 
 ---
 
 ## 2. `existing_home_results`
 
 Contains simulation outputs for the original uncalibrated home model. Values are annual consumption estimates from the initial simulation.
-
-### Structure
 
 ```json
 "existing_home_results": {
@@ -75,28 +52,18 @@ Contains simulation outputs for the original uncalibrated home model. Values are
 }
 ```
 
-### Purpose
-
-Represents the baseline simulation before calibration begins.
-
-Used to quantify the initial mismatch between simulation and normalized utility data.
-
 ---
 
 ## 3. `calibration_success`
+
+Indicates whether the calibration process met predefined acceptance criteria.
 
 ```json
 "calibration_success": false
 ```
 
-### Description
-
-Indicates whether the calibration process met predefined acceptance criteria.
-
-| Value | Description |
-|--------|----------|
-| `true` | Calibration met predefined acceptance criteria |
-| `false` | Calibration did not converge to acceptable error thresholds |
+* `true`: Calibration met predefined acceptance criteria
+* `false`: Calibration did not converge to acceptable error thresholds
 
 ---
 
@@ -113,45 +80,64 @@ Contains detailed results for each generation of the genetic algorithm.
 ]
 ```
 
-Each object represents one generation.
-
----
-
 ### 4.1 Genetic Algorithm Metrics
 
-| Field | Description |
-|--------|-------------|
-| `gen` | Generation index |
-| `nevals` | Number of individuals evaluated |
-| `min` | Best fitness score in generation |
-| `avg` | Average fitness score across the generation population |
-
----
+* `gen`: Generation index
+* `nevals`: Number of individuals evaluated
+* `min`: Best fitness score in generation
+* `avg`: Average fitness score across the generation population
 
 ### 4.2 Error Metrics
 
+Calibration error metrics are calculated for each end-use category (`baseload`, `heating`, and `cooling`) based on the methodology defined in BPI-2400-2015 Section 3.2.3.A.
+
 #### Bias Error
+
+Measures the signed percentage deviation between weather-normalized consumption and simulation results. It is used to identify systematic bias, indicating whether the model tends to over- or under-predict energy use.
 
 ```json
 "bias_error_<fuel>_<end_use>"
 ```
 
-Signed percentage error between simulation output and calibration target.
+##### Formula
 
-- Positive value represents overprediction
-- Negative value represents underprediction
+$$bias\_error = \left( \frac{y - \hat{y}}{NAC} \right) \times 100$$
+
+**Where:**
+
+* $y$ : Weather-normalized consumption target
+* $\hat{y}$ : Simulated consumption for the same end-use
+* $NAC$ : Normalized Annual Consumption
+
+##### Interpretation
+
+* **Positive (+) Value**: The simulation **underpredicts** consumption ($y > \hat{y}$).
+* **Negative (-) Value**: The simulation **overpredicts** consumption ($y < \hat{y}$).
+* Values closer to **0** indicate better calibration performance.
 
 ---
 
 #### Absolute Error
 
+measures the absolute magnitude of the difference between target and simulated consumption, regardless of direction.
+
 ```json
 "abs_error_<fuel>_<end_use>"
 ```
 
-Absolute difference between simulation output and target consumption.
+##### Formula
 
-These values are typically used in the fitness/objective function.
+$$abs\_error = |y - \hat{y}|$$
+
+**Where:**
+
+* $y$ : Weather-normalized consumption target
+* $\hat{y}$ : Simulated consumption
+
+##### Interpretation
+
+* Values are $\ge 0$.
+* **Lower Values**: Indicate better agreement and higher precision.
 
 ---
 
@@ -171,7 +157,7 @@ Contains the best-performing parameter set for the current generation.
 
 ### 4.4 `best_individual_sim_results`
 
-Simulation outputs corresponding to the best individual.
+Contains the simulation output generated by the best individual's parameters.
 
 ```json
 "best_individual_sim_results": {
@@ -182,25 +168,18 @@ Simulation outputs corresponding to the best individual.
 }
 ```
 
-These results should be compared against:
-
-- `weather_normalization_results`
-- `existing_home_results`
-
 ---
 
 ### 4.5 `diversity`
 
+Represents the genetic variance of the population.
+
 ```json
-"diversity": 1.0
+"diversity": 0.6
 ```
 
-Measures population diversity within the genetic algorithm.
-
-#### Interpretation
-
-- Higher values represent broader parameter exploration
-- Lower values represent population convergence
+* **High Diversity**: The algorithm is broadly exploring the parameter space.
+* **Low Diversity**: The population is converging on a specific solution.
 
 ---
 
