@@ -19,7 +19,7 @@ This section contains the energy consumption targets derived from the weather-no
       "heating": 3.23,
       "cooling": 0.54
     }
-  }
+  },
   "... (truncated for brevity)"
 }
 ```
