@@ -1,67 +1,71 @@
-# OpenStudio™ HPXML Calibration
+# OpenStudio®-HPXML
 
-[![ci](https://github.com/NREL/OpenStudio-HPXML-Calibration/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/NREL/OpenStudio-HPXML-Calibration/actions/workflows/ci.yml)
+[![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/NatLabRockies/OpenStudio-HPXML?include_prereleases)](https://github.com/NatLabRockies/OpenStudio-HPXML/releases)
+[![ci](https://github.com/NatLabRockies/OpenStudio-HPXML/actions/workflows/config.yml/badge.svg?branch=master)](https://github.com/NatLabRockies/OpenStudio-HPXML/actions/workflows/config.yml)
+[![Documentation Status](https://readthedocs.org/projects/openstudio-hpxml/badge/?version=latest)](https://openstudio-hpxml.readthedocs.io/en/latest/?badge=latest)
 
-A package to automatically calibrate an [OpenStudio-HPXML](https://github.com/NREL/OpenStudio-HPXML) residential building model against utility bills.
+OpenStudio-HPXML allows running residential [EnergyPlus™ simulations](https://energyplus.net/) using an [HPXML file](https://hpxml.nlr.gov/) for the building description.
+It is primarily intended to be used by user interfaces or other automated software workflows that automatically produce the HPXML file.
 
-The implementation relies heavily on [BPI-2400-S-2015 v.2 Standard Practice for Standardized Qualification of Whole-House Energy Savings Predictions by Calibration to Energy Use](https://www.bpi.org/__cms/docs/20240523_BPI-2400-S-2015_Delta_Standard_v2.pdf).
-However, it is not currently a complete implementation of BPI-2400.
+OpenStudio-HPXML can accommodate a wide range of different building technologies and geometries.
+End-to-end simulations typically run in 3-10 seconds, depending on complexity, computer platform and speed, etc.
 
-## Documentation & usage
+For more information on running simulations, generating HPXML files with the appropriate inputs to run EnergyPlus, etc., please visit the [documentation](https://openstudio-hpxml.readthedocs.io/en/latest).
 
-Full documentation is available at <https://NREL.github.io/OpenStudio-HPXML-Calibration>
+## Workflows
 
-Create a custom config file (based on [`default_calibration_config.yaml`](https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/src/openstudio_hpxml_calibration/default_calibration_config.yaml)) that is specific to the home being calibrated.
+A simple `run_simulation.rb` script is provided to run a residential EnergyPlus simulation from an HPXML file.
+See the [Usage Instructions](https://openstudio-hpxml.readthedocs.io/en/latest/usage_instructions.html) for documentation on running the workflow.
 
-Then run:
-`uv run openstudio-hpxml-calibration calibrate --hpxml-filepath hpxml.xml --config-filepath my_config.yaml`
+Since [OpenStudio measures](http://natlabrockies.github.io/OpenStudio-user-documentation/getting_started/about_measures/) are used for model generation, additional OpenStudio-based workflows and interfaces can instead be used if desired.
 
-See `uv run openstudio-hpxml-calibration calibrate --help` or `uv run openstudio-hpxml-calibration --help` for more options.
+## Capabilities
 
-## Developer installation
+OpenStudio-HPXML capabilities include:
+- Modeling individual dwelling units or whole multifamily buildings
+- Modeling a wide range of building technologies
+- HVAC design load calculations and equipment autosizing
+- Electric panel NEC load calculations (experimental research feature)
+- Occupancy schedules (smooth or stochastic)
+- Utility bill calculations (flat, tiered, time-of-use, real-time pricing, etc.)
+- Emissions calculations (CO2e, etc.)
+- Annual and timeseries outputs (energy, loads, temperatures, etc.)
+- Optional HPXML inputs with transparent defaults
+- Schematron and XSD Schema input validation
+- Can be used for [IRA HOMES Rebates approval](https://www.energy.gov/sites/default/files/2024-05/ira-home-rebates-single-family-software-verification_050324.pdf)
+- Can be used for [ACCA Manual J approval](https://www.acca.org/standards/approved-software)
+- Can be used for [automated calibration to utility bills](https://github.com/NatLabRockies/OpenStudio-HPXML-calibration)
 
-- Clone the repository: `git clone https://github.com/NREL/OpenStudio-HPXML-Calibration.git`
-- Move into the repository: `cd OpenStudio-HPXML-Calibration`
-- Install [OpenStudio 3.11.0](https://github.com/NREL/OpenStudio/releases/tag/v3.11.0)
+## Measures
 
-- [Uv](https://docs.astral.sh/uv/) is used to manage the project & dependencies (and may also be used to [manage Python](https://docs.astral.sh/uv/guides/install-python/) if you want). After cloning, ensure you have
-[uv installed](https://docs.astral.sh/uv/getting-started/installation/), then run `uv sync` to install the package and all development dependencies.
-    - Some Windows developers have reported version conflicts using the default strategy. If this occurs, consider changing the [resolution strategy](https://docs.astral.sh/uv/concepts/resolution/#resolution-strategy) using `uv sync --resolution=lowest-direct`
-- Download all weather files using `uv run openstudio-hpxml-calibration download-weather`
-- Developers can then call `uv run pytest` to confirm all dev dependencies have been installed and everything is working as expected. (If you need to restrict the number of concurrent workers, you can use e.g. `uv run pytest -n <NUM>`.)
-- Activate [pre-commit](https://pre-commit.com/) (only required once, after cloning the repo) with: `uv run pre-commit install`. On your first commit it will install the pre-commit environments, then run pre-commit hooks at every commit.
-- Before pushing to Github, run pre-commit on all files with `uv run pre-commit run -a` to highlight any linting/formatting errors that will cause CI to fail.
-- Pycharm users may need to add Ruff as a [3rd-party plugin](https://docs.astral.sh/ruff/editors/setup/#via-third-party-plugin) or install it as an [external tool](https://docs.astral.sh/ruff/editors/setup/#pycharm) to their IDE to ensure linting & formatting is consistent.
-- Developers can test in-process functionality by prepending `uv run` to a terminal command. For instance, to see the CLI help menu with local changes not yet committed, run: `uv run openstudio-hpxml-calibration --help`
+This repository contains several OpenStudio measures:
+- `BuildResidentialHPXML`: A measure that generates an HPXML file from a set of building description inputs (including, e.g., simplified geometry inputs).
+- `BuildResidentialScheduleFile`: A measure that generates a CSV of detailed schedules (e.g., stochastic occupancy) for use in the simulation.
+- `HPXMLtoOpenStudio`: A measure that translates an HPXML file to an OpenStudio model.
+- `ReportSimulationOutput`: A reporting measure that generates a variety of simulation-based annual/timeseries outputs in CSV/JSON/MessagePack format.
+- `ReportUtilityBills`: A reporting measure that generates utility bill outputs in CSV/JSON/MessagePack format.
 
-### Alternative Dev Container Environment
+## Users
 
-There's a Dev Container configuration in this repo which installs all the necessary dependencies in a docker container and attaches to VSCode to it. To use it:
+OpenStudio-HPXML is used by a number of software products or organizations, including:
 
-- Install [VSCode](https://code.visualstudio.com/)
-- Install the [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension.
-- Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) or something compatible.
-- Click the little blue "><" icon in the lower left of VSCode, and select "Reopen in Container". The window will reload. It may take a few minutes the first time.
+- [BEopt](https://www.nlr.gov/buildings/beopt)
+- [Clarity Heat Pump Toolkit](https://psdconsulting.com/solutions/)
+- [Energy Rating Index (ERI)](https://github.com/NatLabRockies/OpenStudio-ERI)
+- [Home Energy Score](https://www.homeenergyscore.gov)
+- [Hot2000 (H2K)](https://github.com/canmet-energy/h2k-hpxml)
+- [ICF](https://www.icf.com/work/utilities/sightline-utility-customer-programs)
+- [OptiMiser](https://optimiserenergy.com)
+- [Pearl](https://pearlscore.com)
+- [Radiant Labs](https://www.radiantlabs.co)
+- [ResStock](https://resstock.nlr.gov/)
+- [URBANopt](https://www.nlr.gov/buildings/urbanopt)
+- [VEIC](https://www.veic.org)
+- [Weatherization Assistant](https://weatherization.ornl.gov/softwaredescription/) (pending)
+- [XeroHome](https://about.xerohome.com/)
 
-## Testing
-
-Project tests can be run with `uv run pytest` from the repo root. (If you need to restrict the number of concurrent workers, you can use e.g. `uv run pytest -n <NUM>`.)
-
-Ruby Measure tests can be run with `openstudio src/measures/ModifyXML/tests/modify_xml_test.rb`
-
-## Developing documentation
-
-During development we can serve docs locally and view updates as they are made.
-
-1. Start a documentation update branch: `git switch -c <branch_name>`
-1. `uv run mkdocs serve`
-1. Point browser to <http://127.0.0.1:8000/>
-
-- To deploy, push a commit in the `docs` folder to the `main` branch
-- Wait a few minutes, then verify the new documentation on the [docs website](https://NREL.github.io/OpenStudio-HPXML-Calibration)
+Are you using OpenStudio-HPXML and want to be mentioned here? [Email us](mailto:scott.horowitz@nlr.gov) or [open a Pull Request](https://github.com/NatLabRockies/OpenStudio-HPXML/edit/master/README.md).
 
 ## License
 
-This project is available under a BSD-3-like license, which is a free, open-source, and permissive license. For more information, check out the [license file](https://github.com/NREL/OpenStudio-HPXML-Calibration/blob/main/LICENSE.md).
-
-This project is NREL Software Record `SWR-25-94`
+This project is available under a BSD-3-like license, which is a free, open-source, and permissive license. For more information, check out the [license file](https://github.com/NatLabRockies/OpenStudio-HPXML/blob/master/LICENSE.md).

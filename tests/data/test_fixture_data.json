@@ -1,8 +1,0 @@
-{
-  "sample_xml_file": "test_hpxmls/real_homes/house21.xml",
-  "test_workflow": "tests/data/test_modify_xml_workflow.osw",
-  "annual_json_results_path": "tests/data/house_21_results_annual.json",
-  "timeseries_json_results_path": "tests/data/house21_daily_results_timeseries.json",
-  "sample_bill_csv_path": "tests/data/test_bills.csv",
-  "model_without_bills": "src/OpenStudio-HPXML/workflow/sample_files/base.xml"
-}

@@ -1,3 +1,0 @@
-# Regression
-
-::: src.openstudio_hpxml_calibration.weather_normalization.regression
