@@ -4,6 +4,12 @@ The `logbook.json` file is a comprehensive diagnostic report generated after eac
 
 ---
 
+## Units and Conventions
+
+Unless otherwise noted, all energy consumption values reported in `logbook.json` are expressed in MMBtu.
+
+---
+
 ## 1. `weather_normalization_results`
 
 This section contains the energy consumption targets derived from the weather-normalization of actual utility bills. These values serve as the targets for the calibration process.
@@ -58,7 +64,7 @@ Contains simulation outputs for the original uncalibrated home model. Values are
 
 ## 3. `calibration_success`
 
-Indicates whether the calibration process met predefined acceptance criteria.
+Indicates whether the calibration process met predefined acceptance criteria. Acceptance criteria thresholds are configurable through the `acceptance_criteria` section of the calibration configuration YAML file. If custom thresholds are not provided, the default values defined in `default_calibration_config.yaml` are used.
 
 ```json
 "calibration_success": false
@@ -88,6 +94,16 @@ Contains detailed results for each generation of the genetic algorithm.
 * `nevals`: Number of individuals evaluated
 * `min`: Best fitness score in generation
 * `avg`: Average fitness score across the generation population
+
+#### Fitness Score
+
+The fitness score represents the overall calibration objective that the genetic algorithm minimizes.
+
+It is computed by aggregating bias error and absolute error across all fuel types and end uses into a single scalar value.
+
+Each error metric is first transformed using a logarithmic scaling function before being penalized and aggregated. This transformation reduces the influence of extreme error values and improves the stability of the optimization process. The use of a logarithmic transformation prevents any single large error (for a specific fuel type or end use) from dominating the overall fitness score.
+
+Lower fitness values indicate better agreement between simulated results and weather-normalized consumption.
 
 ### 4.2 Error Metrics
 
@@ -121,7 +137,7 @@ $$bias\_error = \left( \frac{y - \hat{y}}{NAC} \right) \times 100$$
 
 #### Absolute Error
 
-measures the absolute magnitude of the difference between target and simulated consumption, regardless of direction.
+Measures the absolute magnitude of the difference between target and simulated consumption, regardless of direction.
 
 ```json
 "abs_error_<fuel_type>_<end_use>"
@@ -139,7 +155,7 @@ $$abs\_error = |y - \hat{y}|$$
 ##### Interpretation
 
 * Values are $\ge 0$.
-* **Lower Value**: Indicate better agreement and higher precision.
+* Lower values indicate better agreement and higher precision.
 
 ---
 
@@ -202,6 +218,12 @@ Tracks distribution statistics for each parameter across the generation populati
 }
 ```
 
+These statistics help diagnose parameter convergence and population diversity throughout the calibration process.
+
+* Low standard deviation may indicate convergence toward a stable parameter value.
+* High standard deviation may indicate continued exploration or weak parameter sensitivity.
+* Narrow min/max ranges across generations may indicate parameter stabilization.
+
 ---
 
 ### 4.7 `simulation_result_stats`
@@ -219,3 +241,10 @@ Tracks simulation output variability across all individuals in the generation.
   "... (truncated for brevity)"
 }
 ```
+
+These statistics summarize the variability of simulated energy consumption across the generation population.
+
+They can be used to evaluate:
+
+* Sensitivity of simulation outputs to parameter variation
+* Whether the search space remains broadly exploratory or is converging toward stable solutions
