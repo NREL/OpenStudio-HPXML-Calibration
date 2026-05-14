@@ -1,6 +1,6 @@
 [project]
 name = "openstudio-hpxml-calibration"
-version = "0.2.0"
+version = "0.3.0"
 description = "Calibrates a residential building energy model to utility bills."
 readme = "README.md"
 authors = [
