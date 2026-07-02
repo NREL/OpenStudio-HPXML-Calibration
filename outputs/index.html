@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://natlabrockies.github.io/OpenStudio-HPXML-Calibration/search_config/">
+        <link rel="canonical" href="https://natlabrockies.github.io/OpenStudio-HPXML-Calibration/outputs/">
       
       
-        <link rel="prev" href="../outputs/">
+        <link rel="prev" href="../inputs/">
       
       
-        <link rel="next" href="../code_documentation/calibrate/">
+        <link rel="next" href="../search_config/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -22,7 +22,7 @@
     
     
       
-        <title>Search Algorithm Configuration - OpenStudio HPXML Calibration</title>
+        <title>logbook.json Output Documentation - OpenStudio HPXML Calibration</title>
       
     
     
@@ -66,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#search-algorithm-configuration" class="md-skip">
+        <a href="#logbookjson-output-documentation" class="md-skip">
           Skip to content
         </a>
       
@@ -102,7 +102,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Search Algorithm Configuration
+              logbook.json Output Documentation
             
           </span>
         </div>
@@ -285,28 +285,6 @@
       
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../outputs/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    logbook.json Output Documentation
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
     
   
   
@@ -324,7 +302,7 @@
   
   
   <span class="md-ellipsis">
-    Search Algorithm Configuration
+    logbook.json Output Documentation
     
   </span>
   
@@ -337,7 +315,7 @@
   
   
   <span class="md-ellipsis">
-    Search Algorithm Configuration
+    logbook.json Output Documentation
     
   </span>
   
@@ -360,190 +338,196 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#optimizing-parameters-practical-guidance" class="md-nav__link">
+  <a href="#units-and-conventions" class="md-nav__link">
     <span class="md-ellipsis">
-      Optimizing Parameters: Practical Guidance
+      Units and Conventions
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#value-choices" class="md-nav__link">
+  <a href="#1-weather_normalization_results" class="md-nav__link">
     <span class="md-ellipsis">
-      Value Choices
+      1. weather_normalization_results
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Value Choices">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-existing_home_results" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. existing_home_results
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-calibration_success" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. calibration_success
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-calibration_results" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. calibration_results
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. calibration_results">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#the-choices-in-the-config-file-adjust-the-following-hpxml-values" class="md-nav__link">
+  <a href="#41-genetic-algorithm-metrics" class="md-nav__link">
     <span class="md-ellipsis">
-      The choices in the config file adjust the following hpxml values
+      4.1 Genetic Algorithm Metrics
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.1 Genetic Algorithm Metrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fitness-score" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fitness Score
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-error-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.2 Error Metrics
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.2 Error Metrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bias-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bias Error
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bias Error">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#formula" class="md-nav__link">
+    <span class="md-ellipsis">
+      Formula
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#misc_load_multiplier_choices" class="md-nav__link">
+  <a href="#interpretation" class="md-nav__link">
     <span class="md-ellipsis">
-      misc_load_multiplier_choices
+      Interpretation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#absolute-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      Absolute Error
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Absolute Error">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#formula_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Formula
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#air_leakage_multiplier_choices" class="md-nav__link">
+  <a href="#interpretation_1" class="md-nav__link">
     <span class="md-ellipsis">
-      air_leakage_multiplier_choices
+      Interpretation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-best_individual" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.3 best_individual
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#heating_efficiency_multiplier_choices" class="md-nav__link">
+  <a href="#44-best_individual_sim_results" class="md-nav__link">
     <span class="md-ellipsis">
-      heating_efficiency_multiplier_choices
+      4.4 best_individual_sim_results
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#cooling_efficiency_multiplier_choices" class="md-nav__link">
+  <a href="#45-diversity" class="md-nav__link">
     <span class="md-ellipsis">
-      cooling_efficiency_multiplier_choices
+      4.5 diversity
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#roof_r_value_multiplier_choices" class="md-nav__link">
+  <a href="#46-parameter_choice_stats" class="md-nav__link">
     <span class="md-ellipsis">
-      roof_r_value_multiplier_choices
+      4.6 parameter_choice_stats
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#ceiling_r_value_multiplier_choices" class="md-nav__link">
+  <a href="#47-simulation_result_stats" class="md-nav__link">
     <span class="md-ellipsis">
-      ceiling_r_value_multiplier_choices
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#above_ground_walls_r_value_multiplier_choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      above_ground_walls_r_value_multiplier_choices
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#below_ground_walls_r_value_multiplier_choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      below_ground_walls_r_value_multiplier_choices
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#slab_r_value_multiplier_choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      slab_r_value_multiplier_choices
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#floor_r_value_multiplier_choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      floor_r_value_multiplier_choices
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#heating_setpoint_offset_choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      heating_setpoint_offset_choices
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cooling_setpoint_offset_choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      cooling_setpoint_offset_choices
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#water_heater_efficiency_multiplier_choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      water_heater_efficiency_multiplier_choices
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#water_fixtures_usage_multiplier_choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      water_fixtures_usage_multiplier_choices
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#window_u_factor_multiplier_choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      window_u_factor_multiplier_choices
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#window_shgc_multiplier_choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      window_shgc_multiplier_choices
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#appliance_usage_multiplier_choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      appliance_usage_multiplier_choices
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lighting_load_multiplier_choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      lighting_load_multiplier_choices
+      4.7 simulation_result_stats
     </span>
   </a>
   
@@ -558,6 +542,28 @@
   
 </nav>
       
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../search_config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Search Algorithm Configuration
+    
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -818,190 +824,196 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#optimizing-parameters-practical-guidance" class="md-nav__link">
+  <a href="#units-and-conventions" class="md-nav__link">
     <span class="md-ellipsis">
-      Optimizing Parameters: Practical Guidance
+      Units and Conventions
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#value-choices" class="md-nav__link">
+  <a href="#1-weather_normalization_results" class="md-nav__link">
     <span class="md-ellipsis">
-      Value Choices
+      1. weather_normalization_results
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Value Choices">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-existing_home_results" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. existing_home_results
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-calibration_success" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. calibration_success
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-calibration_results" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. calibration_results
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. calibration_results">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#the-choices-in-the-config-file-adjust-the-following-hpxml-values" class="md-nav__link">
+  <a href="#41-genetic-algorithm-metrics" class="md-nav__link">
     <span class="md-ellipsis">
-      The choices in the config file adjust the following hpxml values
+      4.1 Genetic Algorithm Metrics
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.1 Genetic Algorithm Metrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fitness-score" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fitness Score
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-error-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.2 Error Metrics
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.2 Error Metrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bias-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bias Error
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bias Error">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#formula" class="md-nav__link">
+    <span class="md-ellipsis">
+      Formula
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#misc_load_multiplier_choices" class="md-nav__link">
+  <a href="#interpretation" class="md-nav__link">
     <span class="md-ellipsis">
-      misc_load_multiplier_choices
+      Interpretation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#absolute-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      Absolute Error
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Absolute Error">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#formula_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Formula
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#air_leakage_multiplier_choices" class="md-nav__link">
+  <a href="#interpretation_1" class="md-nav__link">
     <span class="md-ellipsis">
-      air_leakage_multiplier_choices
+      Interpretation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-best_individual" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.3 best_individual
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#heating_efficiency_multiplier_choices" class="md-nav__link">
+  <a href="#44-best_individual_sim_results" class="md-nav__link">
     <span class="md-ellipsis">
-      heating_efficiency_multiplier_choices
+      4.4 best_individual_sim_results
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#cooling_efficiency_multiplier_choices" class="md-nav__link">
+  <a href="#45-diversity" class="md-nav__link">
     <span class="md-ellipsis">
-      cooling_efficiency_multiplier_choices
+      4.5 diversity
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#roof_r_value_multiplier_choices" class="md-nav__link">
+  <a href="#46-parameter_choice_stats" class="md-nav__link">
     <span class="md-ellipsis">
-      roof_r_value_multiplier_choices
+      4.6 parameter_choice_stats
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#ceiling_r_value_multiplier_choices" class="md-nav__link">
+  <a href="#47-simulation_result_stats" class="md-nav__link">
     <span class="md-ellipsis">
-      ceiling_r_value_multiplier_choices
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#above_ground_walls_r_value_multiplier_choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      above_ground_walls_r_value_multiplier_choices
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#below_ground_walls_r_value_multiplier_choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      below_ground_walls_r_value_multiplier_choices
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#slab_r_value_multiplier_choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      slab_r_value_multiplier_choices
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#floor_r_value_multiplier_choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      floor_r_value_multiplier_choices
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#heating_setpoint_offset_choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      heating_setpoint_offset_choices
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cooling_setpoint_offset_choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      cooling_setpoint_offset_choices
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#water_heater_efficiency_multiplier_choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      water_heater_efficiency_multiplier_choices
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#water_fixtures_usage_multiplier_choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      water_fixtures_usage_multiplier_choices
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#window_u_factor_multiplier_choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      window_u_factor_multiplier_choices
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#window_shgc_multiplier_choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      window_shgc_multiplier_choices
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#appliance_usage_multiplier_choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      appliance_usage_multiplier_choices
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lighting_load_multiplier_choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      lighting_load_multiplier_choices
+      4.7 simulation_result_stats
     </span>
   </a>
   
@@ -1031,157 +1043,188 @@
   
 
 
-<h1 id="search-algorithm-configuration">Search Algorithm Configuration</h1>
-<p>The calibration process utilizes a genetic algorithm. The configuration file includes parameters that allow users to tune the genetic algorithm for optimal performance.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>To use the values from the default config file, simply do not include those lines in your custom config file.</p>
-</div>
+<h1 id="logbookjson-output-documentation"><code>logbook.json</code> Output Documentation</h1>
+<p>The <code>logbook.json</code> file is a comprehensive diagnostic report generated after each calibration run. It archives weather-normalized utility targets, baseline simulation results, and the step-by-step progress of the Genetic Algorithm (GA). This file is the primary resource for <strong>calibration diagnostics, debugging, and post-processing analysis.</strong></p>
+<hr />
+<h2 id="units-and-conventions">Units and Conventions</h2>
+<p>Unless otherwise noted, all energy consumption values reported in <code>logbook.json</code> are expressed in MMBtu.</p>
+<hr />
+<h2 id="1-weather_normalization_results">1. <code>weather_normalization_results</code></h2>
+<p>This section contains the energy consumption targets derived from the weather-normalization of actual utility bills. These values serve as the targets for the calibration process.</p>
+<pre><code class="language-json">&quot;weather_normalization_results&quot;: {
+  &quot;&lt;fuel_type&gt;&quot;: {
+    &quot;calibration_type&quot;: &quot;detailed&quot;,
+    &quot;model_type&quot;: &quot;5-parameter&quot;,
+    &quot;cvrmse&quot;: 0.062,
+    &quot;consumption&quot;: {
+      &quot;baseload&quot;: 6.88,
+      &quot;heating&quot;: 3.23,
+      &quot;cooling&quot;: 0.54
+    }
+  },
+  &quot;... (truncated for brevity)&quot;
+}
+</code></pre>
 <ul>
-<li><strong>population_size</strong>: Defines the number of candidate solutions in each generation. A larger population increases diversity and enhances the search, but require more computational resources. Very small populations can reduce the genetic algorithm's ability to explore the solution space, potentially preventing it from finding the optimal solution.</li>
-<li><strong>generations</strong>: Specifies the maximum number of iterations the algorithm can perform. Increasing this value allows more opportunities for improvement, but leads to longer runtimes. The calibration process will terminate early if a solution that meets the user's acceptance criteria is found before reaching this limit.</li>
-<li><strong>mutation_probability</strong>: Determines the likelihood of random changes being introduced in offspring. Higher mutation rates encourage exploration of new solutions but may destabilize good candidates.</li>
-<li><strong>crossover_probability</strong>: Specifies the probability that two parent solutions will combine to produce a child. Higher crossover rates encourage the exploitation of good solutions; however, excessive rates may reduce overall diversity.</li>
+<li><code>fuel_type</code>: Utility fuel type (e.g., electricity, natural gas)</li>
+<li><code>calibration_type</code>: Type of weather normalization method (e.g., detailed)</li>
+<li><code>model_type</code>: Regression model used (e.g., 5-parameter, 3-parameter heating, or 3-parameter cooling)</li>
+<li><code>cvrmse</code>: Coefficient of Variation of Root Mean Square Error, indicating goodness-of-fit</li>
+<li><code>consumption.baseload</code>: Non-weather-dependent usage</li>
+<li><code>consumption.heating</code>: Heating-related consumption</li>
+<li><code>consumption.cooling</code>: Cooling-related consumption</li>
 </ul>
-<h2 id="optimizing-parameters-practical-guidance">Optimizing Parameters: Practical Guidance</h2>
+<hr />
+<h2 id="2-existing_home_results">2. <code>existing_home_results</code></h2>
+<p>Contains simulation outputs for the original uncalibrated home model. Values are annual consumption estimates from the initial simulation.</p>
+<pre><code class="language-json">&quot;existing_home_results&quot;: {
+  &quot;existing_home_sim_results&quot;: {
+    &quot;electricity&quot;: {
+      &quot;cooling&quot;: 0.876,
+      &quot;baseload&quot;: 11.019
+    },
+    &quot;natural gas&quot;: {
+      &quot;heating&quot;: 92.936,
+      &quot;baseload&quot;: 9.38
+    },
+    &quot;... (truncated for brevity)&quot;
+  }
+}
+</code></pre>
+<hr />
+<h2 id="3-calibration_success">3. <code>calibration_success</code></h2>
+<p>Indicates whether the calibration process met predefined acceptance criteria. Acceptance criteria thresholds are configurable through the <code>acceptance_criteria</code> section of the calibration configuration YAML file. If custom thresholds are not provided, the default values defined in <code>default_calibration_config.yaml</code> are used.</p>
+<pre><code class="language-json">&quot;calibration_success&quot;: false
+</code></pre>
 <ul>
-<li><strong>Testing with Small Values:</strong> Employ reduced population sizes and fewer generations during initial testing phases to quickly validate code and workflow.</li>
-<li><strong>Calibration with Larger Values:</strong> For full-scale calibration, increase both population_size and generations to achieve a more comprehensive search. We recommend population sizes between 30–100 and similar ranges for generations. Note that the effectiveness of larger population sizes or more generations depends on the number and granularity of available calibration adjustment knobs. If only a few knobs are being tuned, excessively large values may not provide meaningful improvements.</li>
-<li><strong>Balance Exploration and Intensification:</strong><ul>
-<li>if the search space is complex, consider increasing the crossover and mutation probabilities to ensure thorough exploration and solution coverage.</li>
-<li>Higher crossover and mutation probabilities (greater than 0.1 or 10%) can enhance the algorithm's ability to investigate new search spaces, while lower probabilities tend to concentrate the search on refining and intensifying existing solutions.</li>
-<li>Higher crossover and mutation probabilities may result in longer search time.</li>
+<li><code>true</code>: Calibration met predefined acceptance criteria</li>
+<li><code>false</code>: Calibration did not converge to acceptable error thresholds</li>
 </ul>
-</li>
-<li><strong>Evaluating Results:</strong> Experiment with different parameter settings and compare outcomes to achieve an optimal balance between solution quality and computational efficiency.</li>
-<li><strong>Tune Based on Constraints:</strong> When computational resources are limited, smaller populations, fewer generations, and smaller crossover and mutation probabilities may still yield useful results. It’s often necessary to experiment with different values to find the optimal values for a particular problem.</li>
-</ul>
-<h2 id="value-choices">Value Choices</h2>
-<p>These arrays contain the discrete options that the genetic algorithm will evaluate to calibrate the model. The values are multipliers (or temperature offsets) applied to elements in the HPXML model. For multipliers, 1 means no change, 0.1 means 1/10th of the original value, and 10 means 10x the original value. For temperature offsets, 0 means no change, -2 means a decrease of 2 deg-F, and 2 means an increase of 2 deg-F. Each home should have a custom config file for what is known about that home in particular. For instance, if a blower door test was completed on a home, you could use a very small range (to account for uncertainty in the infiltration algorithm) or no range for the air leakage choices in that home. We think a safe principle is to start with narrow ranges and few options the first time you attempt calibration of a home, and then subsequently expand the options/ranges if the calibration is not successful.</p>
+<hr />
+<h2 id="4-calibration_results">4. <code>calibration_results</code></h2>
+<p>Contains detailed results for each generation of the genetic algorithm.</p>
+<pre><code class="language-json">&quot;calibration_results&quot;: [
+  {
+    &quot;gen&quot;: 0,
+    &quot;... (truncated for brevity)&quot;
+  }
+]
+</code></pre>
+<h3 id="41-genetic-algorithm-metrics">4.1 Genetic Algorithm Metrics</h3>
 <ul>
-<li>Numbers farther away from 1 signify more uncertainty in the original model.<ul>
-<li>If those settings aren't able to generate a model that meets the acceptance criteria, try expanding the range.<ul>
-<li>Instead of <code>[0.5, 1, 2]</code>, consider <code>[0.25, 1, 4]</code></li>
+<li><code>gen</code>: Generation index</li>
+<li><code>nevals</code>: Number of individuals evaluated</li>
+<li><code>min</code>: Best fitness score in generation</li>
+<li><code>avg</code>: Average fitness score across the generation population</li>
 </ul>
-</li>
-</ul>
-</li>
-<li>More values inside the array give the genetic algorithm more granularity to find a solution.<ul>
-<li>If the quality of the output isn't very good, more granularity could help.<ul>
-<li>Instead of <code>[0.5, 1, 2]</code>, consider <code>[0.5, 0.75, 1, 1.5, 2]</code></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="the-choices-in-the-config-file-adjust-the-following-hpxml-values">The choices in the config file adjust the following hpxml values</h3>
-<p>If your model doesn't contain any of them, that field is ignored. For instance, if your model doesn't include a permanent spa, calibration will not fail because of that, nor will it create a spa. We hope it behaves the way a reasonable person would expect it to.</p>
-<h3 id="misc_load_multiplier_choices">misc_load_multiplier_choices</h3>
+<h4 id="fitness-score">Fitness Score</h4>
+<p>The fitness score represents the overall calibration objective that the genetic algorithm minimizes.</p>
+<p>It is computed by aggregating bias error and absolute error across all fuel types and end uses into a single scalar value.</p>
+<p>Each error metric is first transformed using a logarithmic scaling function before being penalized and aggregated. This transformation reduces the influence of extreme error values and improves the stability of the optimization process. The use of a logarithmic transformation prevents any single large error (for a specific fuel type or end use) from dominating the overall fitness score.</p>
+<p>Lower fitness values indicate better agreement between simulated results and weather-normalized consumption.</p>
+<h3 id="42-error-metrics">4.2 Error Metrics</h3>
+<p>Calibration error metrics are calculated for each end-use category (<code>baseload</code>, <code>heating</code>, and <code>cooling</code>) based on the methodology defined in BPI-2400-2015 Section 3.2.3.A.</p>
+<h4 id="bias-error">Bias Error</h4>
+<p>Measures the signed percentage deviation between weather-normalized consumption and simulation results. It is used to identify systematic bias, indicating whether the model tends to over- or under-predict energy use.</p>
+<pre><code class="language-json">&quot;bias_error_&lt;fuel_type&gt;_&lt;end_use&gt;&quot;
+</code></pre>
+<h5 id="formula">Formula</h5>
+<p>$$bias_error = \left( \frac{y - \hat{y}}{NAC} \right) \times 100$$</p>
+<p><strong>Where:</strong></p>
 <ul>
-<li>plug load</li>
-<li>fuel load</li>
-<li>pool pump usage</li>
-<li>pool heater usage</li>
-<li>permanent spa pump usage</li>
-<li>permanent spa heater usage</li>
+<li>$y$ : Weather-normalized consumption target</li>
+<li>$\hat{y}$ : Simulated consumption for the same end-use</li>
+<li>$NAC$ : Normalized Annual Consumption</li>
 </ul>
-<h3 id="air_leakage_multiplier_choices">air_leakage_multiplier_choices</h3>
+<h5 id="interpretation">Interpretation</h5>
 <ul>
-<li>air leakage</li>
-<li>effective leakage area</li>
+<li><strong>Positive (+) Value</strong>: The simulation underpredicts consumption ($y &gt; \hat{y}$).</li>
+<li><strong>Negative (-) Value</strong>: The simulation overpredicts consumption ($y &lt; \hat{y}$).</li>
+<li>Values closer to 0 indicate better calibration performance.</li>
 </ul>
-<h3 id="heating_efficiency_multiplier_choices">heating_efficiency_multiplier_choices</h3>
+<hr />
+<h4 id="absolute-error">Absolute Error</h4>
+<p>Measures the absolute magnitude of the difference between target and simulated consumption, regardless of direction.</p>
+<pre><code class="language-json">&quot;abs_error_&lt;fuel_type&gt;_&lt;end_use&gt;&quot;
+</code></pre>
+<h5 id="formula_1">Formula</h5>
+<p>$$abs_error = |y - \hat{y}|$$</p>
+<p><strong>Where:</strong></p>
 <ul>
-<li>heating efficiency afue</li>
-<li>heating efficiency percent</li>
-<li>heat pump hspf</li>
-<li>heat pump hspf2</li>
-<li>heat pump cop</li>
+<li>$y$ : Weather-normalized consumption target</li>
+<li>$\hat{y}$ : Simulated consumption</li>
 </ul>
-<h3 id="cooling_efficiency_multiplier_choices">cooling_efficiency_multiplier_choices</h3>
+<h5 id="interpretation_1">Interpretation</h5>
 <ul>
-<li>cooling efficiency seer</li>
-<li>cooling efficiency seer2</li>
-<li>cooling efficiency eer</li>
-<li>cooling efficiency ceer</li>
-<li>heat pump cooling efficiency seer</li>
-<li>heat pump cooling efficiency seer2</li>
-<li>heat pump cooling efficiency eer</li>
-<li>heat pump cooling efficiency ceer</li>
+<li>Values are $\ge 0$.</li>
+<li>Lower values indicate better agreement and higher precision.</li>
 </ul>
-<h3 id="roof_r_value_multiplier_choices">roof_r_value_multiplier_choices</h3>
+<hr />
+<h3 id="43-best_individual">4.3 <code>best_individual</code></h3>
+<p>Contains the best-performing parameter set for the current generation.</p>
+<pre><code class="language-json">&quot;best_individual&quot;: {
+  &quot;misc_load_multiplier&quot;: 0.75,
+  &quot;heating_setpoint_offset&quot;: 0,
+  &quot;... (truncated for brevity)&quot;
+}
+</code></pre>
+<hr />
+<h3 id="44-best_individual_sim_results">4.4 <code>best_individual_sim_results</code></h3>
+<p>Contains the simulation output generated by the best individual's parameters.</p>
+<pre><code class="language-json">&quot;best_individual_sim_results&quot;: {
+  &quot;electricity&quot;: {
+    &quot;cooling&quot;: 0.45,
+    &quot;baseload&quot;: 8.809
+  },
+  &quot;... (truncated for brevity)&quot;
+}
+</code></pre>
+<hr />
+<h3 id="45-diversity">4.5 <code>diversity</code></h3>
+<p>Represents the genetic variance of the population.</p>
+<pre><code class="language-json">&quot;diversity&quot;: 0.6
+</code></pre>
 <ul>
-<li>insulation assembly r value</li>
+<li><strong>High Diversity</strong>: The algorithm is broadly exploring the parameter space.</li>
+<li><strong>Low Diversity</strong>: The population is converging on a specific solution.</li>
 </ul>
-<h3 id="ceiling_r_value_multiplier_choices">ceiling_r_value_multiplier_choices</h3>
+<hr />
+<h3 id="46-parameter_choice_stats">4.6 <code>parameter_choice_stats</code></h3>
+<p>Tracks distribution statistics for each parameter across the generation population.</p>
+<pre><code class="language-json">&quot;parameter_choice_stats&quot;: {
+  &quot;misc_load_multiplier&quot;: {
+    &quot;min&quot;: 0.75,
+    &quot;max&quot;: 2.0,
+    &quot;median&quot;: 1.0,
+    &quot;std&quot;: 0.49
+  },
+  &quot;... (truncated for brevity)&quot;
+}
+</code></pre>
+<p>These statistics help diagnose parameter convergence and population diversity throughout the calibration process.</p>
 <ul>
-<li>attic floor insulation assembly r value</li>
+<li>Low standard deviation may indicate convergence toward a stable parameter value.</li>
+<li>High standard deviation may indicate continued exploration or weak parameter sensitivity.</li>
+<li>Narrow min/max ranges across generations may indicate parameter stabilization.</li>
 </ul>
-<h3 id="above_ground_walls_r_value_multiplier_choices">above_ground_walls_r_value_multiplier_choices</h3>
+<hr />
+<h3 id="47-simulation_result_stats">4.7 <code>simulation_result_stats</code></h3>
+<p>Tracks simulation output variability across all individuals in the generation.</p>
+<pre><code class="language-json">&quot;simulation_result_stats&quot;: {
+  &quot;natural_gas_heating&quot;: {
+    &quot;min&quot;: 47.9,
+    &quot;max&quot;: 165.1,
+    &quot;median&quot;: 95.1,
+    &quot;std&quot;: 34.1
+  },
+  &quot;... (truncated for brevity)&quot;
+}
+</code></pre>
+<p>These statistics summarize the variability of simulated energy consumption across the generation population.</p>
+<p>They can be used to evaluate:</p>
 <ul>
-<li>above-ground walls and rim joists assembly r value</li>
-</ul>
-<h3 id="below_ground_walls_r_value_multiplier_choices">below_ground_walls_r_value_multiplier_choices</h3>
-<ul>
-<li>exterior insulation r value</li>
-<li>interior insulation r value</li>
-<li>assembly insulation r value</li>
-</ul>
-<h3 id="slab_r_value_multiplier_choices">slab_r_value_multiplier_choices</h3>
-<ul>
-<li>under-slab insulation r value</li>
-<li>slab perimeter insulation r value</li>
-<li>slab exterior horizontal insulation r value</li>
-<li>slab gap insulation r value</li>
-</ul>
-<h3 id="floor_r_value_multiplier_choices">floor_r_value_multiplier_choices</h3>
-<ul>
-<li>floor insulation assembly r value</li>
-</ul>
-<h3 id="heating_setpoint_offset_choices">heating_setpoint_offset_choices</h3>
-<ul>
-<li>heating setpoint</li>
-<li>heating setback</li>
-<li>wekday heating setpoints</li>
-</ul>
-<h3 id="cooling_setpoint_offset_choices">cooling_setpoint_offset_choices</h3>
-<ul>
-<li>cooling setpoint</li>
-<li>cooling setback</li>
-<li>wekday cooling setpoints</li>
-</ul>
-<h3 id="water_heater_efficiency_multiplier_choices">water_heater_efficiency_multiplier_choices</h3>
-<ul>
-<li>water heater energy factor</li>
-<li>water heater uniform energy factor</li>
-</ul>
-<h3 id="water_fixtures_usage_multiplier_choices">water_fixtures_usage_multiplier_choices</h3>
-<ul>
-<li>water fixtures usage</li>
-</ul>
-<h3 id="window_u_factor_multiplier_choices">window_u_factor_multiplier_choices</h3>
-<ul>
-<li>window u factor</li>
-</ul>
-<h3 id="window_shgc_multiplier_choices">window_shgc_multiplier_choices</h3>
-<ul>
-<li>window shgc</li>
-</ul>
-<h3 id="appliance_usage_multiplier_choices">appliance_usage_multiplier_choices</h3>
-<ul>
-<li>appliance usage<ul>
-<li>refrigerators</li>
-<li>clothes washers</li>
-<li>clothes dryers</li>
-<li>dishwashers</li>
-<li>freezers</li>
-<li>cooking ranges</li>
-</ul>
-</li>
-</ul>
-<h3 id="lighting_load_multiplier_choices">lighting_load_multiplier_choices</h3>
-<ul>
-<li>interior lighting usage</li>
+<li>Sensitivity of simulation outputs to parameter variation</li>
+<li>Whether the search space remains broadly exploratory or is converging toward stable solutions</li>
 </ul>
 
 
