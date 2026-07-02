@@ -982,7 +982,7 @@ class Calibrate:
             num_proc = multiprocessing.cpu_count() - 1
 
         with Pool(
-            processes=num_proc,
+            processes=max(num_proc, 1),
             maxtasksperchild=15,
             initializer=init_worker,
             initargs=(global_seed,),
