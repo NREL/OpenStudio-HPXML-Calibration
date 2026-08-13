@@ -1129,17 +1129,18 @@
 <pre><code class="language-json">&quot;bias_error_&lt;fuel_type&gt;_&lt;end_use&gt;&quot;
 </code></pre>
 <h5 id="formula">Formula</h5>
-<p>$$bias_error = \left( \frac{y - \hat{y}}{NAC} \right) \times 100$$</p>
+<pre><code class="language-text">bias_error = ((y - ŷ) / NAC) * 100
+</code></pre>
 <p><strong>Where:</strong></p>
 <ul>
-<li>$y$ : Weather-normalized consumption target</li>
-<li>$\hat{y}$ : Simulated consumption for the same end-use</li>
-<li>$NAC$ : Normalized Annual Consumption</li>
+<li><code>y</code>: Weather-normalized consumption target</li>
+<li><code>ŷ</code>: Simulated consumption for the same end-use</li>
+<li><code>NAC</code>: Normalized Annual Consumption</li>
 </ul>
 <h5 id="interpretation">Interpretation</h5>
 <ul>
-<li><strong>Positive (+) Value</strong>: The simulation underpredicts consumption ($y &gt; \hat{y}$).</li>
-<li><strong>Negative (-) Value</strong>: The simulation overpredicts consumption ($y &lt; \hat{y}$).</li>
+<li><strong>Positive (+) Value</strong>: The simulation underpredicts consumption (<code>y &gt; ŷ</code>).</li>
+<li><strong>Negative (-) Value</strong>: The simulation overpredicts consumption (<code>y &lt; ŷ</code>).</li>
 <li>Values closer to 0 indicate better calibration performance.</li>
 </ul>
 <hr />
@@ -1148,15 +1149,16 @@
 <pre><code class="language-json">&quot;abs_error_&lt;fuel_type&gt;_&lt;end_use&gt;&quot;
 </code></pre>
 <h5 id="formula_1">Formula</h5>
-<p>$$abs_error = |y - \hat{y}|$$</p>
+<pre><code class="language-text">abs_error = abs(y - ŷ)
+</code></pre>
 <p><strong>Where:</strong></p>
 <ul>
-<li>$y$ : Weather-normalized consumption target</li>
-<li>$\hat{y}$ : Simulated consumption</li>
+<li><code>y</code>: Weather-normalized consumption target</li>
+<li><code>ŷ</code>: Simulated consumption</li>
 </ul>
 <h5 id="interpretation_1">Interpretation</h5>
 <ul>
-<li>Values are $\ge 0$.</li>
+<li>Values are <code>&gt;= 0</code>.</li>
 <li>Lower values indicate better agreement and higher precision.</li>
 </ul>
 <hr />
