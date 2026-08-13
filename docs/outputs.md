@@ -119,18 +119,20 @@ Measures the signed percentage deviation between weather-normalized consumption 
 
 ##### Formula
 
-$$bias\_error = \left( \frac{y - \hat{y}}{NAC} \right) \times 100$$
+```text
+bias_error = ((y - ŷ) / NAC) * 100
+```
 
 **Where:**
 
-* $y$ : Weather-normalized consumption target
-* $\hat{y}$ : Simulated consumption for the same end-use
-* $NAC$ : Normalized Annual Consumption
+* `y`: Weather-normalized consumption target
+* `ŷ`: Simulated consumption for the same end-use
+* `NAC`: Normalized Annual Consumption
 
 ##### Interpretation
 
-* **Positive (+) Value**: The simulation underpredicts consumption ($y > \hat{y}$).
-* **Negative (-) Value**: The simulation overpredicts consumption ($y < \hat{y}$).
+* **Positive (+) Value**: The simulation underpredicts consumption (`y > ŷ`).
+* **Negative (-) Value**: The simulation overpredicts consumption (`y < ŷ`).
 * Values closer to 0 indicate better calibration performance.
 
 ---
@@ -145,16 +147,18 @@ Measures the absolute magnitude of the difference between target and simulated c
 
 ##### Formula
 
-$$abs\_error = |y - \hat{y}|$$
+```text
+abs_error = abs(y - ŷ)
+```
 
 **Where:**
 
-* $y$ : Weather-normalized consumption target
-* $\hat{y}$ : Simulated consumption
+* `y`: Weather-normalized consumption target
+* `ŷ`: Simulated consumption
 
 ##### Interpretation
 
-* Values are $\ge 0$.
+* Values are `>= 0`.
 * Lower values indicate better agreement and higher precision.
 
 ---

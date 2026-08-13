@@ -229,7 +229,7 @@ def get_tmy3_weather():
         weather_zip_filepath.exists()
         and calculate_sha256(weather_zip_filepath) == weather_zip_sha256
     ):
-        resp = requests.get(weather_files_url, stream=True, timeout=10)
+        resp = requests.get(weather_files_url, stream=True, timeout=120)
         resp.raise_for_status()
         total_size = int(resp.headers.get("content-length", 0))
         block_size = 8192
